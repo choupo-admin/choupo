@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- methanol-nButanol (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( methanol nButanol );
+model       NRTL;
+
+parameters
+{
+    i           methanol;
+    j           nButanol;
+    a_ij        0.0;
+    b_ij        399.464;   // K
+    a_ji        0.0;
+    b_ji        -244.731;   // K
+    alpha       0.2483;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_methanol_nButanol   793.8173;   // CAS 67-56-1 -> 71-36-3
+    A_nButanol_methanol   -486.3299;   // CAS 71-36-3 -> 67-56-1
+    alpha               0.2483;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "67-56-1/71-36-3";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

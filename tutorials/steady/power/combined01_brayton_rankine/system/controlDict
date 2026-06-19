@@ -1,0 +1,11 @@
+application   choupoSolve;
+description   "Combined-cycle: Brayton (CH4 + air, Gibbs combustor) + HRSG + Rankine + 2 generators";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

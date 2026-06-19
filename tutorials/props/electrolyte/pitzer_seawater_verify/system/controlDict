@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "TIER-2 verification: Pitzer-HMW (binaries + ternary theta/psi, slice S3) on standard synthetic seawater (I ~ 0.7).  Pins per-ion + mean activity coefficients against PUBLISHED HMW-1984 / seawater-Pitzer values, and the single-salt reduction (ternaries -> 0).";
+verbosity     3;

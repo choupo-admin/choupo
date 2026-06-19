@@ -1,0 +1,118 @@
+/*---------------------------------------------------------------------------*\
+  membrane09_index_vs_rigorous  --  the bag-of-indices industry shortcut is
+  NOT safe at the membrane wall in a high-recovery concentrate.
+
+  THE LESSON (activity vs concentration -- the whole point of the case):
+
+    The industry calcite-scaling indices read every plant data-sheet ships --
+      * LSI         Langelier saturation index   (Langelier 1936)
+      * Stiff-Davis brine-corrected LSI          (Stiff & Davis 1952)
+      * RSI         Ryznar stability index        (Ryznar 1944)
+    are built from ION CONCENTRATIONS plus an EMPIRICAL ionic-strength
+    correction (a published pK-shift / chart-fit K).  Choupo's rigorous
+    SI_calcite instead forms real ION ACTIVITIES a_i = gamma_i m_i from the
+    Davies model:
+
+        LSI = pH - logK_cc(T) - p[Ca2+]  - p[HCO3-]    (CONCENTRATIONS)
+        SI  = pH - logK_cc(T) - p{a_Ca2+}- p{a_HCO3-}  (ACTIVITIES)
+
+    They share the SAME thermodynamic anchor logK_cc(T) (the HCO3-basis
+    calcite log K, = pK2 - pKsp) -- so the ONLY difference is concentration
+    vs activity.  At LOW ionic strength gamma -> 1 and LSI == SI (validation);
+    as the activity coefficients fall away from 1 the two DIVERGE.
+
+  WHERE IT BITES -- THE WALL.  Concentration polarisation piles solute against
+  the membrane wall: the LOCAL ionic strength at the wall runs far above the
+  bulk.  There the empirical index over-predicts calcite saturation (it cannot
+  see the gamma reduction), while the rigorous activity SI does not.  Reading
+  the index off the bulk analysis -- as the industry shortcut does -- therefore
+  MISLEADS at exactly the place scaling actually starts.
+
+  THE CASE: standard surface seawater (S = 35, the major-ion subset), one
+  pressure vessel of 7 x 8-inch SW elements, pushed to high recovery.  Acid is
+  dosed and CONTROLLED at pH 7.0 (real SWRO practice).  At each module exit the
+  BULK concentrate AND the membrane-WALL composition are speciated (Davies) and
+  BOTH the rigorous SI_calcite AND the empirical LSI / Stiff-Davis / Ryznar are
+  recorded, bulk + wall.
+
+  THE STORY (locked by the golden master):
+    - module 1, low concentrate I: LSI(wall) and the rigorous SI_calcite(wall)
+      AGREE to within a few hundredths -- the index is VALIDATED at low I;
+    - the deepest module, high wall I: LSI(wall) over-predicts the rigorous
+      activity SI_calcite(wall) by a visible margin -- the gap (LSI - SI)
+      printed in the audit footer is the headline number.  Stiff-Davis pulls
+      PART of the way back toward the rigorous SI (its empirical brine K), but
+      not all the way -- it is still a chart fit, not the real gammas.
+    - Ryznar (RSI = 2 pHs - pH) reads the same saturation pHs as LSI on the
+      practical 0..14 stability scale.
+
+  Engineering take-away (Choupo's transparency differentiator): the
+  concentration-based index family is convenient but UNSAFE for high-recovery
+  membrane scaling -- the rigorous activity SI, visible term-by-term, is the
+  honest call.
+
+  Sibling cases: membrane07_scaling_si (bulk vs wall SI, brackish);
+  tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate (Davies vs Pitzer
+  activity fork).  Index kernel + primary sources:
+  src/thermo/electrolyte/ScalingIndices.{H,cpp}.
+
+  PRIMARY SOURCES:
+    Langelier, W.F. (1936) J. AWWA 28(10) 1500-1521.
+    Stiff, H.A. & Davis, L.E. (1952) Trans. AIME 195, 213-216.
+    Ryznar, J.W. (1944) J. AWWA 36(4) 472-486.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            900.0 kmol/h;        // ~16 m3/h of seawater
+        T            298.15 K;
+        P            55.0 bar;            // SWRO operating head
+        molarComposition
+        {
+            water    0.97953676;
+            Na       8.57612838e-03;
+            Mg       9.65255602e-04;
+            Ca       1.87933677e-04;
+            K        1.86698433e-04;
+            Cl       9.98783675e-03;
+            SO4      5.17038192e-04;
+            HCO3     4.23512513e-05;
+        }
+    }
+}
+
+units
+(
+    {
+        name        vessel;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+
+        operation
+        {
+            membrane         SW30HR;          // case-local constant/membranes/
+            moduleDiameter   8 in;            // nominal 8in/40in SW element
+            nModules         7;               // one vessel, 7 elements
+            P_permeate       1.0 bar;
+            k_film           1.2e-5;           // m/s -- moderate crossflow; the
+                                               // polarisation (wall I >> bulk I)
+                                               // is THE driver the indices miss
+            dP_feed_total    0.3 bar;          // per element
+            interElementDP   0.1 bar;
+            nNodes           40;
+        }
+
+        // The scaling audit: rigorous Davies SI + the empirical industry
+        // indices (auto-on because calcite is tracked and Ca + HCO3 are present),
+        // bulk + wall, at each module exit.
+        scaling
+        {
+            minerals    ( calcite  gypsum );
+            pH          7.0;                  // acid-dosed + controlled SWRO feed
+            activityModel davies;            // rigorous SI uses Davies activities
+        }
+    }
+);

@@ -1,0 +1,6 @@
+# Reference KPIs (golden master).  kind  name  key  expected  reltol
+# Wang-Henke distillation (iterative; looser tol than algebraic cases).
+kpi     column01               T_top            354.21089412     1e-4
+kpi     column01               T_bottom         382.893530951    1e-4
+kpi     column01               x_D_LK           0.981245045999   1e-4
+kpi     column01               x_B_HK           0.981245183716   1e-4

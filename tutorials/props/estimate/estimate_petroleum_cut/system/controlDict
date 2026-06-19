@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "ESTIMATE a petroleum PSEUDO-COMPONENT by name from (Tb, SG) -- Riazi-Daubert; see the SCREAMING ESTIMATE provenance and that the lump FLASHES";
+
+verbosity     2;

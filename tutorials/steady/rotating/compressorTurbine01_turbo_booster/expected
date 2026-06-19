@@ -1,0 +1,35 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  ambientAir             F                0.0005             1e-4
+stream  boostedAir             F                0.0005             1e-4
+stream  hotExhaust             F                0.001              1e-4
+stream  turbExhaust            F                0.001              1e-4
+kpi     compressor             F                0.0005             1e-4
+kpi     compressor             P_in             100000             1e-4
+kpi     compressor             P_out            890211.642995      1e-4
+kpi     compressor             T_in             298.15             1e-4
+kpi     compressor             T_out            633.374206884      1e-4
+kpi     compressor             T_out_isen       551.37943898       1e-4
+kpi     compressor             W_isen           3750               1e-4
+kpi     compressor             W_isen_kW        3.75               1e-4
+kpi     compressor             W_shaft          5000               1e-4
+kpi     compressor             W_shaft_kW       5                  1e-4
+kpi     compressor             dS_gen           4.22615345389      1e-4
+kpi     compressor             dT               335.224206884      1e-4
+kpi     compressor             dT_isen          253.22943898       1e-4
+kpi     compressor             eta_isen         0.75               1e-4
+kpi     compressor             ratio            8.90211642995      1e-4
+kpi     turbine                F                0.001              1e-4
+kpi     turbine                P_in             500000             1e-4
+kpi     turbine                P_out            169783.005244      1e-4
+kpi     turbine                T_in             800                1e-4
+kpi     turbine                T_out            640.727389372      1e-4
+kpi     turbine                T_out_isen       599.892018915      1e-4
+kpi     turbine                W_gen_kW         5                  1e-4
+kpi     turbine                W_generated      5000               1e-4
+kpi     turbine                W_shaft          -5000              1e-4
+kpi     turbine                dS_gen           2.01560856373      1e-4
+kpi     turbine                dT               -159.272610628     1e-4
+kpi     turbine                dT_isen          -200.107981085     1e-4
+kpi     turbine                eta_isen         0.8                1e-4
+kpi     turbine                ratio            2.94493550331      1e-4

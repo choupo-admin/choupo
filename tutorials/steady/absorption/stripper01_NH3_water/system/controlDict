@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "NH3 stripping from water with air (Kremser, 6 stages, warm)";
+verbosity     3;
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    profiles       { }
+    spreadsheet    { }
+}

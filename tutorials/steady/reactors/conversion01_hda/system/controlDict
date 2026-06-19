@@ -1,0 +1,6 @@
+/*---------------------------------------------------------------------------*\
+  controlDict -- conversion01_hda
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Conversion reactor: HDA toluene+H2 -> benzene+CH4 at 75%/pass (gas-basis, no kinetics, no Vliq)";
+verbosity     3;

@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+# bin/llmctx --- print all docs/ai/*.md concatenated to stdout, in the
+# order an LLM should read them.  Lets a user paste-the-whole-thing into
+# a fresh chat with Claude / ChatGPT / etc., then ask their question:
+#
+#   bin/llmctx                # print to stdout (browse / pipe / copy)
+#   bin/llmctx > ctx.md       # save -> paste into a fresh chat
+#   bin/llmctx | wc -l        # check how many lines you're about to paste
+#   bin/llmctx | xclip         # copy to clipboard (Linux)
+#   bin/llmctx | pbcopy        # copy to clipboard (macOS)
+#
+# Total context is ~1500 lines (well within a 200k-token window) and is
+# designed to teach an LLM everything it needs to author a Choupo case.
+# For an LLM working ON the source code (not authoring cases), point it
+# at CLAUDE.md instead -- that's the developer-oriented doc.
+set -euo pipefail
+
+# Repo root from this script's location: bin/llmctx -> repo root is one up.
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+AI_DIR="$HERE/docs/ai"
+
+if [ ! -d "$AI_DIR" ]; then
+    echo "llmctx: docs/ai/ not found at $AI_DIR" >&2
+    exit 1
+fi
+
+# Reading order: orientation first, then syntax, then layout (where the
+# files go), then thermo (how to pick models), then unit-ops (the catalogue
+# the user actually picks from), then components (what ships), then patterns
+# (recipes the user copies), then pitfalls (things that bite).
+ORDER=(
+    overview
+    dict-syntax
+    case-layout
+    thermo
+    unit-ops
+    outer-drivers
+    components
+    curation-protocol
+    patterns
+    pitfalls
+    consistency
+    extending
+)
+
+cat <<'EOF'
+<!--
+================================================================================
+Choupo case-authoring context for AI assistants (LLM-facing kit, v0.78).
+Produced by `bin/llmctx`; reading order is fixed by the script.
+
+If you're an LLM reading this:  you have everything needed to help a user
+write a `flowsheetDict` / `propsDict` for Choupo.  Start at the overview,
+write the case, and when in doubt cite which file you pulled the fact from.
+
+If you're a HUMAN: paste this whole file into a fresh chat with Claude /
+ChatGPT and then ask your question.  ~1500 lines, well under any modern
+context window.
+================================================================================
+-->
+
+EOF
+
+for name in "${ORDER[@]}"; do
+    f="$AI_DIR/${name}.md"
+    if [ ! -f "$f" ]; then
+        echo "llmctx: missing $f -- skipping" >&2
+        continue
+    fi
+    printf '\n\n<!-- ============================================================ -->\n'
+    printf '<!-- docs/ai/%s.md -->\n' "$name"
+    printf '<!-- ============================================================ -->\n\n'
+    cat "$f"
+done

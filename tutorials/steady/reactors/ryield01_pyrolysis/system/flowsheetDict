@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict -- ryield01_pyrolysis.  A single YIELD reactor (Aspen RYield
+  analogue).  The HDA chemistry (toluene + H2 -> benzene + CH4) is treated here
+  NOT with a balanced reaction but as an empirical MASS-YIELD slate: per unit
+  mass of TOTAL feed the reactor makes benzene/CH4/H2 in fixed mass fractions.
+  This is the right tool when only the product distribution is known (lumped /
+  empirical chemistry).  No stoichiometry, no kinetics -- the OVERALL MASS
+  BALANCE always closes because the yields are on a normalised (Sum = 1) basis.
+\*---------------------------------------------------------------------------*/
+streams
+{
+    feed
+    {
+        F            400.0 kmol/h;
+        T            900.0 K;
+        P            35.0  bar;
+        molarComposition { toluene 0.25;  H2 0.75;  benzene 0.0;  CH4 0.0; }
+    }
+}
+units
+(
+    {
+        name       reactor;
+        type       yieldReactor;
+        in         feed;
+        outputs    ( product );
+        operation
+        {
+            // Mass of product per unit mass of TOTAL feed (kg/kg).  These sum
+            // to 1 here, so the mass balance closes with no renormalisation.
+            yields
+            (
+                { component benzene;  yield 0.62; }
+                { component CH4;      yield 0.10; }
+                { component H2;       yield 0.28; }
+            );
+            // Outlet T (isothermal); omit to hold the feed T.
+            T  900.0 K;
+        }
+    }
+);

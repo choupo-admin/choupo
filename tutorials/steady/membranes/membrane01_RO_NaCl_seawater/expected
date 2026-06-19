@@ -1,0 +1,5 @@
+# Reference KPIs (golden master).  kind  name  key  expected  reltol
+# THE case that once returned silent NaN KPIs (exit 0) --- this guards it.
+kpi     ROunit                 R_obs_NaCl       0.997801988394   1e-5
+kpi     ROunit                 water_recovery   0.155540314525   1e-4
+kpi     ROunit                 J_w_avg          1.27871729408e-05 1e-4

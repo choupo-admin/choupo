@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Seawater RO with k_film computed from spacer-channel hydraulics (Schock-Miquel Sherwood); k_film falls ~6.6 to ~5.6e-5 m/s along the channel";
+
+verbosity     3;

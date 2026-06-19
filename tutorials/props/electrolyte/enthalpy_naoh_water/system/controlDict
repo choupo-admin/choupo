@@ -1,0 +1,3 @@
+application choupoProps;
+description "NaOH-water heat of dilution: Pitzer with calorimetric T-slots vs Parker (1965)";
+verbosity 2;

@@ -1,0 +1,19 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser01_sugar  --  cooling crystalliser (the most common model),
+                            written as a LEAF node (fractal form, v0.57+).
+
+  A hot, near-saturated sugar solution is cooled; the solubility drops and
+  the excess sucrose crystallises.  The mother liquor leaves saturated at
+  the operating temperature; the yield follows from the solubility curve.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Cooling crystalliser: sugar solution 80 -> 20 C, yield by solubility";
+
+verbosity     3;
+
+reports
+{
+    streamTable  {}
+    massBalance  {}
+}

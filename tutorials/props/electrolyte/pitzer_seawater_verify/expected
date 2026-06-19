@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    reduction_nacl         I                1                1e-4
+diag    reduction_nacl         SI_halite        -1.93464         1e-4
+diag    reduction_nacl         aw               0.964611         1e-4
+diag    reduction_nacl         gamma_Cl         0.657172         1e-4
+diag    reduction_nacl         gamma_Na         0.657172         1e-4
+diag    reduction_nacl         m_Cl             1                1e-4
+diag    reduction_nacl         m_Na             1                1e-4
+diag    reduction_nacl         pH               7                1e-4
+diag    seawater               I                0.720461         1e-4
+diag    seawater               SI_anhydrite     -0.970682        1e-4
+diag    seawater               SI_gypsum        -0.688787        1e-4
+diag    seawater               SI_halite        -2.48552         1e-4
+diag    seawater               SI_sylvite       -3.51313         1e-4
+diag    seawater               aw               0.979371         1e-4
+diag    seawater               gamma_Ca         0.185597         1e-4
+diag    seawater               gamma_Cl         0.691142         1e-4
+diag    seawater               gamma_K          0.589047         1e-4
+diag    seawater               gamma_Mg         0.204857         1e-4
+diag    seawater               gamma_Na         0.639032         1e-4
+diag    seawater               gamma_SO4        0.104021         1e-4
+diag    seawater               m_Ca             0.01065          1e-4
+diag    seawater               m_Cl             0.5658           1e-4
+diag    seawater               m_K              0.01058          1e-4
+diag    seawater               m_Mg             0.0547           1e-4
+diag    seawater               m_Na             0.4861           1e-4
+diag    seawater               m_SO4            0.02926          1e-4
+diag    seawater               pH               8.1              1e-4

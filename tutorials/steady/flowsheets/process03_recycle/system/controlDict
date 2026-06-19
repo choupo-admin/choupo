@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Recycle loop with Wegstein acceleration on the tear stream";
+
+verbosity     3;

@@ -1,0 +1,10 @@
+/*  Two liquid phases sharing a predictive UNIFAC activity model (no fitted
+    pairs) -- the liquid-liquid flash needs >= 2 liquid phases to split.
+    UNIFAC groups come from each component's .dat (water, nButanol). */
+components ( water nButanol );
+phases
+(
+    { name vapor;   type vapor;  eos { model idealGas; } }
+    { name liquid1; type liquid; activity { model UNIFAC; } }
+    { name liquid2; type liquid; activity { model UNIFAC; } }
+);

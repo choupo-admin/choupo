@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  cstr02_reversible_wgs  --  water-gas-shift reaction in a CSTR with
+                             reverse rate from thermodynamic K_eq.
+
+  Feed: equimolar CO + H2O at 600 K, 10 bar.  The forward Arrhenius
+  kinetics drives a high conversion in the early residence times;
+  the reverse term (auto-derived from g_pure_ig of the four species
+  at T = 600 K) caps the conversion at the Le Chatelier equilibrium.
+
+  At T = 600 K:
+      dG_rxn  =  g_CO2 + g_H2 - g_CO - g_H2O   ≈  -16.3 kJ/mol
+      K_eq    =  exp(16300 / (R · 600))        ≈  26.5
+      For equimolar CO + H2O, K_eq = X^2 / (1-X)^2 -->  X_eq = 0.838
+
+  V_R is picked large enough (1e-3 m^3 for a 1 kmol/h feed) that the
+  kinetics are fast relative to residence; we see the conversion
+  approach (but not exceed) X_eq = 0.838 --- exactly the
+  thermodynamic ceiling.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        T            600.0 K;
+        P              10.0 bar;
+        molarFlows
+        {
+            CO       0.5 kmol/h;
+            water    0.5 kmol/h;
+            CO2      0.0 kmol/h;
+            H2       0.0 kmol/h;
+        }
+    }
+}
+
+units
+(
+    {
+        name        wgs;
+        type        cstr;
+        in          feed;
+        outputs     ( products );
+
+        operation   { V_R 1.0e-3; }
+        reaction    wgs_reversible;
+    }
+);

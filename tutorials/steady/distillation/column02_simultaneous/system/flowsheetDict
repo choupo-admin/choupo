@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------*\
+  column02_simultaneous
+  =====================
+
+  The SAME benzene/toluene column as column01, but solved by the rigorous
+  SIMULTANEOUS-correction (MESH Newton) method instead of the sequential
+  bubble-point (Wang-Henke).  Selected by `method simultaneous;`.
+
+  Pedagogical point: on an ideal system both methods give the SAME answer
+  --- this case validates the MESH solver against column01.  But the
+  simultaneous Newton converges in ~6 iterations (quadratic) vs ~100 for
+  the bubble-point, and --- the reason it exists --- it stays stable on
+  azeotropic systems where the sequential method does not.
+
+  Expected (identical to column01): T_top ≈ 354.2 K, T_bottom ≈ 382.9 K,
+  x_D(benzene) ≈ 0.981, x_B(toluene) ≈ 0.981.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            365.0 K;
+        P            1.01325 bar;
+        molarComposition { benzene 0.5;  toluene 0.5; }
+    }
+}
+
+units
+(
+    {
+        name        column01;
+        type        distillationColumn;
+        model       simultaneous;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+        }
+    }
+);

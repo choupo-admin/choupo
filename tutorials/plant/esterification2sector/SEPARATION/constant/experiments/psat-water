@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------*\
+  Water vapour pressure vs temperature (literature, 283-373 K).  Lets the
+  Antoine equation be FITTED to data (vaporPressureFit) and cross-checked via
+  Clausius-Clapeyron (dHvap) -- instead of trusting the catalogue constants
+  blind.  Self-describing format, units MANDATORY.
+\*---------------------------------------------------------------------------*/
+
+columns
+(
+    { name T;     unit K;    role independent; }
+    { name Psat;  unit kPa;  role dependent;   }
+);
+
+data
+(
+    283.15    1.228
+    293.15    2.339
+    303.15    4.246
+    313.15    7.381
+    323.15   12.350
+    333.15   19.950
+    343.15   31.190
+    353.15   47.390
+    363.15   70.140
+    373.15  101.320
+);
+
+provenance
+{
+    source        literature;
+    citation      "water saturation pressure, standard steam-table values";
+}

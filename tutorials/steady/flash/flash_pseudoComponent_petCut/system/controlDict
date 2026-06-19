@@ -1,0 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  flash_pseudoComponent_petCut
+  ============================
+
+  WORKED EXAMPLE for the PSEUDO-COMPONENT data model: flash a binary of a
+  petroleum pseudo-component (petCut_C7plus, lumped from an assay by
+  Riazi-Daubert) with a real species (toluene), then a heater raises the
+  liquid and the energy balance CLOSES on the implied duty.
+
+  The pseudo-component .dat lives in constant/components/petCut_C7plus.dat
+  (SELF-CONTAINED -- the case carries its own lump).  It omits formula/CAS
+  and gibbsFormation (a lump has no molecule and no reaction), yet it FLASHES
+  (critical{} + Ambrose-Walton Psat) and closes an enthalpy balance (gasIdeal
+  + liquidPure Cp).  Sensible-heat balance only -- no reaction -> no Hf datum
+  is needed, exactly as the lump's missing gibbsFormation implies.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Flash of a petroleum pseudo-component (Riazi-Daubert lump) + toluene, with a heater closing the energy balance";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

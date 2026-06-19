@@ -1,0 +1,31 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.000277777777778 1e-4
+stream  hotStream              F                0.000277777777778 1e-4
+stream  liqProd                F                7.65621619403e-05 1e-4
+stream  reactorOut             F                0.000277777777778 1e-4
+stream  vapProd                F                0.000201215615838 1e-4
+kpi     heater                 F                0.000277777777778 1e-4
+kpi     heater                 P                101325           1e-4
+kpi     heater                 Q                500              1e-4
+kpi     heater                 Q_kW             0.5              1e-4
+kpi     heater                 Q_per_mol        1800             1e-4
+kpi     heater                 T_in             350              1e-4
+kpi     heater                 T_out            364.85579492     1e-4
+kpi     heater                 dT               14.8557949202    1e-4
+kpi     reactor                Da_kTau          1.79046552367    1e-4
+kpi     reactor                F_in_kmol_h      1                1e-4
+kpi     reactor                F_out_kmol_h     1                1e-4
+kpi     reactor                T                350              1e-4
+kpi     reactor                V_R              0.0080703125     1e-4
+kpi     reactor                X_limiting       0.641636855379   1e-4
+kpi     reactor                k                0.00357499942014 1e-4
+kpi     reactor                tau_s            500.829598345    1e-4
+kpi     reactor                xi_mol_per_s     0.0891162299138  1e-4
+kpi     separator              F_alpha          7.65621619403e-05 1e-4
+kpi     separator              F_beta           0.000201215615838 1e-4
+kpi     separator              F_in             0.000277777777778 1e-4
+kpi     separator              P                100000           1e-4
+kpi     separator              T                364.85579492     1e-4
+kpi     separator              V_over_F         0.724376217015   1e-4
+kpi     separator              phaseSet         0                1e-4

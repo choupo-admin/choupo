@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Component: Calcium chloride (CaCl2, CAS 10043-52-4)
+
+  Reference-state-layout native #2 (forum 2026-06-11).  Strong 2:1 electrolyte
+  (Ca++ + 2 Cl-): nonvolatile, dissolved-only; exercises the Pitzer 2:1 charge
+  asymmetry.  REPAIRED from a headless fragment that carried only the
+  electrolyte block (no identity -> the loader's MW lookup threw at load).
+
+  CURATION STATUS: the solubility anchor is an individual literature value --
+  primary re-citation pending (IST review).  The VALUE is kept (physically
+  plausible, ~7.3 mol/kg at 25 C) but flagged: re-source from a public-domain
+  primary before any result hinges on it.  At
+  25 C the stable solid is a HYDRATE (CaCl2.6H2O up to ~30 C) -- the `forms`
+  slot is its future home.
+\*-----------------------------------------------------------------------------*/
+
+identity
+{
+    name        CaCl2;
+    formula     CaCl2;
+    CAS         10043-52-4;
+    MW          110.98;             // g/mol
+}
+
+nonvolatile    true;                // never in the vapour (K = 0)
+dissociation   3;                   // van't Hoff factor (2:1 strong electrolyte)
+
+electrolyte
+{
+    cation     Ca;                  // -> electrolyte/ions.dat (z = +2)
+    anion      Cl;                  // -> electrolyte/ions.dat (z = -1); pairs.dat (Ca,Cl): Appelo 2014
+    solubility 7.3;                 // m_sat [mol/kg water], 25 C -- RE-SOURCE (licence)
+    provenance
+    {
+        solubility { origin literature; method "individual literature value -- primary re-citation pending (IST review); re-source from a public-domain primary before design use (25 C; stable solid is CaCl2.6H2O)"; }
+    }
+}
+
+// solid                            // SLOT: rho_p / k_v / Hf_298(s) + the
+// {                                //   hydrate `forms` (CaCl2.6H2O) -- fill
+// }                                //   with open primary data when needed.

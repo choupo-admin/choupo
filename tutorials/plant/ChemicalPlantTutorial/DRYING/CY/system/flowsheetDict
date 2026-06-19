@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  CY / system/flowsheetDict   (LEAF -- cyclone dust separator)
+
+  Despoeira the spray-dryer exhaust: clean air to stack, fines recovered.
+  A size classifier (it needs the gas viscosity from the transport block).
+\*---------------------------------------------------------------------------*/
+
+type        cyclone;
+model       Lapple;
+operation   { bodyDiameter 0.4 m;  numberOfTurns 5; }
+
+boundary    { inlets ( Exhaust );  outlets ( ExhaustClean  Dust ); }
+
+streams     // default for isolated run; the sector cables SD/Exhaust
+{
+    Exhaust
+    {
+        F 82 kmol/h;  T 371 K;  P 1 bar;
+        molarComposition { N2 0.94;  water 0.06; }
+        solids
+        {
+            solidMolarFlows { sucrose 0.002; }    // fines carried by the exhaust
+            diameters    ( 2e-6  5e-6  1e-5 );
+            massFractions ( 0.5   0.3   0.2 );
+        }
+    }
+}

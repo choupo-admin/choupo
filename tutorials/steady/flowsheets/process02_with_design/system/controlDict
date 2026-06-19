@@ -1,0 +1,63 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "process02 with full reports: balances + sizing + Guthrie costing";
+
+verbosity     3;
+
+// Reports (v0.41+).  The controlDict is the maestro: sizing and costing
+// --- which used to live in a separate system/postDict --- are now
+// `design` and `economics` report objects, written into the per-domain
+// tree under reports/.  Order matters: `design` before `economics`
+// (costing reads the equipment sizes), and `spreadsheet` last so its
+// Design / Economics sheets see the data.
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+
+    design
+    {
+        units
+        (
+            {
+                unitName    reactor;
+                type        stirredTank;
+                material    SS316;
+                designRules
+                {
+                    L_over_D        2.5;
+                    pressureDesign  3.0;        // bar (operating × 2 safety)
+                    corrosionAllow  0.003;      // m
+                    jointEfficiency 1.0;
+                }
+            }
+
+            {
+                unitName    heater;
+                type        shellTubeHX;
+                material    SS304;
+                designRules
+                {
+                    U               600.0;      // W/(m²·K)
+                    LMTD            10.0;        // K
+                    pressureDesign  2.0;        // bar
+                }
+            }
+        );
+    }
+
+    economics
+    {
+        method      Guthrie;
+        year        2026;
+        cepci       820;
+        cepci2001   397;
+        usdToEur    0.92;
+    }
+
+    spreadsheet    { }
+}

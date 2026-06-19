@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser01_sugar / thermoPackage
+
+  water (solvent) + sucrose (crystallising solute).  The sucrose .dat carries
+  the solid-liquid equilibrium curve `solubility { coefficients (...) }` that
+  the crystalliser uses for its yield.
+\*---------------------------------------------------------------------------*/
+
+components       ( water  sucrose );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "Closed Brayton (gas-turbine) cycle: compress air -> combust (gas-aware heater) -> expand to feed P";
+verbosity     2;
+
+// Computed cycle headline numbers (net work, thermal efficiency), evaluated
+// after the solve from the unit KPIs.  Runs at the DesignSpec optimum replay.
+reports
+{
+    computed   { }
+}

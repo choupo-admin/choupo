@@ -1,0 +1,10 @@
+application   choupoBatch;
+description   "Two-vessel batch recipe: esterify (AcOH + EtOH -> EtOAc + H2O) in a reactor, transfer the charge to a still, then distil";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         1200;     // s    (400 s react + 800 s distil)
+deltaT          1.0;      // s
+writeInterval   20;       // s

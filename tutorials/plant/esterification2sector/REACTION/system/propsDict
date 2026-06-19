@@ -1,0 +1,42 @@
+/*--- REACTION sector -- PROPERTY analyses (the reactor's kinetics).
+  Fractal: opening REACTION shows only these.  Acetic-acid consumption:
+  is it 1st or 2nd order?  Closed-form rate laws vs the raw batch lab data. */
+experimental
+(
+    {
+        name       rate_AcOH_batch;
+        dataset    "constant/experiments/rate-AcOH-batch";
+        kind       kinetics;  component AcOH;
+        source     "batch lab run, 353 K (pedagogical)";
+        models     ( rate_order1  rate_order2 );
+    }
+);
+operations
+(
+    {
+        // NO `k` declared -> kinetics1D REGRESSES k from the lab data by least
+        // squares (c0 fixed at the measured initial value).  provenance =
+        // fitted -- a real fit, not a hand-set constant masquerading as one.
+        name rate_order1;  type kinetics1D;
+        time { from 0; to 1800; n 61; }  rate { order 1; c0 1.0; }
+        component AcOH;  dataset "constant/experiments/rate-AcOH-batch";
+        provenance { source fitted; }  output { file rate_order1.csv; }
+    }
+    {
+        name rate_order2;  type kinetics1D;
+        time { from 0; to 1800; n 61; }  rate { order 2; c0 1.0; }
+        component AcOH;  dataset "constant/experiments/rate-AcOH-batch";
+        provenance { source fitted; }  output { file rate_order2.csv; }
+    }
+    {
+        // ARRHENIUS fit: NO k0/Ea given -> kinetics1D regresses them from the
+        // MULTI-isotherm data (`fit ( k0 Ea )`).  Per temperature it fits k(T),
+        // then the Arrhenius line ln k vs 1/T gives k0 + Ea from the slope.
+        // (One isotherm cannot give Ea -- that needs >= 2 temperatures.)
+        name rate_arrhenius;  type kinetics1D;
+        rate { order 2; c0 1.0 mol/L; }
+        component AcOH;  dataset "constant/experiments/rate-AcOH-multiT";
+        fit ( k0 Ea );
+        provenance { source fitted; }  output { file rate_arrhenius.csv; }
+    }
+);

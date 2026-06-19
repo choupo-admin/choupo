@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: benzeneAW  --  a copy of benzene whose vapour pressure is
+  PREDICTED by Ambrose-Walton corresponding states (Tc, Pc, omega) instead of
+  the fitted Antoine of the catalogue benzene.  Same constants, different Psat
+  route -- so a scan can overlay the PREDICTION (this) on the DATA-fit (catalogue
+  benzene) on one axis.  Benzene is non-polar: Ambrose-Walton should track the
+  Antoine fit closely (a few %).
+\*---------------------------------------------------------------------------*/
+
+name        benzeneAW;
+MW          78.114;        // kg/kmol
+Tc          562.05;        // K
+Pc          48.95;         // bar
+omega       0.2103;        // [-]
+Tb          353.24;        // K
+HvapTb      30720;         // J/mol
+Vliq        8.943e-5;      // m^3/mol
+
+vaporPressure
+{
+    model    AmbroseWalton;   // Tc/Pc/omega taken from the component above
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (-31.368   0.4746   -3.117e-4   8.523e-8);
+    Trange        (200  1500);
+}

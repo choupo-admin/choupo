@@ -1,0 +1,57 @@
+#!/bin/bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+#---------------------------------------------------------------------------#
+#  agentBridge -- start the LOCAL web-terminal bridge that lets the Choupo
+#  GUI's Assistant console run a real `claude -c` session in the project.
+#
+#  Usage:
+#      bin/agentBridge          # start (foreground)
+#      bin/agentBridge --kill   # stop a running bridge
+#
+#  Binds 127.0.0.1:7682 (override with CHOUPO_AGENT_PORT).  LOCAL ONLY.
+#  Needs `claude` on PATH and the GUI deps installed (ws + node-pty).
+#---------------------------------------------------------------------------#
+set -e
+script_dir=$(dirname "$(readlink -f "$0")")
+root=$(dirname "$script_dir")
+bridge="$root/gui/bridge/claudeBridge.mjs"
+
+if [ "${1:-}" = "--kill" ] || [ "${1:-}" = "--stop" ]; then
+    pkill -f 'claudeBridge.mjs' 2>/dev/null && echo "[agentBridge] stopped" || echo "[agentBridge] nothing running"
+    exit 0
+fi
+
+if ! command -v claude > /dev/null; then
+    echo "[agentBridge] ERROR: 'claude' not on PATH -- install Claude Code first" >&2
+    exit 1
+fi
+export CHOUPO_HOME="$root"
+echo "[agentBridge] starting -> ws://127.0.0.1:${CHOUPO_AGENT_PORT:-7682} (claude -c in $root)"
+exec node "$bridge"

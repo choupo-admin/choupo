@@ -1,0 +1,6 @@
+// Riazi-Daubert needs no thermo package; a single placeholder component keeps
+// the loader happy (the estimate itself reads only the `anchors` block).
+components       ( benzene );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

@@ -1,0 +1,66 @@
+/*---------------------------------------------------------------------------*\
+  extract01_ethanol_water_benzene  --  Counter-current LL extraction column
+
+  Recover ETHANOL (the solute) from a dilute aqueous feed (WATER = the
+  carrier) using BENZENE as the extracting SOLVENT.  This is the classic
+  Aspen "Extract" problem: a multistage counter-current liquid-liquid
+  cascade.
+
+  Topology (the `extractor` unit op):
+    * the feed (water + ethanol) enters at stage 1;
+    * fresh solvent (benzene) enters at stage N;
+    * the two liquid phases pass counter-currently --- the raffinate
+      (water-rich, ethanol-depleted) flows 1 -> N, the extract
+      (benzene-rich, ethanol-enriched) flows N -> 1;
+    * EXTRACT leaves stage 1, RAFFINATE leaves stage N.
+
+  Each theoretical stage is ONE liquid-liquid equilibrium, solved by the
+  SHARED Gibbs-energy-minimisation LL flash (IsothermalFlash, phaseSet LL)
+  --- robust against the K = 1 saddle that traps Newton-on-residual
+  methods in LLE (CLAUDE.md sec.9).  The cascade is torn by successive
+  substitution (mirroring the distillation bubble-point loop).
+
+  Thermo: predictive UNIFAC for both liquid phases (water / ethanol /
+  benzene groups inline), the same model used by the ternary LLE scan
+  tutorial --- fully self-contained, no fitted pairs needed.
+
+  KPIs to watch:  recovery_ethanol (fraction of ethanol leaving in the
+  extract), distribution_ethanol (z_E / z_R), F_extract / F_raffinate,
+  massClosure (must be ~0).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            298.15 K;
+        P            1.01325 bar;
+        molarComposition  { water 0.80;  ethanol 0.20; }   // dilute ethanol in water
+    }
+
+    solvent
+    {
+        F            120.0 kmol/h;
+        T            298.15 K;
+        P            1.01325 bar;
+        molarComposition  { benzene 1.0; }                 // fresh benzene
+    }
+}
+
+units
+(
+    {
+        name        extractor01;
+        type        extractor;
+        inputs      ( feed  solvent );        // feed at stage 1, solvent at stage N
+        outputs     ( extract  raffinate );   // extract leaves stage 1, raffinate stage N
+
+        operation
+        {
+            stages       5;
+            solvent      benzene;             // defines the extract phase
+            temperature  298.15 K;
+        }
+    }
+);

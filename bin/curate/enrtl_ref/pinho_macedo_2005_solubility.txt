@@ -1,0 +1,280 @@
+                                                  J. Chem. Eng. Data 2005, 50, 29-32                                                  29
+
+
+Solubility of NaCl, NaBr, and KCl in Water, Methanol, Ethanol, and
+Their Mixed Solvents
+
+Simão P. Pinho† and Eugénia A. Macedo*
+Laboratory of Separation and Reaction Engineering, Departamento de Engenharia Quı́mica,
+Faculdade de Engenharia, Rua do Dr. Roberto Frias, 4200-465 Porto, Portugal
+
+
+
+          The solubilities of sodium chloride, sodium bromide, and potassium bromide in the solvents water,
+          methanol, ethanol, and methanol + ethanol as well as those of sodium bromide in water + methanol and
+          sodium bromide and potassium chloride in water + ethanol mixed solvents were measured in the range
+          between 298.15 and 348.15 K using an analytical gravimetric method. When possible, the reliability of
+          the method was checked by comparing the experimental data with literature values. The method proved
+          to be very accurate, and the solubilities are generally reproducible when compared to the data reported
+          in the literature.
+
+
+
+Introduction                                                            is given. The method consists on the preparation of a
+   The study of phase equilibria in salt-containing systems             saturated solution at constant temperature ((0.1 K). The
+is very important for many industrial applications. More                equilibrium cell is charged with known masses ((0.1 mg)
+particularly, a knowledge of accurate solubilities is needed            of all components, and to reach solution equilibrium
+for the design of separation processes such as extractive               conditions, stirring is carried out for at least 3 h at the
+crystallization1 or for the safe operation of different pro-            working temperature. Then the solution is allowed to settle
+cessing units such as distillation columns, absorption units,           at least 1/2 h before sampling with a heated syringe. The
+and extraction plants.2 They can also be useful for theoreti-           total solvent evaporation is achieved in two stages. Initially,
+cal studies relating solubility to ionic radii or other possible        the samples are placed on a heating plate, enhancing the
+solvation parameters3 and for calculating the salt solubility           formation of salt crystals, which are then completely dried
+product or the ion-pair association constants applying the              in an oven at 393.15 K. The samples remain in the oven
+Pitzer-Simonson4 or the Clegg-Pitzer5 equations.                        for more than 3 days and are then cooled in a drier with
+                                                                        silica gel for 1 day. Finally, they are weighed, and the
+   Whereas for aqueous electrolyte systems solubility is
+                                                                        process is regularly repeated until a constant mass is
+generally available for many salts, namely, in the compila-
+                                                                        achieved. Each experimental point is an average of at least
+tion books by Stephen and Stephen6,7 or Linke and Seidell,8,9
+                                                                        three different measurements obeying one of the following
+for organic solvents or aqueous-organic mixed solvents
+                                                                        criteria. If the solubility is higher than 10 (mass percent),
+data is very scarce, obsolete, or not available at all.2
+                                                                        then the quotient {2s}/{solubility} × 100 should be less
+   Therefore, a program for systematic measurements was
+                                                                        than 0.1, where s is the standard deviation within a set of
+implemented to measure the solubility of NaCl, NaBr, KCl,
+                                                                        different experimental results. If the experimental solubil-
+and KBr in the temperature range between 298.15 and
+                                                                        ity is less than 10%, then this criterion is difficult to attain,
+353.15 K in the pure solvents water, methanol, and
+                                                                        and instead the standard deviation s should be less than
+ethanol, and their binary mixed solvents over the whole
+                                                                        0.005.
+solvent composition range. Because some of the experi-
+mentally measured solubilities had already been pub-
+                                                                        Results and Discussion
+lished,10,11 in this work the final series of measurements
+is presented.                                                              Binary Systems. In Table 1, the measured solubilities
+                                                                        of the salts in water, methanol, and ethanol at different
+Experimental Section                                                    temperatures are reported. The water + salt systems were
+  Chemicals. In all experiments, distilled deionized water              studied in a temperature range between 298.15 and 353.15
+was used. All other chemicals were supplied by Merck; salts             K, whereas for systems with methanol the maximum
+NaCl, KCl, and NaBr with a purity higher than 99.5% and                 temperature is 333.15 K. The ethanol + salt systems were
+solvents methanol and ethanol with a minimum purity of                  studied at only three different temperatures: 298.15,
+99.8% were employed with no further purification. To avoid              323.15, and 348.15 K because the salt solubilities are too
+water salt contamination, salts were dried at 393.15 K in               low or the temperature dependence is not pronounced.
+a drying stove for more than 2 days before use.                            The quality of the measured data may be investigated
+  Procedure. A detailed description of the procedure has                by comparing it with literature values reported in the
+been presented,11 so only a brief explanation of the analyti-           compilation books6-9 and in the open literature; for the
+cal gravimetric method used to perform the measurements                 water + salt binary systems, the comparisons can be easily
+                                                                        done because of the extensive amount of published data.
+* Corresponding author. E-mail: eamacedo@fe.up.pt. Fax: + 351           In some cases, the amount of consistent data presented in
+225081674.
+† Present address: Escola Superior de Tecnologia e de Gestão, Campus   the compilation books is enough to make an average curve
+de Santa Apolónia, Apartado 1134, 5301-857 Bragança, Portugal.        fit for a better graphical comparison with the more recently
+                                10.1021/je049922y CCC: $30.25 © 2005 American Chemical Society
+                                                   Published on Web 11/18/2004
+30    Journal of Chemical and Engineering Data, Vol. 50, No. 1, 2005
+
+Table 1. Solubility (Mass Fraction, w) in Pure Solvents
+at Different Temperatures
+                                          100w
+      T/K             NaCl                NaBr          KCl
+                                Water
+     298.15         26.483                48.620       26.476
+     303.15         26.550                49.583       27.257
+     313.15         26.701                51.571       28.728
+     318.15                               52.673
+     323.15         26.889                53.838       30.094
+     328.15                               54.015
+     333.15         27.106                54.087       31.366
+     343.15         27.338                54.281       32.582
+     348.15         27.478                54.369       33.146
+     353.15         27.602                54.495       33.709
+                               Methanol
+     298.15           1.375a              14.938        0.539a        Figure 2. Comparison of the solubility of NaBr (1) in water at
+     303.15           1.360               14.754        0.554         different temperatures: +, Linke and Seidell;8 O, this work.
+     313.15           1.310               14.461        0.593
+     323.15           1.235a              14.196        0.630a        1 a better agreement than for the previous system. Now,
+     333.15           1.220               13.941        0.670         the systematically higher deviations do not occur. At lower
+                               Ethanol                                temperatures, the solubility measured in this work is only
+     298.15           0.055a               2.496        0.034         slightly superior, whereas at higher temperatures it is
+     323.15           0.065a               2.416        0.039         slightly inferior. The solubilities measured by Zhang et al.14
+     348.15           0.077a               2.297        0.049
+                                                                      with a new method combining the polythermal and iso-
+  a Reference 10.                                                     thermal synthetic methods are also displayed, showing
+                                                                      higher deviations from the average curve.
+published data. That is shown in Figure 1 for the systems                As can be observed from Figure 2 for the NaBr + water
+water + NaCl and water + KCl. From Figure 1, it is                    system, it was also possible to find good agreement of the
+possible to observe the good agreement of the data, even if           data measured in this work with the values compiled by
+the solubilities measured in this work are systematically             Linke an Seidell.8 The solubility change with temperature
+higher (around 0.05 g of NaCl per 100 g of solution) when             is very different from that of the precedent systems; up to
+compared with the values of Farelo et al.12 Although the              323.15 K, the solubility increase is very evident, but beyond
+data reported by Farelo and collaborators are clearly in              that value, it is almost constant. The observed breaking
+better accordance with the average curve, they have used              behavior corresponds to a solid-phase transition. According
+the polythermal synthetic method, which is not the most               to Rard and Archer,15 the transition occurs at 323.98 K;
+adequate because the temperature exhibits little influence            below this temperature, the solid phase is NaBr‚2H2O, and
+on the NaCl solubility.13 It seems that this is the main              above it, the solid phase is NaBr.
+reason for the unexpected irregular trend shown by their                 The experimental results measured in this work can be
+experimental data at low temperatures because the solu-               used to estimate the transition temperature by making two
+bility is almost constant until 300 K.                                linear fits, one with the experimental results until 323.15
+   Comparing the solubilities measured here and the ones              K and the other with the results obtained at temperatures
+reported by Farelo et al.12 for the system water + KCl at             higher than this one. The intersection of these two lines
+different temperatures, it is possible to observe in Figure           should give the transition temperature. Using the data
+                                                                      presented in Table 1, the calculated value for that tem-
+                                                                      perature is 324.00 K, which in comparison with the value
+                                                                      given by Rard and Archer15 is good support for the quality
+                                                                      of the data measured in this work.
+                                                                         Concerning the salt + alcohol systems, it is worthwhile
+                                                                      first to notice the inverse salt solubility temperature
+                                                                      dependencesthe salt solubility decreases with rising tem-
+                                                                      perature for salts NaCl in methanol and NaBr in methanol
+                                                                      and ethanol. This unusual effect of the temperature on the
+                                                                      solubility, although unforeseen for a given system, may be
+                                                                      explained both by Debye-Hückel and ion association
+                                                                      Bjerrum theories16 because at such low ionic concentrations
+                                                                      the electrostatic interactions are more pronounced and
+                                                                      association is favored by the lower dielectric constant. This
+                                                                      effect and the change in the association constant with
+                                                                      temperature influence the salt solubility in organic sol-
+                                                                      vents.
+                                                                         It has already been mentioned that solubility data of
+                                                                      salts in alcohols at different temperatures are scarce. Thus,
+                                                                      the same kind of comparison as for aqueous systems was
+                                                                      possible only for the system methanol + NaBr. As can be
+                                                                      seen from Figure 3, the measured solubilities of NaBr in
+Figure 1. Comparison of the solubility of NaCl (1) and KCl (2)        methanol reported by Stephen and Stephen6 present values
+in water at different temperatures: 0, Farelo et al.;12 O, Zhang et   that are somewhat different from those obtained in this
+al.;14 9, this work. Lines represent average curves.                  work.
+                                                               Journal of Chemical and Engineering Data, Vol. 50, No. 1, 2005 31
+
+
+
+
+Figure 3. Comparison of the solubility of NaBr (1) in methanol            Figure 4. Comparison of the solubility of NaBr (1) in water (2)
+at different temperatures: 0, Stephen and Stephen;6 O, this work.         + methanol (3) solvent mixtures at 298.15 K: 0, Stephen and
+                                                                          Stephen;7 O, this work.
+Table 2. Solubility (Mass Fraction, w) in Water +
+Methanol and Methanol + Ethanol Mixed Solvents
+                                                                          Table 3. Solubility (Mass Fraction, w) in Water +
+                                           100w                           Ethanol Mixed Solvents
+        100w1a                298.15 K              323.15 K                                       100w                             100w
+                 Water (1) + Methanol (2) + NaBr (3)                       100w1a         298.15 K      323.15 K      100w1a      348.15 K
+         10.00                18.772                 18.532                                Water (1) + Ethanol (2) + NaBr (3)
+         20.00                23.524                 23.465                 10.00           8.527         8.840       10.00         9.051
+         30.00                28.258                 28.326                 20.00          13.648       16.277        20.00        16.491
+         40.00                32.634                 32.829                 30.00          19.808       23.009        30.00        23.299
+         49.98                35.862                 36.931                 40.00          25.124       28.905        40.00        29.328
+         59.98                38.339                 40.793                 50.00          29.119       34.121        50.00        34.637
+         69.99                41.070                 44.306                 60.00          34.007       38.689        60.00        39.224
+                                                                            70.00          37.928       42.876        70.00        43.501
+         79.99                43.716                 47.686
+                                                                            80.00          41.662       46.706        79.99        47.266
+         89.99                46.245                 50.910                 90.00          45.162       50.276        89.99        50.892
+                 Methanol (1) + Ethanol (2) + NaCl (3)                                     Water (1) + Ethanol (2) + KCl (3)
+         20.01                  0.139                  0.140                10.00           0.164        0.254       10.00          0.344
+         40.18                  0.331                  0.288                20.00           0.685        1.064       20.00          1.458
+         59.77                  0.548                  0.517                30.00           1.874        2.834       29.99          3.796
+         80.01                  0.885                  0.818                40.04           3.759        5.544       40.00          7.206
+                                                                            50.00           6.198        8.828       50.00         11.189
+                 Methanol (1) + Ethanol (2) + NaBr (3)                      60.00           9.123       12.519       60.00         15.415
+         10.07                  3.406                  3.264                70.00          12.544       16.436       70.00         19.666
+         19.87                  4.497                  4.287                80.00          16.589       20.666       79.44         23.745
+         30.01                  5.835                  5.522                89.98          21.352       25.225       89.81         28.452
+         40.13                  6.985                  6.636
+                                                                            a w
+         50.03                  8.266                  7.873                      1 mass fraction of component 1 on a salt-free basis.
+         59.96                  9.579                  9.110
+         70.00                 11.033                10.438               However, the values showed high inconsistency for the pure
+         79.97                 12.226                11.603               solvents’ solubility, and no comparison is presented. There-
+         89.99                 13.568                12.918               fore, only for the water + methanol + NaBr system at
+                 Methanol (1) + Ethanol (2) + KCl (3)                     298.15 K is it possible to analyze the data agreement with
+         20.01                  0.065                 0.078               other sources. In Figure 4, it is possible to observe the good
+         39.95                  0.117                 0.138               agreement between our data and that compiled by Stephen
+         60.11                  0.204                 0.259               and Stephen.7 Additionally, for that set the reported
+         80.15                  0.352                 0.424
+                                                                          solubility value in pure methanol is, at 298.15 K, 14.8 g of
+  a w
+        1 mass fraction of component 1 on a salt-free basis.
+                                                                          NaBr in 100 g of saturated solution, which is good support
+                                                                          for our measured data for the solubility of NaBr in pure
+   Unfortunately, no reliable or more recent data were                    methanol.
+found for that system in order to carry out a better data                    In Table 3, the measured solubilities at 298.15, 323.15,
+evaluation. In this way, a comparison for the solubilities                and 348.15 K for KCl and NaBr in water + ethanol solvents
+values at 298.15 K was done; in the compilation books,6,7                 are shown. Although for NaBr it was not possible to find
+that solubility was found to be between 14.79 and 15.888                  any data for comparison, in Figure 5 our data is compared
+g of NaBr in 100 g of saturated solution, which includes                  with that published by Chiavone-Filho and Rasmussen17
+our measured value. This procedure was repeated for all                   at 298.15 K and 348.15 K and by Delesalle and Heubel18
+other salt + alcohol systems for which it was possible to                 and Galleguillos et al.19 at 298.15 K for the water + ethanol
+find a much higher consistency.                                           + KCl system. A good resemblance is obtained at the
+   Ternary Systems. In Table 2, the measured solubilities                 different temperatures over the entire solvent composition
+at 298.15 and 323.15 K for NaBr in water + methanol and                   range.
+for NaCl, NaBr, and KCl in methanol + ethanol solvents
+are presented.                                                            Conclusions
+   For the methanol + ethanol solvent mixtures, the only                    The simple apparatus designed for the measurement of
+data set found for comparison was for NaBr at 298.15 K.                   salt solubilities in mixed solvents using an analytical
+32   Journal of Chemical and Engineering Data, Vol. 50, No. 1, 2005
+
+                                                                             (3) Stenger, V. A. Solubilities of Various Alkali Metal and Alkaline
+                                                                                 Earth Metal Compounds in Methanol. J. Chem. Eng. Data 1996,
+                                                                                 41, 1111-1113.
+                                                                             (4) Pitzer, K. S.; Simonson, J. M. Thermodynamics of Multicompo-
+                                                                                 nent, Miscible, Ionic Systems: Theory and Equations. J. Phys.
+                                                                                 Chem. 1986, 90, 3005-3009.
+                                                                             (5) Clegg, S. L.; Pitzer, K. S. Thermodynamics of Multicomponent,
+                                                                                 Miscible, Ionic Solutions: Generalized Equations for Symmetrical
+                                                                                 Electrolytes. J. Phys. Chem. 1992, 96, 3513-3520.
+                                                                             (6) Stephen, H.; Stephen, T. Solubilities of Inorganic and Organic
+                                                                                 Compounds: Binary Systems; Pergamon Press: Oxford, England,
+                                                                                 1963.
+                                                                             (7) Stephen, H.; Stephen, T. Solubilities of Inorganic and Organic
+                                                                                 Compounds: Ternary Systems; Pergamon Press: Oxford,
+                                                                                 England, 1964.
+                                                                             (8) Linke, W. F.; Seidell, A. Solubilities of Inorganic and Metal-
+                                                                                 Organic Compounds, 4th ed.; American Chemical Society: Wash-
+                                                                                 ington, DC, 1958.
+                                                                             (9) Linke, W. F.; Seidell, A. Solubilities of Inorganic and Metal-
+                                                                                 Organic Compounds, 4th ed.; American Chemical Society: Wash-
+                                                                                 ington, DC, 1965.
+                                                                            (10) Pinho, S. P.; Macedo, E. A. Representation of Salt Solubility in
+                                                                                 Mixed Solvents: A Comparison of Thermodynamic Models. Fluid
+                                                                                 Phase Equilib. 1996, 116, 209-216.
+                                                                            (11) Pinho, S. P.; Macedo, E. A. Experimental Measurement and
+                                                                                 Modelling of KBr Solubility in Water, Methanol, Ethanol and its
+                                                                                 Binary Mixed Solvents at Different Temperatures. J. Chem.
+                                                                                 Thermodyn. 2002, 34, 337-360.
+Figure 5. Comparison of the solubility of KCl (1) in water (2) +            (12) Farelo, F.; von Brachel, G.; Offermann, H. Solid-Liquid Equilibria
+ethanol (3) solvent mixtures at different temperatures: 0, Chia-                 in the Ternary System NaCl-KCl-H2O. Can. J. Chem. Eng. 1993,
+vone-Filho and Rasmussen;17 9, Delesalle and Heubel;18 +, Gal-                   71, 141-146.
+leguillos et al.;19 O, this work.                                           (13) Chianese, A.; Cave, S. D.; Mazzarotta, B. Solubility and Meta-
+                                                                                 stable Zone Width of Sodium Chloride in Water-Diethylene
+                                                                                 Glycol Mixtures. J. Chem. Eng. Data 1986, 31, 329-332.
+method proved to be very successful; high precision and                     (14) Zhang, L.; Gui, Q.; Lu, X.; Wang, Y.; Shi, J.; Lu, B. C.-Y.
+                                                                                 Measurement of Solid-Liquid Equilibria by a Flow-Cloud-Point
+accurate results were obtained, and the solubilities are                         Method. J. Chem. Eng. Data 1998, 43, 32-37.
+generally reproducible when compared to the values re-                      (15) Rard, J. A.; Archer, D. G. Isopiestic Investigation of the Osmotic
+ported in the literature.                                                        and Activity Coefficients of Aqueous NaBr and the Solubility of
+                                                                                 NaBr‚2H2O(cr) at 298.15 K: Thermodynamic Properties of the
+  The systematized experimental study implemented is an                          NaBr + H2O System over Wide Ranges of Temperature and
+important contribution to the fulfillment of the great                           Pressure. J. Chem. Eng. Data 1995, 40, 170-185.
+demand for salt solubility in nonaqueous and mixed solvent                  (16) Robinson, R. A.; Stokes, R. H. Electrolyte Solutions, 2nd ed.;
+systems; a high number of new experimental solubilities                          Butterworths: London, 1970.
+                                                                            (17) Chiavone-Filho, O.; Rasmussen, P. Solubilities of Salts in Mixed
+have been measured for the salts NaCl, KCl, and NaBr in                          Solvents. J. Chem. Eng. Data 1993, 38, 367-369.
+the pure solvents water, methanol, ethanol and in the                       (18) Delesalle, G.; Heubel, J. Relation entre la Solubilité des EÄ lectro-
+mixed solvents water + methanol, water + ethanol, and                            lytes et la Constante Diélectrique de la Solution dans les Solvants
+                                                                                 Mixtes Eau-E  Ä thanol à 25 °C. Bull. Soc. Chim. Fr. 1972, 7, 2626-
+methanol + ethanol at different temperatures.                                    2631.
+                                                                            (19) Galleguillos, H. R.; Taboada, M. E.; Graber, T. A. Compositions,
+Literature Cited                                                                 Densities, and Refractive Indices of Potassium Chloride + Ethanol
+                                                                                 + Water and Sodium Chloride + Ethanol + Water Solutions at
+ (1) Bader, M. S. H. Precipitation and Separation of Chloride and                (298.15 and 313.15) K. J. Chem. Eng. Data 2003, 48, 405-410.
+     Sulfate Ions from Aqueous Solutions: Basic Experimental Per-
+     formance and Modelling. Environ. Prog. 1998, 17, 126-135.              Received for review February 19, 2004. Accepted September 23,
+ (2) Wagner, K.; Friese, T.; Schulz, S.; Ulbig, P. Solubilities of Sodium   2004.
+     Chloride in Organic and Aqueous-Organic Solvent Mixtures. J.
+     Chem. Eng. Data 1998, 43, 871-875.                                     JE049922Y
+

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/splitter.schema.json",
+  "title": "splitter operation",
+  "description": "Stream splitter: divides one inlet into several outlets by the user-supplied split fractions (which must sum to 1).  All branches share the same temperature, pressure and composition as the inlet -- this is a flow split, NOT a separation (contrast the gasSolidSplitter, which spec-splits solids but likewise does not classify by size).",
+  "type": "object",
+  "properties": {
+    "fractions": {
+      "type": "array",
+      "title": "Split fractions",
+      "description": "Per-outlet split fraction (one entry per output stream).  Must sum to 1; each entry in [0, 1].  The ordering matches the `outputs` list.",
+      "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1
+      },
+      "minItems": 2
+    }
+  },
+  "required": ["fractions"],
+  "additionalProperties": false
+}

@@ -1,0 +1,20 @@
+/*---------------------------------------------------------------------------*\
+  composite01_two_flashes  --  the COMPOSITE node form (fractal step 2).
+
+  A sector with TWO child unit ops (flash1 -> flash2) in folders, wired by
+  `connections`.  The engine flattens the children into a namespaced units
+  list (flash1.vapor, flash1.liquid, ...) and solves them in sequence.  This
+  is the composite node: "a sector is a flowsheet of units" -- the level
+  above the leaf node (leaf01_flash), the level below the plant.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Composite node: two flashes in series (fractal step 2)";
+
+verbosity     3;
+
+reports
+{
+    streamTable  {}
+    massBalance  {}
+}

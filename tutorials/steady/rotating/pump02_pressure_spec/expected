@@ -1,0 +1,17 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.01               1e-4
+stream  out                    F                0.01               1e-4
+kpi     pump02                 F                0.01               1e-4
+kpi     pump02                 P_in             100000             1e-4
+kpi     pump02                 P_out            3000000            1e-4
+kpi     pump02                 T_in             298.15             1e-4
+kpi     pump02                 T_out            298.523735099      1e-4
+kpi     pump02                 W_hydraulic      524.03             1e-4
+kpi     pump02                 W_shaft          806.2              1e-4
+kpi     pump02                 W_shaft_kW       0.8062             1e-4
+kpi     pump02                 dP               2900000            1e-4
+kpi     pump02                 dT               0.373735099338     1e-4
+kpi     pump02                 eta              0.65               1e-4
+kpi     pump02                 head_m           296.620531272      1e-4
+kpi     pump02                 v_molar_liq      1.807e-05          1e-4

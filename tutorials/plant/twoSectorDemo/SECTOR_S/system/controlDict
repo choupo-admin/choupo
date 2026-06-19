@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "SECTOR_S -- the separation sector. Runs its OWN compiled unit op (sharpSplitColumn) on the plant-level thermo (cascaded from ../constant).";
+verbosity     3;

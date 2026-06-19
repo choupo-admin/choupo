@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Nitrogen dioxide  (NO2, CAS 10102-44-0)
+
+  Combustion-NOx tail end (NO is the kinetic product of the Zeldovich
+  chain; NO2 forms downstream by NO + O / NO + HO2).  The
+  NO + 1/2 O2 <-> NO2 equilibrium peaks at low T --- a GibbsReactor
+  cooled from 1500 K to 800 K traces the NO -> NO2 conversion neatly.
+  Sources: ideal-gas formation enthalpy/entropy cross-checked against the
+  NASA polynomial database (NASA TM-4513, public domain).  Critical
+  constants are individual literature values -- primary re-citation
+  pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        NO2;
+formula     NO2;
+CAS         10102-44-0;
+
+MW          46.006;            // kg/kmol
+Tc          431.00;             // K
+Pc          101.00;             // bar
+omega       0.834;              // [-]   (very polar; dimerizes to N2O4)
+Tb          294.30;             // K
+HvapTb      14730;              // J/mol
+Vliq        3.79e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    33180.0;         // J/mol  -- ideal-gas reference
+    s_298      240.06;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.04275   1099.500   -34.000);
+    Trange        (250  294);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (24.23   0.04836   -2.080e-5   -1.000e-9);
+    Trange        (250  1500);
+}

@@ -1,0 +1,61 @@
+/*---------------------------------------------------------------------------*\
+  Constrained optimisation by hand-rolled SQP (line-search, damped-BFGS on
+  the Lagrangian, L1 merit, active-set convex QP -- Nocedal & Wright Ch.18 /
+  16.5).  Maximise brackish-RO water recovery up to the wall-scaling limit.
+
+  The two design variables are case-level $references (P_feed, nMods) so the
+  driver writes them through `variables.<name>` and the trace shows them in
+  canonical SI.  Both scaling KPIs are inequality constraints; at the optimum
+  the SQP prints the active set and the Lagrange multipliers (shadow prices)
+  plus the 5-line KKT certificate.
+\*---------------------------------------------------------------------------*/
+
+type    optimization;
+method  sqp;
+
+variables
+(
+    {
+        path     variables.P_feed;
+        min      10.0 bar;
+        max      30.0 bar;
+        initial  14.0 bar;
+    }
+    {
+        path     variables.nMods;
+        min      3.0;
+        max      9.0;
+        initial  5.0;
+    }
+);
+
+objective
+{
+    kind     kpi;
+    path     vessel.water_recovery;
+    sense    maximise;
+}
+
+constraints
+(
+    {
+        kpi      vessel.maxSI_gypsum_wall;
+        atMost   0.0;
+    }
+    {
+        kpi      vessel.maxSI_calcite_wall;
+        atMost   0.0;
+    }
+);
+
+options
+{
+    maxIter   40;
+    fdStep    1e-3;
+    fdMode    central;
+}
+
+report
+{
+    file        optimization_history.csv;
+}

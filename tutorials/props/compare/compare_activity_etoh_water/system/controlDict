@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Compare 3 activity models (ideal / NRTL / Wilson) for γ_ethanol in equimolar mixture with water vs T";
+
+verbosity     2;

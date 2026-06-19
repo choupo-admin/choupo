@@ -1,0 +1,60 @@
+/*---------------------------------------------------------------------------*\
+  FEEDBACK heat-link == an ENERGY TEAR.
+
+      coldFeed ─► preheater ─► column01 ─┬─► distillate
+                     ▲                    └─► bottoms
+                     └──(condenser heat)──────┘
+
+  The preheater (UPSTREAM of the column) is heated by the column's CONDENSER
+  duty (DOWNSTREAM) -> circular.  The Flowsheet detects the feedback, turns
+  the recycle outer loop on, and converges the duty by successive
+  substitution (Wegstein).  Sized so the ~1 MW condenser preheats the large
+  1000 kmol/h feed by a modest ~25 K (stays liquid).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    coldFeed
+    {
+        F                1000.0 kmol/h;
+        T                320.0 K;
+        P                1.01325 bar;
+        molarComposition { benzene 0.50;  toluene 0.50; }
+    }
+}
+
+tearStreams      ( );
+recycleTol       1e-5;
+recycleMaxIter   60;
+
+units
+(
+    {
+        name        preheater;
+        type        heater;
+        in          coldFeed;
+        outputs     ( warmFeed );
+        operation   { }                       // Q supplied by the feedback link
+        energyInputs
+        (
+            { from column01.condenser;  kind heat;  target Q; }
+        );
+    }
+    {
+        name        column01;
+        type        distillationColumn;
+        in          warmFeed;
+        outputs     ( distillate  bottoms );
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    1.5;
+            distillateRate 50.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+        }
+        compositionTol   1e-7;
+        maxOuterIter     200;
+    }
+);

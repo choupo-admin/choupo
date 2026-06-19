@@ -1,0 +1,12 @@
+/* Case-local ion charges (overlay). Self-contained snapshot; rows verbatim
+   from data/standards/electrolyte/ions.dat (USGS PHREEQC, public domain).
+   Restricted to the masters of this analysis {H Ca Na Cl SO4 HCO3}. */
+ions
+(
+    { species Ca; ion "Ca+2"; z +2; MW 40.078; hfAq -542830; sAq -53.1; }
+    { species H; ion "H+"; z +1; MW 1.008; hfAq 0; sAq 0; cpAq 0; }
+    { species Na; ion "Na+"; z +1; MW 22.99; hfAq -240120; sAq 59.0; cpAq 46.4; }
+    { species Cl; ion "Cl-"; z -1; MW 35.453; hfAq -167160; sAq 56.5; cpAq -136.4; }
+    { species HCO3; ion "HCO3-"; z -1; MW 61.02; }
+    { species SO4; ion "SO4-2"; z -2; MW 96.06; }
+);

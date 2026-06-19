@@ -1,0 +1,58 @@
+/*---------------------------------------------------------------------------*\
+  Minimise the reboiler vapour flow V_strip on the benzene/toluene
+  column by tuning two design variables:
+      * refluxRatio          continuous, [3.0, 5.0]
+      * feedStage            integer-valued (but treated as continuous by
+                              the simplex; the column code rounds to the
+                              nearest stage internally if asked), [6, 12]
+
+  V_strip is a proxy for the reboiler duty Q_reboiler (Q_reb = V·ΔHvap
+  at near-saturated bottoms).  Less V_strip → less steam → less OPEX.
+
+  The optimum sits at the LOWER bound of R (separation gets easier as
+  R rises but V grows with R via V = (R+1)·D); the trade-off is the
+  product purity floor.  In this tutorial we do not impose a purity
+  constraint — the student observes that, without it, Nelder-Mead
+  drives R to the floor and feedStage toward the middle of the
+  column.  A purity constraint would require a penalty term added to
+  the objective (left as an exercise / future v0.18 SQP wrapper).
+\*---------------------------------------------------------------------------*/
+
+type    optimization;
+method  nelderMead;
+
+variables
+(
+    {
+        path     units[0].operation.refluxRatio;
+        min      3.0;
+        max      5.0;
+        initial  4.0;
+    }
+    {
+        path     units[0].operation.feedStage;
+        min      6;
+        max      12;
+        initial  8;
+    }
+);
+
+objective
+{
+    kind     kpi;
+    path     column01.V_strip;
+    sense    minimise;
+}
+
+options
+{
+    maxIter     80;
+    tolX        5e-3;
+    tolF        1e-4;
+    simplexInit 0.15;
+}
+
+report
+{
+    file        optimization_history.csv;
+}

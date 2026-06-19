@@ -1,0 +1,12 @@
+application   choupoSolve;
+description   "Multi-stream heat exchanger (MHeatX): 2 hot + 1 cold, balance closes";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }     // the two hot streams give up what the cold takes
+    spreadsheet    { }
+}

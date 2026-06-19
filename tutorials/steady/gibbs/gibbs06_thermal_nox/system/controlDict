@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  Methane combustion at 1800 K with NO included in the species list.
+  Demonstrates thermal NOx formation: at high T the N2 inert breaks
+  down through the Zeldovich channel and a small but non-zero NO
+  equilibrium population appears.
+
+  This tutorial is the same chemistry as gibbs03_methane_combustion
+  but with one extra species (NO).  The expected outcome is that
+  most of the result table is essentially unchanged from gibbs03
+  while y_NO appears at ~ 100-1000 ppm depending on T.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Methane combustion at 1800 K with thermal NOx formation";
+
+verbosity     3;

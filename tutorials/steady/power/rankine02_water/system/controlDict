@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  rankine02_water  --  meta-control
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Closed IF97 Rankine cycle: pump -> boiler -> turbine -> condenser -> recycle";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

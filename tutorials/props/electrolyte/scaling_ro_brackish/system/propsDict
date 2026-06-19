@@ -1,0 +1,126 @@
+/*---------------------------------------------------------------------------*\
+  scaling_ro_brackish --- will my RO concentrate scale?
+
+  A REPRESENTATIVE brackish groundwater (generic textbook-style composition,
+  ~1500 mg/L TDS; no licensed table reproduced):
+
+      ion      mg/L     mol/kg w        ion      mg/L     mol/kg w
+      Ca+2       84      0.0021         Cl-       510      0.0144
+      Mg+2       27      0.0011         SO4-2     250      0.0026
+      Na+       363      0.0158         HCO3-     183      0.0030
+      K+         12      0.0003         lab pH 7.8 (nominal -- see below)
+
+  (totals are TOTAL element amounts: the HCO3 total is total dissolved
+  inorganic carbon -- at pH 7.8 the reported HCO3 is ~97% of it.  Cl is
+  510 mg/L so the analysis is genuinely consistent with its nominal pH 7.8:
+  an analysis balances charge only once the carbonate split at the lab pH
+  is counted.)
+
+  pH IS SOLVED, NOT GIVEN (`pH solve;`): H+ joins the Newton unknowns and
+  ELECTRONEUTRALITY sum z_i m_i = 0 closes the system.  Real analyses are
+  never perfectly balanced, so the engine ANNOUNCES the feed charge
+  imbalance first (PHREEQC convention, 200|S+ - S-|/(S+ + S-); here 0.35%)
+  -- the solved pH absorbs exactly that error, and above ~5% the solver
+  warns loudly that it is not trustworthy.  This feed solves to pH ~7.72,
+  near the lab's nominal 7.8: the analysis is consistent.
+
+  UNITS: every `totals` entry carries its basis (bare numbers are refused).
+  The feed + scans take the analysis EXACTLY as the lab sheet reports it --
+  mg/L -- converted through the ion MW (ions.dat) at rho ~ 1 kg/L (dilute
+  aqueous, announced once per run).  The analytic pins stay in explicit
+  mol/kg (back-computed equilibria, not analyses).
+
+  THE CLOSED-vs-OPEN LESSON (two scans, same feed):
+    scan       CLOSED system -- every total (DIC included) concentrates as
+               feed/(1-r); the charge-balance ratio is scale-invariant, so
+               the pH only drifts gently (7.72 -> 7.58, the Davies gammas at
+               work) while calcite SI climbs 0.24 -> 1.43.
+    scan_open  OPEN to the atmosphere (`atmosphere { pCO2 4.2e-4 atm; }`) --
+               a(CO2aq) is PINNED by Henry, the HCO3 mole balance is
+               REPLACED by the pin, and DIC becomes a solved OUTCOME.  This
+               groundwater is ~8x CO2-supersaturated vs the atmosphere, so
+               opening it DEGASES CO2: the pH jumps to 8.54 and climbs to
+               9.09, and calcite SI lands ABOVE the closed curve (2.61 vs
+               1.43 at r = 0.85) -- why concentrate pH control (acid dosing)
+               matters.  Compare the two CSVs (both carry a pH column right
+               after I); the contrast IS the lesson.
+
+  VALIDATION PINS (locked by the golden master):
+    pin_kw      pure water, pH 7 GIVEN  ->  m_OH = Kw a_w/(a_H gamma_OH)
+                ~ 1.0004e-7   (unchanged)
+    pin_gypsum  totals Ca = SO4 = 0.015271 mol/kg, pH 7 GIVEN, BACK-COMPUTED
+                from the catalogue's logK25(gypsum) = -4.55 + CaSO4aq logK25
+                = 2.14 + Davies at the resulting I = 0.0455 (26% ion
+                pairing) so that SI_gypsum = 0.00 +- 0.001   (unchanged)
+    pin_neutral pure water, pH SOLVED  ->  electroneutrality m_H = m_OH
+                must give pH 7.000 (locks the new charge-balance closure)
+
+  Speciation/mineral/gas data: case-local constant/electrolyte/ (self-
+  contained SNAPSHOT of the standards catalogue, restricted to this master
+  set; the case files ECLIPSE data/standards/electrolyte/ -- the network is
+  taken whole.  Provenance: USGS PHREEQC, public domain -- see the .dat
+  headers; the CO2(g) Henry constant is the db's PHASES CO2(g) entry).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- analytic pin 1: pure water at GIVEN pH 7 reproduces Kw ------------------
+    {
+        name        pin_kw;
+        type        speciate;
+        pH          7.0;                    // no totals: pure water
+        diagSpecies ( OH );                 // locks m_OH ~ 1e-7
+        output      { file pin_kw.csv; }
+    }
+
+    // -- analytic pin 2: gypsum-saturated CaSO4 water gives SI = 0 ---------------
+    {
+        name        pin_gypsum;
+        type        speciate;
+        totals      { Ca 0.015271 mol/kg; SO4 0.015271 mol/kg; }   // back-computed equilibrium
+        pH          7.0;
+        diagSpecies ( CaSO4aq );
+        output      { file pin_gypsum.csv; }
+    }
+
+    // -- analytic pin 3: pure water with pH SOLVED must be neutral ---------------
+    {
+        name        pin_neutral;
+        type        speciate;
+        pH          solve;                  // electroneutrality: m_H = m_OH
+        output      { file pin_neutral.csv; }   // locks pH = 7.000
+    }
+
+    // -- the feed water, speciated (pH solved from charge balance) ---------------
+    {
+        name        feed;
+        type        speciate;
+        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+                      Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
+        pH          solve;                  // lands ~7.72, near the lab's 7.8
+        output      { file speciation_feed.csv; }
+    }
+
+    // -- scaling audit, CLOSED system: DIC concentrates, pH drifts up ------------
+    {
+        name        scan;
+        type        scalingScan;
+        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+                      Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
+        pH          solve;                  // solved per point (closed system)
+        recovery    { from 0; to 0.85; n 18; }
+        output      { file scaling_scan.csv; }
+    }
+
+    // -- scaling audit, OPEN to the atmosphere: the gas pin caps the pH ----------
+    {
+        name        scan_open;
+        type        scalingScan;
+        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+                      Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
+        pH          solve;
+        atmosphere  { pCO2 4.2e-4 atm; }    // a(CO2aq) = K_H(T) * pCO2; DIC solved
+        recovery    { from 0; to 0.85; n 18; }
+        output      { file scaling_scan_open.csv; }
+    }
+);

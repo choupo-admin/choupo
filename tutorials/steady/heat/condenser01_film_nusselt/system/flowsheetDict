@@ -1,0 +1,82 @@
+/*---------------------------------------------------------------------------*\
+  condenser01_film_nusselt
+  ========================
+
+  A horizontal-tube steam condenser whose duty is NOT specified -- it EMERGES
+  from the physics of the condensing film, exactly as a real condenser's does.
+
+  Saturated steam at 1 bar enters a bundle of horizontal tubes cooled by
+  cooling water.  The `phaseChanger` runs in `model geometry;` (the seventh
+  resolution): a Nusselt (1916) LAMINAR FILM coefficient h_cond is computed
+  on the tube, the wall conducts, and the cooling-water film carries the heat
+  away.  Because the condensing-film coefficient itself depends on the
+  driving dT_film = Tsat - T_wall, the unit solves a 1-D energy balance at
+  the wall (q_cond == q_cool) -- the wall temperature is the unknown.  Then
+  the duty is Q = h_cond * A * dT_film and the outlet is the dome-flash at
+  that duty.
+
+      steam (saturated vapour, 1 bar, vf = 1)
+        -> condenser (model geometry: NusseltFilm + cooling-water film)
+        -> condensate (saturated / wet liquid)   + Q (RESULT)
+
+  Method (glass-box):
+    * h_cond : Nusselt film, horizontal tube, coefficient 0.729
+               h = 0.729 [k_l^3 rho_l (rho_l-rho_v) g h_fg' /(mu_l D dT_film)]^1/4
+               h_fg' = h_fg + 0.68 cp_l dT_film  (Rohsenow subcooling corr.)
+               (Incropera & DeWitt, Fund. of Heat & Mass Transfer, Ex. 10.4)
+    * wall   : carbon-steel cylindrical resistance r_o ln(r_o/r_i)/k
+    * coolant: a cooling-water film coefficient h (Dittus-Boelter order)
+    * the three resistances + which CONTROLS are printed; the duty is
+      cross-checked against U*A*dT.
+
+  All film/saturation properties are IAPWS-IF97 water.  The case is
+  SELF-CONTAINED (its own constant/components/water.dat).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    steam
+    {
+        F            100.0 kmol/h;             // ~0.5 kg/s steam
+        T            372.76 K;                 // saturated vapour at 1 bar (IF97 Tsat)
+        P              1.0 bar;
+        state         saturatedVapour;
+        molarComposition { water 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        condenser;
+        type        condenser;            // alias of phaseChanger
+        model       geometry;             // the seventh resolution
+        in          steam;
+        outputs     ( condensate );
+
+        operation
+        {
+            geometry
+            {
+                orientation   horizontalTube;
+                tubeOD        0.025 m;          // 25 mm OD tubes
+                tubeID        0.021 m;          // 2 mm wall
+                tubeL         2.0   m;
+                nTubes        24;               // sized so the bundle nearly
+                                                //  fully condenses the steam
+                wall          carbonSteel;      // -> k = 50 W/(m.K)
+            }
+
+            condensation
+            {
+                model  NusseltFilm;             // laminar film (Nusselt 1916)
+            }
+
+            coolant
+            {
+                T_in   300.0 K;                 // cooling water inlet
+                h      8000.0 W/m2/K;            // cooling-water film coefficient
+            }
+        }
+    }
+);

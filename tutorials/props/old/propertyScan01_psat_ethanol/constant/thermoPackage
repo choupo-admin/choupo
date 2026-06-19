@@ -1,0 +1,5 @@
+components       ( ethanol  water );
+
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

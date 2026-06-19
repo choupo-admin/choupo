@@ -1,0 +1,17 @@
+application   choupoSolve;
+description   "Isomerization neoPentane->nPentane: mixer + CSTR + distillation with recycle";
+
+verbosity     3;
+
+// Chemical-engineering report objects (v0.41+).  After the converged
+// solve, each writes a CSV into reports/.  This is the rich test case
+// for reviewing the whole results layer on a recycle flowsheet.
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+    utilities      { }
+    profiles       { }     // column per-stage T-x-y -> unitOperations/column/
+    spreadsheet    { }     // consolidated coloured report.ods
+}

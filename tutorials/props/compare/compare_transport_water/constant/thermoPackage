@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  compare_transport_water -- base thermo package.
+
+  Neutral by design: NO baseline transport model and NO pureFluids flag.
+  Each op in propsDict declares its own route via a `thermo {}` override --
+  the IAPWS ops add `pureFluids { water { method IF97; } }`, the generic ops
+  add a `transport { liquidViscosity / liquidConductivity { ... } }` block.
+  This keeps the two routes side by side on the same water.dat.
+\*---------------------------------------------------------------------------*/
+
+components       ( water );
+
+phase            { type vle; }
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

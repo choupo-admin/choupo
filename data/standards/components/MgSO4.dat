@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Magnesium sulphate (MgSO4, CAS 7487-88-9)
+
+  Divalent 1-1 electrolyte (Mg²⁺ + SO₄²⁻) --- a useful contrast to
+  NaCl for NF-membrane screening, since NF preferentially rejects
+  divalent ions over monovalent ones.  The ideal van't Hoff factor
+  is 2 (one cation + one anion), the same as NaCl, but NF rejection
+  is substantially higher because of the divalent charge --- a
+  point membrane data captures through the per-component
+  permeability B_s rather than through bulk thermo.
+\*---------------------------------------------------------------------------*/
+
+name           MgSO4;
+formula        MgSO4;
+CAS            7487-88-9;
+
+MW             120.37;         // g/mol
+nonvolatile    true;
+dissociation   2;              // fully dissociated 1-1 (one Mg²⁺ + one SO₄²⁻)

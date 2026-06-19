@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser02_msmpr  --  continuous MSMPR crystalliser (population balance
+                            by the method of moments, v0.62+).
+
+  The same sugar solution as crystalliser01, but now the crystalliser is a
+  continuous mixed-suspension mixed-product-removal vessel with KINETICS.
+  The size-independent-growth population balance has the closed form
+  n(L) = n0 exp(-L/(G tau)); its moments close with no L-grid.  The steady
+  supersaturation S = c/c_sat is a RESULT (a Newton-1D balances the kinetic
+  crystal production against the solute removed from the liquor), and from it
+  the growth, nucleation, dominant crystal size and magma density follow.
+
+  Hardware = working volume (sets the residence time tau = V/Q); kinetics
+  live in constant/crystallisation; the solubility c_sat(T) on the .dat.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "MSMPR sugar crystalliser: population balance by method of moments";
+
+verbosity     3;
+
+reports
+{
+    streamTable  {}
+    massBalance  {}
+}

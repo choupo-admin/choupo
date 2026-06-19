@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  thermoPackage  --  evaporator03_co_current
+
+  Uses USER-DEFINED components living at constant/components/<name>.dat:
+      - agua     (volatile solvent, water-like)
+      - solidos  (non-volatile dissolved solids, generic)
+
+  The Database loader (v0.30+) resolves a component name by checking
+  the case-local directory FIRST.  These two .dat files OVERRIDE any
+  standard-catalogue component of the same name --- which is the
+  whole point: this tutorial intentionally does NOT consume anything
+  from data/standards/components/.
+\*---------------------------------------------------------------------------*/
+
+components       ( agua  solidos );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

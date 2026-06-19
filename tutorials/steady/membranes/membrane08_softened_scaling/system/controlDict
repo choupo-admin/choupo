@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Softener + brackish RO: ion-exchange removes the scaling driver upstream of the vessel";
+
+verbosity     3;

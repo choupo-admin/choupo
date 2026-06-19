@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Water pump specified by DISCHARGE PRESSURE (P_out 30 bar) --- the shaft power W_shaft is the RESULT (closed-form inverse of pump01)";
+
+verbosity     3;

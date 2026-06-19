@@ -1,0 +1,71 @@
+# =============================================================================
+#  Choupo  --  shell environment  (source this file)
+# =============================================================================
+#  Usage:
+#      source /path/to/Choupo/etc/bashrc
+#
+#  Recommended: add the above line to your ~/.bashrc so the environment is
+#  loaded automatically in new shells.
+#
+#  After sourcing:
+#      CHOUPO_HOME  is set
+#      $CHOUPO_HOME           is on PATH  (for ./choupoSolve)
+#      $CHOUPO_HOME/bin       is on PATH  (for runCase, etc.)
+#      Aliases:  Choupo, cdTut
+# =============================================================================
+
+# ----- Resolve own location regardless of current $PWD ----------------------
+if [ -n "${BASH_SOURCE[0]:-}" ]; then
+    _choupo_here="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+elif [ -n "${ZSH_VERSION:-}" ]; then
+    _choupo_here="$(cd -P -- "$(dirname -- "${(%):-%x}")" && pwd)"
+else
+    # POSIX fallback — only works if the user sourced via an absolute path
+    _choupo_here="$(cd -P -- "$(dirname -- "$0")" && pwd)"
+fi
+
+export CHOUPO_HOME="$(cd -P -- "$_choupo_here/.." && pwd)"
+unset _choupo_here
+
+# ----- Workspace — where YOUR cases live -----------------------------------
+# Your own cases (created with `newCase`) live here, SEPARATE from the bundled
+# read-only tutorials.  Resolution order:
+#   1. an explicit  export CHOUPO_WORKSPACE=...  before sourcing this file
+#   2. the user config the GUI writes ($XDG_CONFIG_HOME/choupo/workspace)
+#   3. default $CHOUPO_HOME/cases (in-repo, gitignored)
+# The engine finds data/standards via CHOUPO_HOME, so a case works from any
+# location on disk.
+if [ -z "${CHOUPO_WORKSPACE:-}" ]; then
+    _ws_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/choupo/workspace"
+    if [ -s "$_ws_cfg" ]; then
+        CHOUPO_WORKSPACE="$(head -n1 "$_ws_cfg")"
+    else
+        CHOUPO_WORKSPACE="$CHOUPO_HOME/cases"
+    fi
+    unset _ws_cfg
+fi
+export CHOUPO_WORKSPACE
+
+# ----- PATH ----------------------------------------------------------------
+# Prepend project root (binary symlink) and bin/ (scripts) — but only once.
+case ":$PATH:" in
+    *":$CHOUPO_HOME:"*) ;;
+    *) export PATH="$CHOUPO_HOME:$CHOUPO_HOME/bin:$PATH" ;;
+esac
+
+# ----- Convenience aliases --------------------------------------------------
+alias Choupo='cd "$CHOUPO_HOME"'
+alias cdTut='cd "$CHOUPO_HOME/tutorials"'
+alias cdWork='cd "$CHOUPO_WORKSPACE"'
+
+# ----- Banner (only for interactive shells, only the first time) -----------
+if [ -t 1 ] && [ -z "${CHOUPO_BANNER_SHOWN:-}" ]; then
+    cat <<EOF
+Choupo environment loaded.
+  CHOUPO_HOME      = $CHOUPO_HOME
+  CHOUPO_WORKSPACE = $CHOUPO_WORKSPACE   (your cases; newCase writes here)
+  Commands available  : choupoSolve, runCase, runApplication, newCase,
+                        listCases, cleanCase, Choupo, cdTut, cdWork
+EOF
+    export CHOUPO_BANNER_SHOWN=1
+fi

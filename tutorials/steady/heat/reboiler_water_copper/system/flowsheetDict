@@ -1,0 +1,100 @@
+/*---------------------------------------------------------------------------*\
+  reboiler_water_copper
+  =====================
+
+  A steam-heated copper-surface POOL REBOILER whose duty is NOT specified --
+  it EMERGES from the physics of NUCLEATE BOILING, exactly as a real
+  reboiler's does.
+
+  Saturated-liquid water at 1 bar sits in a pool boiling on a bundle of
+  horizontal copper tubes heated INSIDE by condensing steam.  The
+  `phaseChanger` runs in `model geometry;` with a `boiling { ... }` block (the
+  boiling resolution): a Rohsenow (1952) NUCLEATE-boiling flux q'' is computed
+  on the tube surface, the copper wall conducts, and the heating-medium film
+  delivers the heat.  Because the nucleate flux itself depends on the wall
+  superheat dT_excess = T_surface - Tsat (and on its CUBE), the unit solves a
+  1-D energy balance at the surface (q_boil == q_heat) -- the surface
+  temperature is the unknown.  Then the duty is Q = q'' * A and the outlet is
+  the dome-flash at that duty.
+
+      water (saturated liquid, 1 bar, vf = 0)
+        -> reboiler (model geometry: Rohsenow nucleate flux + steam film)
+        -> wet vapour (partially boiled)   + Q (RESULT)
+
+  HONESTY-AS-STRUCTURE (the binding constraint):
+    * the nucleate flux is +/-100% uncertain -- C_sf is surface-FINISH lab
+      data (polish, oxidation), NOT a fluid property.  There is NO default
+      C_sf and NO catalogue in v1: it is STUDENT-SUPPLIED here (water-copper
+      0.013, polished) WITH a mandatory citation.
+    * the result carries the [q/2, 2q] scatter band (C_sf +/-25%, cubed).
+    * the RELIABLE figure is the Zuber (1959) CHF ceiling, printed FIRST.  A
+      design above CHF is HARD-REFUSED (burnout) -- a pool boiler cannot
+      operate above the critical heat flux.
+
+  Method (glass-box):
+    * q_boil : Rohsenow nucleate flux, water-copper, C_sf 0.013, s 1.0
+               q'' = mu_l h_fg sqrt(g(rho_l-rho_v)/sigma)
+                     [cp_l dT_excess / (C_sf h_fg Pr_l^s)]^3
+               (Rohsenow 1952; Incropera & DeWitt, Ch.10 Table 10.1)
+    * q_CHF  : Zuber 1959, q''_max = 0.149 h_fg rho_v^0.5
+               [sigma g (rho_l-rho_v)]^0.25   (~1.26 MW/m^2 for water at 1 atm)
+    * wall   : copper cylindrical resistance r_o ln(r_o/r_i)/k
+    * medium : a condensing-steam film coefficient h (high)
+    * the CHF margin SAFE/BURNOUT + the cube sensitivity are printed.
+
+  All film/saturation properties are IAPWS-IF97 water (incl. sigma via R1-76).
+  The case is SELF-CONTAINED (its own constant/components/water.dat).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;             // ~0.5 kg/s water
+        T            372.0 K;                  // saturated liquid near 1 bar
+        P              1.0 bar;
+        state         saturatedLiquid;
+        molarComposition { water 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        reboiler;
+        type        boiler;                // alias of phaseChanger
+        model       geometry;              // the geometry resolution
+        in          feed;
+        outputs     ( wetVapour );
+
+        operation
+        {
+            geometry
+            {
+                orientation   horizontalTube;
+                tubeOD        0.025 m;          // 25 mm OD copper tubes
+                tubeID        0.021 m;          // 2 mm wall
+                tubeL         2.0   m;
+                nTubes        8;                // bundle sized for a SAFE margin
+                wallK         400.0;            // copper k ~ 400 W/(m.K)
+                                                //   (wallK direct -- copper is
+                                                //    not in data/standards yet)
+            }
+
+            boiling
+            {
+                model     Rohsenow;             // nucleate pool boiling (1952)
+                Csf       0.013;                // water-copper, polished
+                                                //   (NO default -- student data)
+                s         1.0;                  // water (1.7 for other fluids)
+                citation  "Incropera & DeWitt Tab 10.1, water-copper polished";
+            }
+
+            heatingMedium
+            {
+                T_in   393.0 K;                 // condensing steam ~ 120 degC
+                h      8000.0 W/m2/K;           // condensing-steam film coeff.
+            }
+        }
+    }
+);

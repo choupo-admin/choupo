@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  Dew-T of a 30/70 ethanol/water vapour at 1 atm (NRTL).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            370.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.30;  water 0.70; }
+    }
+}
+
+units
+(
+    {
+        name        dew01;
+        type        dewT;
+        in          feed;
+        outputs     ( );
+
+        operation   { P 1.01325 bar; }
+    }
+);

@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Reversible water-gas shift (CO + H2O <-> CO2 + H2) in a PFR; approaches the same X_eq as the CSTR";
+
+verbosity     3;

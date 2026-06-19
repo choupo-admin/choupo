@@ -1,0 +1,15 @@
+/* Case-local ion catalogue (overlay) -- self-contained for the DSPM-DE
+   tutorial.  Rows verbatim from data/standards/electrolyte/ions.dat:
+   charge z (USGS PHREEQC pitzer.dat, public domain) + the ION-TRANSPORT TIER
+   radius [m] / D0 [m2/s] (Nightingale, J. Phys. Chem. 63 (1959) 1381 --
+   effective hydrated radii + limiting conductances; D0 via Nernst-Einstein).
+   The DSPM-DE law reads z (electroneutrality / Donnan), radius (Deen hindrance
+   + Born) and D0 (Nernst-Planck diffusion) for each ion. */
+ions
+(
+    { species Na;  ion "Na+";   z +1; MW 22.99;  radius 3.58e-10; D0 1.33e-09; }   // Nightingale 1959 (lambda0 50.1)
+    { species Cl;  ion "Cl-";   z -1; MW 35.453; radius 3.32e-10; D0 2.03e-09; }   // Nightingale 1959 (lambda0 76.3)
+    { species Ca;  ion "Ca+2";  z +2; MW 40.078; radius 4.12e-10; D0 7.92e-10; }   // Nightingale 1959 (lambda0 119.0 molar)
+    { species Mg;  ion "Mg+2";  z +2; MW 24.305; radius 4.28e-10; D0 7.06e-10; }   // Nightingale 1959 (lambda0 106.0 molar)
+    { species SO4; ion "SO4-2"; z -2; MW 96.06;  radius 3.79e-10; D0 1.06e-09; }   // Nightingale 1959 (lambda0 160.0 molar)
+);

@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Single-stage CO2 absorption in water (Henry's law)";
+verbosity     3;

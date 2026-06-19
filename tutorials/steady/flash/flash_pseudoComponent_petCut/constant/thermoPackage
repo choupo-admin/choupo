@@ -1,0 +1,20 @@
+/*---------------------------------------------------------------------------*\
+  thermoPackage -- a real species + a petroleum PSEUDO-COMPONENT.
+
+  toluene loads from data/standards/components/toluene.dat (catalogue).
+  petCut_C7plus loads from THIS case's constant/components/petCut_C7plus.dat
+  -- a lumped petroleum cut, resolved by EXACT NAME like any component.
+  The lump has no formula/CAS and no gibbsFormation; it still flashes.
+\*---------------------------------------------------------------------------*/
+
+components       ( toluene  petCut_C7plus );
+
+activityModel
+{
+    model        ideal;            // a hydrocarbon-hydrocarbon mix is near-ideal
+}
+
+equationOfState
+{
+    model        idealGas;
+}

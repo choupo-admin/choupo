@@ -1,0 +1,35 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  concentrated           F                0.0049888708933    1e-4
+stream  condensate             F                0.0277777777778    1e-4
+stream  feed                   F                0.0277777777778    1e-4
+stream  saturatedSteam130C     F                0.0277777777778    1e-4
+stream  vapour                 F                0.0227889068845    1e-4
+kpi     evap                   A                20                 1e-4
+kpi     evap                   A_m2             20                 1e-4
+kpi     evap                   BPE              1.79512624904      1e-4
+kpi     evap                   F_conc           0.0049888708933    1e-4
+kpi     evap                   F_conc_kmol_h    17.9599352159      1e-4
+kpi     evap                   F_conc_mass      0.101856029976     1e-4
+kpi     evap                   F_cond           0.500416666667     1e-4
+kpi     evap                   F_cond_kg_h      1801.5             1e-4
+kpi     evap                   F_in             0.0277777777778    1e-4
+kpi     evap                   F_in_kmol_h      100                1e-4
+kpi     evap                   F_steam          0.500416666667     1e-4
+kpi     evap                   F_steam_kg_h     1801.5             1e-4
+kpi     evap                   F_vap            0.0227889068845    1e-4
+kpi     evap                   F_vap_kmol_h     82.0400647841      1e-4
+kpi     evap                   F_vap_mass       0.410542157524     1e-4
+kpi     evap                   P                102428.751969      1e-4
+kpi     evap                   T_boil           374.54608293       1e-4
+kpi     evap                   T_sat_pure       372.750956681      1e-4
+kpi     evap                   T_steam          401.62883329       1e-4
+kpi     evap                   U                2000               1e-4
+kpi     evap                   U_W_m2_K         2000               1e-4
+kpi     evap                   V_over_F         0.820400647841     1e-4
+kpi     evap                   converged        1                  1e-4
+kpi     evap                   dT               27.0827503596      1e-4
+kpi     evap                   duty             1083310.01439      1e-4
+kpi     evap                   duty_kW          1083.31001439      1e-4
+kpi     evap                   economy          0.820400647841     1e-4
+kpi     evap                   molality         3.50610595516      1e-4

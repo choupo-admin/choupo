@@ -1,0 +1,10 @@
+application   choupoCtrl;
+description   "PID disturbance rejection: T_in steps down then up, PID maintains T_setpoint";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         2000;     // s
+deltaT          1.0;      // s
+writeInterval   20;       // s

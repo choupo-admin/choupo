@@ -1,0 +1,56 @@
+/*---------------------------------------------------------------------------*\
+  Three-unit flowsheet — physically realistic operation:
+
+       feed (350 K)                       hotStream (~362 K)
+           │              reactorOut          │
+           ▼     CSTR     350 K, X=52%        ▼      flash
+       [reactor] ────► [heater] ────► [separator] ──┬─► vapProd
+                                                    └─► liqProd
+
+  The flash inherits T from its input stream (no explicit operation.T)
+  — propagation through the flowsheet.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            1.0 kmol/h;
+        T            350.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+    }
+}
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+
+        operation   { V_R 0.005; }
+        reaction    esterification_etac;
+    }
+
+    {
+        name        heater;
+        type        heater;
+        in          reactorOut;
+        outputs     ( hotStream );
+
+        operation   { Q  0.40 kW; }      // credo-pure: Q is hardware,
+                                          // T_out is a result (lands
+                                          // ~5 K above reactor outlet)
+    }
+
+    {
+        name        separator;
+        type        isothermalFlash;
+        in          hotStream;
+        outputs     ( liqProd  vapProd );
+
+        operation   { P 1.0 bar; }           // no T → inherits ~362 K from hotStream
+    }
+);

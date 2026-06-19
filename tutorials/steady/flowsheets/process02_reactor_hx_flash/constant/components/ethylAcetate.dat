@@ -1,0 +1,52 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/ethylAcetate.dat
+// sha256   141d78a129612fb010deb7c93b0413dc7942f1b515d27eac190819c07356ecce
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Ethyl Acetate  (C4H8O2, CAS 141-78-6)
+\*---------------------------------------------------------------------------*/
+
+name        ethylAcetate;
+formula     C4H8O2;
+CAS         141-78-6;
+
+MW          88.106;
+Tc          523.20;
+Pc          38.30;
+omega       0.3664;
+Tb          350.21;
+HvapTb      31940;
+Vliq        9.819e-5;       // 98.19 cm³/mol at 25 °C
+
+
+gibbsFormation
+{
+    dHf_298   -442920.0;        // J/mol  -- ideal-gas reference
+    s_298     359.710;         // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (NIST/JANAF convention)
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.13361   1195.130   -53.118);
+    Trange        (290  370);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (7.235   0.4072   -2.092e-4   2.855e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (170.7);
+    Trange        (280  350);
+}

@@ -1,0 +1,51 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/C8H18.dat
+// sha256   aa2bb451ff0bea77aa934a65f1ec2129d62f3e8564ae5d32cab2445def5b95b5
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-Octane  (C8H18, CAS 111-65-9)
+
+  Reference compound for the gasoline RON / MON scale (iso-octane =
+  2,2,4-trimethylpentane has the same Tc within ~5 K so this entry
+  doubles as a surrogate when the isomer is not resolved).  Useful
+  for combustion equilibria in IC engines.
+  Sources: Reid-Prausnitz-Poling 4th ed., Appendix A; NIST WebBook.
+\*---------------------------------------------------------------------------*/
+
+name        C8H18;
+formula     C8H18;
+CAS         111-65-9;
+
+MW          114.231;           // kg/kmol
+Tc          568.70;             // K
+Pc          24.86;              // bar
+omega       0.398;              // [-]
+Tb          398.83;             // K
+HvapTb      34410;              // J/mol
+Vliq        1.638e-4;           // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    -208447.0;       // J/mol  -- ideal-gas reference
+    s_298      466.73;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (NIST/JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.04867   1351.94   -64.030);
+    Trange        (326  399);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (-6.096   0.7712   -4.195e-4   8.855e-8);
+    Trange        (250  1500);
+}

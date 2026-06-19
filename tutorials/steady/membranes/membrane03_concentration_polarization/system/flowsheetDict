@@ -1,0 +1,58 @@
+/*---------------------------------------------------------------------------*\
+  membrane03_concentration_polarization  --  the classic CP study.
+
+  Same SW30HR seawater RO case as membrane01_RO_NaCl_seawater, but
+  here we use the SweepDriver (see outerDict) to vary the
+  mass-transfer coefficient k_film over a decade and plot how
+  observed rejection and average flux change.
+
+  The physics:
+        c_m / c_b  =  exp ( J_w / k_film )    (film model)
+
+  When k_film is large (good cross-flow mixing, e.g. high-velocity
+  channel + good spacer), the boundary layer is thin and the
+  concentration at the membrane wall is close to the bulk:
+  c_m ≈ c_b.  Δπ then reflects the bulk concentration, fluxes are
+  high, and observed rejection is close to the intrinsic value.
+
+  When k_film is small (poor mixing, low velocity, dead zones), the
+  solute concentrates at the wall: c_m ≫ c_b.  Δπ rises sharply,
+  J_w collapses, and a larger fraction of the wall solute leaks
+  through, dropping observed rejection.
+
+  This sweep illustrates why membrane-module designers obsess over
+  spacer geometry and feed velocity --- they are not adjusting the
+  membrane itself, they are adjusting k_film.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            575.0 kmol/h;
+        T            298.15 K;
+        P            55.0 bar;
+        molarComposition  { water 0.98960;  NaCl 0.01040; }
+    }
+}
+
+units
+(
+    {
+        name        ROunit;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+
+        operation
+        {
+            membrane         SW30HR;
+            area             35.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;        // SWEPT by outerDict
+            dP_feed_total    2.0 bar;
+            nNodes           100;
+        }
+    }
+);

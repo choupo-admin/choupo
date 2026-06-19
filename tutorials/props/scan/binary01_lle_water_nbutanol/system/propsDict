@@ -1,0 +1,10 @@
+operations
+(
+    {
+        name      lle;
+        type      propertyScanBinary;
+        state     { T 298.15 K;  P 1 bar; }
+        grid      { n 41; }            // interior g_mix samples (x1 = i/n)
+        output    { file binaryLle.csv; }
+    }
+);

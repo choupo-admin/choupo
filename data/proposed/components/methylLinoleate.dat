@@ -1,0 +1,72 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: methylLinoleate  (C19H34O2, CAS 112-63-0)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Huber-EF-2009
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        methylLinoleate;
+formula     C19H34O2;
+CAS         112-63-0;
+
+MW          294.4721;        // kg/kmol  [CoolProp]
+Tc          799.0002;        // K        [CoolProp EOS]
+Pc          13.40821;        // bar      [CoolProp EOS]
+omega       0.80541;        // [-]      [CoolProp EOS]
+Tb          628.8406;        // K  normal boiling [CoolProp]
+HvapTb      58182.9;        // J/mol  at Tb     [CoolProp]
+Vliq        3.3399e-04;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.33167   2180.75   -124.408);
+    Trange        (359.55  783.02);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (61.5399  1.37894  -0.000449531  -2.61431e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (743.3  -0.855342  0.00222448  -9.28286e-07);
+    Trange        (400  629);
+}
+
+sublimation
+{
+    tripleT   260.0000;        // K   [CoolProp]
+    tripleP   0.0000;        // Pa  [CoolProp]
+    // Hfus / Hsub absent: CoolProp models no solid phase.  The
+    // sublimation curve stays undrawn until measured Hsub lands.
+}
+
+gibbsFormation
+{
+    dHf_298   -518330;      // J/mol  ideal-gas [origin=estimated method=Joback uncertainty=~9kJ/mol]
+    dGf_298   -40830;      // J/mol  ideal-gas [Joback]
+    s_298     934.227;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S; ~25 J/mol/K; biased ~R*ln(sigma) for symmetric species]
+    phase     gas;
+}
+
+groups { joback ( { group CH3; count 2; } { group CH2; count 12; } { group eCH; count 4; } { group ester; count 1; } ); }
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Huber-EF-2009";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 1.14%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.08%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.04%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    preserved      "from prior proposal (NOT CoolProp): gibbsFormation, groups";
+}

@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  Sweep the drying-chamber HEIGHT (hardware) and read the powder's final
+  moisture X_final (a result).  Credo-compliant: we move ONE hardware
+  parameter; the residence time (= L / v_particle) and X_final follow.
+  This is the design question "how tall must the chamber be to dry the
+  powder?".
+\*---------------------------------------------------------------------------*/
+
+type        sweep;
+
+parameter
+{
+    target    units[0].operation.chamberHeight;
+    range     ( 0.01  0.3 );               // m -- residence = L / v_particle (~0.7 m/s)
+    nPoints   40;
+}
+
+responses
+(
+    dryer.residenceTime    // L / v_particle -- the result of the swept height
+    dryer.X_final          // the drying curve
+    dryer.X_critical       // flat reference: the knee (constant -> falling)
+    dryer.X_equilibrium    // flat reference: the floor (GAB equilibrium)
+);
+
+report
+{
+    format    csv;
+    file      sweep_chamberHeight.csv;
+}

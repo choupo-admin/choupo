@@ -1,0 +1,6 @@
+/* Case-local ion charges (overlay). Self-contained. */
+ions
+(
+    { species Na; ion "Na+"; z +1; MW 22.99;  }
+    { species Cl; ion "Cl-"; z -1; MW 35.453; }
+);

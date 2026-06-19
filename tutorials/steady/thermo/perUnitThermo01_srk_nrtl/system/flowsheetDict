@@ -1,0 +1,63 @@
+/*---------------------------------------------------------------------------*\
+  perUnitThermo01_srk_nrtl
+  ========================
+
+  Demonstrates PER-UNIT thermo models: the global package (Raoult) is the
+  default, but each unit can override it with a `thermo { ... }` block that
+  replaces the model it cares about.  Components stay global.
+
+    turbine  ->  equationOfState SRK   (real-gas expansion, high P)
+    flash    ->  activityModel  NRTL   (non-ideal ethanol/water liquid)
+
+  Pedagogical caveat: the stream that crosses from the turbine (SRK) into
+  the flash (NRTL + idealGas) is re-interpreted by a different model -- a
+  small thermodynamic inconsistency at the boundary.  Real practice keeps
+  one consistent method per section; mixing is an advanced, deliberate act.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            50.0 kmol/h;
+        T            430.0 K;
+        P            6.0 bar;
+        molarComposition { ethanol 0.5;  water 0.5; }
+    }
+}
+
+units
+(
+    {
+        name        turbine;
+        type        turbine;
+        in          feed;
+        outputs     ( expanded );
+        operation   { W_shaft -3.0 kW;  eta 0.80; }
+        thermo      { equationOfState { model SRK; } }     // real gas
+    }
+
+    {
+        name        flash;
+        type        isothermalFlash;
+        in          expanded;
+        outputs     ( liquid  vapor );
+        operation   { T 353.0 K;  P 1.0 bar; }
+        thermo
+        {
+            activityModel
+            {
+                model  NRTL;
+                pairs
+                (
+                    {
+                        i ethanol;  j water;
+                        a_ij -0.8009;  b_ij 246.18;
+                        a_ji  3.4578;  b_ji -586.0809;
+                        alpha 0.30;
+                    }
+                );
+            }
+        }
+    }
+);

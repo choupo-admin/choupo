@@ -1,0 +1,60 @@
+/*---------------------------------------------------------------------------*\
+  Batch esterification kinetics at THREE temperatures (333 / 353 / 373 K).
+  Acetic-acid concentration vs time, c_AcOH in mol/L.  Pedagogical synthetic
+  set generated from a 2nd-order rate law with an Arrhenius temperature
+  dependence (Ea ~ 50 kJ/mol), mild rounding scatter.
+
+  Self-describing format (units MANDATORY, declared once per column):
+      columns ( { name; unit; role } ... );
+      data    ( <grid, row-major, in the column units> );
+
+  TWO+ temperatures is what makes Ea identifiable: each isotherm gives k(T),
+  and the Arrhenius line ln k vs 1/T gives k0 and Ea from its slope.  The
+  353 K isotherm matches the single-T set rate-AcOH-batch.
+\*---------------------------------------------------------------------------*/
+
+columns
+(
+    { name T;       unit K;      role independent; }
+    { name time;    unit s;      role independent; }
+    { name c_AcOH;  unit mol/L;  role dependent;   }
+);
+
+data
+(
+    // --- 333 K  (k ~ 3.6e-4 L/mol/s) ---
+    333     0   1.00
+    333   120   0.96
+    333   300   0.90
+    333   600   0.82
+    333   900   0.76
+    333  1200   0.70
+    333  1500   0.65
+    333  1800   0.61
+
+    // --- 353 K  (k ~ 1.0e-3 L/mol/s; matches rate-AcOH-batch) ---
+    353     0   1.00
+    353   120   0.89
+    353   300   0.77
+    353   600   0.63
+    353   900   0.53
+    353  1200   0.45
+    353  1500   0.40
+    353  1800   0.36
+
+    // --- 373 K  (k ~ 2.5e-3 L/mol/s) ---
+    373     0   1.00
+    373   120   0.77
+    373   300   0.57
+    373   600   0.40
+    373   900   0.31
+    373  1200   0.25
+    373  1500   0.21
+    373  1800   0.18
+);
+
+provenance
+{
+    source        assumed;
+    citation      "pedagogical batch runs at 333/353/373 K (synthetic, 2nd order + Arrhenius)";
+}

@@ -1,0 +1,20 @@
+/*---------------------------------------------------------------------------*\
+  chemicalPlantTutorial / constant/thermoPackage   (PLANT level)
+
+  Global components of the plant.  A sector/unit may override or extend this
+  via its own constant/thermoPackage (the cascade), but by default everyone
+  shares these three: the solvent (water), the product solid (sucrose) and
+  the drying-air carrier (N2).
+\*---------------------------------------------------------------------------*/
+
+components       ( water  sucrose  N2  ethanol  CO2 );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }
+
+transport
+{
+    model               Chung;        // gas viscosity (cyclone d50, drying h/k_c)
+    thermalConductivity { model Eucken; }
+    diffusivity         { model Fuller; }
+}

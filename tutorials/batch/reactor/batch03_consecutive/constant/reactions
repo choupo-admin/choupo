@@ -1,0 +1,46 @@
+/*---------------------------------------------------------------------------*\
+  Two first-order reactions in series for the consecutive-reaction
+  tutorial.  Ea = 0 so k(T) = A_pre directly --- the case runs
+  isothermal at 350 K so any T-dependence would be invisible anyway.
+
+  Per-mole-of-A rate of reaction 1:  r1 = k1 * c_A
+  Per-mole-of-B rate of reaction 2:  r2 = k2 * c_B
+
+  No dH_rxn quoted; isothermal mode ignores the energy balance.
+\*---------------------------------------------------------------------------*/
+
+A_to_B
+{
+    limitingReactant   compA;
+
+    stoichiometry
+    (
+        { component compA;  nu -1;  order 1; }
+        { component compB;  nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      1.0e-2;         // 1/s   k1 = 0.01 s^-1
+        Ea     0.0;
+    }
+}
+
+B_to_C
+{
+    limitingReactant   compB;
+
+    stoichiometry
+    (
+        { component compB;  nu -1;  order 1; }
+        { component compC;  nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      2.0e-3;         // 1/s   k2 = 0.002 s^-1
+        Ea     0.0;
+    }
+}

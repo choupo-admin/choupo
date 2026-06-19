@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "PFR with the same kinetics as cstr01 (RK4 integration)";
+
+verbosity     3;

@@ -1,0 +1,156 @@
+{
+  "choupoLayout": 1,
+  "nodes": {
+    "stream:RawJuice": {
+      "x": -326.68573939610155,
+      "y": 470.89707315587464
+    },
+    "stream:PlantSteam": {
+      "x": 63.24304691466159,
+      "y": 51.41196150110222
+    },
+    "stream:DryingAir": {
+      "x": -67.14426369245993,
+      "y": 274.11291575269496
+    },
+    "unit:JuiceSplitter": {
+      "x": 142.45631715038982,
+      "y": 469.8711631000034
+    },
+    "unit:CONCENTRATION": {
+      "x": 545.5986014410526,
+      "y": -54.05864853764359
+    },
+    "unit:DRYING": {
+      "x": 916.5050561914526,
+      "y": 184.9984263179278
+    },
+    "unit:FERMENTATION": {
+      "x": 902.0464183568008,
+      "y": 712.4869600831022
+    },
+    "stream:EvapVapour": {
+      "x": 1432.1369883931425,
+      "y": -194.44521227771358
+    },
+    "stream:EvapCondensate1": {
+      "x": 1438.9658631675006,
+      "y": -70.52411461851801
+    },
+    "stream:EvapCondensate2": {
+      "x": 1252.1436043403132,
+      "y": 92.55379533021082
+    },
+    "stream:Powder": {
+      "x": 1742,
+      "y": 144
+    },
+    "stream:RecoveredDust": {
+      "x": 1313.6513452589643,
+      "y": 245.65470279144103
+    },
+    "stream:Stack": {
+      "x": 1314.5052168292152,
+      "y": 453.9452972928642
+    },
+    "stream:DryerVapour": {
+      "x": 1329.6072825182137,
+      "y": 568.8778592420186
+    },
+    "stream:EthanolVapour": {
+      "x": 1612,
+      "y": 706
+    },
+    "stream:Purge": {
+      "x": 1233.689581019762,
+      "y": 802.9393601349524
+    }
+  },
+  "viewport": {
+    "x": 44.93576844536642,
+    "y": 193.75702816447176,
+    "zoom": 0.7684375906440061
+  },
+  "edges": {
+    "e:unit:FERMENTATION->stream:EthanolVapour:EthanolVapour": {
+      "x": 1238.6810137307039,
+      "y": 537.5738119365052
+    },
+    "e:stream:PlantSteam->unit:CONCENTRATION:PlantSteam": {
+      "x": 519.3805689939902,
+      "y": 60.92579365655164
+    },
+    "e:unit:JuiceSplitter->unit:FERMENTATION:JuiceSplitter/ToFermentation": {
+      "x": 676.1436698434458,
+      "y": 705.8191569926613
+    },
+    "e:unit:CONCENTRATION->unit:DRYING:CONCENTRATION/Magma": {
+      "x": 785.2303653628891,
+      "y": 73.7065356658137
+    },
+    "e:unit:CONCENTRATION->stream:EvapCondensate2:EvapCondensate2": {
+      "x": 983.6575308523213,
+      "y": 142.43506435148336
+    },
+    "e:unit:CONCENTRATION->stream:EvapCondensate1:EvapCondensate1": {
+      "x": 1035.3326060992035,
+      "y": 172.47742338228628
+    },
+    "e:unit:CONCENTRATION->stream:EvapVapour:EvapVapour": {
+      "x": 1346.2544529528739,
+      "y": -17.945061611935635
+    },
+    "e:stream:RawJuice->unit:JuiceSplitter:RawJuice": {
+      "x": 18.00174950124213,
+      "y": 520.5832852368998
+    },
+    "e:unit:JuiceSplitter->unit:CONCENTRATION:JuiceSplitter/ToConcentration": {
+      "x": 450.91936118556794,
+      "y": 238.48125176164498
+    },
+    "e:stream:DryingAir->unit:DRYING:DryingAir": {
+      "x": 552.3012370354423,
+      "y": 589.8397357915152
+    },
+    "e:unit:DRYING->stream:Stack:Stack": {
+      "x": 1377.421361499323,
+      "y": 408.6039111938451
+    },
+    "e:unit:DRYING->stream:RecoveredDust:RecoveredDust": {
+      "x": 1222.5949822040996,
+      "y": 366.9525901530319
+    }
+  },
+  "handles": {
+    "unit:DRYING\u0000DryerVapour": {
+      "side": "bottom",
+      "d": 11.849990844726562,
+      "frac": 0.5067174362325348
+    },
+    "unit:CONCENTRATION\u0000EvapCondensate2": {
+      "side": "bottom",
+      "d": 7.48333740234375,
+      "frac": 0.3148794294297493
+    },
+    "unit:DRYING\u0000CONCENTRATION/Magma": {
+      "side": "bottom",
+      "d": 55.7166748046875,
+      "frac": 0.2124345896195213
+    },
+    "unit:DRYING\u0000Stack": {
+      "side": "bottom",
+      "d": 39.73333740234375,
+      "frac": 0.7984368265086207
+    },
+    "unit:DRYING\u0000RecoveredDust": {
+      "side": "right",
+      "d": 3.933349609375,
+      "frac": 0.7033090690350224
+    },
+    "unit:CONCENTRATION\u0000EvapCondensate1": {
+      "side": "bottom",
+      "d": 4.4166717529296875,
+      "frac": 0.8105359606278272
+    }
+  }
+}

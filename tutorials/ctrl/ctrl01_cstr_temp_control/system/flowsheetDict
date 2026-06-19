@@ -1,0 +1,96 @@
+/*---------------------------------------------------------------------------*\
+  ctrl01_cstr_temp_control  --  the canonical first choupoCtrl test.
+
+  Process:
+      Continuous CSTR with first-order reaction compA → compB.  Feed
+      is pure compA at 320 K, 5×10⁻⁵ kmol/s; reactor volume 1 L; mild
+      exotherm (ΔH_rxn = −50 kJ/mol).  Without control the reactor
+      settles a few K above the inlet temperature (small reaction
+      exotherm balanced by convective cooling), well below the
+      desired setpoint of 350 K.
+
+  Controller:
+      A PID acts on the jacket temperature (T_jacket) to drive the
+      reactor temperature (T) to a setpoint of 350 K.  Tuning is
+      pedagogical, not optimal:
+
+          Kp = 4.0   (proportional band ≈ 7-8 K)
+          Ki = 0.04  (integral time τ_I = Kp/Ki ≈ 100 s)
+          Kd = 0.0   (no derivative; system is benign enough)
+
+      Jacket bounded to [280, 420] K --- realistic limits of a
+      utility loop.  Anti-windup: integral does not advance when the
+      unclamped output is outside the bounds.
+
+  Expected trajectory:
+      Open-loop:   T relaxes to ~ 325 K (natural steady state).
+      Closed-loop: T jumps to ~ 346 K within the first control step,
+                   then climbs smoothly (well-damped, no overshoot)
+                   and settles at the 350 K setpoint by ~ 600 s.  The
+                   jacket (MV) holds around 347 K to keep heating in
+                   against the cool 320 K feed.
+
+  To run the OPEN-LOOP comparison, comment out the entire
+  `controllers` block below --- the case will then run the bare
+  reactor with whatever T_jacket the `operation` block initialised
+  it to (here 320 K, i.e. no jacket heating).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+        initial
+        {
+            T            320.0 K;            // K  cold start
+            P            1.013 bar;
+            V            0.001;            // m³   (1 L)
+            totalMoles   0.012;             // kmol  (≈ 12 kmol/m³ liquid charge)
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        inlet
+        {
+            F            5.0e-5 kmol/h;           // kmol/s
+            T            320.0 K;            // K   (cool feed)
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        operation
+        {
+            UA           50.0;             // W/K   (jacket coupling)
+            T_jacket     320.0 K;            // K     (initial; controller overwrites)
+        }
+
+        reaction    compA_to_compB;
+    }
+);
+
+controllers
+(
+    {
+        name         TC1;
+        type         PID;
+
+        measurement  { unit reactor;  cv T; }
+        actuator     { unit reactor;  mv T_jacket; }
+
+        setpoint     350.0;     // K
+
+        gains
+        {
+            Kp       4.0;
+            Ki       0.04;
+            Kd       0.0;
+        }
+
+        output
+        {
+            min      280.0;
+            max      420.0;
+            bias     320.0;     // jacket idles at the inlet temperature
+        }
+    }
+);

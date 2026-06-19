@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  topology (streams + units + connections)
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            370.0 K;
+        P              1.0 bar;
+        molarComposition  { benzene 0.40;  toluene 0.60; }
+    }
+}
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 370.0 K;  P 1.0 bar; }
+    }
+);

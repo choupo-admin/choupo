@@ -1,0 +1,20 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  capturedSolids         F                0                  1e-4
+stream  cleanGas               F                0.0416666666667    1e-4
+stream  feed                   F                0.0416666666667    1e-4
+kpi     cyclone                bodyDiameter     0.5                1e-4
+kpi     cyclone                d50              1e-09              1e-4
+kpi     cyclone                d50_micron       0.001              1e-4
+kpi     cyclone                dP_cyclone       4903.83536027      1e-4
+kpi     cyclone                efficiency       0.983932479817     1e-4
+kpi     cyclone                eulerNumber      8                  1e-4
+kpi     cyclone                inletVelocity    32.8229439921      1e-4
+kpi     cyclone                loading          0.475969490356     1e-4
+kpi     cyclone                mu_gas           1.78433840676e-05  1e-4
+kpi     cyclone                numberOfTurns    5                  1e-4
+kpi     cyclone                rho_gas          1.13794383208      1e-4
+kpi     cyclone                rho_particle     2650               1e-4
+kpi     cyclone                solidsCaptured_mass 0.546629155454     1e-4
+kpi     cyclone                solidsEscaped_mass 0.00892640010141   1e-4
+kpi     cyclone                solidsIn_mass    0.555555555556     1e-4

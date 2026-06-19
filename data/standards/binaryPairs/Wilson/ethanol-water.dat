@@ -1,0 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  Wilson binary interaction parameters --- ethanol(1) + water(2)
+\*---------------------------------------------------------------------------*/
+
+components  ( ethanol  water );
+model       Wilson;
+
+parameters
+{
+    i           ethanol;
+    j           water;
+    A_ij        1157.95;             // J/mol
+    A_ji        4081.65;             // J/mol
+}
+
+provenance
+{
+    source        literature;
+    citation      "DECHEMA Chemistry Data Series Vol. I, regressed against atmospheric VLE";
+    fitData       "<not refit>";
+    fitDate       "<literature>";
+    algorithm     "<not reported in source>";
+    chi2          "<not reported>";
+    nDataPoints   0;
+    validityRange { Tmin 298.0; Tmax 373.0; }
+    author        "Curated from DECHEMA by V. Geraldes, 2026";
+    notes         "Standard Wilson set for ethanol-water; comparable accuracy to NRTL near the azeotrope. Requires V_liq per component (from data/standards/components/<name>.dat).";
+}

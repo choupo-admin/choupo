@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Single-effect NaCl evaporator with the boiling-point elevation from the PITZER electrolyte model (a_w), not the ideal K_b*m. Concentrated brine -> BPE several degrees, the real value.";
+verbosity     3;

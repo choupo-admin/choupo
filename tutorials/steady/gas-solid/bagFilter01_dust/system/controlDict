@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Bag filter (baghouse) on a dusty gas: >99% capture + cake pressure drop";
+verbosity     2;

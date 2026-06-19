@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/solverDict.schema.json",
+  "title": "solverDict",
+  "description": "Per-unit-op-type solver defaults (system/solverDict, optional). Each top-level key matches a unit-op type from flowsheetDict.",
+  "type": "object",
+  "additionalProperties": { "$ref": "#/$defs/SolverOptions" },
+
+  "$defs": {
+    "SolverOptions": {
+      "type": "object",
+      "description": "Tolerances and accelerator settings.",
+      "properties": {
+        "tolerance":        { "type": "number", "exclusiveMinimum": 0 },
+        "compositionTol":   { "type": "number", "exclusiveMinimum": 0 },
+        "maxIter":          { "type": "integer", "minimum": 1 },
+        "maxOuterIter":     { "type": "integer", "minimum": 1 },
+        "outerAccelerator": {
+          "type": "string",
+          "enum": ["wegstein", "directSubstitution"]
+        },
+        "damping":          { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- ethanol-toluene (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( ethanol toluene );
+model       NRTL;
+
+parameters
+{
+    i           ethanol;
+    j           toluene;
+    a_ij        0.0;
+    b_ij        359.08;   // K
+    a_ji        0.0;
+    b_ji        577.626;   // K
+    alpha       0.5292;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_ethanol_toluene   713.5653;   // CAS 64-17-5 -> 108-88-3
+    A_toluene_ethanol   1147.8607;   // CAS 108-88-3 -> 64-17-5
+    alpha               0.5292;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "64-17-5/108-88-3";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

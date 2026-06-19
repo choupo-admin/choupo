@@ -1,0 +1,13 @@
+/*--- SECTOR_R: one custom reactor (compiled from code/). Build + run with:
+        bin/buildCode tutorials/plant/twoSectorDemo/SECTOR_R
+        runCase       tutorials/plant/twoSectorDemo/SECTOR_R                       ---*/
+streams
+{
+    feed { F 100 kmol/h;  T 360 K;  P 1.01325 bar;
+           molarComposition { compA 0.5;  compB 0.5; } }
+}
+units
+(
+    { name R1;  type stoichReactor;  in feed;  outputs ( rOut );
+      operation { reactant compA;  product compC;  conversion 0.70; } }
+);

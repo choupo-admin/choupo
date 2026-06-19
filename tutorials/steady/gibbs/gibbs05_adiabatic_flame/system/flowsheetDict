@@ -1,0 +1,56 @@
+/*---------------------------------------------------------------------------*\
+  Lean methane combustion at φ = 0.5 (100 % excess air):
+      1 mol CH4 + 4 mol O2 + 15.04 mol N2
+  Feed at ambient 298.15 K, 1 bar.  Reactor finds its own adiabatic
+  flame temperature.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            20.04 kmol/h;       // kmol/h  (1 CH4 + 4 O2 + 15.04 N2)
+        T            298.15 K;      // K       (ambient reactants)
+        P            1.0 bar;         // bar
+        composition
+        {
+            CH4    0.04990;       //  1.00 / 20.04
+            O2     0.19960;       //  4.00 / 20.04
+            N2     0.75050;       // 15.04 / 20.04
+            CO     0.0;
+            CO2    0.0;
+            water  0.0;
+            H2     0.0;
+        }
+    }
+}
+
+units
+(
+    {
+        name        burner;
+        type        gibbsReactor;
+        in          feed;
+        outputs     ( flueGas );
+
+        operation
+        {
+            T          1500.0 K;      // initial guess for outer Newton on T
+            P          1.0 bar;
+            mode       adiabatic;   // H_out(T_flame) = H_in;  Q defaults to 0
+
+            elements   ( C  H  O  N );
+
+            species
+            (
+                { name  CH4;    atoms  ( 1  4  0  0 ); }
+                { name  O2;     atoms  ( 0  0  2  0 ); }
+                { name  N2;     atoms  ( 0  0  0  2 ); }
+                { name  CO;     atoms  ( 1  0  1  0 ); }
+                { name  CO2;    atoms  ( 1  0  2  0 ); }
+                { name  water;  atoms  ( 0  2  1  0 ); }
+                { name  H2;     atoms  ( 0  2  0  0 ); }
+            );
+        }
+    }
+);

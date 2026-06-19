@@ -1,0 +1,68 @@
+/*---------------------------------------------------------------------------*\
+  propertyScan_transport_liquid
+  =============================
+
+  The LIQUID transport layer (v0.62), the liquid counterpart of the gas
+  scan propertyScan_transport_kD.  All three families vs temperature:
+
+    * liquid VISCOSITY μ_L(T) by Vogel  -> viscosity_*.csv  (water, ethanol).
+      Validate: water at 298 K ~ 8.9e-4 Pa·s, ethanol ~ 1.07e-3 Pa·s.
+      Pedagogically, μ of a LIQUID FALLS with T --- the opposite of a gas.
+
+    * liquid thermal CONDUCTIVITY k_L(T) by Sato-Riedel -> conductivity_*.csv
+      (benzene, toluene).  Validate: benzene at 298 K ~ 0.14 W/(m·K).
+      Sato-Riedel is parameter-free (MW, Tb, Tc) and excellent for organics;
+      it UNDER-predicts water (anomalous) --- why the model is selectable.
+
+    * liquid DIFFUSIVITY D_L(T) by Wilke-Chang -> diffusivity_ethanol_water.csv
+      (ethanol in water, infinite dilution).  Validate: ~1.5e-9 m²/s at 298 K
+      (measured ~1.2e-9; Wilke-Chang is ±15 %).  D rises ~ T/μ_solvent.
+
+  All five operations share one thermoPackage; composition selects the pure
+  liquid for μ_L and k_L, while D_L always uses components 0 (solute) and
+  1 (solvent) = ethanol in water.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        mu_water;
+        type        propertyScan1D;
+        vary        { variable T;  from 280.0 K;  to 360.0 K;  n 17; }
+        state       { P 1.0 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+        output      { file viscosity_water.csv; }
+    }
+    {
+        name        mu_ethanol;
+        type        propertyScan1D;
+        vary        { variable T;  from 280.0 K;  to 360.0 K;  n 17; }
+        state       { P 1.0 bar;  composition { ethanol 1.0; } }
+        properties  ( viscosity_liquid );
+        output      { file viscosity_ethanol.csv; }
+    }
+    {
+        name        k_benzene;
+        type        propertyScan1D;
+        vary        { variable T;  from 280.0 K;  to 360.0 K;  n 17; }
+        state       { P 1.0 bar;  composition { benzene 1.0; } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file conductivity_benzene.csv; }
+    }
+    {
+        name        k_toluene;
+        type        propertyScan1D;
+        vary        { variable T;  from 280.0 K;  to 360.0 K;  n 17; }
+        state       { P 1.0 bar;  composition { toluene 1.0; } }
+        properties  ( thermal_conductivity_liquid );
+        output      { file conductivity_toluene.csv; }
+    }
+    {
+        name        D_ethanol_in_water;
+        type        propertyScan1D;
+        vary        { variable T;  from 280.0 K;  to 360.0 K;  n 17; }
+        state       { P 1.0 bar;  composition { water 1.0; } }
+        properties  ( diffusivity_liquid );
+        output      { file diffusivity_ethanol_water.csv; }
+    }
+);

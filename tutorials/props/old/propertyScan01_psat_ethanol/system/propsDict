@@ -1,0 +1,45 @@
+/*---------------------------------------------------------------------------*\
+  propertyScan01_psat_ethanol
+  ===========================
+
+  The first thing any chemical engineer learns about a pure component:
+  P_sat(T).  This case sweeps T from 250 K to 400 K and tabulates the
+  Antoine vapour pressure for ETHANOL and WATER side by side, so you
+  can see them on the same axes (and read the normal boiling point of
+  each: P_sat = 1.01325 bar).
+
+  Open `psat_ethanol_water.csv` in the GUI plot, or `plot 'psat_*.csv'`
+  in gnuplot.  The crossover near T = 351 K (78 degC) is the start of
+  the rich VLE behaviour you'll explore in propertyScan02.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        psat_curve;
+        type        propertyScan1D;
+
+        vary
+        {
+            variable  T;
+            from      250.0 K;
+            to        400.0 K;
+            n          51;
+        }
+
+        state
+        {
+            // No P needed --- Psat_<comp> is a pure-component function of T.
+            // The composition is also irrelevant for per-component Psat,
+            // but the dict requires the block.
+            composition  { ethanol 0.5;  water 0.5; }
+        }
+
+        properties  ( Psat_ethanol  Psat_water );
+
+        output
+        {
+            file    psat_ethanol_water.csv;
+        }
+    }
+);

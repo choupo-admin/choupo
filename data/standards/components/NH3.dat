@@ -1,0 +1,87 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Ammonia  (NH3, CAS 7664-41-7)
+
+  The Haber-Bosch product (N2 + 3 H2 -> 2 NH3); a Choupo GibbsReactor
+  with NH3 + N2 + H2 at 400-500 K, 200 bar is the textbook synthesis
+  case.  Also relevant for thermal-NOx (Zeldovich) and SCR flue-gas
+  chemistries, and as a refrigerant (R-717).
+
+  CANONICAL FILE.  2026-06-06: the duplicate-CAS twin `ammonia.dat`
+  (same CAS 7664-41-7, divergent constants) was merged into this file
+  and removed -- one molecule, one file, one set of numbers.
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+           reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+           (McBride-Gordon-Reno 1993); vaporPressure -- individual
+           literature value, primary re-citation pending (IST review);
+           liquidViscosity -- Engineering Toolbox saturated-liquid table.
+\*---------------------------------------------------------------------------*/
+
+name        NH3;
+formula     NH3;
+CAS         7664-41-7;
+
+MW          17.030;            // kg/kmol
+Tc          405.40;             // K
+Pc          113.59;             // bar
+omega       0.252;              // [-]
+Tb          239.82;             // K
+HvapTb      23330;              // J/mol
+Vliq        2.50e-5;            // m^3/mol
+role        solute;        // soluble gas: Henry K = H(T)/P (solvent water)
+
+gibbsFormation
+{
+    dHf_298    -45940.0;        // J/mol  -- ideal-gas reference
+    s_298      192.77;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat[bar]) = A - B/(T[K]+C).  Coefficients valid ~195-371 K
+    // (Psat(Tb=239.82 K) = 1.03 bar; Psat(300 K) = 10.5 bar -- both check).
+    coefficients  (4.86886   1113.928   -10.409);
+    Trange        (195  371);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (27.31   0.02383   1.707e-5   -1.185e-8);
+    Trange        (250  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // approximate constant ~80 J/(mol·K) for liquid NH3 (Cp ~ 4.7 J/g·K x MW);
+    // merged from the former ammonia.dat twin.
+    coefficients  (80.0);
+    Trange        (200  350);
+}
+
+// Liquid transport.  liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade).
+// Andrade A,B = least-squares fit to the Engineering Toolbox saturated-liquid
+// ammonia table:  mu = 0.306 / 0.239 / 0.186 mPa.s  @ 223 / 273 / 323 K
+// (AAD ~2% over 223-323 K).  Cross-check: mu(239.85 K, b.p.) = 0.277 mPa.s
+// (literature scatter 0.26-0.28; a calorimetric/JPCRD viscosity ref would
+// be needed for tighter work).
+liquidViscosity
+{
+    andrade { A -9.665; B 353.6; }
+}
+
+provenance
+{
+    vaporPressure  "individual literature value -- primary re-citation pending (IST review)";
+    constants      "cross-checked vs CoolProp 7.2.0 reference EOS";
+    gibbsFormation "NASA TM-4513 (McBride-Gordon-Reno 1993), ideal-gas, 298 K";
+    liquidViscosity
+    {
+        origin       regressed;
+        method       "Andrade least-squares fit to Engineering Toolbox saturated-liquid mu(T) (3 pts, 223-323 K)";
+        validity     (223 323);
+        uncertainty  "~2% AAD vs the ET table";
+    }
+}

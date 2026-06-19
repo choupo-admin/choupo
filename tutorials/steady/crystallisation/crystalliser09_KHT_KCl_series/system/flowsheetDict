@@ -1,0 +1,131 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser09_KHT_KCl_series  --  SELECTIVE crystallisation of two salts
+
+      feed (hot: KCl + KHT) ──► [cryst1: COOL to 5 C] ──┬──► KHT_cake   (cream of tartar)
+                                                         │
+                                  liquor1 (KCl-rich) ────┘
+                                       │
+                ethanol ──────────────►[cryst2: ANTISOLVENT] ──┬──► KCl_cake
+                                                                │
+                                  finalLiquor (EtOH+water+salt) ┘
+                                       │
+                                       ▼
+                            [recovery: DISTILLATION] ──┬──► recoveredEthanol (recycle-grade)
+                                                       │
+                                                       └──► stillage (water + residual salt)
+
+  Two salts with very different solubilities are separated by two DIFFERENT
+  levers, each crystalliser targeting one salt (`solute ...`):
+
+  * CRYST1 cools the hot feed.  Potassium bitartrate (KHT) is sparingly soluble
+    with a STEEP solubility curve, so cooling 50 -> 5 C precipitates most of it;
+    KCl, far more soluble and only mildly T-sensitive, stays dissolved.  KHT's
+    saturation is its measured solubility CURVE c_sat(T) -- no ion parameters.
+
+  * CRYST2 doses ethanol into the KCl-rich mother liquor.  KCl drops out by
+    drowning-out: the eNRTL mixed-solvent term raises gamma_pm as the dielectric
+    falls, collapsing m_sat.  KCl's saturation is the ion-activity Ksp.
+
+  The SAME package carries both routes; `useElec` is decided per solute, so KHT
+  uses its curve while KCl uses the eNRTL.  Self-contained.
+
+  Basis (per kg water): 55.5 water, 3.0 KCl (below the 5 C saturation ~3.9), and
+  0.078 KHT (saturated at 50 C).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed                                        // hot brine: KCl + KHT in water
+    {
+        F            100.0 kmol/h;
+        T            323.15 K;                   // 50 C (KHT saturated here)
+        P              1.0 bar;
+        molarComposition  { water 0.9475;  KCl 0.0512;  potassiumBitartrate 0.00133; }
+    }
+
+    freshEthanol                                // MAKE-UP antisolvent (tops up what leaves
+    {                                           //   the loop in the cake + the stillage)
+        F             15.0 kmol/h;
+        T            298.15 K;
+        P              1.0 bar;
+        molarComposition  { ethanol 1.0; }
+    }
+
+    // TEAR (recycle): the recovered antisolvent (column distillate) fed BACK to
+    // cryst2.  Initial guess; the recycle solver iterates it to consistency.
+    recoveredEthanol
+    {
+        F             85.0 kmol/h;
+        T            351.0 K;
+        P              1.0 bar;
+        molarComposition  { ethanol 0.81;  water 0.19; }
+    }
+}
+
+tearStreams      ( recoveredEthanol );          // close the antisolvent loop
+recycleSolver     Newton;                       // Newton on the tear variables
+recycleTol        1e-5;
+recycleMaxIter    150;
+recycleWegsteinQmin  0.0;                        // gentle (phase-changing recycle): no acceleration
+recycleWegsteinQmax  0.0;
+
+units
+(
+    {
+        name        cryst1;                      // COOLING crystalliser -> KHT
+        type        crystalliser;
+        in          feed;
+        outputs     ( KHT_cake  liquor1 );
+
+        operation
+        {
+            operatingTemperature 278.15 K;       // cool to 5 C
+            solute               potassiumBitartrate;   // target KHT (its solubility curve)
+            cakeMoisture         0.10;
+        }
+    }
+
+    {
+        name        cryst2;                      // ANTISOLVENT crystalliser -> KCl
+        type        crystalliser;
+        inputs      ( liquor1  freshEthanol  recoveredEthanol );  // liquor + make-up + RECYCLE
+        outputs     ( KCl_cake  finalLiquor );
+
+        operation
+        {
+            operatingTemperature 278.15 K;       // stay cold
+            solute               KCl;            // target KCl (the eNRTL ion-activity)
+            cakeMoisture         0.10;
+            dHcryst              0.0;             // KCl crystallisation heat (neglected)
+        }
+    }
+
+    {
+        name        recovery;                    // recover the antisolvent for recycle
+        type        distillationColumn;
+        model       simultaneous;                // ethanol-water azeotrope -> MESH Newton
+        in          finalLiquor;                 // EtOH + water + residual salt (non-volatile)
+        outputs     ( recoveredEthanol  stillage );
+
+        operation
+        {
+            nStages          20;
+            feedStage        10;
+            refluxRatio      2.0;
+            distillateRate   85.0 kmol/h;        // ~ the ethanol fed (79.6) + azeotropic water
+            feedQuality      1.0;                // treat the 5 C liquor as saturated liquid
+            P                1.01325 bar;
+        }
+
+        // MODEL BOUNDARY (deliberate): the package's eNRTL is for the SALT and
+        // treats ethanol-water as ideal -- it has no ethanol-water azeotrope.  A
+        // distillation that ignored the azeotrope would lie.  So this column
+        // OVERRIDES the activity model to NRTL (ethanol-water), capping the
+        // distillate at the azeotrope; the salts, with no NRTL pair, stay ideal
+        // and nonvolatile -> the bottoms.  (The crystallisers keep eNRTL.)
+        thermo
+        {
+            activityModel { model NRTL; }
+        }
+    }
+);

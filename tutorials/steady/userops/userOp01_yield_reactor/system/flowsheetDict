@@ -1,0 +1,46 @@
+/*---------------------------------------------------------------------------*\
+  userOp01_yield_reactor
+  ======================
+
+  A single unit op --- but a USER-DEFINED one (`yieldReactor`), written in
+  this case's code/ folder, not in the Choupo source tree.  Build + run
+  it with:
+
+      bin/buildCase tutorials/steady/userOp01_yield_reactor
+
+  (NOT runCase: the type `yieldReactor` does not exist in the stock
+  binary; buildCase compiles the case's code/ against libchoupo.a.)
+
+  The op converts a SPECIFIED fraction of the reactant to the product
+  (no kinetics) --- a "yield reactor", which the built-in CSTR/PFR are
+  not.  Here: 80 % of neoPentane isomerised to nPentane.  Because the
+  two are isomers (same MW), the mass balance closes to 100 %.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            1.0 kmol/h;
+        T          320.0 K;
+        P            1.01325 bar;
+        molarComposition  { neoPentane 1.0;  nPentane 0.0; }
+    }
+}
+
+units
+(
+    {
+        name        reactor;
+        type        yieldReactor;          // <-- the user-defined op
+        in          feed;
+        outputs     ( out );
+
+        operation
+        {
+            reactant     neoPentane;
+            product      nPentane;
+            conversion   0.80;
+        }
+    }
+);

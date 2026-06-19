@@ -1,0 +1,81 @@
+/*---------------------------------------------------------------------------*\
+  membrane11_dspmde_born_toggle  --  SEE the dielectric-exclusion (Born) term.
+
+  The SAME NaCl feed (50 mM, 10 bar) through TWO NF270 elements that differ in
+  ONE thing only:
+
+     NF_born   : membrane NF270_dspmde         -- poreDielectric 35  (Born ON)
+     NF_noBorn : membrane NF270_dspmde_noBorn  -- poreDielectric absent (Born OFF)
+
+  Everything else -- pore radius, porosity/thickness, fixed charge X_d, feed,
+  pressure, area, k_film -- is IDENTICAL.  The ONLY physics that changes is the
+  Born dielectric-exclusion term
+
+     dW_i = (z_i^2 e^2 / 8 pi eps0 r_i)(1/eps_p - 1/eps_b)
+
+  (Bowen & Welfoot 2002, Eq. 16).  With eps_p < eps_b an ion pays an extra
+  solvation-energy penalty to enter the low-dielectric pore, so it is excluded
+  MORE strongly.  The student reads the Born contribution straight off the two
+  R_obs(NaCl) KPIs:  R_obs(NF_born) > R_obs(NF_noBorn).
+
+  This is the pedagogical core of DSPM-"DE": the DE (dielectric exclusion) is
+  what distinguishes the 2002 Bowen-Welfoot model from the 1997 steric-Donnan
+  DSPM.  Toggling poreDielectric is a single, visible switch.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed_born
+    {
+        F            200.0 kmol/h;
+        T            298.15 K;
+        P            10.0 bar;
+        // 50 mM NaCl: c = 50 mol/m3; aqueous basis z_NaCl ~ 50/55500 = 9.0e-4.
+        molarComposition  { water 0.99910;  NaCl 0.00090; }
+    }
+    feed_noBorn
+    {
+        F            200.0 kmol/h;
+        T            298.15 K;
+        P            10.0 bar;
+        molarComposition  { water 0.99910;  NaCl 0.00090; }
+    }
+}
+
+units
+(
+    {
+        name        NF_born;
+        type        spiralWoundModule;
+        in          feed_born;
+        outputs     ( ret_born  perm_born );
+        operation
+        {
+            membrane         NF270_dspmde;        // Born ON  (poreDielectric 35)
+            transport        DSPM-DE;
+            area             5.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;
+            nNodes           50;
+        }
+    }
+    {
+        name        NF_noBorn;
+        type        spiralWoundModule;
+        in          feed_noBorn;
+        outputs     ( ret_noBorn  perm_noBorn );
+        operation
+        {
+            membrane         NF270_dspmde_noBorn; // Born OFF (poreDielectric absent)
+            transport        DSPM-DE;
+            area             5.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;
+            nNodes           50;
+        }
+    }
+);

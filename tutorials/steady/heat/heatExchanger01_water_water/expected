@@ -1,0 +1,21 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  cold                   F                0.0333333333333    1e-4
+stream  coldOut                F                0.0333333333333    1e-4
+stream  hot                    F                0.0277777777778    1e-4
+stream  hotOut                 F                0.0277777777778    1e-4
+kpi     hx                     C_cold           2516.66666667      1e-4
+kpi     hx                     C_hot            2097.22222222      1e-4
+kpi     hx                     C_r              0.833333333333     1e-4
+kpi     hx                     LMTD             18.7584806629      1e-4
+kpi     hx                     NTU              2.38410596026      1e-4
+kpi     hx                     Q                93792.4033146      1e-4
+kpi     hx                     Q_kW             93.7924033146      1e-4
+kpi     hx                     T_cold_in        300                1e-4
+kpi     hx                     T_cold_out       337.268504628      1e-4
+kpi     hx                     T_hot_in         360                1e-4
+kpi     hx                     T_hot_out        315.277794446      1e-4
+kpi     hx                     U                500                1e-4
+kpi     hx                     UA               5000               1e-4
+kpi     hx                     area             10                 1e-4
+kpi     hx                     effectiveness    0.745370092566     1e-4

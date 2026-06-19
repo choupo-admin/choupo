@@ -1,0 +1,42 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/NaCl.dat
+// sha256   e193aa1cbee66e44bf6f4182ef59a10784760d0523daca9307a4517ac35bcb32
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Sodium chloride (NaCl, CAS 7647-14-5)
+
+  A non-volatile fully-dissociating 1-1 salt --- the canonical solute
+  for RO desalination tutorials.  Brackish water is ~5 g/L NaCl;
+  seawater is ~35 g/L (~0.6 mol/L NaCl).
+
+  At dilute aqueous concentrations the ideal van't Hoff form
+      π = ν R T c        with ν = 2
+  predicts the osmotic pressure to within ~5 % up to ~1 mol/L; for
+  precise screening at higher concentrations one switches to Pitzer
+  (scheduled for v0.28+).
+
+  Properties relevant to membrane simulation:
+    MW             58.44 g/mol
+    dissociation    2 (fully dissociated 1-1 electrolyte)
+    nonvolatile    true (never appears in the vapour)
+
+  The vapour-pressure block is left empty: with nonvolatile=true
+  the runtime never reads it.  Liquid Cp is intentionally absent
+  too --- membrane simulations do not run an energy balance on the
+  solute side; for tutorials that DO need an energy balance with
+  dissolved salt the Cp of the salt-free water dominates by 2-3
+  orders of magnitude and the salt contribution is neglected.
+\*---------------------------------------------------------------------------*/
+
+name           NaCl;
+formula        NaCl;
+CAS            7647-14-5;
+
+MW             58.44;          // g/mol  (= kg/kmol)
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for π = ν R T c

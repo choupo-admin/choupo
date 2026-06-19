@@ -1,0 +1,4 @@
+components       ( compA  compB  compC );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

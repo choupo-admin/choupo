@@ -1,0 +1,45 @@
+/*---------------------------------------------------------------------------*\
+  phasechange01_partial_condenser  --  a partial condenser
+
+  A superheated benzene/toluene vapour enters a condenser that is asked to
+  land its outlet at a vapour QUALITY of 0.4 (40 % of the moles stay vapour,
+  60 % condense).  The duty Q is the RESULT -- the unit solves it as a
+  built-in self-target (no outerDict, no variables block) and ANNOUNCES that
+  it did so.  Because the mixture is multicomponent, the condensed liquid is
+  toluene-RICH and the remaining vapour benzene-RICH -- the partial-
+  condensation lesson: a partial condenser is also a SEPARATION.
+
+      feedVapour (superheated, 1 bar, 390 K, vf = 1)
+        -> condenser (outletQuality 0.4)
+        -> wetOut (two-phase, 0 < vf < 1)
+
+  Same outlet vocabulary as rankine02_water's IF97 boiler/condenser, on the
+  GENERIC (Antoine + Raoult) backend.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feedVapour
+    {
+        F            100.0 kmol/h;
+        T            390.0 K;                  // superheated vapour at 1 bar
+        P              1.0 bar;
+        state         superheatedVapour;
+        molarComposition  { benzene 0.50;  toluene 0.50; }
+    }
+}
+
+units
+(
+    {
+        name        condenser;
+        type        condenser;            // alias of phaseChanger
+        in          feedVapour;
+        outputs     ( wetOut );
+
+        operation
+        {
+            outletQuality  0.4;            // 40 % vapour -> Q is the result
+        }
+    }
+);

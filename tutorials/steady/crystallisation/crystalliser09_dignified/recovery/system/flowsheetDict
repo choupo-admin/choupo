@@ -1,0 +1,9 @@
+/* recovery (LEAF) -- distillation that recovers the ethanol antisolvent.
+   Its OWN model lives here: NRTL (ethanol-water azeotrope), overriding the
+   plant eNRTL.  Its OWN pair data lives in recovery/constant/binaryPairs/. */
+type        distillationColumn;
+model       simultaneous;
+operation   { nStages 20;  feedStage 10;  refluxRatio 2.0;  distillateRate 85 kmol/h;  feedQuality 1.0;  P 1.01325 bar; }
+thermo      { activityModel { model NRTL; } }
+boundary    { inlets ( finalLiquor );  outlets ( recoveredEthanol  stillage ); }
+streams     { finalLiquor { F 110 kmol/h; T 278.15 K; P 1 bar; molarComposition { water 0.54; ethanol 0.45; KCl 0.007; potassiumBitartrate 0.0002; } } }

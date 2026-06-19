@@ -1,0 +1,273 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+# =============================================================================
+#  newCase  --  scaffold a NEW, EMPTY Choupo case in your workspace
+#
+#  Creates the deterministic 5-file skeleton of a case in CURATION phase
+#  (no physics yet -- empty components, empty units).  You then author the
+#  content yourself in a text editor, or hand it to the in-GUI AI console.
+#  The STRUCTURE is created here (load-bearing, never guessed); the PHYSICS
+#  is yours to fill.
+#
+#  The skeleton (all five files):
+#      <name>.cho                 empty marker -- the GUI's "openable" entity
+#      system/controlDict         application + description + verbosity
+#      system/flowsheetDict       streams{} + units() + connections() -- EMPTY
+#      constant/thermoPackage     components() -- EMPTY -- + ideal model blocks
+#      CLAUDE.md                  per-case brief (seeded with your statement)
+#
+#  Cases live in $CHOUPO_WORKSPACE (default $CHOUPO_HOME/cases, gitignored).
+#  Set CHOUPO_WORKSPACE before sourcing etc/bashrc to own them elsewhere.
+#
+#  Usage:
+#      newCase [-d DIR] <name> [one-line problem statement ...]
+#
+#  -d DIR   parent folder to create the case in (default: $CHOUPO_WORKSPACE).
+#           Lets you place a case anywhere, mirroring the GUI's folder picker.
+#
+#  Examples:
+#      newCase flash_etoh_water
+#      newCase nf_glucose  "10 g/L glucose, 10 bar, NF270, observed rejection?"
+#      newCase -d ~/projects/membranes  nf_glucose  "..."
+#
+#  Then:
+#      runCase <DIR>/<name>      # (after you add units)
+#      -- or open it in the GUI and let the console fill the dicts.
+# =============================================================================
+
+set -euo pipefail
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ] || [ "$#" -eq 0 ]; then
+    sed -n '3,37p' "$0" | sed 's/^# \{0,1\}//'
+    exit 0
+fi
+
+DIR_OPT=
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -d) DIR_OPT="${2:-}"; shift 2 ;;
+        --) shift; break ;;
+        -*) echo "newCase: unknown option '$1'" >&2; exit 1 ;;
+        *)  break ;;
+    esac
+done
+
+if [ "$#" -eq 0 ]; then
+    echo "newCase: missing case name (newCase [-d DIR] <name> [statement...])" >&2
+    exit 1
+fi
+
+NAME="$1"; shift
+STATEMENT="$*"
+
+# ----- Validate the name (slug only -- it becomes a folder + .cho marker) ---
+if ! printf '%s' "$NAME" | grep -qE '^[A-Za-z0-9][A-Za-z0-9_-]*$'; then
+    echo "newCase: invalid name '$NAME'." >&2
+    echo "         Use letters, digits, '-' and '_' only (no spaces, no '/')." >&2
+    exit 1
+fi
+
+# ----- Resolve the target parent folder -------------------------------------
+# Explicit -d wins; else the workspace ($CHOUPO_WORKSPACE, default
+# $CHOUPO_HOME/cases).
+if [ -n "$DIR_OPT" ]; then
+    PARENT="$DIR_OPT"
+else
+    PARENT="${CHOUPO_WORKSPACE:-}"
+    if [ -z "$PARENT" ]; then
+        if [ -n "${CHOUPO_HOME:-}" ]; then
+            PARENT="$CHOUPO_HOME/cases"
+        else
+            echo "newCase: neither CHOUPO_WORKSPACE nor CHOUPO_HOME is set." >&2
+            echo "         source <projectRoot>/etc/bashrc first, or pass -d DIR." >&2
+            exit 1
+        fi
+    fi
+fi
+mkdir -p "$PARENT"
+
+CASE="$PARENT/$NAME"
+if [ -e "$CASE" ]; then
+    echo "newCase: '$CASE' already exists -- refusing to overwrite." >&2
+    exit 1
+fi
+
+DESC="${STATEMENT:-$NAME}"
+
+# ----- Materialise the skeleton ---------------------------------------------
+mkdir -p "$CASE/system" "$CASE/constant"
+
+# 1. the .cho marker (empty -- the openable entity)
+: > "$CASE/$NAME.cho"
+
+# 2. system/controlDict
+cat > "$CASE/system/controlDict" <<EOF
+/*---------------------------------------------------------------------------*\\
+  controlDict  --  meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;        // choupoSolve | choupoBatch | choupoCtrl
+description   "$DESC";
+verbosity     3;                  // 0 silent .. 3 info (Newton iters) .. 4 debug
+EOF
+
+# 3. system/flowsheetDict  --  CURATION phase: empty streams/units/connections
+cat > "$CASE/system/flowsheetDict" <<'EOF'
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  topology (streams + units + connections).
+
+  CURATION phase: this case is EMPTY.  Add streams and units below; the
+  connections are implicit via stream names (a unit's `in` / `outputs`).
+  UNITS ARE MANDATORY on every dimensional value.
+
+  Example (an isothermal flash):
+
+      streams
+      {
+          feed
+          {
+              F                100.0 kmol/h;
+              T                370.0 K;
+              P                  1.0 bar;
+              molarComposition { benzene 0.40;  toluene 0.60; }
+          }
+      }
+      units
+      (
+          {
+              name      flash01;
+              type      isothermalFlash;
+              in        feed;
+              outputs   ( liquid  vapor );
+              operation { T 370.0 K;  P 1.0 bar; }
+          }
+      );
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+}
+
+units
+(
+);
+EOF
+
+# 4. constant/thermoPackage  --  EMPTY components + ideal model defaults
+cat > "$CASE/constant/thermoPackage" <<'EOF'
+/*---------------------------------------------------------------------------*\
+  thermoPackage  --  the components + thermodynamic models for this case.
+
+  EMPTY skeleton.  Add your components (loaded from data/standards/components/)
+  and choose ONE global model set -- the default.  "All models are wrong, some
+  are useful": start ideal, SEE the result, then refine by evidence (an NRTL or
+  Wilson pair for a non-ideal liquid; SRK / PengRobinson for a real gas).
+  UNITS ARE MANDATORY on every dimensional value.
+
+      components ( ethanol  water );
+\*---------------------------------------------------------------------------*/
+
+components ( );
+
+activityModel
+{
+    model        ideal;            // ideal | NRTL | Wilson   (+ pairs ( ... ))
+}
+
+equationOfState
+{
+    model        idealGas;         // idealGas | PengRobinson | SRK
+}
+EOF
+
+# 5. CLAUDE.md  --  the per-case brief (seeded with the problem statement)
+cat > "$CASE/CLAUDE.md" <<EOF
+# Case: $NAME
+
+## Problem statement
+$DESC
+
+## FIRST -- read the authoring guide (before anything else)
+**Your first action in this case is to read \`ai/choupo-authoring.md\`** (right
+here, local + offline) -- even when the user's first message is just a request.
+It is the ground truth: dict syntax, **UNITS ARE MANDATORY**, the unit-op
+catalogue, the valid component names, patterns and pitfalls.  Do NOT invent
+components or unit-op types -- use that catalogue.  Any agent (Claude Code,
+Cursor, Aider) is led there by this file + \`AGENTS.md\`.
+
+## How to author this case
+This is an empty Choupo case in the **curation phase** (no units yet).  The
+dicts on disk are the source of truth; fill them in a text editor or via the
+in-GUI AI console.
+
+- \`system/flowsheetDict\` -- the streams + units (the topology).
+- \`constant/thermoPackage\` -- the components + thermodynamic models.
+- \`system/controlDict\` -- application (choupoSolve/Batch/Ctrl) + verbosity.
+
+## Rules
+- **UNITS ARE MANDATORY** on every dimensional value (\`370 K\`, \`1 bar\`,
+  \`100 kmol/h\`).  Never write a bare number for a physical quantity.
+- One global thermo model is the default; override per-unit only deliberately.
+- You DECIDE the physics (which components, which models, which units); the
+  console only ENACTS what you ask -- it never picks a model for you.
+
+Run it (once it has units) with:  \`runCase $CASE\`
+EOF
+
+# 6. ai/choupo-authoring.md  --  the authoring RULES (the docs/ai guide), LOCAL +
+#    offline, so ANY agent opened in this folder (Claude Code / Cursor / Aider)
+#    is born taught.  Same content the GUI bundles into a downloaded case.
+mkdir -p "$CASE/ai"
+if "$(dirname "$0")/llmctx" > "$CASE/ai/choupo-authoring.md" 2>/dev/null; then
+    :
+else
+    echo "newCase: warning -- could not generate ai/choupo-authoring.md (bin/llmctx)" >&2
+fi
+
+# 7. AGENTS.md  --  the vendor-neutral entry file; points any agent at ai/.
+cat > "$CASE/AGENTS.md" <<EOF
+# AGENTS.md -- Choupo case: $NAME
+
+Any AI agent authoring this case (Cursor, Aider, Zed, Claude Code, ...): you are
+writing Choupo "dicts" under \`system/\` + \`constant/\`, NOT editing the engine.
+
+- **Rules (read first):** \`ai/choupo-authoring.md\` -- here, LOCAL + offline.
+- The **user decides; you enact** via dict edits, then \`runCase $CASE\`.
+- A \`code/\` folder (custom C++) is compiled first with \`bin/buildCode $CASE\`.
+
+## Goal (this case)
+$DESC
+EOF
+
+echo "newCase: created $CASE"
+echo "  in curation phase (empty).  Next:"
+echo "    - edit system/flowsheetDict + constant/thermoPackage, or"
+echo "    - open it in the GUI and let the console fill the dicts."
+echo "    - then:  runCase $CASE"

@@ -1,0 +1,53 @@
+/*---------------------------------------------------------------------------*\
+  bagFilter01_dust
+  ================
+
+  The high-efficiency complement to cyclone01 (same dusty gas: N2 carrying
+  50 kg/h of silica, PSD 1..50 um).  Where the cyclone captured ~82 % by
+  SIZE (fines escape), the fabric filter's dust cake captures ~99.9 %
+  across all sizes --- the price is a much larger pressure drop, dominated
+  by the cake (dP = mu V (K1 + K2 W)).
+
+  Face velocity V = Q_gas / filterArea is the air-to-cloth ratio
+  (~1.5 m/min here); with a cake load W = 0.5 kg/m^2 the pressure drop is
+  ~2.7 kPa.  The classic train is cyclone (cheap pre-cleaner) THEN bag
+  filter (polish) --- this case is the polish stage on the same dust.
+
+  Gas:    150 kmol/h N2, 300 K, 1 atm
+  Dust:   50 kg/h silica, PSD 1..50 um
+  Filter: 40 m^2 cloth
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            150.0 kmol/h;
+        T            300.0 K;
+        P            1.01325 bar;
+        molarComposition { N2 1.0; }
+        solids
+        {
+            solidFlows   { silica 50.0 kg/h; }
+            diameters    ( 1e-6  2e-6  5e-6  10e-6  20e-6  50e-6 );   // m
+            massFractions( 0.05  0.10  0.20  0.30   0.25   0.10  );
+        }
+    }
+}
+
+units
+(
+    {
+        name        baghouse;
+        type        bagFilter;
+        in          feed;
+        outputs     ( cleanGas  capturedSolids );
+        operation
+        {
+            filterArea      40.0 m2;   // total cloth area
+            arealDustLoad   0.5;        // kg/m^2 cake at cleaning
+            // K1 (clean cloth), K2 (specific cake resistance),
+            // penetration0, dCharacteristic keep their defaults.
+        }
+    }
+);

@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_seawater_verify --- MINIMAL speciation network (water dissociation ONLY).
+
+  This case is a PURE Pitzer-HMW activity-coefficient verification: the major
+  seawater ions (Na, K, Ca, Mg, Cl, SO4) are kept FULLY DISSOCIATED -- no ion
+  pairing (no NaSO4-, MgSO4(aq), CaSO4(aq), ...).  This is DELIBERATE and is the
+  ONLY honest way to verify the HMW model: the Harvie-Moller-Weare (1984)
+  theta/psi parameters were fitted to a NON-pairing major-ion treatment, with
+  ALL specific non-ideality carried by the Pitzer virial + ternary terms.  Mixing
+  explicit sulfate-pairing reactions WITH the Pitzer ternary terms would
+  DOUBLE-COUNT the SO4 interactions and make the computed gammas non-comparable
+  to the published seawater Pitzer values.
+
+  So the network here is ONLY water self-ionisation (Kw) -- it fixes the trace
+  H+/OH- (which do not enter the major-ion gammas at all).  Carbonate, borate
+  and the ion-pair complexes are intentionally ABSENT.
+
+  Source: USGS PHREEQC phreeqc.dat (public domain), Kw entry (the standard
+  catalogue's OH row, taken verbatim).
+\*---------------------------------------------------------------------------*/
+
+reactions
+(
+    { species OH; ion "OH-"; z -1; masters ( { ion H; nu -1; } ); nuWater 1;
+      logK25 -14; dH 56400; analytic ( 293.29227 0.1360833 -10576.913 -123.73158 0 -6.996455e-05 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+);

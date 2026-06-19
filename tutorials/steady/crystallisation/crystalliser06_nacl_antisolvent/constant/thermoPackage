@@ -1,0 +1,10 @@
+/* NaCl in a water + ethanol mixed solvent.  The liquid-activity slot is the
+   ELECTROLYTE-NRTL model -- selected like any activity model (one word: eNRTL).
+   eNRTL is the model for a salt in a NON-ideal molecular solvent: its mixed-solvent
+   term (dielectric mixing + Born) is what captures the drowning-out effect that the
+   aqueous Pitzer model cannot.  The salt's ions live in NaCl.dat; ethanol's dielectric
+   constant (relativePermittivity) lives in ethanol.dat -- both called by name, nothing
+   chemical re-typed here.  Self-contained: components copied into constant/components/. */
+components       ( water ethanol NaCl );
+activityModel    { model eNRTL; }
+equationOfState  { model idealGas; }

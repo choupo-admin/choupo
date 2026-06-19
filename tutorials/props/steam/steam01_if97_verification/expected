@@ -1,0 +1,69 @@
+# Reference KPIs (golden master).  THE PUBLISHED NUMBERS ARE THE GOLDEN:
+# every value below is copied digit for digit from the computer-program
+# verification tables of IAPWS R7-97(2012) (Tables 5, 15, 35, 36) -- not
+# recorded from a run.
+#
+# Two-tier defence: the 1e-8 transcription tripwire lives INSIDE the engine
+# (IF97::verify() runs on every steamTables run and HARD-REFUSES the run if
+# any verification value deviates > 1e-8 -- so a single wrong coefficient
+# digit fails this case via the refusal, rc != 0).  The pins below sit at
+# reltol 1e-5 only because the result-JSON diagnostics channel prints 6
+# significant figures (up to ~5e-6 relative rounding); the comparison is
+# channel-limited, the formulation is verified to 1e-8.
+# kind   name      key         expected        reltol
+diag    r1_T300_p3MPa          region           1                  1e-9
+diag    r1_T300_p3MPa          v                0.100215168e-2     1e-5
+diag    r1_T300_p3MPa          h                0.115331273e3      1e-5
+diag    r1_T300_p3MPa          u                0.112324818e3      1e-5
+diag    r1_T300_p3MPa          s                0.392294792        1e-5
+diag    r1_T300_p3MPa          cp               0.417301218e1      1e-5
+diag    r1_T300_p3MPa          w                0.150773921e4      1e-5
+diag    r1_T300_p3MPa          psat_MPa         0.353658941e-2     1e-5
+diag    r1_T300_p80MPa         region           1                  1e-9
+diag    r1_T300_p80MPa         v                0.971180894e-3     1e-5
+diag    r1_T300_p80MPa         h                0.184142828e3      1e-5
+diag    r1_T300_p80MPa         u                0.106448356e3      1e-5
+diag    r1_T300_p80MPa         s                0.368563852        1e-5
+diag    r1_T300_p80MPa         cp               0.401008987e1      1e-5
+diag    r1_T300_p80MPa         w                0.163469054e4      1e-5
+diag    r1_T500_p3MPa          region           1                  1e-9
+diag    r1_T500_p3MPa          v                0.120241800e-2     1e-5
+diag    r1_T500_p3MPa          h                0.975542239e3      1e-5
+diag    r1_T500_p3MPa          u                0.971934985e3      1e-5
+diag    r1_T500_p3MPa          s                0.258041912e1      1e-5
+diag    r1_T500_p3MPa          cp               0.465580682e1      1e-5
+diag    r1_T500_p3MPa          w                0.124071337e4      1e-5
+diag    r1_T500_p3MPa          psat_MPa         0.263889776e1      1e-5
+diag    r2_T300_p3p5kPa        region           2                  1e-9
+diag    r2_T300_p3p5kPa        v                0.394913866e2      1e-5
+diag    r2_T300_p3p5kPa        h                0.254991145e4      1e-5
+diag    r2_T300_p3p5kPa        u                0.241169160e4      1e-5
+diag    r2_T300_p3p5kPa        s                0.852238967e1      1e-5
+diag    r2_T300_p3p5kPa        cp               0.191300162e1      1e-5
+diag    r2_T300_p3p5kPa        w                0.427920172e3      1e-5
+diag    r2_T700_p3p5kPa        region           2                  1e-9
+diag    r2_T700_p3p5kPa        v                0.923015898e2      1e-5
+diag    r2_T700_p3p5kPa        h                0.333568375e4      1e-5
+diag    r2_T700_p3p5kPa        u                0.301262819e4      1e-5
+diag    r2_T700_p3p5kPa        s                0.101749996e2      1e-5
+diag    r2_T700_p3p5kPa        cp               0.208141274e1      1e-5
+diag    r2_T700_p3p5kPa        w                0.644289068e3      1e-5
+diag    r2_T700_p30MPa         region           2                  1e-9
+diag    r2_T700_p30MPa         v                0.542946619e-2     1e-5
+diag    r2_T700_p30MPa         h                0.263149474e4      1e-5
+diag    r2_T700_p30MPa         u                0.246861076e4      1e-5
+diag    r2_T700_p30MPa         s                0.517540298e1      1e-5
+diag    r2_T700_p30MPa         cp               0.103505092e2      1e-5
+diag    r2_T700_p30MPa         w                0.480386523e3      1e-5
+# satline endpoints: psat(273.16 K) = 611.657 Pa is the OFFICIAL triple-point
+# pressure (the release quotes it); psat(623.15 K) closes onto the B23 corner.
+diag    satline                n_points         50                 1e-9
+diag    satline                psat_from_Pa     611.657            1e-5
+diag    satline                psat_to_Pa       16529164.25        1e-5
+# Tsat pins = release Table 36 (0.1 / 1 / 10 MPa), via the isobar crossings.
+diag    isobar_1bar            n_points         57                 1e-9
+diag    isobar_1bar            Tsat_K           0.372755919e3      1e-5
+diag    isobar_1MPa            n_points         47                 1e-9
+diag    isobar_1MPa            Tsat_K           0.453035632e3      1e-5
+diag    isobar_10MPa           n_points         67                 1e-9
+diag    isobar_10MPa           Tsat_K           0.584149488e3      1e-5

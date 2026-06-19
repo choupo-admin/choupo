@@ -1,0 +1,35 @@
+// ChemSep DECHEMA UNIQUAC pair -- acetone-benzene (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( acetone benzene );
+model       UNIQUAC;
+
+parameters
+{
+    i           acetone;
+    j           benzene;
+    a_ij        -180.617;   // K
+    a_ji        304.085;   // K
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_acetone_benzene   -358.9226;   // CAS 67-64-1 -> 71-43-2
+    A_benzene_acetone   604.28;   // CAS 71-43-2 -> 67-64-1
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "uniquac.ipd";
+    sourceRecord  "67-64-1/71-43-2";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "UNIQUAC";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

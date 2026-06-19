@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Material: Carbon Steel (ASME SA-516 Gr. 70)  — baseline reference.
+\*---------------------------------------------------------------------------*/
+
+name      carbonSteel;
+density   7850;      // kg/m³
+F_M       1.00;      // Guthrie/Turton material factor (reference)
+sigma_y   140;       // MPa  allowable stress @ 250 °C
+maxT      700;       // K
+maxP      100;       // bar  (typical pressure-vessel rating)
+thermalConductivity 50;  // W/(m·K)  (typical, for HX wall conduction)

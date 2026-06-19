@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------*\
+  solidDryer01_sugar / flowsheetDict   (LEAF node)
+
+  Wet solid: 10 kmol/h sucrose (3423 kg/h) carrying 38 kmol/h bound water
+  (~685 kg/h, X_in = 0.20 kg/kg).  Dried by air at 77 C, RH 0.10.
+\*---------------------------------------------------------------------------*/
+name        solidDryer;
+type        solidDryer;
+operation   { airTemperature 350.0 K;  relativeHumidity 0.10; }
+
+boundary    { inlets ( wetSolid );  outlets ( drySolid  vapour ); }
+
+streams
+{
+    wetSolid
+    {
+        F                  38.0 kmol/h;        // bound water (liquid)
+        T                  330.0 K;
+        P                  1.0 bar;
+        molarComposition  { water 1.0; }
+        solids { solidFlows { sucrose 3423.0 kg/h; } }
+    }
+}

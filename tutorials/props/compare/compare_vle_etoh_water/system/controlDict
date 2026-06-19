@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Ethanol/water T-x-y at 1 atm: ideal vs NRTL model curves OVERLAID with measured VLE data --- see the data, pick the model";
+
+verbosity     2;

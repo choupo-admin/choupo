@@ -1,0 +1,10 @@
+application   choupoBatch;
+description   "Rayleigh batch distillation: ethanol/water 40/60 with NRTL, residue concentrates in water";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         600;      // s
+deltaT          1.0;      // s
+writeInterval   20;       // s

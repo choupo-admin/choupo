@@ -1,0 +1,85 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_calcite_brine --- the slice-S4 GATE for the Pitzer CARBONATE system.
+
+  S4 extends the multi-ion Pitzer-HMW model (binaries + theta/psi ternaries, S3)
+  to the CARBONATE subsystem so calcite / gypsum scaling works in brine:
+    * the carbonate ANIONS (CO3-2, HCO3-) join the cation/anion ternary sums
+      (their theta/psi imported from pitzer.dat into mixing.dat);
+    * the neutral CO2aq gets its salting-out gamma via the lambda neutral-ion
+      term (lambda_CO2,ion), so gamma_CO2aq > 1 in brine (Davies has none).
+
+  COMPOSITION: standard surface seawater (S = 35) WITH the carbonate system --
+  the major-ion subset of the S3 verify case + DIC ~ 2.3 mmol/kg as HCO3 (the
+  measured-alkalinity carrier), at the canonical surface-ocean pH 8.2.
+      Na+ 0.4861  Mg+2 0.0547  Ca+2 0.01065  K+ 0.01058
+      Cl- 0.5658  SO4-2 0.02926  HCO3- 0.00230     (I ~ 0.68 mol/kg)
+
+  ---------------------------------------------------------------------------
+  THE PUBLISHED PIN (cited; E_theta before/after recorded below):
+
+    SI_calcite (surface seawater, 25 C, pH 8.2) ~ +0.6 to +0.8.
+      Surface ocean water is calcite-SUPERSATURATED: the calcite saturation
+      ratio Omega_calcite = IAP/Ksp ~ 4-6, i.e. SI = log10(Omega) ~ +0.6 to +0.8.
+      Sources: Mucci, A., Am. J. Sci. 283 (1983) 780 (the seawater calcite/
+      aragonite solubility); Millero, F.J., Chem. Rev. 107 (2007) 308 (the
+      seawater carbonate system); a well-documented oceanographic number (the
+      ocean-acidification baseline).  Choupo (Pitzer-HMW) computes SI_calcite
+      = +0.667 -- INSIDE the published band.
+    SI_gypsum (seawater) ~ -0.9 to -0.6 (strongly UNDERsaturated -- seawater is
+      nowhere near gypsum saturation); Choupo computes -0.964 -- a touch below
+      the -0.9 floor (this carbonate-bearing brine sits at slightly higher I than
+      the carbonate-free seawater_verify case, which gives -0.689 in-band).  Still
+      firmly undersaturated, the physically-correct verdict.
+
+    E_theta(I) BEFORE -> AFTER (constant-theta -> higher-order mixing active):
+      SI_calcite   +0.724 -> +0.667   (IN band +0.6..+0.8) -- E_theta lowers the
+                                       2+/2- ion gammas, nudging the carbonate IAP
+      SI_gypsum    -0.875 -> -0.964   gamma_CO2aq 1.105 -> 1.106 (salting-out kept)
+                                       gamma_Ca 0.227 -> 0.194 (E_theta on Ca pairs)
+      Davies (untouched -- E_theta is Pitzer-only): SI_calcite +0.882, byte-ident.
+
+  The golden master locks Choupo's exact output; the band above validates it is
+  PHYSICALLY right (a wrong pin is worse than no pin -- the band is cited).
+
+  DAVIES vs PITZER (the differentiator, also pinned): the SAME composition under
+  Davies gives SI_calcite +0.882 and gamma_CO2aq = 1.000 (no neutral salting-
+  out) -- Davies is out of its trustworthy band (~0.5) at this I, overshoots the
+  calcite SI by ~0.22 vs Pitzer-HMW-with-E_theta and misses the CO2 salting-out
+  entirely.  Pitzer is the rigorous tool for brine.  Both entries run here so the
+  divergence is VISIBLE.
+
+  SELF-CONTAINED: constant/electrolyte/ carries the FULL snapshot (ions, pairs,
+  mixing WITH carbonate theta/psi/lambda, speciation, minerals) -- the case runs
+  with data/standards/ hidden.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- PIN A: the carbonate Pitzer brine -- SI_calcite / SI_gypsum + the
+    //    neutral CO2 salting-out (gamma_CO2aq > 1 ONLY because lambda is wired).
+    {
+        name        seawater_pitzer;
+        type        speciate;
+        activityModel pitzer;
+        totals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
+                      K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg;
+                      HCO3 0.00230 mol/kg; }
+        pH          8.2;                // canonical surface-ocean pH (given)
+        diagSpecies ( Ca CO3 HCO3 CO2aq );
+        output      { file seawater_pitzer.csv; }
+    }
+
+    // -- PIN B: the SAME composition under Davies -- the divergence preview.
+    //    gamma_CO2aq = 1 (no lambda), SI_calcite overshoots: Pitzer is rigorous.
+    {
+        name        seawater_davies;
+        type        speciate;
+        activityModel davies;
+        totals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
+                      K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg;
+                      HCO3 0.00230 mol/kg; }
+        pH          8.2;
+        diagSpecies ( Ca CO3 HCO3 CO2aq );
+        output      { file seawater_davies.csv; }
+    }
+);

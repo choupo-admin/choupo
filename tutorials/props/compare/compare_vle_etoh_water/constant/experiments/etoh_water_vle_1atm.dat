@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------*\
+  Measured vapour-liquid equilibrium of ethanol(1) / water(2) at 101.3 kPa.
+
+  The classic minimum-boiling azeotrope: x1 = 0.894 at 78.15 C, the reason a
+  plain ethanol column tops out near 89 mol%.  Overlaid (as POINTS) on the
+  ideal- and NRTL-model bubble/dew curves so a student DECIDES from evidence:
+  the ideal curve misses the azeotrope entirely; NRTL captures it.
+
+  Self-describing columns -> the engine echoes every column to exp_<name>.csv
+  (T converted from degC to K), so the T-x-y / x-y / T-x / T-y views all get
+  their measured points.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source   "Carey & Lewis, Ind. Eng. Chem. 24 (1932) 882";
+    citation "Ethanol(1)-water(2) VLE at 101.3 kPa; minimum-boiling azeotrope x1=0.894 at 78.15 C.  Classic literature data, widely tabulated (Smith, Van Ness & Abbott; Perry's Handbook).";
+}
+
+columns
+(
+    { name x[ethanol];    unit -;    }      // liquid mole fraction ethanol
+    { name T_bubble;      unit degC; }      // bubble temperature
+    { name y_eq_ethanol;  unit -;    }      // vapour mole fraction ethanol
+);
+
+data
+(
+    0.000   100.00   0.000
+    0.019    95.50   0.170
+    0.0966   86.70   0.4375
+    0.1661   84.10   0.5089
+    0.2608   82.30   0.5580
+    0.3965   80.70   0.6122
+    0.5079   79.80   0.6564
+    0.5732   79.30   0.6841
+    0.6763   78.74   0.7385
+    0.7472   78.41   0.7815
+    0.8943   78.15   0.8943
+    1.000    78.30   1.000
+);

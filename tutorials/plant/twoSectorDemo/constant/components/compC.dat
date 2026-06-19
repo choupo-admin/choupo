@@ -1,0 +1,13 @@
+/*--- Component: compC  (synthetic, case-local; demo case) ---*/
+name        compC;
+MW          76.000;
+Tc          520.00;
+Pc          42.00;
+omega       0.2200;
+Tb          346.00;
+HvapTb      30400;
+Vliq        8.5e-5;
+gibbsFormation { dHf_298 -40000.0;  s_298 254.0;  phase gas; }
+vaporPressure { model Antoine; coefficients (4.05 1250.0 -50.0); Trange (250 500); }
+idealGasHeatCapacity { model polynomial; coefficients (50.0 0.12 -6.0e-5 9.0e-9); Trange (200 1500); }
+provenance { source synthetic; note "demo two-sector case"; }

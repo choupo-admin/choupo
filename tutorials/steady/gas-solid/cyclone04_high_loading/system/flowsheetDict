@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------*\
+  cyclone04_high_loading
+  ======================
+
+  The same cyclone geometry as cyclone01, but with a HEAVY dust load ---
+  2000 kg/h of silica (inlet loading ~ 0.476 kg dust / kg gas, ~40x the
+  ~0.012 kg/kg of cyclone01).  At high loading the Muschelknautz model
+  captures the mass-loading effect: above a critical loading the dust
+  forms a wall strand that sweeps out particles independently of the
+  single-particle cut, so the collection efficiency RISES sharply.
+
+  Muschelknautz overall collection ~ 98.4 % of the dust mass --- far
+  above the ~82 % a dilute Lapple cyclone gives, because the high solids
+  loading itself enhances separation.  Grade efficiency ~ 90 % even at
+  1 um.
+
+  Gas:    150 kmol/h N2, 300 K, 1 atm
+  Dust:   2000 kg/h silica, ρ_p = 2650 kg/m^3, PSD 1..50 um
+  Cyclone: body diameter 0.5 m, 5 effective turns, cLimit = 0.05
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            150.0 kmol/h;
+        T            300.0 K;
+        P            1.01325 bar;
+        molarComposition { N2 1.0; }
+        solids
+        {
+            solidFlows   { silica 2000.0 kg/h; }
+            diameters    ( 1e-6  2e-6  5e-6  10e-6  20e-6  50e-6 );   // m
+            massFractions( 0.05  0.10  0.20  0.30   0.25   0.10  );
+        }
+    }
+}
+
+units
+(
+    {
+        name        cyclone;
+        type        cyclone;
+        model       Muschelknautz;
+        in          feed;
+        outputs     ( cleanGas  capturedSolids );
+        operation   { bodyDiameter 0.5 m;  numberOfTurns 5;  cLimit 0.05; }
+    }
+);

@@ -1,0 +1,10 @@
+operations
+(
+    {
+        name    pd;
+        type    purePhaseDiagram;
+        grid    { n 30; }
+        solid   { tripleT 273.16; tripleP 611.657; Hfus 6010; Hsub 51059; deltaVfus -1.63e-6; }
+        output  { file phase.csv; }
+    }
+);

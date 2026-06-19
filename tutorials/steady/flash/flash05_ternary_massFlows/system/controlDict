@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Ternary flash benzene/toluene/n-hexane, feed in mass flows (5000 kg/h)";
+
+verbosity     3;

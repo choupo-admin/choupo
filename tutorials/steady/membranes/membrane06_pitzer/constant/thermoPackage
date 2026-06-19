@@ -1,0 +1,8 @@
+components       ( water  NaCl );
+
+// Activity model is irrelevant for dilute aqueous NF/RO at v0.26:
+// the membrane unit op does not consult γ_i.  We set `ideal` to keep
+// the loader happy; v0.28+ adds a proper electrolyte activity model
+// for high-concentration brines.
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

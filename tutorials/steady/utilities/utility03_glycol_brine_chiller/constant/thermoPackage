@@ -1,0 +1,10 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Process side: ethanol vapour from the top of a fermentation column,
+  to be cooled below its dew point.  Utility side: propylene-glycol-30
+  brine, the canonical chilled secondary loop for sub-ambient duty.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  propyleneGlycol30 );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

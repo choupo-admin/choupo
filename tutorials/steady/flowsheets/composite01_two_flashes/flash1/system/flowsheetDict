@@ -1,0 +1,9 @@
+/*---------------------------------------------------------------------------*\
+  flash1 / system/flowsheetDict   (LEAF -- child of composite01)
+\*---------------------------------------------------------------------------*/
+
+name        flash1;
+type        isothermalFlash;
+operation   { T 370.0 K;  P 1.0 bar; }
+
+boundary    { inlets ( feed );  outlets ( liquid  vapor ); }

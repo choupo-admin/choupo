@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Low-pressure gas viscosity vs T (Chung) for N2 / CO2 / CH4, 250-600 K";
+
+verbosity     3;

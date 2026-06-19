@@ -1,0 +1,20 @@
+/*---------------------------------------------------------------------------*\
+  pitzer01_nacl --- the first electrolyte case.
+
+  gamma_pm, the osmotic coefficient phi and the water activity a_w for NaCl,
+  by the Pitzer ion-interaction model.  The parameters are CURATED data, read
+  by name from data/standards/electrolyte/NaCl.dat (cited: Pitzer & Mayorga
+  1973).  Open pitzer_nacl.csv: gamma_pm dips to ~0.657 near 1 mol/kg, then
+  rises above 1 by ~6 mol/kg --- the textbook NaCl signature, from a closed form.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      gamma_nacl;
+        type      pitzerActivity;
+        cation    Na;
+        anion     Cl;
+        molality  { from 0.1; to 6.0; n 30; }
+        output    { file pitzer_nacl.csv; }
+    }
+);

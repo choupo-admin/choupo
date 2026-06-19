@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Single-effect NaCl evaporator with the boiling-point elevation from the eNRTL water activity (electrolyte-NRTL) -- the same slot as model pitzer, one word changed. eNRTL is the model for salt in a non-ideal molecular solvent.";
+verbosity     3;

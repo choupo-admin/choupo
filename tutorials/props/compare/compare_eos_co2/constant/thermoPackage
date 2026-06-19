@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------*\
+  Global thermoPackage for compare_eos_co2.  The per-op `thermo {}`
+  override in the propsDict REPLACES the `equationOfState` block at each
+  operation; this global stays as the baseline (ideal gas) and provides
+  the components list (shared across all ops).
+\*---------------------------------------------------------------------------*/
+
+components       ( CO2 );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

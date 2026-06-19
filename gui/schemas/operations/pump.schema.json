@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/pump.schema.json",
+  "title": "pump operation",
+  "description": "Operation block of a credo-pure incompressible-liquid pump.  Hardware-only: specify the shaft power W_shaft (W or kW, positive) and the pump efficiency eta.  The discharge pressure P_out (P_in + eta*W_shaft/(F*v_molar)) and the small dissipation temperature rise are RESULTS.  For 'pump to X bar' wrap the unit in a DesignSpec that manipulates $W_shaft with a target on this unit's P_out KPI (converges in one step --- the relation is linear).",
+  "type": "object",
+  "properties": {
+    "W_shaft": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Shaft power (hardware)",
+      "description": "Mechanical power delivered to the liquid (motor rating).  Positive.",
+      "unit": "W"
+    },
+    "eta": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Pump efficiency",
+      "description": "Hydraulic + mechanical efficiency: useful v*dP work / shaft work.  0 < eta <= 1.  The (1-eta) fraction heats the liquid (a small dT).",
+      "unit": "-"
+    }
+  },
+  "required": ["W_shaft", "eta"],
+  "additionalProperties": false
+}

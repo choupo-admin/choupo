@@ -1,0 +1,7 @@
+/*  Ternary VLLE phase map — synthetic audit (compA/compB/compC).
+    Reuses IsothermalFlash::solveCore per simplex node (no reimplemented
+    physics).  Run-only smoke (the CSV is a phase-region map, not pinned
+    KPIs); the VLLE region near the A-B-immiscible corner is the lesson. */
+application   choupoProps;
+description   "Ternary VLLE phase map (compA/compB/compC) at 350 K, 1 bar via propertyScanTernary";
+verbosity     2;

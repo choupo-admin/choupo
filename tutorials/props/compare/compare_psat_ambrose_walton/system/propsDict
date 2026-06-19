@@ -1,0 +1,59 @@
+/*---------------------------------------------------------------------------*\
+  compare_psat_ambrose_walton
+  ===========================
+
+  Ambrose-Walton corresponding states (Ambrose & Walton 1989; Poling et al.
+  5th ed., Eq. 7-2.7) predicts vapour pressure from Tc, Pc and omega ALONE --
+  exactly the constants a Joback + Lee-Kesler estimate produces.  So an
+  estimated component becomes flashable with NO measured Psat data.  But it is
+  an ESTIMATE, and the glass-box rule is: SEE the error before you trust it.
+
+  This sweeps T = 270 -> 360 K and tabulates four curves:
+    Psat_benzene    -- fitted Antoine (catalogue DATA)        } non-polar pair
+    Psat_benzeneAW  -- Ambrose-Walton PREDICTION              }
+    Psat_ethanol    -- fitted Antoine (catalogue DATA)        } associating pair
+    Psat_ethanolAW  -- Ambrose-Walton PREDICTION              }
+
+  Open `psat_aw_vs_antoine.csv` (GUI plot, or gnuplot).  What you SEE:
+    * Near the normal boiling point (~350-360 K) BOTH agree to ~1 % -- corresponding
+      states is anchored there and is excellent.
+    * Towards the cold end (270 K) the curves separate, and MORE for the
+      associating ethanol than for non-polar benzene:
+          benzene  AW vs Antoine:  +3.3 % average,  +8.9 % at 270 K
+          ethanol  AW vs Antoine:  +5.2 % average,  -16  % at 270 K
+  So corresponding states is a solid FREE first predictor (it makes an estimated
+  component flashable with no data), best near Tb and degrading at low reduced
+  temperature -- the degradation worse for hydrogen-bonding species.  The lesson:
+  prediction gets you started; for an associating species, or far below Tb, fit
+  Antoine to data (choupoProps vaporPressureFit) before any design number.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        psat_aw_vs_antoine;
+        type        propertyScan1D;
+
+        vary
+        {
+            variable  T;
+            from      270.0 K;
+            to        360.0 K;
+            n          46;
+        }
+
+        state
+        {
+            // Per-component Psat is independent of composition; the block is
+            // required, so split the moles evenly across the four components.
+            composition  { benzene 0.25;  benzeneAW 0.25;  ethanol 0.25;  ethanolAW 0.25; }
+        }
+
+        properties  ( Psat_benzene  Psat_benzeneAW  Psat_ethanol  Psat_ethanolAW );
+
+        output
+        {
+            file    psat_aw_vs_antoine.csv;
+        }
+    }
+);

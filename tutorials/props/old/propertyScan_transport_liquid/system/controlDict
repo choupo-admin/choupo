@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Liquid transport vs T: viscosity (Vogel) + conductivity (Sato-Riedel) + diffusivity (Wilke-Chang)";
+
+verbosity     2;

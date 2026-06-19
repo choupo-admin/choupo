@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Algorithm-audit synthetic VLLE: 3 components with identical Psat and exaggerated NRTL. Should converge to 3-phase by construction.";
+
+verbosity     3;

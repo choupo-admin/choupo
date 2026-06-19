@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Compare 3 EoS (idealGas / SRK / PR) for Z of CO2 near critical (T=310 K, P from 1 to 100 bar)";
+
+verbosity     2;

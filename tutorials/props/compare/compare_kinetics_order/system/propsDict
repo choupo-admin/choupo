@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  compare_kinetics_order
+  ======================
+  The "see, then decide" of CHEMICAL KINETICS: fit a 1st- and a 2nd-order rate
+  law to the SAME measured c(t) and overlay both on the data.  No `k` is given,
+  so each op REGRESSES its own k from the points (provenance = fitted).  The
+  data here are second-order -- the 1st-order curve misses the tail, the 2nd
+  lands on the points.  The student picks the order from the evidence.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name rate_order1;  type kinetics1D;
+        time { from 0; to 1800; n 61; }  rate { order 1; c0 1.0; }
+        component AcOH;  dataset "constant/experiments/rate-batch.dat";
+        provenance { source fitted; }  output { file rate_order1.csv; }
+    }
+    {
+        name rate_order2;  type kinetics1D;
+        time { from 0; to 1800; n 61; }  rate { order 2; c0 1.0; }
+        component AcOH;  dataset "constant/experiments/rate-batch.dat";
+        provenance { source fitted; }  output { file rate_order2.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      kinetics_batch;
+        component AcOH;
+        kind      kinetics;
+        models    ( rate_order1  rate_order2 );
+        dataset   "constant/experiments/rate-batch.dat";
+        source    "illustrative 2nd-order batch data, 353 K";
+    }
+);

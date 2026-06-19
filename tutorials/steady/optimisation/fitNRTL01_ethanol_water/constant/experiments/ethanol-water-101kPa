@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  Experimental ethanol/water VLE bubble-point data at 1.01325 bar.
+  Source: literature compilation (DECHEMA / Gmehling-Onken Vol.I Part 1,
+  representative subset used pedagogically).  Pure-component endpoints
+  (x = 0, x = 1) omitted -- they constrain nothing in the NRTL fit.
+
+  Format:
+      P    <pressure in bar>;
+      data ( x_ethanol  T_bubble  x_ethanol  T_bubble  ... );        // K
+\*---------------------------------------------------------------------------*/
+
+P    1.01325;
+
+data
+(
+    0.05  361.95
+    0.10  359.95
+    0.20  358.05
+    0.30  357.30
+    0.40  356.85
+    0.50  356.20
+    0.60  355.30
+    0.70  354.50
+    0.80  353.30
+    0.90  351.85
+    0.95  351.45
+);

@@ -1,0 +1,35 @@
+// ChemSep DECHEMA Wilson pair -- cyclohexane-ethanol (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( cyclohexane ethanol );
+model       Wilson;
+
+parameters
+{
+    i           cyclohexane;
+    j           ethanol;
+    A_ij        1964.46;   // J/mol
+    A_ji        8853.05;   // J/mol
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_ethanol_cyclohexane   2115.9303;   // CAS 64-17-5 -> 110-82-7
+    A_cyclohexane_ethanol   469.5182;   // CAS 110-82-7 -> 64-17-5
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "wilson.ipd";
+    sourceRecord  "64-17-5/110-82-7";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "Wilson";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

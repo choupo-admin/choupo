@@ -1,0 +1,61 @@
+/*---------------------------------------------------------------------------*\
+  heatExchanger01_water_water
+  ===========================
+
+  Two-stream heat exchanger by the effectiveness-NTU method (the built-in
+  `heatExchanger`).  A hot water stream is cooled by a cold water stream
+  in a counter-current unit --- the canonical heat-recovery problem.
+
+  Hardware (the credo): area + U.  The outlet temperatures and the duty
+  are RESULTS.  "I need T_hot_out = X" would be a DesignSpec on $area.
+
+  Hot  : 100 kmol/h water at 360 K
+  Cold : 120 kmol/h water at 300 K
+  Hardware: A = 10 m^2, U = 500 W/(m^2.K), counter-current
+
+  Expected (eps-NTU, Cp_water ~ 75 J/mol/K):
+      C_hot  = 100/3.6 * 75  ~ 2083 W/K  (= C_min)
+      C_cold = 120/3.6 * 75  ~ 2500 W/K
+      NTU = U.A/C_min ~ 2.4,  C_r ~ 0.83,  effectiveness ~ 0.75
+      Q ~ 93 kW
+      T_hot_out  ~ 315 K   (cooled ~45 K)
+      T_cold_out ~ 337 K   (heated ~37 K)
+      LMTD ~ 22 K, and U.A.LMTD ~ Q (cross-check)
+      energy balance: hot stream loses what the cold stream gains.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    hot
+    {
+        F            100.0 kmol/h;
+        T            360.0 K;
+        P            2.0 bar;
+        molarComposition { water 1.0; }
+    }
+
+    cold
+    {
+        F            120.0 kmol/h;
+        T            300.0 K;
+        P            2.0 bar;
+        molarComposition { water 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        hx;
+        type        heatExchanger;
+        inputs      ( hot  cold );
+        outputs     ( hotOut  coldOut );
+
+        operation
+        {
+            area     10.0 m2;
+            U        500.0 W/m2/K;
+            flow     counter;        // counter | co
+        }
+    }
+);

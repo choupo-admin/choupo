@@ -1,0 +1,126 @@
+/*---------------------------------------------------------------------------*\
+  rankine02_water  --  a CLOSED Rankine steam cycle on IAPWS-IF97
+
+         ┌──────────────────────── recycle (condensate) ◄───────────┐
+         │                                                           │
+     [feedPump] ──► [boiler] ──► [steamTurbine] ──► [condenser] ─────┘
+       raise P       cross the     extract work       cross the dome
+       to 80 bar     dome up,      (W_shaft, eta),    DOWN, land on
+       (liquid)      superheat     exhaust ~0.1 bar   saturated liquid
+
+  A real Rankine: the working fluid crosses the saturation dome TWICE -- up
+  in the boiler (subcooled liquid -> superheated vapour) and down in the
+  condenser (wet vapour -> saturated liquid).  Pure water on IF97 supplies
+  the steam-table h/s/v surface, so:
+
+    * the boiler is a dome-crossing phaseChanger driven to superheatedVapour
+      (its duty Q_boiler is the result),
+    * the turbine expands on the IF97 entropy surface (H_real/S_real routed),
+    * the condenser is a dome-crossing phaseChanger driven to saturatedLiquid
+      (its duty Q_condenser is the result),
+    * the pump returns the condensate to boiler pressure (closed-form v*dP).
+
+  The loop is CLOSED: the condensate is the tear stream, recycled to the
+  pump.  Wegstein/Newton drives the post-pass condensate to match the guess.
+
+  First-law check (KPIs):  Q_boiler + Q_condenser + W_pump + W_turbine ~ 0.
+
+  Contrast: rankine01_water runs the SAME architecture on the ideal gas, in
+  the gas phase only (no liquid leg, no phase change) -- the pedagogical
+  baseline.  rankine02 is the steam-table truth.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    // Initial guess for the tear: saturated condensate at the condenser
+    // pressure (~0.1 bar, Tsat ~ 319 K).  Wegstein iterates from here.
+    condensate
+    {
+        F             3.6 kmol/h;             // = 1 mol/s
+        T           445.0 K;                   // ~ Tsat at the turbine back-pressure
+        P             8.6 bar;
+        state         saturatedLiquid;
+        molarComposition { water 1.0; }
+
+        // Cage the tear iterate inside the IF97 liquid box (T >= 273.15 K).
+        // The condensate T is physically slaved to the condenser pressure
+        // (Tsat), so a generous additive band on T keeps the Newton search in
+        // the valid region; the flow band is generous (closed loop, no makeup
+        // -> F is invariant).
+        bounds
+        {
+            F  { min 0.5 kmol/h;  max 10.0 kmol/h; }
+            T  { min 300 K;       max 600 K; }
+        }
+    }
+}
+
+tearStreams        ( condensate );
+// The loop is effectively a feed-forward chain: the condensate temperature is
+// SLAVED to the condenser pressure (= the turbine back-pressure, itself fixed
+// by the boiler outlet and the turbine W_shaft), and the flow is invariant
+// (closed loop, no makeup).  Direct substitution (Wegstein with q = 0) closes
+// such a slaved tear in a couple of passes; a Newton Jacobian is near-singular
+// in the slaved T direction.
+recycleSolver       Wegstein;
+recycleWegsteinQmin 0.0;
+recycleWegsteinQmax 0.0;
+recycleTol          1e-6;
+recycleMaxIter      40;
+
+units
+(
+    {
+        name        feedPump;
+        type        pump;
+        in          condensate;
+        outputs     ( feedwater );
+
+        operation
+        {
+            P_out    80.0 bar;       // boiler pressure (subcritical, < 22 MPa)
+            eta       0.80;
+        }
+    }
+
+    {
+        name        boiler;
+        type        boiler;          // alias of phaseChanger
+        in          feedwater;
+        outputs     ( superheatedSteam );
+
+        operation
+        {
+            outletT  773.15 K;       // 500 degC superheat; Q_boiler is the result
+        }
+    }
+
+    {
+        name        steamTurbine;
+        type        turbine;
+        in          superheatedSteam;
+        outputs     ( wetExhaust );
+
+        operation
+        {
+            W_shaft  -9.0 kW;        // expand to ~8.6 bar, staying dry (superheated)
+            eta       0.85;
+        }
+
+        energyOutputs
+        (
+            { name shaft;  kind work;  expression "-W_shaft";  unit W; }
+        );
+    }
+
+    {
+        name        condenser;
+        type        condenser;       // alias of phaseChanger
+        in          wetExhaust;
+        outputs     ( condensate );  // closes the loop -> the tear
+        operation
+        {
+            outletState  saturatedLiquid;   // Q_condenser is the result
+        }
+    }
+);

@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------*\
+  Choupo electrolyte catalogue --- electrolyte-NRTL (eNRTL) energy parameters.
+
+  Per salt: the molecule<->electrolyte NRTL energy parameters (water as the
+  molecule) and the nonrandomness alpha.  tau_m_ca = molecule->electrolyte;
+  tau_ca_m = electrolyte->molecule.  Validated vs NaCl: gamma_pm AAD 1.8 %,
+  osmotic phi AAD 1.4 % over 0.1-6 mol/kg (vs Hamer & Wu / Robinson & Stokes).
+
+  eNRTL is the model for a salt in a NON-ideal molecular solvent (where Pitzer,
+  aqueous-only, and plain NRTL, ion-blind, both fail).  Model equations: the
+  Chen-Song-Evans eNRTL (PDH long-range + NRTL local), ported from IDAES (US DOE,
+  open-source, validated).  Cite the PRIMARY paper per value.
+\*---------------------------------------------------------------------------*/
+
+enrtl
+(
+    {
+        cation    Na;
+        anion     Cl;
+        tau_m_ca  8.885;     // water -> NaCl
+        tau_ca_m  -4.549;    // NaCl  -> water
+        alpha     0.2;
+        source    "Chen & Evans, AIChE J. 32 (1986) 444 (water-NaCl reference)";
+    }
+    {
+        cation    Na;
+        anion     OH;
+        tau_m_ca  9.560;     // water -> NaOH
+        tau_ca_m  -4.840;    // NaOH  -> water
+        alpha     0.2;
+        source    "MODEL-TO-MODEL anchor (2026-06-11): least squares vs the Parker-slotted Pitzer gamma_pm(m) at 25 C, m 0.1-6 mol/kg, rms(ln gamma) 0.023 (bin: /tmp fit vs pitzer_naoh.csv). NOT an independent measurement fit -- replace when a primary eNRTL regression lands.";
+    }
+    {
+        cation    K;
+        anion     Cl;
+        tau_m_ca  8.885;     // water -> KCl  (ILLUSTRATIVE PROXY: 1:1 alkali chloride,
+        tau_ca_m  -4.549;    // KCl  -> water  taken = Na-Cl; refit for production use)
+        alpha     0.2;
+        source    "proxy of Chen & Evans water-NaCl (1:1 alkali chloride); refit needed";
+    }
+);

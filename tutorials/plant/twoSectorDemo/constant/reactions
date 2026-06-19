@@ -1,0 +1,6 @@
+/*--- 5 curated reactions for the demo two-sector plant (synthetic) ---*/
+rxn1 { limitingReactant compA; stoichiometry ( {component compA; nu -1; order 1;} {component compB; nu -1; order 0;} {component compC; nu 1; order 0;} ); kinetics { type Arrhenius; A 1.0e8; Ea 6.5e4; } }
+rxn2 { limitingReactant compC; stoichiometry ( {component compC; nu -1; order 1;} {component compD; nu 1; order 0;} ); kinetics { type Arrhenius; A 5.0e7; Ea 6.0e4; } }
+rxn3 { limitingReactant compD; stoichiometry ( {component compD; nu -1; order 1;} {component compE; nu -1; order 0;} {component compF; nu 1; order 0;} ); kinetics { type Arrhenius; A 2.0e8; Ea 7.0e4; } }
+rxn4 { limitingReactant compF; stoichiometry ( {component compF; nu -1; order 1;} {component compG; nu 1; order 0;} ); kinetics { type Arrhenius; A 3.0e7; Ea 5.5e4; } }
+rxn5 { limitingReactant compG; stoichiometry ( {component compG; nu -1; order 1;} {component compH; nu -1; order 0;} {component compI; nu 1; order 0;} {component compJ; nu 1; order 0;} ); kinetics { type Arrhenius; A 1.5e8; Ea 6.8e4; } }

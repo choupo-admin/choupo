@@ -1,0 +1,37 @@
+/*---------------------------------------------------------------------------*\
+  Sensitivity sweep over the reflux ratio of column01.
+
+  For each value of R in [1.5, 5.0] the simulator runs and extracts:
+    * T_top          — distillate temperature
+    * T_bottom       — bottoms temperature
+    * x_D_LK         — light-key purity in distillate (benzene)
+    * V_strip        — vapour flow at reboiler  (≈ proxy for Q_reboiler)
+
+  The student plots V_strip vs R to see the classic separation/energy
+  trade-off:  higher R → higher purity but more energy at the reboiler.
+\*---------------------------------------------------------------------------*/
+
+type    sweep;
+
+parameter
+{
+    target    units[0].operation.refluxRatio;
+    range     ( 1.5  5.0 );
+    nPoints   10;
+}
+
+responses
+(
+    column01.T_top
+    column01.T_bottom
+    column01.x_D_LK
+    column01.x_B_HK
+    column01.V_strip
+    column01.iterations
+);
+
+report
+{
+    format   csv;
+    file     sweep_results.csv;
+}

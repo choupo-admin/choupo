@@ -1,0 +1,14 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0208333333333    1e-4
+stream  distillate             F                0.00694444444444   1e-4
+stream  feed                   F                0.0277777777778    1e-4
+kpi     column                 B                0.0208333333333    1e-4
+kpi     column                 D                0.00694444444444   1e-4
+kpi     column                 R                2.5                1e-4
+kpi     column                 T_bottom         357.713408957      1e-4
+kpi     column                 T_top            351.388958309      1e-4
+kpi     column                 feedStage        8                  1e-4
+kpi     column                 nStages          16                 1e-4
+kpi     column                 x_B_HK           0.868205515093     1e-4
+kpi     column                 x_D_LK           0.804616545279     1e-4

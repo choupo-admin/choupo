@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  controlDict  --  credo01_valve_heater_drum
+
+  Illustrates "information follows the streams": every change of state is a
+  VISIBLE box on the stream (a heater sets the duty, a valve sets the
+  pressure), and the separator (flash drum) has NO operating knobs --- it
+  separates the stream exactly as it arrives.
+
+    feed -> [H1 heater: Q] -> [V1 valve: P] -> [D1 flash: {}] -> liquid + vapour
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Info-follows-streams credo: heater (Q) + valve (P) set the state; the flash drum (no knobs) just separates";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

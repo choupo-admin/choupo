@@ -1,0 +1,10 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Process side: water being heated below the saturation point at 40 bar
+  (T_sat ~ 250 C).  Utility side: HITEC molten salt loop, the textbook
+  high-temperature carrier in the 400-500 C range.
+\*---------------------------------------------------------------------------*/
+
+components       ( water  hitecSalt );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

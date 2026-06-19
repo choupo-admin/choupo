@@ -1,0 +1,12 @@
+application   choupoSolve;
+description   "NH3 absorption from air into water (Kremser, 6 stages)";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    profiles       { }     // per-stage T, x_i, y_i down the column
+    spreadsheet    { }     // coloured .ods: streams + balances + profile
+}

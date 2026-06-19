@@ -1,0 +1,102 @@
+#!/bin/bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+#---------------------------------------------------------------------------#
+#  runSite  --  build + assemble + serve the Choupo SITE locally, on ONE
+#               port: the landing at /  and the simulator app at /app .
+#               This is the "choupo.org" VISITOR experience, run entirely on
+#               this PC -- no domain, no GitHub, nothing published.
+#
+#  How the single-origin layout works (no asset rebasing needed):
+#      site/_dist/                 <- the combined site (build output, gitignored)
+#      site/_dist/index.html       <- the LANDING (from site/index.html)
+#      site/_dist/app/index.html   <- the APP entry (the GUI build's index.html)
+#      site/_dist/{assets,wasm,workers,docs}/  <- served at ROOT; the app's
+#                                  absolute /assets, /wasm, /workers refs resolve
+#                                  here, so /app/index.html runs unchanged.
+#  The simulator (choupoSolve.wasm) is delivered by this server but EXECUTES in
+#  the browser tab, on the visitor's machine -- the server never computes.
+#
+#  Usage:
+#      bin/runSite                # build, assemble, serve (foreground)
+#      bin/runSite --no-build     # reuse site/_dist, just serve
+#      bin/runSite --kill         # stop the local site server
+#---------------------------------------------------------------------------#
+
+set -e
+
+script_dir=$(dirname "$(readlink -f "$0")")
+root=$(readlink -f "$script_dir/..")
+gui="$root/gui"
+src="$root/site"
+dist="$src/_dist"
+PORT=4180
+URL="http://127.0.0.1:${PORT}/"
+
+case "${1:-}" in
+    --kill|--stop)
+        if pkill -f "http.server ${PORT}" 2>/dev/null; then echo "[runSite] stopped"; else echo "[runSite] nothing running"; fi
+        exit 0 ;;
+esac
+
+if [ "${1:-}" != "--no-build" ]; then
+    # Compile the guide PDFs FIRST (incremental: rebuilds only what changed) so
+    # the served Help links never 404.  theoryGuide.tex is gitignored
+    # (co-author-pending academic doc), so it is NOT in a fresh clone -- this
+    # deploy step is what puts a current theoryGuide.pdf in front of copyDocs,
+    # which the npm prebuild then copies into gui/public/docs.  Needs pdflatex;
+    # if absent we warn and fall back to whatever PDFs already sit in docs/.
+    if command -v pdflatex >/dev/null 2>&1; then
+        echo "[runSite] compiling guide PDFs (make -C docs) ..."
+        ( cd "$root/docs" && make all >/dev/null 2>&1 ) \
+            || echo "[runSite] WARN: docs build had errors; serving existing PDFs"
+    else
+        echo "[runSite] WARN: pdflatex not found -- serving existing docs/*.pdf (Help links may 404 if absent)"
+    fi
+    echo "[runSite] building the app (npm run build) -- ~15 s ..."
+    ( cd "$gui" && npm run build )
+fi
+if [ ! -d "$gui/dist" ]; then
+    echo "[runSite] ERROR: no app build at $gui/dist (run without --no-build first)"; exit 1
+fi
+
+# Assemble the combined single-origin site.
+echo "[runSite] assembling combined site -> $dist"
+rm -rf "$dist"
+mkdir -p "$dist/app"
+cp -r "$gui/dist/." "$dist/"          # app assets + the app index.html at root
+mv "$dist/index.html" "$dist/app/index.html"   # the APP lives at /app
+cp "$src/index.html" "$dist/index.html"         # the LANDING lives at /
+cp "$src"/*.svg "$dist/" 2>/dev/null || true
+cp "$src"/*.png "$dist/" 2>/dev/null || true    # landing logo (logo2.png) + any raster art
+cp "$src/sw.js" "$dist/" 2>/dev/null || true    # offline service worker (scope /)
+
+echo "[runSite] serving the site at $URL  (landing / , app /app)"
+echo "[runSite] stop with: bin/runSite --kill"
+exec python3 -m http.server "$PORT" --directory "$dist"

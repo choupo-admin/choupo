@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: chilled water from the central chiller plant.
+
+  Sources: Sinnott & Towler 6ed (2022) §6.5.3.
+
+  When to use:
+    For process duties needing a cold side below the practical reach of
+    cooling water (~25 C floor) but still above the freezing margin of
+    water.  Typical applications: condensers of light-end columns,
+    reactor jackets running 10-30 C, polishing condensers downstream of
+    cooling-water condensers.  Below ~5 C process T, switch to the
+    glycol brine (`refrigerationPG`) to avoid ice in the coils.
+
+  Note: ~10x more expensive per GJ than cooling water because the chiller
+  consumes electrical compression work (COP ≈ 4-5).
+\*---------------------------------------------------------------------------*/
+
+utility     chilledWater;
+tier        cooling;
+mechanism   sensible;
+
+components  ( water );
+state       subcooledLiquid;
+P           3.0 bar;
+T_in        280.15 K;                  // 7 C chiller outlet
+T_out       285.15 K;                  // 12 C return (typical 5 K rise)
+
+// Energy rejected per kg: Cp_water × ΔT for the 5 K rise.
+dutyPerKg   21000.0;                   // J/kg  (4200 × 5)
+
+cost        4.0;                       // €/GJ rejected
+costYear    2022;
+description "Chilled water from central chiller plant (7 -> 12 C)";

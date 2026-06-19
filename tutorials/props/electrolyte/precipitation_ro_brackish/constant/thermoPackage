@@ -1,0 +1,4 @@
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

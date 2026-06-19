@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  Isomerization neoPentane -> nPentane.  1:1 in moles AND in mass
+  (identical MW 72.15), so the overall mass balance closes EXACTLY ---
+  the whole point of using isomers for the report-validation case.
+\*---------------------------------------------------------------------------*/
+
+isomerization
+{
+    limitingReactant   neoPentane;
+    stoichiometry
+    (
+        { component neoPentane;  nu -1;  order 1; }
+        { component nPentane;    nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      1.5e1;          // 1/s -- low Ea + small A keeps the per-pass
+        Ea     1.5e4;          // J/mol -- conversion stable vs the cold recycle
+                               //          (weak T-sensitivity decouples the loop)
+    }
+}

@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Magnesium sulphate (MgSO4, CAS 7487-88-9)
+
+  Case-local copy for the DSPM-DE divalent tutorial.  The standard
+  data/standards/components/MgSO4.dat carries no `electrolyte{}` block; the
+  DSPM-DE transport law needs the ion decomposition (Mg + SO4), so this
+  self-contained case copy ADDS it.  Both ions carry the transport tier
+  (radius + D0) in the case-local constant/electrolyte/ions.dat.
+
+  Divalent 2:2 electrolyte (Mg++ + SO4--): the canonical NF contrast to NaCl
+  -- NF rejects the divalent salt far more strongly (Donnan co-ion exclusion of
+  the divalent SO4 against the negative membrane charge, plus stronger Born
+  exclusion).  DSPM-DE reproduces this from first principles.
+\*---------------------------------------------------------------------------*/
+
+name           MgSO4;
+formula        MgSO4;
+CAS            7487-88-9;
+MW             120.37;         // g/mol
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor (Mg++ + SO4--)
+
+electrolyte
+{
+    cation     Mg;             // -> ions.dat (z = +2)
+    anion      SO4;            // -> ions.dat (z = -2)
+}

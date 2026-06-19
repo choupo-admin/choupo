@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser10_naoh_antisolvent -- H2O + NaOH + ethanol, every effect that
+  IS calibrated active, every one that is NOT loudly announced:
+    ACTIVE:  drowning-out saturation (eNRTL mixed-solvent; Na-OH taus anchored
+             to the Parker-slotted Pitzer surface), BPE-grade water activity,
+             differential-Ksp lineage, wet-cake split.
+    ANNOUNCED OMISSIONS (honest): heat of dilution / crystallisation heat use
+    the dHcryst constant (the eNRTL kernel is NOT calorimetrically fitted --
+    per-kernel flag); water-ethanol heat of mixing gated until the H_E refit;
+    the solid is ANHYDROUS NaOH until the NaOH.H2O hydrate forms entry lands.
+\*---------------------------------------------------------------------------*/
+streams
+{
+    liquor       { F 50.0 kmol/h; T 298.15 K; P 1.0 bar;
+                   molarComposition { water 0.70; NaOH 0.30; } }   // ~ m 23.8: near-saturated caustic
+    antisolvent  { F 30.0 kmol/h; T 298.15 K; P 1.0 bar;
+                   molarComposition { ethanol 1.0; } }
+}
+units
+(
+    {
+        name     cryst;
+        type     crystalliser;
+        inputs   ( liquor  antisolvent );
+        outputs  ( NaOH_cake  motherLiquor );
+        operation
+        {
+            operatingTemperature 298.15 K;
+            solute               NaOH;
+            cakeMoisture         0.10;
+            dHcryst              0.0;     // constant path (eNRTL not calorimetrically fitted) -- announced
+        }
+    }
+);

@@ -1,0 +1,124 @@
+/*---------------------------------------------------------------------------*\
+  designSpec01_triple_equal_areas
+  -------------------------------
+  Same physics as evaporator02_triple_effect_sugar (MCFT Ex. 10.4 ---
+  three cocurrent effects on a 22 500 kg/h, 5 wt% sucrose feed).  The
+  twist: instead of HARD-CODING each effect's area at 100 m², we
+  declare A as a CASE-LEVEL VARIABLE and use the outer DesignSpec
+  driver to find the equal-areas value that delivers L_3 ~ 4500 kg/h
+  (25 wt% sucrose), the textbook design target.
+
+  This tutorial showcases two new pieces of v0.30 machinery:
+
+    1.  $references in the dict (`variables { ... }`
+        block + `$A` syntax inside any scalar).  The same A is shared
+        by the three effects without copy-paste --- which makes it
+        trivially a single degree of freedom for the outer solver.
+
+    2.  The `designSpec` outer driver: a Newton-ND wrap on
+        Flowsheet::solve, manipulating the case's $variables to
+        satisfy named targets.  Here it is a 1-D Newton in $A on the
+        residual L3.F - 0.001249 kmol/s.  Convergence in 4-5
+        evaluations.
+
+  Cascade (cocurrent):
+
+      F=22 500 kg/h    L1        L2        L3 (target ~ 4500 kg/h)
+      x=0.05  ->[1] -------> [2] -------> [3] ----->
+                  ^          ^             ^
+                  |          V1            V2        V3 -> condenser
+                  Steam      (drives 2)   (drives 3)
+                  200 kPa    P1 = 80      P2 = 45    P3 = 15 kPa
+
+  Constraints we leave fixed:
+    - P_i pressures (textbook cascade)
+    - U_i overall HTCs per effect (textbook values)
+    - Feed and steam conditions
+    - Equal areas: enforced trivially by the single $A variable
+
+  Read the run log to see the Newton converge in <10 evaluations.
+  At the optimum, the case ends with the converged final state on
+  stdout, exactly like a hand-tuned evaporator02 run --- but the area
+  was DERIVED, not specified.
+
+  Initial guess A_0 = 100 m² (the educated guess from evaporator02);
+  the solver should home in on ~ 110-120 m² to hit the target.
+
+  Target tolerance: ±5 kg/h on L_3, encoded via tol = 1.4e-6 kmol/s
+  (= 5 kg/h ÷ 3600 s/h ÷ 18 kg/kmol).
+\*---------------------------------------------------------------------------*/
+
+// --- Case-level variables: declared ONCE here, referenced as $name
+//     anywhere a scalar is expected.  setScalarAtPath("variables.<name>", v)
+//     mutates these values live --- which is precisely how the
+//     DesignSpec driver manipulates them between Newton evaluations.
+variables
+{
+    A           100      m2;         // shared heat-exchange area
+                                      //   (manipulated by DesignSpec)
+    F_steam     400.0    kmol/h;     // live-steam initial estimate
+                                      //   (manipulated by DesignSpec
+                                      //    via A_needed = A constraint)
+}
+
+streams
+{
+    feed
+    {
+        T            295.0 K;
+        P            200.0 kPa;
+        massFlows
+        {
+            water    21375 kg/h;
+            sucrose   1125 kg/h;
+        }
+    }
+
+    utilitySteam_200kPa
+    {
+        F                $F_steam;          // initial estimate; the
+                                              //   DesignSpec adjusts it
+                                              //   to close the design.
+        P                200.0  kPa;
+        state            saturatedVapour;    // -> T_sat(200 kPa) ~ 393 K auto
+        molarComposition  { water 1.0; }
+        category         LP_steam_200kPa;    // utility tag for aggregation
+    }
+}
+
+units
+(
+    {
+        name        effect1;
+        type        evaporator;
+        inputs      ( feed  utilitySteam_200kPa );
+        outputs     ( L1  V1  cond1 );
+        operation
+        {
+            area           $A;            // <- live reference
+            U            2319.0 W/m2/K;
+        }
+    }
+    {
+        name        effect2;
+        type        evaporator;
+        inputs      ( L1  V1 );
+        outputs     ( L2  V2  cond2 );
+        operation
+        {
+            area           $A;            // <- same $A, propagates automatically
+            U            2194.0 W/m2/K;
+        }
+    }
+    {
+        name        effect3;
+        type        evaporator;
+        inputs      ( L2  V2 );
+        outputs     ( L3  V3  cond3 );
+        operation
+        {
+            area           $A;            // <- same $A
+            U            1296.0 W/m2/K;
+        }
+    }
+);

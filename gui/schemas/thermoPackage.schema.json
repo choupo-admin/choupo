@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/thermoPackage.schema.json",
+  "title": "thermoPackage",
+  "description": "Components and mixture models (constant/thermoPackage).",
+  "type": "object",
+  "required": ["components"],
+  "properties": {
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Component names (must each have data/components/<name>.dat)."
+    },
+
+    "activityModel": {
+      "$ref": "#/$defs/ActivityModel",
+      "description": "Global activity-coefficient model (mutually exclusive with phases)."
+    },
+
+    "equationOfState": {
+      "$ref": "#/$defs/EquationOfState",
+      "description": "Global vapour-phase EoS."
+    },
+
+    "phases": {
+      "type": "array",
+      "minItems": 2,
+      "description": "Per-phase models (used for LLE / multi-liquid cases).",
+      "items": { "$ref": "#/$defs/Phase" }
+    }
+  },
+  "additionalProperties": true,
+
+  "$defs": {
+    "ActivityModel": {
+      "type": "object",
+      "required": ["model"],
+      "properties": {
+        "model": { "type": "string", "enum": ["ideal", "NRTL", "Wilson"] },
+        "pairs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/BinaryInteractionPair" }
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "BinaryInteractionPair": {
+      "type": "object",
+      "required": ["i", "j"],
+      "properties": {
+        "i":     { "type": "string", "minLength": 1 },
+        "j":     { "type": "string", "minLength": 1 },
+        "a_ij":  { "type": "number" },
+        "b_ij":  { "type": "number" },
+        "a_ji":  { "type": "number" },
+        "b_ji":  { "type": "number" },
+        "alpha": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": true
+    },
+
+    "EquationOfState": {
+      "type": "object",
+      "required": ["model"],
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": ["idealGas", "PengRobinson", "SRK"]
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "Phase": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "enum": ["liquid", "vapor", "solid"] },
+        "activity":        { "$ref": "#/$defs/ActivityModel" },
+        "equationOfState": { "$ref": "#/$defs/EquationOfState" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

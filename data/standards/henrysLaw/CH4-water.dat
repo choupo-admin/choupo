@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for CH4 in liquid water.
+
+  Reference: Sander, R. (2015) Atmos. Chem. Phys. 15, 4399-4981.
+
+      H_xp(298)  ≈  4.13e9 Pa  =  41,300 bar       (very poorly soluble)
+
+  Useful for biogas / natural-gas dissolution in water and for
+  estimating dissolved-methane content in groundwater near
+  fracking operations.
+
+      dH_diss(CH4-water)  ≈  -13000 J/mol
+\*---------------------------------------------------------------------------*/
+
+solute      CH4;
+solvent     water;
+
+model       vantHoff;
+H_ref       4.13e9 Pa;             // = 41,300 bar at 298.15 K
+T_ref       298.15 K;
+enthalpy    -13000  J/mol;
+Trange      ( 273  373 );

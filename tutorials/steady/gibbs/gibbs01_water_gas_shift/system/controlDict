@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for the water-gas shift Gibbs reactor.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Gibbs reactor: water-gas shift CO + H2O <-> CO2 + H2 at 800 K";
+
+verbosity     3;

@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Adiabatic air compressor: 10 kW shaft, eta 0.75 --- P_out and T_out are RESULTS";
+
+verbosity     3;

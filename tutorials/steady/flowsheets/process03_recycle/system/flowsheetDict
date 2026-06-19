@@ -1,0 +1,115 @@
+/*---------------------------------------------------------------------------*\
+  process03_recycle  --  the classic Reactor-Separator-Recycle architecture
+
+         freshFeed ──┐                                       ┌──► vapProd (product)
+                     │                                       │
+                  [mixer] ──► [reactor] ──► [separator]──────┤
+                     ▲                          (flash)      │
+                     │                                       └──► liqProd
+                     │                                                │
+                     │            [splitter]                          │
+                     └────── recycle ◄─ ┤                             │
+                                        └─────────► purge             │
+                                                                      │
+                                          (the splitter is fed by liqProd)
+
+  Tear stream: `recycle` — declared explicitly; the Flowsheet runs
+  Wegstein on (F, z..., T) until the post-pass value matches the input
+  guess to a tolerance.
+
+  The CSTR converts ~25% per pass (small volume); without recycle most
+  ethanol would simply leave in liqProd.  With ~80% recycle, the overall
+  ethanol conversion approaches 100% at steady state.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    freshFeed
+    {
+        F            1.0 kmol/h;           // equimolar ethanol + acetic acid (esterification feed)
+        T            350.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+    }
+
+    // Initial guess for the tear stream.  Wegstein will iterate from here.
+    recycle
+    {
+        F            2.0 kmol/h;
+        T            350.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.5;  water 0.5; }
+
+        // OPTIONAL author bounds (a "cage" for the tear iterate -- aids
+        // convergence by keeping the recycle physical during the solve).
+        // GENEROUS here, so they never bind; if one DID bind the solver would
+        // say so, and if the converged physical value fell outside the cage it
+        // would WARN that the cage excludes the solution.  The cage shapes the
+        // search; it never fakes the answer.
+        //
+        // A relative bound combines with a FROZEN reference differently per the
+        // variable's measurement scale (the physics decides, not the syntax):
+        //   FLOW is a RATIO scale (true zero) -> MULTIPLICATIVE fraction:
+        //       min 0.1; max 8;          = 0.1x .. 8x the reference
+        //   TEMPERATURE is an INTERVAL scale -> ADDITIVE signed K offset:
+        //       min -50 K; max +100 K;   = [ref-50 K, ref+100 K]
+        // (a fraction of T is meaningless -- a bare number on a T bound is
+        // rejected; references: feedTotal/feedMax/feedMin/feedMean/<feed>.F/.T).
+        // Both GENEROUS here, so non-binding; an ABSOLUTE band also works:
+        // F { min 0 kmol/h; max 5 kmol/h; } / T { min 300 K; max 450 K; }.
+        bounds
+        {
+            F  { reference feedTotal;  min 0.1;    max 8; }     // 0.1x .. 8x the feed (flow scales)
+            T  { reference feedMax;    min -50 K;  max +100 K; } // feedMax +/- K (temperature shifts)
+        }
+    }
+}
+
+tearStreams           ( recycle );
+recycleSolver          Newton;        // Newton on the tear variables (default);
+                                      //   `Wegstein` for the fixed-point accelerator
+recycleTol             1e-5;
+recycleMaxIter         120;
+// Recycle problems with flash regime switching are best solved with
+// gentle / no acceleration.  Start with direct substitution (q ≡ 0)
+// and add Wegstein later if convergence is too slow.
+recycleWegsteinQmin    0.0;
+recycleWegsteinQmax    0.0;
+
+units
+(
+    {
+        name        mixer01;
+        type        mixer;
+        inputs      ( freshFeed  recycle );
+        outputs     ( mixed );
+    }
+
+    {
+        name        reactor;
+        type        cstr;
+        in          mixed;
+        outputs     ( reactorOut );
+
+        operation   { V_R 0.020; }        // kτ ≈ 4.4, ~80% per pass
+        reaction    esterification_etac;
+    }
+
+    {
+        name        separator;
+        type        isothermalFlash;
+        in          reactorOut;
+        outputs     ( liqOut  vapProd );
+
+        operation   { T 360.0 K;  P 1.0 bar; }    // hot enough to vaporise some of this water-rich mix
+    }
+
+    {
+        name        split01;
+        type        splitter;
+        in          liqOut;
+        outputs     ( recycle  liqProd );    // recycle FEEDS BACK into mixer
+
+        operation   { fractions ( 0.6  0.4 ); }    // 60% recycled, 40% to product
+    }
+);

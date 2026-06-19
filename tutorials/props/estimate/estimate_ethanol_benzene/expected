@@ -1,0 +1,28 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    estimate_ethanol       Cp298            64.62              1e-4
+diag    estimate_ethanol       Hvap_kJmol       36.73              1e-4
+diag    estimate_ethanol       MW               46.07              1e-4
+diag    estimate_ethanol       Pc_bar           57.57              1e-4
+diag    estimate_ethanol       Psat_298_bar     0.16               1e-4
+diag    estimate_ethanol       Psat_Tb_bar      0.97               1e-4
+diag    estimate_ethanol       Tb_K             337.54             1e-4
+diag    estimate_ethanol       Tc_K             499.41             1e-4
+diag    estimate_ethanol       Vc_cm3mol        166.50             1e-4
+diag    estimate_ethanol       Vliq298_cm3mol   57.70              1e-4
+diag    estimate_ethanol       dGf_kJmol        -170.86            1e-4
+diag    estimate_ethanol       dHf_kJmol        -236.84            1e-4
+diag    estimate_ethanol       omega            0.57               1e-4
+diag    estimate_benzene       Cp298            81.82              1e-4
+diag    estimate_benzene       Hvap_kJmol       30.56              1e-4
+diag    estimate_benzene       MW               78.11              1e-4
+diag    estimate_benzene       Pc_bar           47.69              1e-4
+diag    estimate_benzene       Psat_298_bar     0.10               1e-4
+diag    estimate_benzene       Psat_Tb_bar      0.98               1e-4
+diag    estimate_benzene       Tb_K             358.58             1e-4
+diag    estimate_benzene       Tc_K             570.03             1e-4
+diag    estimate_benzene       Vc_cm3mol        263.50             1e-4
+diag    estimate_benzene       Vliq298_cm3mol   93.94              1e-4
+diag    estimate_benzene       dGf_kJmol        121.68             1e-4
+diag    estimate_benzene       dHf_kJmol        80.83              1e-4
+diag    estimate_benzene       omega            0.22               1e-4

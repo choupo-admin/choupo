@@ -1,0 +1,25 @@
+/*---------------------------------------------------------------------------*\
+  flash06_sweep_T --- the landing-page flash, swept.
+
+  Same benzene/toluene flash as flash01_benzene_toluene (40/60, 1 bar,
+  Raoult), but the flash TEMPERATURE is swept across the two-phase window
+  by an outerDict (`type sweep;`).  At 1 bar the feed's bubble point is
+  ~368 K and its dew point is ~374 K: below the window the flash reports
+  vf = 0 (all liquid), above it vf = 1 (all vapour), and in between
+  V/F climbs the classic S-curve while Q tracks the duty that holds each
+  temperature.
+
+  This case is ALSO the reference artifact for the GUI discussion of
+  2026-06-12: "explore the effect of a parameter on a block" is not a new
+  GUI mechanism --- it is THIS dict.  A future "sweep this parameter"
+  button on a unit's selection card would synthesize exactly this
+  outerDict (target = one dict path, range, responses = the unit's KPIs)
+  and emit it for the student to author, the same way the Property
+  Explorer emits its propsDict.  One sweep concept, engine-owned, GUI
+  merely synthesizes + plots it.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Flash benzene/toluene at 1 bar: T swept 360->385 K across the bubble->dew window (V/F S-curve + duty)";
+
+verbosity     2;          // the sweep prints one line per point; Newton detail off

@@ -1,0 +1,125 @@
+/*---------------------------------------------------------------------------*\
+  UNIFAC subgroups (R_k, Q_k) + their main group -- FULL original/VLE table (111 subgroups).
+
+  Source: the ChemSep database (Artistic-2.0, (c) H. Kooijman & R. Taylor),
+  compiling the original UNIFAC (VLE) parameters of Hansen, Rasmussen,
+  Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352.
+  Imported by bin/curate/unifac_gct_to_choupo.py.  Cite the PRIMARY (Hansen 1991).
+  Subgroup names are tokenizer-sanitised (parens -> '_'); '=' kept verbatim.
+\*---------------------------------------------------------------------------*/
+
+subgroups
+(
+    // name           mainGroup        R          Q
+    { name CH3; mainGroup CH2; R 0.9011; Q 0.848; }
+    { name CH2; mainGroup CH2; R 0.6744; Q 0.540; }
+    { name CH; mainGroup CH2; R 0.4469; Q 0.228; }
+    { name C; mainGroup CH2; R 0.2195; Q 0.000; }
+    { name CH2=CH; mainGroup C=C; R 1.3454; Q 1.176; }
+    { name CH=CH; mainGroup C=C; R 1.1167; Q 0.867; }
+    { name CH2=C; mainGroup C=C; R 1.1173; Q 0.988; }
+    { name CH=C; mainGroup C=C; R 0.8886; Q 0.676; }
+    { name C=C; mainGroup C=C; R 0.6605; Q 0.485; }
+    { name ACH; mainGroup ACH; R 0.5313; Q 0.400; }
+    { name AC; mainGroup ACH; R 0.3652; Q 0.120; }
+    { name ACCH3; mainGroup ACCH2; R 1.2663; Q 0.968; }
+    { name ACCH2; mainGroup ACCH2; R 1.0396; Q 0.660; }
+    { name ACCH; mainGroup ACCH2; R 0.8121; Q 0.348; }
+    { name OH; mainGroup OH; R 1.0000; Q 1.200; }
+    { name CH3OH; mainGroup CH3OH; R 1.4311; Q 1.432; }
+    { name H2O; mainGroup H2O; R 0.9200; Q 1.400; }
+    { name ACOH; mainGroup ACOH; R 0.8952; Q 0.680; }
+    { name CH3CO; mainGroup CH2CO; R 1.6724; Q 1.488; }
+    { name CH2CO; mainGroup CH2CO; R 1.4457; Q 1.180; }
+    { name CHO; mainGroup CHO; R 0.9980; Q 0.948; }
+    { name CH3COO; mainGroup CCOO; R 1.9031; Q 1.728; }
+    { name CH2COO; mainGroup CCOO; R 1.6764; Q 1.420; }
+    { name HCOO; mainGroup HCOO; R 1.2420; Q 1.188; }
+    { name CH3O; mainGroup CH2O; R 1.1450; Q 1.088; }
+    { name CH2O; mainGroup CH2O; R 0.9183; Q 0.780; }
+    { name CH-O; mainGroup CH2O; R 0.6908; Q 0.468; }
+    { name FCH2O; mainGroup CH2O; R 0.9183; Q 1.100; }
+    { name CH3NH2; mainGroup CNH2; R 1.5959; Q 1.544; }
+    { name CH2NH2; mainGroup CNH2; R 1.3692; Q 1.236; }
+    { name CHNH2; mainGroup CNH2; R 1.1417; Q 0.924; }
+    { name CH3NH; mainGroup CNH; R 1.4337; Q 1.244; }
+    { name CH2NH; mainGroup CNH; R 1.2070; Q 0.936; }
+    { name CHNH; mainGroup CNH; R 0.9795; Q 0.624; }
+    { name CH3N; mainGroup _C_3N; R 1.1865; Q 0.940; }
+    { name CH2N; mainGroup _C_3N; R 0.9597; Q 0.632; }
+    { name ACNH2; mainGroup ACNH2; R 1.0600; Q 0.816; }
+    { name C5H5N; mainGroup Pyridine; R 2.9993; Q 2.113; }
+    { name C5H4N; mainGroup Pyridine; R 2.8332; Q 1.833; }
+    { name C5H3N; mainGroup Pyridine; R 2.6670; Q 1.553; }
+    { name CH3CN; mainGroup CCN; R 1.8701; Q 1.724; }
+    { name CH2CN; mainGroup CCN; R 1.6434; Q 1.416; }
+    { name COOH; mainGroup COOH; R 1.3013; Q 1.224; }
+    { name HCOOH; mainGroup COOH; R 1.5280; Q 1.532; }
+    { name CH2Cl; mainGroup CCl; R 1.4654; Q 1.264; }
+    { name CHCl; mainGroup CCl; R 1.2380; Q 0.952; }
+    { name CCl; mainGroup CCl; R 1.0060; Q 0.724; }
+    { name CH2Cl2; mainGroup CCl2; R 2.2564; Q 1.988; }
+    { name CHCl2; mainGroup CCl2; R 2.0606; Q 1.684; }
+    { name CCl2; mainGroup CCl2; R 1.8016; Q 1.448; }
+    { name CHCl3; mainGroup CCl3; R 2.8700; Q 2.410; }
+    { name CCl3; mainGroup CCl3; R 2.6401; Q 2.184; }
+    { name CCl4; mainGroup CCl4; R 3.3900; Q 2.910; }
+    { name ACCl; mainGroup ACCl; R 1.1562; Q 0.844; }
+    { name CH3NO2; mainGroup CNO2; R 2.0086; Q 1.868; }
+    { name CH2NO2; mainGroup CNO2; R 1.7818; Q 1.560; }
+    { name CHNO2; mainGroup CNO2; R 1.5544; Q 1.248; }
+    { name ACNO2; mainGroup ACNO2; R 1.4199; Q 1.104; }
+    { name CS2; mainGroup CS2; R 2.0570; Q 1.650; }
+    { name CH3SH; mainGroup CH3SH; R 1.8770; Q 1.676; }
+    { name CH2SH; mainGroup CH3SH; R 1.6510; Q 1.368; }
+    { name Furfural; mainGroup Furfural; R 3.1680; Q 2.481; }
+    { name _CH2OH_2; mainGroup DOH; R 2.4088; Q 2.248; }
+    { name I; mainGroup I; R 1.2640; Q 0.992; }
+    { name Br; mainGroup Br; R 0.9492; Q 0.832; }
+    { name CH_C; mainGroup C_C; R 1.2920; Q 1.088; }
+    { name C_C; mainGroup C_C; R 1.0613; Q 0.784; }
+    { name Me2SO; mainGroup Me2SO; R 2.8266; Q 2.472; }
+    { name ACRY; mainGroup ACRY; R 2.3144; Q 2.052; }
+    { name Cl_C=C_; mainGroup ClCC; R 0.7910; Q 0.724; }
+    { name ACF; mainGroup ACF; R 0.6948; Q 0.524; }
+    { name DMF-1; mainGroup DMF; R 3.0856; Q 2.736; }
+    { name DMF-2; mainGroup DMF; R 2.6322; Q 2.120; }
+    { name CF3; mainGroup CF2; R 1.4060; Q 1.380; }
+    { name CF2; mainGroup CF2; R 1.0105; Q 0.920; }
+    { name CF; mainGroup CF2; R 0.6150; Q 0.460; }
+    { name COO; mainGroup COO; R 1.3800; Q 1.200; }
+    { name SiH3; mainGroup SiH2; R 1.6035; Q 1.263; }
+    { name SiH2; mainGroup SiH2; R 1.4443; Q 1.006; }
+    { name SiH; mainGroup SiH2; R 1.2853; Q 0.749; }
+    { name Si; mainGroup SiH2; R 1.0470; Q 0.410; }
+    { name SiH2O; mainGroup SiO; R 1.4838; Q 1.062; }
+    { name SiHO; mainGroup SiO; R 1.3030; Q 0.764; }
+    { name SiO; mainGroup SiO; R 1.1044; Q 0.466; }
+    { name NMP; mainGroup NMP; R 3.9810; Q 3.200; }
+    { name CCl3F; mainGroup CClF; R 3.0356; Q 2.644; }
+    { name CCl2F; mainGroup CClF; R 2.2287; Q 1.916; }
+    { name HCCl2F; mainGroup CClF; R 2.4060; Q 2.116; }
+    { name HCClF; mainGroup CClF; R 1.6493; Q 1.416; }
+    { name CClF2; mainGroup CClF; R 1.8174; Q 1.648; }
+    { name HCClF2; mainGroup CClF; R 1.9670; Q 1.828; }
+    { name CClF3; mainGroup CClF; R 2.1721; Q 2.100; }
+    { name CCl2F2; mainGroup CClF; R 2.6243; Q 2.376; }
+    { name CONH2; mainGroup CON; R 1.4515; Q 1.248; }
+    { name CONHCH3; mainGroup CON; R 2.1905; Q 1.796; }
+    { name CONHCH2; mainGroup CON; R 1.9637; Q 1.488; }
+    { name CON_CH3_2; mainGroup CON; R 2.8589; Q 2.428; }
+    { name CONCH3CH2; mainGroup CON; R 2.6322; Q 2.120; }
+    { name CON_CH2_2; mainGroup CON; R 2.4054; Q 1.812; }
+    { name C2H5O2; mainGroup OCCOH; R 2.1226; Q 1.904; }
+    { name C2H4O2; mainGroup OCCOH; R 1.8952; Q 1.592; }
+    { name CH3S; mainGroup CH2S; R 1.6130; Q 1.368; }
+    { name CH2S; mainGroup CH2S; R 1.3863; Q 1.060; }
+    { name CHS; mainGroup CH2S; R 1.1589; Q 0.748; }
+    { name Morpholine; mainGroup Morpholine; R 3.4740; Q 2.796; }
+    { name C4H4S; mainGroup Thiophene; R 2.8569; Q 2.140; }
+    { name C4H3S; mainGroup Thiophene; R 2.6908; Q 1.860; }
+    { name C4H2S; mainGroup Thiophene; R 2.5247; Q 1.580; }
+    { name CH2SuCH2; mainGroup Sulfones; R 2.6869; Q 2.120; }
+    { name CH2SuCH; mainGroup Sulfones; R 2.4595; Q 1.808; }
+    { name OCOO; mainGroup OCOO; R 1.5821; Q 1.394; }
+);

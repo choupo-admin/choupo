@@ -1,0 +1,24 @@
+components       ( ethanol  water );
+
+activityModel
+{
+    model        NRTL;
+
+    pairs
+    (
+        {
+            i          ethanol;
+            j          water;
+            a_ij      -0.8009;
+            b_ij       246.18;
+            a_ji       3.4578;
+            b_ji      -586.0809;
+            alpha      0.30;
+        }
+    );
+}
+
+equationOfState
+{
+    model        idealGas;
+}

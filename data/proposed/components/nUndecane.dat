@@ -1,0 +1,72 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nUndecane  (C11H24, CAS 1120-21-4)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Aleksandrov-TE-2011
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        nUndecane;
+formula     C11H24;
+CAS         1120-21-4;
+
+MW          156.3083;        // kg/kmol  [CoolProp]
+Tc          638.8000;        // K        [CoolProp EOS]
+Pc          19.90452;        // bar      [CoolProp EOS]
+omega       0.53904;        // [-]      [CoolProp EOS]
+Tb          468.9337;        // K  normal boiling [CoolProp]
+HvapTb      41429.4;        // J/mol  at Tb     [CoolProp]
+Vliq        2.1226e-04;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.22411   1658   -75.9875);
+    Trange        (287.46  626.02);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (4.21104  1.02709  -0.00061247  1.92157e-07);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (286.333  -0.251214  0.00190987  -1.33859e-06);
+    Trange        (319  469);
+}
+
+sublimation
+{
+    tripleT   247.5410;        // K   [CoolProp]
+    tripleP   0.4461;        // Pa  [CoolProp]
+    // Hfus / Hsub absent: CoolProp models no solid phase.  The
+    // sublimation curve stays undrawn until measured Hsub lands.
+}
+
+gibbsFormation
+{
+    dHf_298   -270370;      // J/mol  ideal-gas [origin=estimated method=Joback uncertainty=~9kJ/mol]
+    dGf_298   41740;      // J/mol  ideal-gas [Joback]
+    s_298     584.478;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S; ~25 J/mol/K; biased ~R*ln(sigma) for symmetric species]
+    phase     gas;
+}
+
+groups { joback ( { group CH3; count 2; } { group CH2; count 9; } ); }
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Aleksandrov-TE-2011";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.71%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 4.70%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.02%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    preserved      "from prior proposal (NOT CoolProp): gibbsFormation, groups";
+}

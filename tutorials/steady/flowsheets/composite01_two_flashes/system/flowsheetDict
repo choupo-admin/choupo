@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  composite01_two_flashes / flowsheetDict   (COMPOSITE node)
+
+  children : the child unit ops (folders flash1/, flash2/ -- leaf nodes).
+  connections : the wiring.  `from`/`to` endpoints are either a bare name
+                (this node's boundary inlet/outlet) or `<child>/<port>`.
+  The engine flattens to namespaced streams (flash1.liquid -> flash2.feed).
+\*---------------------------------------------------------------------------*/
+
+children    ( flash1  flash2 );
+
+boundary
+{
+    inlets   ( feed );
+    outlets  ( vapor1  vapor2  bottoms );
+}
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            365.0 K;
+        P              1.0 bar;
+        molarComposition  { benzene 0.50;  toluene 0.50; }
+    }
+}
+
+connections
+(
+    { from feed;            to flash1/feed;  }   // boundary inlet -> child
+    { from flash1/liquid;   to flash2/feed;  }   // child -> child (the liquid is re-flashed hotter)
+    { from flash1/vapor;    to vapor1;       }   // child -> boundary outlet
+    { from flash2/vapor;    to vapor2;       }
+    { from flash2/liquid;   to bottoms;      }
+);

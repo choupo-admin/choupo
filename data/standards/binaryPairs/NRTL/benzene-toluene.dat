@@ -1,0 +1,37 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- benzene(1) + toluene(2)
+
+  Benzene-toluene is the classic "ideal" binary in chemical engineering
+  teaching: the two species are chemically and dimensionally similar,
+  so the activity coefficients are very close to unity over the entire
+  composition range.  We carry the NRTL set with zero binary energies
+  as a convenience --- the result is identical to Raoult's law.
+\*---------------------------------------------------------------------------*/
+
+components  ( benzene  toluene );
+model       NRTL;
+
+parameters
+{
+    i           benzene;
+    j           toluene;
+    a_ij        0.0;
+    b_ij        0.0;
+    a_ji        0.0;
+    b_ji        0.0;
+    alpha       0.30;
+}
+
+provenance
+{
+    source        estimated;
+    citation      "Ideal-mixture assumption; well-supported by VLE data for benzene-toluene at 1 atm";
+    fitData       "<not refit>";
+    fitDate       "<n/a>";
+    algorithm     "<n/a>";
+    chi2          "<n/a>";
+    nDataPoints   0;
+    validityRange { Tmin 353.0; Tmax 384.0; }
+    author        "V. Geraldes, 2026";
+    notes         "Equivalent to Raoult's law. Use the simpler activityModel { model ideal; } in most cases; this NRTL set is provided for studies that want NRTL machinery active with a known trivial case.";
+}

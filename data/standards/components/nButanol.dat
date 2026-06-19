@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-Butanol  (C4H10O, CAS 71-36-3)
+  Notable LLE: partially miscible with water below 125.5 °C (UCST).
+\*---------------------------------------------------------------------------*/
+
+name        nButanol;
+formula     C4H10O;
+CAS         71-36-3;
+
+MW          74.122;
+Tc          563.05;
+Pc          44.14;
+omega       0.5897;
+Tb          390.81;
+HvapTb      43130;
+Vliq        9.190e-5;
+
+
+gibbsFormation
+{
+    dHf_298   -274600.0;        // J/mol  -- ideal-gas reference
+    s_298     363.620;         // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.54607   1351.555   -93.34);
+    Trange        (295  392);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (3.266   0.4180   -2.242e-4   4.685e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (177.0);          // ~177 J/(mol·K) average near 25 °C
+    Trange        (280  390);
+}
+
+groups
+{
+    joback ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } );
+    unifac ( { group CH3; count 1; } { group CH2; count 3; } { group OH; count 1; } );
+}

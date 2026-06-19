@@ -1,0 +1,60 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: R116  (C2F6, CAS 76-16-4)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Lemmon-JCED-2006
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        R116;
+formula     C2F6;
+CAS         76-16-4;
+
+MW          138.0118;        // kg/kmol  [CoolProp]
+Tc          293.0298;        // K        [CoolProp EOS]
+Pc          30.47660;        // bar      [CoolProp EOS]
+omega       0.25660;        // [-]      [CoolProp EOS]
+Tb          195.0584;        // K  normal boiling [CoolProp]
+HvapTb      16144.7;        // J/mol  at Tb     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.13358   732.677   -17.6489);
+    Trange        (173.60  287.17);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (12.1862  0.431673  -0.000433796  1.56662e-07);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (74.7433  0.515134  -0.00269182  7.70429e-06);
+    Trange        (178  195);
+}
+
+sublimation
+{
+    tripleT   173.1000;        // K   [CoolProp]
+    tripleP   26083.7342;        // Pa  [CoolProp]
+    // Hfus / Hsub absent: CoolProp models no solid phase.  The
+    // sublimation curve stays undrawn until measured Hsub lands.
+}
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Lemmon-JCED-2006";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.40%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.20%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+}

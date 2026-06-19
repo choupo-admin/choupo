@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Recycle with NO authored tear guess -- the solver auto-seeds the tear from the feed aggregate (announced), then converges";
+
+verbosity     3;

@@ -1,0 +1,33 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/silica.dat
+// sha256   547bee29684dc3b9b5981f250ed69b95c45c823e22244e5ac404b19687453b4d
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Silica  (SiO2) --- a generic mineral particulate / dust.
+
+  A NON-VOLATILE solid: it never enters the vapour (K = 0) and carries
+  no Antoine / Cp blocks.  The `solid { rho_p; }` block gives the
+  particle density used by gas-solid separation (the cyclone d50).
+  `k_v` defaults to a sphere; no `dHf_solid` -> it is a pseudo-solid
+  (cannot react / crystallise), only physically separated.
+
+  rho_p for amorphous silica / sand ~ 2650 kg/m^3.
+\*---------------------------------------------------------------------------*/
+
+name        silica;
+formula     SiO2;
+CAS         7631-86-9;
+
+MW          60.08;            // kg/kmol
+
+role        nonvolatile;      // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   2650.0;           // particle density [kg/m^3]
+}

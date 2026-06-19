@@ -1,0 +1,25 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  concentrate            F                0.00501492454831   1e-4
+stream  concentrateFeed        F                0.005              1e-4
+stream  diluate                F                0.00498507545169   1e-4
+stream  diluateFeed            F                0.005              1e-4
+kpi     edStack                E_mem_pair       0.0794573845707    1e-4
+kpi     edStack                I                8                  1e-4
+kpi     edStack                N_cellpairs      100                1e-4
+kpi     edStack                R_pair           0.00507753048751   1e-4
+kpi     edStack                U                13.5077628471      1e-4
+kpi     edStack                W_electric       108.062102777      1e-4
+kpi     edStack                W_electric_kW    0.108062102777     1e-4
+kpi     edStack                current_efficiency 0.9                1e-4
+kpi     edStack                demin_ratio      0.831450327631     1e-4
+kpi     edStack                i_density        40                 1e-4
+kpi     edStack                i_lim            131.37819666       1e-4
+kpi     edStack                i_over_ilim      0.304464523163     1e-4
+kpi     edStack                specific_energy_kWh_per_m3 0.334442402505     1e-4
+kpi     rectifier              W_electric       108.062102777      1e-4
+kpi     rectifier              W_electric_kW    0.108062102777     1e-4
+kpi     rectifier              W_losses         0                  1e-4
+kpi     rectifier              W_shaft          108.062102777      1e-4
+kpi     rectifier              W_shaft_kW       0.108062102777     1e-4
+kpi     rectifier              eta_generator    1                  1e-4

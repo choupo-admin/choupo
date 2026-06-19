@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/pfr.schema.json",
+  "title": "pfr operation",
+  "description": "Operation block of an isothermal plug-flow reactor.  The volume is integrated by hand-rolled RK4; nSteps controls the spatial discretisation.",
+  "type": "object",
+  "required": ["V_R"],
+  "properties": {
+    "V_R": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Reactor volume",
+      "description": "Total reactor volume.  RK4 integrates along the residence time interval [0, V_R / Q_feed].",
+      "unit": "m^3",
+      "default": 0.005
+    },
+    "nSteps": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "RK4 steps",
+      "description": "Number of integration steps along the reactor length.  100 is plenty for first-order kinetics; raise it if the rate is stiff.",
+      "default": 100
+    },
+    "writeInterval": {
+      "type": "integer",
+      "minimum": 0,
+      "title": "Profile log interval",
+      "description": "How often to print the (V, T, conversion) profile along the reactor.  0 = silent end-point only.",
+      "default": 0
+    }
+  },
+  "additionalProperties": false
+}

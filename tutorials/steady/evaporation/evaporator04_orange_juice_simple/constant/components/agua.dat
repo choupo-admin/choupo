@@ -1,0 +1,44 @@
+/*---------------------------------------------------------------------------*\
+  USER-DEFINED COMPONENT --- "agua" (water analog).
+
+  Defined inside the case at constant/components/, NOT in
+  data/standards/components/.  The Database loader (v0.30+) checks the
+  case-local directory FIRST, so "agua" overrides any standard "water".
+
+  Properties are essentially the standard water values --- but the
+  point is pedagogical: the student SEES that defining a component is
+  just authoring a plain-text file with a few named fields.
+
+  Trimmed-down vs the standard catalogue: only the fields the v0.29
+  evaporator actually consults.  No Gibbs-formation block (not needed
+  for evaporator energy balances), no ideal-gas Cp (not needed for the
+  liquid energy balance and the V latent term), no K_b (BPE neglected
+  per the textbook problem 10.38).
+\*---------------------------------------------------------------------------*/
+
+name        agua;
+formula     H2O;
+
+MW          18.015;
+Tc          647.14;
+Pc          220.64;          // bar  (used by Watson scaling on Hvap)
+Tb          373.15;
+HvapTb      40660;            // J/mol, at Tb
+
+role        volatile;
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.40221   1838.675   -31.737);
+    Trange        (273  393);   // valid up to ~ 120 deg C (Tb at 170 kPa)
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq = 75.5 J/(mol·K)  =  75.5 / 18.015 = 4.19 kJ/(kg·K)
+    // --- matches the textbook problem's "Cp_solucao = 4.18 kJ/(K·kg)"
+    coefficients  (75.5);
+    Trange        (273  393);
+}

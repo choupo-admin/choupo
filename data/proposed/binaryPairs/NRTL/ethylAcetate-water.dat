@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- ethylAcetate-water (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( ethylAcetate water );
+model       NRTL;
+
+parameters
+{
+    i           ethylAcetate;
+    j           water;
+    a_ij        0.0;
+    b_ij        647.134;   // K
+    a_ji        0.0;
+    b_ji        808.212;   // K
+    alpha       0.4393;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_ethylAcetate_water   1285.988;   // CAS 141-78-6 -> 7732-18-5
+    A_water_ethylAcetate   1606.082;   // CAS 7732-18-5 -> 141-78-6
+    alpha               0.4393;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "141-78-6/7732-18-5";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

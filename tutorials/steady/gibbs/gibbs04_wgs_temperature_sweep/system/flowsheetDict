@@ -1,0 +1,36 @@
+streams
+{
+    feed
+    {
+        F            1.0 kmol/h;        // kmol/h
+        T            800.0 K;      // K  (also reactor T for the base case)
+        P            1.0 bar;        // bar
+        molarComposition  { CO  0.5;  water  0.5;  CO2  0.0;  H2  0.0; }
+    }
+}
+
+units
+(
+    {
+        name        wgs;
+        type        gibbsReactor;
+        in          feed;
+        outputs     ( products );
+
+        operation
+        {
+            T          800.0 K;        // K  (overwritten by the sweep)
+            P          1.0 bar;          // bar
+
+            elements   ( C  H  O );
+
+            species
+            (
+                { name  CO;    atoms  ( 1  0  1 ); }
+                { name  water; atoms  ( 0  2  1 ); }
+                { name  CO2;   atoms  ( 1  0  2 ); }
+                { name  H2;    atoms  ( 0  2  0 ); }
+            );
+        }
+    }
+);

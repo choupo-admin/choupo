@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/flowsheetDict.schema.json",
+  "title": "flowsheetDict",
+  "description": "Topology of a case: input streams + units + connections.",
+  "type": "object",
+  "required": ["streams", "units"],
+  "properties": {
+    "streams": {
+      "type": "object",
+      "description": "Map of stream name -> stream specification.",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/Stream" }
+    },
+    "units": {
+      "type": "array",
+      "description": "Ordered list of unit operations.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Unit" }
+    }
+  },
+  "additionalProperties": false,
+
+  "$defs": {
+    "Stream": {
+      "type": "object",
+      "required": ["F", "T", "P", "composition"],
+      "properties": {
+        "F": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Molar flow rate (kmol/h or consistent unit)."
+        },
+        "T": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Temperature in Kelvin."
+        },
+        "P": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Pressure in bar."
+        },
+        "composition": {
+          "type": "object",
+          "description": "Mole-fraction map keyed by component name.",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "Unit": {
+      "type": "object",
+      "required": ["name", "type", "in", "outputs", "operation"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "type": {
+          "type": "string",
+          "enum": [
+            "isothermalFlash",
+            "adiabaticFlash",
+            "bubbleT",
+            "dewT",
+            "cstr",
+            "pfr",
+            "heater",
+            "heatExchanger",
+            "compressor",
+            "turbine",
+            "pump",
+            "distillationColumn",
+            "shortcutColumn",
+            "absorber",
+            "stripper",
+            "cyclone",
+            "bagFilter",
+            "gasSolidSplitter",
+            "mixer",
+            "splitter"
+          ]
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Optional model variant of the type, in the slot right after `type` (e.g. cyclone -> Lapple/Muschelknautz, distillationColumn -> WangHenke/simultaneous).  Its numeric parameters live in `operation`."
+        },
+        "thermo": {
+          "type": "object",
+          "description": "Optional per-unit thermo override: replaces the global package's models (activityModel / equationOfState / transport) for THIS unit only (components stay global).  E.g. SRK for a high-P compressor, NRTL for a non-ideal-liquid column.",
+          "additionalProperties": true
+        },
+        "in": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            }
+          ]
+        },
+        "outputs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "operation": {
+          "type": "object",
+          "description": "Type-specific operating parameters.",
+          "additionalProperties": true
+        },
+        "reaction": {
+          "type": "string",
+          "description": "Reference to a named reaction in constant/reactions (CSTR/PFR only)."
+        },
+        "energyOutputs": {
+          "type": "array",
+          "description": "Energy-wire producer ports.  Each entry declares a port that publishes a scalar (shaft work, heat duty) computed from the unit's operation values + KPIs via the `expression`.  Consumed by other units' `energyInputs`.",
+          "items": {
+            "type": "object",
+            "required": ["name", "expression"],
+            "properties": {
+              "name":       { "type": "string", "minLength": 1 },
+              "kind":       { "type": "string", "enum": ["work", "heat"], "default": "work" },
+              "expression": { "type": "string", "minLength": 1 },
+              "unit":       { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "energyInputs": {
+          "type": "array",
+          "description": "Energy-wire consumer ports.  Each entry pulls a scalar value from `<producer>.<port>` (declared in that unit's `energyOutputs`) into this unit's `operation.<target>` BEFORE its solve() runs.  Kind (work / heat) is validated to match on both ends.",
+          "items": {
+            "type": "object",
+            "required": ["from", "target"],
+            "properties": {
+              "from":   { "type": "string", "minLength": 1, "description": "<producer-unit>.<port-name>" },
+              "kind":   { "type": "string", "enum": ["work", "heat"], "default": "work" },
+              "target": { "type": "string", "minLength": 1, "description": "Operation-block key that receives the wire's value." }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

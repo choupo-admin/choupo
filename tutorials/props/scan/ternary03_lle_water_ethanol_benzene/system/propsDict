@@ -1,0 +1,12 @@
+operations
+(
+    {
+        name      lle;
+        type      propertyScanTernary;
+        mode      lle;                  // liquid-liquid flash (PhaseSet::LL) — clean solubility map
+        state     { T 298.15 K;  P 1 bar; }
+        grid      { n 16; }
+        tieStride 4;
+        output    { file ternary.csv; }
+    }
+);

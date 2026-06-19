@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------*\
+  stripper01_NH3_water
+  ====================
+
+  The inverse of absorber01: instead of scrubbing NH3 OUT of a gas, here
+  we strip NH3 OUT of water with a lean gas (air ~ N2).  Counter-current
+  Kremser; the rich liquid enters the top, the stripping gas the bottom.
+
+  Run warm (330 K): NH3 is less soluble hot (K rises), so the stripping
+  factor S = K V/L exceeds 1 and the strip is efficient.  But desorption
+  is endothermic, so the column cools -- which lowers K and self-limits
+  the stripping (the mirror image of the absorber's exotherm).
+
+  Liquid:  100 kmol/h, 5 % NH3 in water, 330 K
+  Gas:     100 kmol/h N2 (V/L = 1), 330 K
+  Column:  6 theoretical stages
+
+  Expected: S_NH3 > 1 -> most of the NH3 stripped into the gas; stripped
+  liquid nearly NH3-free; rich gas carries the NH3; mass closes 100 %.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    liquidFeed
+    {
+        F            100.0 kmol/h;
+        T            330.0 K;
+        P            1.01325 bar;
+        molarComposition { NH3 0.05;  water 0.95; }
+    }
+    strippingGas
+    {
+        F            100.0 kmol/h;
+        T            330.0 K;
+        P            1.01325 bar;
+        molarComposition { N2 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        stripper;
+        type        stripper;
+        inputs      ( liquidFeed  strippingGas );
+        outputs     ( strippedLiquid  richGas );
+        operation   { stages 6; }
+    }
+);

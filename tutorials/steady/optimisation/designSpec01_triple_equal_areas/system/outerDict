@@ -1,0 +1,43 @@
+/*---------------------------------------------------------------------------*\
+  designSpec01_triple_equal_areas --- outer driver.
+
+  v0.33 Mode-2 formulation.  Pressures inside the effects EMERGE
+  from each effect's heat balance.  Two design unknowns:
+
+      $A         common heat-exchange area (equal areas)
+      $F_steam   live-steam flow
+
+  Two constraints:
+      (1) L3.F_mass    = 4500 kg/h    (textbook 25 wt% target;
+                                       solidos in 1125 kg/h / 0.25 = 4500)
+      (2) effect3.P    = 15 kPa        (textbook terminal-effect vacuum)
+\*---------------------------------------------------------------------------*/
+
+type         designSpec;
+
+manipulate
+(
+    { variable A;        initial 100.0  m2;     min 20.0  m2;      max 500.0  m2;     }
+    { variable F_steam;  initial 400.0  kmol/h; min 100.0 kmol/h;  max 1500.0 kmol/h; }
+);
+
+targets
+(
+    // (1) textbook product spec: 1125 kg/h sucrose / 0.25 = 4500 kg/h
+    { path  L3.F_mass;          value 4500.0 kg/h;   tol 1.0  kg/h; }
+
+    // (2) textbook terminal vacuum: effect 3 boils at T_sat(15 kPa) ~ 327 K
+    { path  effect3.P;          value 15000 Pa;       tol 50 Pa; }
+);
+
+options
+{
+    maxIter      40;
+    tolF         1.0;
+    fdStep       1.0e-4;
+}
+
+report
+{
+    file         designspec_history.csv;
+}

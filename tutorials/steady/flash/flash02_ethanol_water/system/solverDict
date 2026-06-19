@@ -1,0 +1,8 @@
+isothermalFlash
+{
+    tolerance           1e-8;
+    maxIter             50;
+    outerAccelerator    wegstein;          // wegstein | directSubstitution
+    compositionTol      1e-6;
+    maxOuterIter        100;
+}

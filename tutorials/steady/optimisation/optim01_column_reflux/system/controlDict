@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Optimise reflux ratio + feedStage of benzene/toluene column to minimise reboiler vapour V_strip";
+
+verbosity     3;

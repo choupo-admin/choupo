@@ -1,0 +1,1223 @@
+\documentclass[11pt,a4paper]{article}
+\newcommand{\docTitle}{User Guide}
+\input{preamble.tex}
+
+\title{}
+\author{}
+\date{}
+
+\begin{document}
+
+\manualfrontmatter{User Guide}{
+Choupo is a trademark of TalentGround Lda.
+
+Anthropic, Claude, and Claude Code are trademarks or registered trademarks of
+Anthropic, PBC.
+
+ParaView is a trademark of Kitware Inc.
+}
+
+% =====================================================================
+%   Table of contents
+% =====================================================================
+\pagenumbering{roman}
+\setcounter{tocdepth}{2}
+\markboth{Contents}{Contents}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% =====================================================================
+%   Preface
+% =====================================================================
+\section*{Preface --- read this first}
+\addcontentsline{toc}{section}{Preface --- read this first}
+
+Engineers used to text-driven, file-first tools will feel at home. Newcomers will feel curious, then
+liberated. This is an \emph{educational} process simulator: every Newton
+iteration, every $K$-value, every Wegstein step is visible both in the
+source and at runtime. If something surprises you, the answer is
+always one \texttt{grep} away.
+
+This guide walks you from a cold install to running, modifying, and
+building your own cases. A dozen-odd short chapters; each opens with a
+\emph{What you'll learn} note and closes with a hands-on cue. Boxes mark
+crystal-clear takeaways, common pitfalls, and small experiments you
+should run as you read.
+
+
+% =====================================================================
+\section{Quick start}
+
+\begin{whatyoulllearn}
+How to build the simulator once, set up your shell environment, and
+run your first tutorial in under five minutes.
+\end{whatyoulllearn}
+
+Build once, source the shell environment once, then run any tutorial:
+
+\begin{lstlisting}
+cd /path/to/Choupo
+make all                                       # release build
+source etc/bashrc                              # adds bin/ + project root to PATH
+
+listCases                                            # available tutorials
+runCase tutorials/steady/flash/flash01_benzene_toluene     # run one
+less  tutorials/steady/flash/flash01_benzene_toluene/log.choupoSolve
+\end{lstlisting}
+
+Tutorials live under \file{tutorials/<category>/<name>/}, where the
+category is one of \file{steady/} (\code{choupoSolve}), \file{batch/}
+(\code{choupoBatch}), \file{ctrl/} (\code{choupoCtrl}), \file{props/}
+(\code{choupoProps}), or \file{plant/} (multi-sector cases).
+\code{runCase} reads each case's \code{controlDict.application} and
+dispatches to the right binary automatically --- you never pick the
+executable by hand.  After your first run a symlink (e.g.\ \file{./choupoSolve})
+points to the matching \file{build/linux64Gcc/} binary.
+
+\subsection{Permanent shell setup}
+
+Append this line to \file{\textasciitilde/.bashrc} so every new terminal has the
+environment ready:
+
+\begin{lstlisting}
+source /path/to/Choupo/etc/bashrc
+\end{lstlisting}
+
+A fresh terminal then greets you with:
+
+\begin{lstlisting}
+Choupo environment loaded.
+  CHOUPO_HOME = /path/to/Choupo
+  Binaries          : choupoSolve, choupoBatch, choupoCtrl, choupoProps
+  Commands available: runCase, runApplication,
+                        listCases, cleanCase, cdOPE, cdTut
+\end{lstlisting}
+
+\subsection{Build modes}
+
+\begin{lstlisting}
+make all                # default --- release, -O2
+make MODE=debug all     # -O0 -g, parallel tree under build/linux64GccDebug
+make print              # show resolved variables
+make clean              # remove current mode
+make distclean          # remove the whole build/ tree
+\end{lstlisting}
+
+Both modes coexist; the \file{choupoSolve} symlink points to the
+\emph{last} binary built.
+
+\begin{keyidea}
+You never recompile to switch cases. Build once, source once, then
+all you do is edit text dictionaries and re-run.
+\end{keyidea}
+
+\begin{tryit}
+Run \code{runCase tutorials/steady/flash/flash01\_benzene\_toluene} and then
+\code{less tutorials/steady/flash/flash01\_benzene\_toluene/log.choupoSolve}.
+Notice the per-iteration trace under ``\code{Rachford-Rice}'': that is
+the simulator showing its work.
+\end{tryit}
+
+% =====================================================================
+\section{The four shell helpers}
+
+\begin{whatyoulllearn}
+Five short commands cover every interaction you'll have with the
+simulator from the shell.
+\end{whatyoulllearn}
+
+After sourcing \file{etc/bashrc} you have:
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Command} & \textbf{Purpose} \\
+\midrule
+\code{choupoSolve <case>}    & Run a case; write everything to stdout. \\
+\code{runCase [<case>]}           & Run + redirect to \file{log.choupoSolve} in the case dir. Defaults to current dir. \\
+\code{runApplication choupoSolve <args>} & redirect to \file{log.<appName>} in cwd. \\
+\code{listCases}                  & Tabulate all tutorials with one-line descriptions. \\
+\code{cleanCase [<case>]}         & Remove \file{log.*} and \file{*.log} from a case (never touches source). \\
+\code{cdOPE}                      & \code{cd} to the project root. \\
+\code{cdTut}                      & \code{cd} to \file{tutorials/}. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Two equivalent workflows:
+
+\begin{lstlisting}
+# From anywhere (use $CHOUPO_HOME):
+runCase $CHOUPO_HOME/tutorials/steady/flash/flash01_benzene_toluene
+
+# from inside the case dir:
+cd tutorials/steady/flash/flash01_benzene_toluene
+runCase                                 # writes log.choupoSolve here
+\end{lstlisting}
+
+% =====================================================================
+\section{Anatomy of a case directory}
+
+\begin{whatyoulllearn}
+Every case is a folder of plain-text dicts. Two are required; three are
+optional. Nothing else.
+\end{whatyoulllearn}
+
+\begin{lstlisting}
+caseName/
+|-- system/
+|   |-- controlDict          required   --- verbosity, [future] time control
+|   |-- flowsheetDict        required   --- topology: streams + units + connections
+|   |-- solverDict           optional   --- per-unit-op solver options (overrides)
+|   |-- outerDict            optional   --- sensitivity / optimisation / param-est
+|   `-- postDict             optional   --- post-processing chain (sizing, costing)
+|-- constant/
+|   |-- thermoPackage        required   --- components + gamma-phi models / phases
+|   `-- reactions            optional   --- named-reaction library (CSTR / PFR)
+`-- log.choupoSolve     produced   --- written by runCase
+\end{lstlisting}
+
+\begin{keyidea}
+A standalone unit operation is just a \file{flowsheetDict} of length 1.
+There is no special ``single-unit'' mode --- one consistent case
+format for everything.
+\end{keyidea}
+
+\subsection{\file{controlDict}}
+
+The simplest valid file:
+
+\begin{lstlisting}[language=dict]
+verbosity   3;     // 0 silent / 1 errors / 2 warnings / 3 info / 4 debug
+\end{lstlisting}
+
+For pedagogical use you want \code{verbosity 3} --- that prints every
+Newton iteration, every Wegstein step, every $K$-value evaluation. Set
+lower only when sweeping the simulator thousands of times.
+
+\subsection{\file{flowsheetDict}}
+
+Streams + units + (optional) tear-stream declaration for recycles.
+
+\begin{lstlisting}[language=dict]
+streams
+{
+    feed
+    {
+        F            100.0  kmol/h;     // industrial unit; parser
+        T            370.0  K;          // converts to SI canonical
+        P              1.0  bar;        // (kmol/s, K, Pa) on the fly
+        composition  { benzene 0.40;  toluene 0.60; }
+    }
+}
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     (liquid  vapor );   // names assigned to producedStreams[0..k]
+
+        operation   { T 370.0 K;  P 1.0 bar; }
+    }
+);
+\end{lstlisting}
+
+\paragraph{Units on every scalar.} Since, any scalar in a
+dict may carry a unit suffix.  The parser converts to canonical SI
+internally (Pa, kmol/s, K, m, m\textsuperscript{2},
+m\textsuperscript{3}, J, kg) and tags the entry with its physical
+dimensions, so a typo (\code{P 1 kg;}) is caught with a
+crystal-clear error before the solver runs.  See
+\S\ref{sec:units-suffixes} for the three accepted forms and the
+\code{controlDict.units \{...\}} block.
+
+\paragraph{Composition basis.}  Five ways to declare a stream's
+flow and composition --- pick exactly one:
+
+\begin{lstlisting}[language=dict]
+// (a) F + molar fractions
+F                100.0 kmol/h;
+molarComposition { benzene 0.50;  toluene 0.50; }
+
+// (b) F + mass fractions
+F                5000  kg/h;
+massComposition  { benzene 0.40;  toluene 0.60; }
+
+// (c) legacy alias of (a)
+F                100.0 kmol/h;
+composition      { benzene 0.50;  toluene 0.50; }
+
+// (d) per-species molar flows -- F and x_i derived
+molarFlows
+{
+    benzene  40.0 kmol/h;
+    toluene  60.0 kmol/h;
+}
+
+// (e) per-species mass flows -- F and x_i derived
+massFlows
+{
+    benzene  3124.4 kg/h;
+    toluene  5528.4 kg/h;
+}
+\end{lstlisting}
+
+Forms (d) and (e) are the natural way to describe a feed in
+process design (``mix 40 kmol/h of A with 60 kmol/h of B''); F
+total and composition are computed from the sum.  Forms (a) / (b)
+/ (c) are the textbook way (total flow + composition).
+
+\emph{Internally} the simulator always stores mole fractions, so
+mass-basis inputs (b, e) are converted at parse time via
+$x_i = (w_i / \mathrm{MW}_i) / \sum_j w_j / \mathrm{MW}_j$.
+
+\paragraph{Sum check.}  A composition block is always renormalised
+to $\sum_i x_i = 1$, but the parser also checks the user-supplied
+sum and either passes silently or shouts, depending on how far it
+drifts from 1.  Four regimes:
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Input                                       & Behaviour                                           & Why \\
+\midrule
+$\sum_i = 1.0$ exact                        & silent --- values used as data                      & textbook input \\
+$|\sum_i - 1| \le 10^{-3}$                  & silent --- normalised                               & rounding drift  \\
+$|\sum_i - 1| > 10^{-3}$                    & \textbf{warning} + normalised                       & likely typo \\
+$\sum_i = 0$                                & \textbf{fatal error} --- simulator stops            & no feed at all \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The warning emitted on the third case names the stream,
+the block, and the actual sum:
+
+\begin{lstlisting}
+WARNING: Stream 'feed': molarComposition sums to 0.9 (should be 1.0);
+         values will be normalised
+\end{lstlisting}
+
+\noindent Why renormalise instead of rejecting outright?  Two
+pedagogical conveniences:
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item Shortcut for equimolar feeds: \code{\{ A 1;~ B 1;~ \}} is
+        an unambiguous 50/50 without having to type the
+        arithmetic.
+  \item Tolerance for rounding: \code{\{ A 0.333;~ B 0.333;~ C 0.333; \}}
+        (sum 0.999) should not abort a simulation.
+\end{itemize}
+
+\noindent The threshold $10^{-3}$ is tight enough to catch a typo
+like \code{\{ A 0.4;~ B 0.5; \}} (forgot to write 0.6) yet loose
+enough to wave through legitimate rounding.
+
+\paragraph{Flow-based forms are not normalised.}  When the stream
+is declared via \code{molarFlows} or \code{massFlows} (forms d / e
+above), the absolute species flows are the source of truth and
+the parser sums them to find $F_{\mathrm{total}}$.  There is no
+``should sum to 1'' check; the only fatal case is $F_{\mathrm{total}}
+= 0$ (an empty feed).
+
+\paragraph{Sixth form: \code{state} keyword + flash on
+import.}  The five flavours above all assume you know $T$ and
+$P$ ahead of time.  But many streams in a problem have an
+\emph{under-specified} thermodynamic state that the simulator
+should resolve on import.
+Two examples that come up immediately:
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item Heating utility (live steam at 170 kPa): the engineer
+        knows the header pressure; the temperature is whatever
+        $T_{\mathrm{sat}}$ corresponds to it; the flow is whatever
+        the consuming unit demands.
+  \item Cooling water (saturated liquid at supply pressure):
+        same logic, on the liquid side of the saturation curve.
+\end{itemize}
+
+\noindent For these streams, the user declares a \code{state}
+keyword and only the variables that are physically known.  The
+parser completes the rest by inverting the dominant component's
+saturation curve:
+
+\begin{lstlisting}[language=dict]
+liveSteam
+{
+    P              170.0  kPa;
+    state          saturatedVapour;     // -> T computed from
+                                        //    Psat^-1(170 kPa)
+    molarComposition  { water 1.0; }
+    // no F!  The consuming unit op (the evaporator's heating
+    // chest) computes the actual steam demand and the simulator
+    // writes it back into the stream registry after solve().
+    // The Streams panel then shows the real consumption.
+}
+
+coolingWater
+{
+    T              298.15 K;
+    state          saturatedLiquid;     // -> P computed from
+                                        //    Psat(298.15) for water
+    molarComposition  { water 1.0; }
+    F              50.0   kmol/h;       // here F is known a priori
+                                        //   (plant-side metered flow)
+}
+\end{lstlisting}
+
+Supported \code{state} values:
+
+\begin{center}\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\code{state}                       & Computes                                  & Sets $vf$ \\
+\midrule
+\code{saturatedVapour}             & $T$ from $P$, or $P$ from $T$             & $1.0$ \\
+\code{saturatedLiquid}             & $T$ from $P$, or $P$ from $T$             & $0.0$ \\
+\code{subcooledLiquid}             & --- (validates $T < T_{\mathrm{sat}}(P)$) & $0.0$ \\
+\code{superheatedVapour}           & --- (validates $T > T_{\mathrm{sat}}(P)$) & $1.0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent Restrictions:
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+\item Currently \code{state} works for \emph{pure-component}
+      streams (one species with $x_i \ge 0.999$).  Multi-component
+      saturated states (bubble-point / dew-point of a mixture) are
+      scheduled.
+\item If you declare \emph{both} $T$ and $P$ alongside a
+      saturated state, the parser checks consistency against
+      $P_{\mathrm{sat}}(T)$ and throws if they disagree by more
+      than 5\,\%.
+\item Omitting $F$ is only allowed for streams declared as
+      \code{saturatedVapour} or \code{saturatedLiquid} --- the
+      utility pattern.  Subcooled / superheated streams require
+      an explicit $F$ since they are not demand-driven utilities.
+\end{itemize}
+
+\paragraph{Consistency check on input streams (the bigger picture).}
+The \code{state} keyword is one piece of the \emph{flash-on-import}
+contract: every input stream becomes a single point in
+thermodynamic-state space, fully specified, before any unit op
+runs.  Internally the simulator already does this for ALL
+streams --- whether or not the user wrote \code{state}.  Three
+checks happen at parse time:
+
+\begin{enumerate}[leftmargin=*,nosep,topsep=2pt]
+\item Composition normalisation (the four regimes documented in
+      the Sum-check subsection).
+\item Phase-state consistency (the \code{state}-keyword paths
+      above).  Without an explicit \code{state}, a stream with
+      $T$, $P$, $\mathbf{z}$ given is taken as ``whatever the flash
+      regime turns out to be''; multi-component streams left
+      under-specified will go through a Rachford-Rice flash on
+      first use by a unit op.
+\item Dimension cross-check on every scalar value (any unit
+      suffix on $T$, $P$, $F$ etc.\ is validated against the
+      expected physical dimensions; see \S\ref{sec:units-suffixes}).
+\end{enumerate}
+
+\medskip
+
+For recycles, declare the cycle-breaking streams and the Wegstein
+parameters:
+
+\begin{lstlisting}[language=dict]
+tearStreams           (recycle );
+recycleTol             1e-5;
+recycleMaxIter         60;
+recycleWegsteinQmin   -0.5;
+recycleWegsteinQmax    0.0;
+\end{lstlisting}
+
+\subsection{Units}\label{sec:units-suffixes}
+
+Choupo uses canonical SI internally: Pa for pressure, kmol/s for
+molar flow, K for temperature, m for length, m\textsuperscript{2}
+for area, m\textsuperscript{3} for volume, J for energy, kg for
+mass, kmol for amount.  You almost never want to type those raw,
+so any scalar value in a dict may carry a unit suffix.  The parser
+converts the value to SI on the fly and remembers what dimension
+it was --- a typo in the unit is caught with a clear error before
+the solver runs.
+
+\paragraph{Three accepted forms.}
+
+\begin{lstlisting}[language=dict]
+P    1     bar;                    // (a) named-unit shortcut
+A_w  [-1  2  1  0  0]  1.5e-12;    // (b) bracket form
+                                   //     [M L T Theta N] + SI value
+R    0.5;                          // (c) raw SI (no declaration)
+\end{lstlisting}
+
+Form (a) is what you will type 95\,\% of the time.  Form (b) is
+the escape hatch for quantities with no short named unit
+(membrane permeabilities, exotic transport coefficients).
+Form (c) says ``trust me, the number is in canonical SI'' --- the
+parser cannot check anything, so a typo here passes silently.
+
+\paragraph{Named units shipped by Choupo.} A non-exhaustive
+overview of the most useful aliases (see \file{src/core/Units.cpp}
+for the full table):
+
+\begin{center}\small
+\begin{tabular}{lll}
+\toprule
+Quantity            & Canonical SI   & Named-unit aliases \\
+\midrule
+pressure            & Pa             & \code{Pa, kPa, MPa, bar, atm, psi, mmHg, torr} \\
+molar flow          & kmol/s         & \code{kmol/s, kmol/h, mol/s, mol/h} \\
+mass flow           & kg/s           & \code{kg/s, kg/h, g/s, g/h, t/h} \\
+volumetric flow     & m\textsuperscript{3}/s & \code{m3/s, m3/h, L/s, L/h, L/min} \\
+temperature         & K              & \code{K, degC, C, Celsius, degF, F, Fahrenheit} \\
+length              & m              & \code{m, mm, cm, km, in, inch, ft} \\
+area                & m\textsuperscript{2} & \code{m2, m\textasciicircum{}2, cm2, mm2} \\
+volume              & m\textsuperscript{3} & \code{m3, m\textasciicircum{}3, L, mL} \\
+time                & s              & \code{s, sec, min, h, hr, day} \\
+mass                & kg             & \code{kg, g, t, ton, tonne} \\
+energy              & J              & \code{J, kJ, MJ} \\
+power               & W              & \code{W, kW, MW\_power} \\
+concentration       & kmol/m\textsuperscript{3} & \code{kmol/m3, mol/m3, mol/L, M} \\
+density             & kg/m\textsuperscript{3}   & \code{kg/m3, g/cm3, g/mL} \\
+viscosity           & Pa$\cdot$s     & \code{Pa.s, cP} \\
+membrane $A_w$      & m/(s$\cdot$Pa) & \code{m/s/Pa, m/s/bar} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{What the student sees on a bad unit.}  Asking for a
+pressure but typing \code{P 1 kg;} produces:
+
+\begin{lstlisting}
+ERROR: Dictionary 'feed' ():
+  parameter 'P' expected dimensions [1 -1 -2 0 0] (Pa)
+  but the dict declared [1 0 0 0 0] (kg).  Check the unit
+  suffix on this entry.
+\end{lstlisting}
+
+The same check guards every parameter that the unit operations
+read (\code{T}, \code{F}, \code{V\_R}, \code{area}, \code{length},
+\code{k\_film}, \code{P\_permeate},...).
+
+\paragraph{Output preferences.}  By default Choupo prints flows
+in kmol/h, pressures in bar, temperatures in K, sizes in m / m$^2$
+/ m$^3$ --- the chem-eng convention.  To override, drop a
+\code{units} block in \file{controlDict}:
+
+\begin{lstlisting}[language=dict]
+units
+{
+    pressure       atm;       // default bar
+    flow           kmol/s;    // default kmol/h
+    temperature    K;         // default K
+    length         m;
+    volume         L;
+    energy         kJ;
+    power          kW;
+}
+\end{lstlisting}
+
+The simulator internals stay in SI; only the printed output
+changes.  Mismatched dimensions in the override (e.g.\
+\code{pressure m;}) are reported and ignored.
+
+\paragraph{Decimal precision.}  An optional \code{precision} block
+in \file{controlDict} tunes the number of decimal digits per
+quantity category:
+
+\begin{lstlisting}[language=dict]
+precision
+{
+    pressure       3;       // default 3
+    temperature    2;       // default 2
+    flow           4;       // shorthand for molarFlow + massFlow
+    composition    4;       // mole / mass fractions
+}
+\end{lstlisting}
+
+Other accepted keys: \code{molarFlow}, \code{massFlow},
+\code{volumetricFlow}, \code{length}, \code{area}, \code{volume},
+\code{time}, \code{mass}, \code{amount}, \code{energy},
+\code{power}, \code{concentration}, \code{density},
+\code{velocity}, \code{viscosity}, \code{diffusivity}.  Omit any
+key to keep its default.  The defaults match the hardcoded
+formatting so existing tutorials look identical.
+
+\subsection{\file{thermoPackage}}
+
+Two equivalent syntaxes --- legacy (VLE only) and explicit (general,
+supports LL / VLL):
+
+\begin{lstlisting}[language=dict]
+// Legacy:
+components       (benzene  toluene );
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }
+
+// Explicit:
+components (water nButanol );
+phases
+(
+    { name aqueous;  type liquid;  activity { model NRTL; pairs (... ); } }
+    { name organic;  type liquid;  activity { model NRTL; pairs (... ); } }
+);
+\end{lstlisting}
+
+\subsection{Optional dicts}
+
+\begin{itemize}[leftmargin=*]
+  \item \dict{solverDict} --- defaults per unit-op type, overridable
+        by each unit. E.g.
+        \code{isothermalFlash \{ tolerance 1e-8; outerAccelerator wegstein; \}}.
+  \item \dict{outerDict} --- see \S\ref{sec:outer}.
+  \item \dict{postDict} --- see \S\ref{sec:post}.
+  \item \dict{constant/reactions} --- named-reaction library. CSTR / PFR
+        reference reactions by name: \code{reaction ethanol\_to\_water\_test;}.
+\end{itemize}
+
+% =====================================================================
+\section{Built-in unit operations}\label{sec:units}
+
+\begin{whatyoulllearn}
+The unit-op types available (around two dozen, plus aliases such as
+\code{flash}, \code{HX}, \code{column}, \code{FUG},
+\code{membraneSW}) and what each \code{operation} block must contain.
+The table below lists the workhorses; \code{UnitOperation::availableTypes()}
+prints the full registry at runtime.
+\end{whatyoulllearn}
+
+\begin{center}\footnotesize
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.21\linewidth}
+                                 >{\raggedright\arraybackslash}X
+                                 >{\raggedright\arraybackslash}p{0.30\linewidth}@{}}
+\toprule
+\code{type}            & \textbf{What it does}                                  & \textbf{Required keys} \\
+\midrule
+\code{isothermalFlash} \textit{(alias \code{flash})} & Multi-component V--L or L--L flash    & \code{T}, \code{P}, \code{phaseSet} \code{VL}/\code{LL} \\
+\code{adiabaticFlash}  & Adiabatic two-phase flash; solves $T_{\mathrm{out}}$         & \code{P} \\
+\code{bubbleT}         & Bubble temperature at given $\mathbf{x}, P$            & \code{P} \\
+\code{dewT}            & Dew temperature at given $\mathbf{y}, P$               & \code{P} \\
+\code{cstr}            & Single-reaction liquid CSTR                            & \code{V\_R}, \code{reaction <name>} \\
+\code{pfr}             & Plug-flow reactor (RK4 over volume)                    & \code{V\_R}, \code{nSteps}, \code{reaction <name>} \\
+\code{heatExchanger} \textit{(alias \code{HX})} & Liquid heater / cooler                 & one of \code{Tout} or \code{Q} \\
+\code{mixer}           & $N \to 1$ mixer with energy balance                    & uses \code{inputs (a b c )} \\
+\code{splitter}        & $1 \to N$ tee with composition split                   & \code{fractions (f1 f2 \dots )} \\
+\code{distillationColumn} \textit{(alias \code{column})} & Multi-stage column (Wang-Henke or simultaneous MESH) & \code{nStages}, \code{feedStage}, \code{refluxRatio}, \code{distillateRate}, \code{feedQuality}, \code{P} \\
+\code{shortcutColumn} \textit{(alias \code{FUG})} & Fenske-Underwood-Gilliland shortcut column & \code{lightKey}, \code{heavyKey}, \code{refluxRatio}, \code{P} \\
+\code{absorber} / \code{stripper} & Multi-stage gas absorber / stripper & \code{nStages}, \code{P} \\
+\code{gibbsReactor}  & Equilibrium reactor by Gibbs-energy minimisation & \code{T} or adiabatic; \code{reactions (...)} \\
+\code{compressor} / \code{turbine} / \code{pump} & Rotating equipment; spec \code{W\_shaft} + \code{eta} ($P_{\mathrm{out}}$ is a result) & \code{W\_shaft}, \code{eta} \\
+\code{electricLoad}  & Sink for shaft work via an energy wire & uses \code{energyInputs} \\
+\code{valve}         & Isenthalpic throttle to a target pressure & \code{P\_out} \\
+\code{evaporator}    & Single-effect evaporator with heating duty & \code{P} (+ heat) \\
+\code{sprayDryer} / \code{solidDryer} & Gas--solid drying (constant + falling rate) & \code{T\_gas}, sample drying curve \\
+\code{crystalliser}  & Population-balance crystalliser & nucleation/growth kinetics \\
+\code{cyclone} / \code{bagFilter} / \code{gasSolidSplitter} & Gas--solid separation (5 cyclone sub-models) & geometry per \code{model} \\
+\code{spiralWoundModule} \textit{(alias \code{membraneSW})} & NF/RO spiral-wound element (solution-diffusion) & membrane name, \code{area}, \code{P\_permeate}, \code{k\_film} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Each unit also accepts (top-level, not inside \code{operation}) overrides
+for solver tolerances --- same keys as in \file{solverDict}.
+
+\paragraph{Energy ports and heat integration.}  Rotating equipment,
+heaters, and distillation reboilers/condensers exchange \emph{work}
+and \emph{heat} through typed energy ports (\code{energyOutputs} /
+\code{energyInputs}) rather than process streams.  A turbine's shaft
+work can drive a compressor or an \code{electricLoad}; a column's
+reboiler heat can preheat another unit (a forward heat-link).  This
+layer --- the \code{W}/\code{Q} wires, the \code{column.condenser} /
+\code{column.reboiler} port names, the auto-allocation-by-temperature
+rule, and the \code{utilityAllocation} report --- is documented in
+\file{docs/ai/energy.md}.
+
+% =====================================================================
+\section{Built-in thermodynamic models}
+
+\begin{whatyoulllearn}
+The four families of models that together cover everything the
+simulator does: activity coefficients, equation of state, vapour
+pressure, and heat capacity.
+\end{whatyoulllearn}
+
+\subsection{Activity models (liquid $\gamma$)}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\code{model}  & \textbf{Notes} \\
+\midrule
+\code{ideal}  & $\gamma_i = 1$ --- the Raoult limit. \\
+\code{NRTL}   & Renon-Prausnitz; needs binary pairs. \\
+\code{Wilson} & Wilson 1964; needs binary pairs + $V_{\mathrm{liq}}$ per component. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+NRTL pair entry:
+
+\begin{lstlisting}[language=dict]
+pairs
+(
+    {
+        i       ethanol;     j       water;
+        a_ij   -0.8009;      b_ij    246.18;        // tau_ij = a_ij + b_ij/T
+        a_ji    3.4578;      b_ji   -586.0809;
+        alpha   0.30;
+    }
+);
+\end{lstlisting}
+
+\subsection{Equation of state (vapour $\varphi$)}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\code{model} & \textbf{Notes} \\
+\midrule
+\code{idealGas} & $\varphi_i = 1$; $PV = RT$. Adequate for the low-pressure tutorials. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Vapour pressure (per component)}
+
+Stored in \file{data/standards/components/<name>.dat}:
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\code{model}    & \textbf{Form} \\
+\midrule
+\code{Antoine}  & $\log_{10} P^{\mathrm{sat}}[\text{bar}] = A - B / (T[\text{K}] + C)$ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Heat capacity (per component, optional)}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\code{model}     & \textbf{Form} \\
+\midrule
+\code{polynomial} & $C_p = a_0 + a_1 T + a_2 T^2 + a_3 T^3 + a_4 T^4$, \quad $[\,\mathrm{J/(mol\!\cdot\! K)}\,]$ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Phase types (multi-phase / LLE)}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\code{type}    & \textbf{Notes} \\
+\midrule
+\code{vapor}   & wraps an EoS \\
+\code{liquid}  & wraps an \code{ActivityModel} + uses Antoine for $P^{\mathrm{sat}}$ \\
+\code{solid}   & stub: declared interface for future SLE / inert solids \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Sensitivity, optimisation, parameter estimation}\label{sec:outer}
+
+\begin{whatyoulllearn}
+How to wrap the simulator in an outer loop without writing a single
+line of \cpp.
+\end{whatyoulllearn}
+
+Drop a \file{system/outerDict} into a case and the simulator is wrapped
+in an outer loop.
+
+\subsection{Sensitivity sweep --- \code{type sweep;}}
+
+Vary one design value across a grid and harvest responses:
+
+\begin{lstlisting}[language=dict]
+type        sweep;
+
+parameter
+{
+    target    units[0].operation.refluxRatio;   // JSON-path-like syntax
+    range     ( 1.5  5.0 );
+    nPoints   10;
+}
+
+responses
+(column01.T_top
+    column01.T_bottom
+    column01.x_D_LK
+    column01.V_strip
+);
+
+report
+{
+    format   csv;
+    file     sweep_results.csv;
+}
+\end{lstlisting}
+
+Each response is \code{unitName.kpiName} (a unit-op KPI) or
+\code{streamName.field} where field is \code{F}, \code{T}, \code{P}, or
+\code{vf}.
+
+\begin{tryit}
+\code{runCase tutorials/steady/optimisation/sensitivity01\_column\_reflux} produces
+\file{sweep\_results.csv}. Plot column~6 against column~2 with any
+tool; you'll see the classic ``$V_{\text{strip}}$ asymptote'' as the
+reflux ratio grows past the minimum.
+\end{tryit}
+
+\subsection{Parameter estimation}\label{sec:fitBinaryPair}
+
+A dedicated concrete driver, \code{type fitBinaryPair;}, regresses
+the four interaction parameters of one binary pair against
+experimental bubble-temperature data using hand-rolled
+Levenberg-Marquardt (Marquardt diagonal damping, central
+finite-difference Jacobian, 3-up/5-down trust-region update of
+$\lambda$):
+
+\begin{verbatim}
+type      fitBinaryPair;
+
+pair      ethanol-water;
+data      constant/experiments/ethanol-water-101kPa;
+unit      bt01;            % the bubbleT unit that emits T_bubble
+
+% Optional (defaults shown):
+% maxIter   30;     tolerance 1.0e-6;
+% fdStep    1.0e-4; lambda0   1.0e-3;
+\end{verbatim}
+
+The dataset is a dict with a flat two-column list:
+
+\begin{verbatim}
+P    1.01325;
+data
+(
+    0.05  361.95
+    0.10  359.95
+...
+    0.95  351.45
+);
+\end{verbatim}
+
+The driver writes a dated proposal to
+\file{constant/binaryPairs/<model>/<c1>-<c2>.fit-<YYYY-MM-DD>.dat};
+the human promotes it manually with \code{mv} once inspected.  Worked
+example: \file{tutorials/fitNRTL01\_ethanol\_water/}, with detailed
+walk-through in its \file{README.md}.
+
+\subsection{Optimisation --- \code{type optimization;}}
+
+\code{type optimization;} drives a hand-rolled Nelder-Mead simplex to
+minimise a target KPI (e.g.\ annualised cost) over one or more decision
+variables, re-running the whole simulator --- and, if a \file{postDict}
+is present, the sizing + costing chain --- at every evaluation.  Two
+worked examples ship: \file{tutorials/steady/optimisation/optim01\_column\_reflux}
+(minimises \code{column01.V\_strip} over reflux ratio + feed stage) and
+\file{tutorials/steady/optimisation/optim02\_process\_cost} (minimises the total
+Guthrie module cost over reactor volume + heater outlet temperature).
+
+% =====================================================================
+\section{Equipment sizing and costing}\label{sec:post}
+
+\begin{whatyoulllearn}
+How a single \file{postDict} turns a converged flowsheet into a vessel
+list, wall thicknesses, weights, and Guthrie/Turton bare-module costs
+in EUR.
+\end{whatyoulllearn}
+
+Drop a \file{system/postDict} and the simulator result is post-processed.
+
+\subsection{Sizing --- \code{sizing \{ units (...) \}}}
+
+\begin{lstlisting}[language=dict]
+sizing
+{
+    units
+    (
+        {
+            unitName    reactor;
+            type        stirredTank;
+            material    SS316;
+            designRules
+            {
+                L_over_D        2.5;
+                pressureDesign  3.0;
+                corrosionAllow  0.003;        // m
+                jointEfficiency 1.0;
+            }
+        }
+
+        {
+            unitName    heater;
+            type        shellTubeHX;
+            material    SS304;
+            designRules
+            {
+                U               600.0;        // W/(m^2 K)
+                LMTD            10.0;         // K
+                pressureDesign  2.0;
+            }
+        }
+    );
+}
+\end{lstlisting}
+
+\code{type} selects an \code{EquipmentSize} model. At:
+\code{stirredTank} (vessels including CSTRs and reactor surge drums) and
+\code{shellTubeHX}. Materials come from \file{data/standards/materials/*.dat}
+--- built-in: \code{carbonSteel}, \code{SS304}, \code{SS316},
+\code{aluminium}.
+
+\subsection{Costing --- \code{costing \{ method... \}}}
+
+\begin{lstlisting}[language=dict]
+costing
+{
+    method      Guthrie;
+    year        2026;
+    cepci       820;
+    cepci2001   397;
+    usdToEur    0.92;
+}
+\end{lstlisting}
+
+The \code{Guthrie} model uses Turton-style purchased-cost correlations,
+ASME wall-thickness pressure factor for vessels, polynomial $F_P$ for
+heat exchangers, then $C_{BM} = C_p (B_1 + B_2 \, F_M \, F_P)$, and
+$C_{TM} = 1.18 \, C_{BM}$.
+
+The post-processor prints a per-unit cost table to stdout:
+
+\begin{lstlisting}
+========================  Equipment Costing  =========================
+  Method:  Guthrie    Year:  2026.0    CEPCI: 820.0
+
+  unit      equipment       F_M   F_P    C_purchased   C_bare_mod    C_total_mod
+  heater    shellTubeHX     2.34  1.09     365 249      2 146 753    2 533 169
+  reactor   stirredTank     3.05  1.00       2 055         16 033       18 918
+  TOTALS (EUR)                            367 304      2 162 786    2 552 087
+\end{lstlisting}
+
+% =====================================================================
+\section{Tour of the tutorials}
+
+\begin{whatyoulllearn}
+Choupo ships 131 tutorials under \file{tutorials/\{steady,batch,ctrl,props,plant\}/};
+\code{listCases} tabulates them all with one-line descriptions.  The
+selection below is the steady-state on-ramp --- pick the one closest
+to what you want to do and edit from there.
+\end{whatyoulllearn}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Tutorial}                       & \textbf{What you learn} \\
+\midrule
+\code{flash01\_benzene\_toluene}        & First run: Raoult VLE, Rachford-Rice, Newton iteration visible. \\
+\code{flash02\_ethanol\_water}          & NRTL + Wegstein outer loop ($\sim$7 iter vs $\sim$29 direct subst.). \\
+\code{flash03\_wilson\_ethanol\_water}  & Same problem with Wilson --- model uncertainty visible. \\
+\code{bubbleT01\_ethanol\_water}        & Find $T$ such that $\sum K_i x_i = 1$. \\
+\code{dewT01\_ethanol\_water}           & Find $T$ such that $\sum y_i / K_i = 1$. \\
+\code{adiabaticFlash01\_benzene\_toluene} & $Q = 0$ --- solve for $T_{\mathrm{out}}$; uses $C_p$ and $\Delta H_{\mathrm{vap}}$ (Watson). \\
+\code{cstr01\_first\_order}             & Newton on extent $\xi$; Damk\"ohler \& analytic check. \\
+\code{pfr01\_first\_order}              & RK4 by hand; reproduces $X = 1 - e^{-k\tau}$. \\
+\code{hx01\_heater}                     & Specify $T_{\mathrm{out}}$ or $Q$, compute the other; Newton 1-D. \\
+\code{process01\_reactor\_flash}        & First flowsheet: CSTR $\to$ flash; mass-balance closure. \\
+\code{process02\_reactor\_hx\_flash}    & Three units; $T$ propagates through the chain. \\
+\code{process02\_with\_design}          & The above + sizing + Guthrie costing --- full CAPEX in one run. \\
+\code{process03\_recycle}               & Reactor-separator-recycle: tear stream + Wegstein outer loop. \\
+\code{column01\_benzene\_toluene}       & Multi-stage column, Wang-Henke bubble-point. \\
+\code{sensitivity01\_column\_reflux}    & Sweep $R$ over $[1.5, 5]$ to CSV with $V_{\mathrm{reboiler}}$ vs purity. \\
+\code{optim01\_column\_reflux}          & Nelder-Mead: minimise $V_{\mathrm{strip}}$ over reflux + feed stage. \\
+\code{optim02\_process\_cost}           & Nelder-Mead on total Guthrie module cost (sizing + costing per evaluation). \\
+\code{process04\_research\_workflow}    & Case-local \file{constant/binaryPairs/<model>/<pair>.dat} instead of inline pairs --- the lookup-order pattern. \\
+\code{fitNRTL01\_ethanol\_water}        & \code{fitBinaryPair} outer driver: LM regression of NRTL ethanol/water against 1\,atm bubble-$T$ data (see \S\ref{sec:fitBinaryPair}). \\
+\code{extraction01\_waterButanol}       & LL extraction with NRTL --- \emph{experimental} (see \S\ref{sec:troubleshoot}). \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =====================================================================
+\section{Output anatomy}
+
+\begin{whatyoulllearn}
+What every section of a run's log means, and why the inner iteration
+trace is the part you should read.
+\end{whatyoulllearn}
+
+A typical run with \code{verbosity 3} prints, in order:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Banner} --- version + licence.
+  \item \textbf{Case header} --- case dir, database root, optional-dicts presence.
+  \item \textbf{Components and phases} declared.
+  \item \textbf{Topology} of the flowsheet --- source streams + the per-unit blocks.
+  \item \textbf{Per-unit run} --- for each unit operation:
+    \begin{itemize}
+      \item Inputs echo ($F, T, P, \mathbf{z}$).
+      \item Inner iteration trace (Newton steps with $g(x)$, $\mathrm{d}g/\mathrm{d}x$, $\Delta V$).
+      \item For $\gamma$-models: outer Wegstein loop with $\gamma$ values per iter.
+      \item Result block (regime, $V/F$, $\mathbf{x}$, $\mathbf{y}$, $\mathbf{K}$).
+    \end{itemize}
+  \item \textbf{Flowsheet summary} --- final stream table.
+  \item \textbf{Outer driver / post-processor output} (if applicable).
+\end{enumerate}
+
+\begin{keyidea}
+The inner iteration trace is where the simulator stops being a black
+box. Convergence ratios in the trace tell you whether Newton is
+converging quadratically (good) or linearly (problem is ill-conditioned).
+\end{keyidea}
+
+% =====================================================================
+\section{The web GUI: a runner and visualiser}\label{sec:gui}
+
+\begin{whatyoulllearn}
+How to open a case in the browser, run it, and read the result --- and
+why the GUI never edits your dicts.
+\end{whatyoulllearn}
+
+Choupo ships a browser front-end under \file{gui/}.  Its design stance
+is deliberate and worth stating up front: \textbf{the GUI is a runner
+and visualiser, not an editor.}  Cases are authored as plain-text dicts
+under \file{tutorials/<name>/system/} and \file{constant/}, edited with
+any text editor (increasingly with LLM help).  The GUI loads those
+dicts, draws the flowsheet, runs the solver \emph{in the browser}, and
+renders the log + plots.  The dicts on disk remain the single source of
+truth; per-case scalar tweaks in the GUI are downloaded back to disk,
+never silently mutated.  The architectural inspiration is ParaView (a
+DSL plus a viewer), not a block-diagram GUI editor.
+
+\subsection{Starting the GUI}
+
+\begin{lstlisting}
+make wasm-gui          # build the WASM solver (choupoSolve + choupoProps)
+bin/runGui             # boots the dev server and opens a browser window
+bin/runGui --kill      # stops everything
+\end{lstlisting}
+
+\subsection{The layout}
+
+The shell is a thin top bar over a full-screen flowsheet canvas --- no
+left tree, no docked right panel, no bottom tab strip.  Auxiliary views
+(log, plots, stream table) open on demand as workspaces.  Selecting a
+unit or stream raises a floating selection card in the top-right corner;
+the card is read-only (labels, units, help tooltips driven by the
+operation schemas).
+
+\subsection{Interactions}
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{Single-click} a node or edge --- raises the floating
+        selection card.
+  \item \textbf{Double-click} --- pops the unit out (or drills into a
+        composite sector).
+  \item \textbf{Drag} nodes, edge bends, and connection points to lay
+        the flowsheet out; the layout persists per case in the
+        browser's \code{localStorage}.
+  \item \textbf{Stream-class toggle} --- show/hide whole classes of
+        streams (e.g.\ energy wires) to declutter the canvas.
+  \item \textbf{Run} --- streams the same log you would see from
+        \code{runCase}; \textbf{Stop} cancels mid-solve.
+\end{itemize}
+
+Stream colour encodes phase and comes straight from the solver
+(\code{vf} + solid mass fraction); it never changes on hover or
+selection --- selection is signalled by a halo/ring, not a recolour.
+
+\begin{pitfall}
+\textbf{MOCK vs WASM.}  If the WASM solver has not been built
+(\code{make wasm-gui}), the GUI silently falls back to a \emph{mock}
+adapter that returns canned numbers so the UI still renders.  The Run
+badge reads \code{MOCK} in that case, not \code{WASM} --- check it
+before trusting any result.  After changing a unit op or any \cpp{}
+source, rebuild the WASM (it is a separate artefact from the native
+binary) or the browser keeps running stale code.
+\end{pitfall}
+
+% =====================================================================
+\section{Building your own case}
+
+\begin{whatyoulllearn}
+The fastest path from a blank idea to a converged result is to clone
+the tutorial closest to your idea and edit.
+\end{whatyoulllearn}
+
+\begin{lstlisting}
+cp -r tutorials/steady/flash/flash01_benzene_toluene tutorials/steady/myFlash
+$EDITOR tutorials/steady/myFlash/system/flowsheetDict
+$EDITOR tutorials/steady/myFlash/constant/thermoPackage
+runCase tutorials/steady/myFlash
+\end{lstlisting}
+
+\paragraph{Adding a missing component.}
+Two locations are available --- pick the right tier for what you are
+adding:
+
+\begin{itemize}[leftmargin=*]
+  \item \file{data/standards/components/<name>.dat} --- contribution to
+        the \emph{shared catalogue} of well-curated chemicals.
+  \item \file{<case>/constant/components/<name>.dat} ---
+        \emph{sample-specific or one-off data}: a particular powder's
+        sorption isotherm, a custom membrane solute, a laboratory
+        measurement.  Per-case files are overlaid field-by-field on
+        top of the standard catalogue, so a slim file with just the
+        bespoke fields is enough --- the rest is inherited from the
+        standard entry of the same name.
+\end{itemize}
+
+\begin{enumerate}[leftmargin=*]
+  \item Create the file in the chosen tier, following the same format
+        as the existing standard entries (see Developer Guide
+        \S\,Adding components for the field list).  When the file
+        carries a \code{gibbsFormation} block, declare the
+        \code{phase} of the tabulated $\Delta h^{\circ}_f$ explicitly
+        (\code{gas} / \code{liquid} / \code{solid}) --- the value
+        tells the solver which rung of the enthalpy ladder the data
+        is pinned to; see Theory Guide
+        \S\,``Which rung does the data file pin?''.
+  \item Add \code{<name>} to the \code{components (...)} list in your
+        thermoPackage.
+\end{enumerate}
+
+\paragraph{Using a plant utility.}
+Heating and cooling services are catalogued separately from process
+components, under \file{data/standards/utilities/}.  Eight services
+ship by default --- LP / MP / HP steam, cooling water, chilled
+water, Dowtherm A, HITEC molten salt, and a propylene-glycol
+refrigeration brine --- each with operating conditions and a
+\code{cost} in EUR/GJ.
+
+A stream block pulls the catalogue defaults with a single keyword:
+
+\begin{lstlisting}[language=dict]
+streams
+{
+    PlantSteam  { utility steamLP;  F 60 kmol/h; }
+}
+\end{lstlisting}
+
+The parser substitutes \code{components}, \code{state}, \code{P} and
+\code{T} from the \code{steamLP.dat} entry (the user keeps full
+control --- writing \code{P 3 bar;} alongside the \code{utility} key
+overrides the catalogue default for that one case), and marks the
+stream's internal \code{category} to \code{"steamLP"}.  When the case
+runs, the \code{utilities} report aggregates every utility-tagged
+stream by category and emits \file{reports/utilities/consumption.csv}
+with the kg/h, MW, and EUR/h delivered by each header.  Multiple
+streams sharing a catalogue name (two heaters tapping the same plant
+header) sum automatically.
+
+\paragraph{Adding a missing material.}
+Same procedure under \file{data/standards/materials/}.
+
+\paragraph{Using a reaction in a CSTR / PFR.}
+Declare it in \file{constant/reactions} and reference it by name in the
+unit's \code{reaction <name>;} entry.
+
+% =====================================================================
+\section{Troubleshooting}\label{sec:troubleshoot}
+
+\begin{whatyoulllearn}
+The seven failure modes that account for nearly every support ticket,
+and exactly what to do about each.
+\end{whatyoulllearn}
+
+\subsection*{``Component does not exist'' / ``Material does not exist''}
+
+\begin{lstlisting}
+ERROR: Database: component file not found: data/standards/components/foo.dat
+\end{lstlisting}
+
+The component (or material) name is misspelt, or the file is missing.
+Filenames are case-sensitive. Check \file{data/standards/components/}.
+
+\subsection*{Build fails after pulling new code}
+
+\begin{lstlisting}
+make distclean
+make all
+\end{lstlisting}
+
+Removes the entire \file{build/} tree. Necessary when headers change in
+incompatible ways.
+
+\subsection*{Simulator runs but flowsheet returns NaN}
+
+Most common: feed composition does not sum to 1, or a unit-op is fed
+with an empty stream. Re-read the input echo and verify $F, T, P,
+\mathbf{z}$ values.
+
+\subsection*{Newton fails to converge}
+
+Two situations:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Outer Wegstein} ($\gamma$-model loop): \code{qmin} too aggressive.
+        Try \code{outerAccelerator directSubstitution} for non-ideal LL
+        or azeotropic systems.
+  \item \textbf{Inner Newton} (Rachford-Rice or distillation bubble-T): increase
+        \code{maxIter} and \code{maxOuterIter}. Near the phase boundary,
+        tighten \code{compositionTol}.
+\end{itemize}
+
+\subsection*{LL extraction tutorial does not give a physical split}
+
+Known issue (still open at) --- LL flash converges to the trivial $K = 1$ fixed
+point in systems with the same $\gamma$-model on both phases. Resolution
+requires second-order Michelsen TPD with Newton --- scheduled.
+The tutorial is shipped as \emph{experimental} and documents this gap.
+
+\subsection*{Sweep run fails on some points}
+
+Almost always: the simulator's \code{maxOuterIter} is too small for the
+edge points (high reflux ratio, high pressure, \dots). Increase
+\code{maxOuterIter} in the corresponding unit-operation block in
+\file{flowsheetDict}.
+
+\begin{pitfall}
+A run that prints \code{V/F = nan} mid-flash almost always means
+$\log P_i^{\mathrm{sat}}$ was evaluated outside Antoine's valid range
+(e.g.\ $T$ too low so Antoine returns a negative pressure), or that a
+stream upstream had $F = 0$ and emptied the composition vector.
+\end{pitfall}
+
+% =====================================================================
+\section{Where to look next}
+
+\begin{itemize}[leftmargin=*]
+  \item \file{CLAUDE.md} --- conventions, architecture overview,
+        AI-assistant guide.
+  \item \file{docs/developerGuide.pdf} --- adding unit operations,
+        thermo models, components, materials, outer drivers,
+        post-processors.
+  \item \file{tutorials/<name>/system/*} --- every tutorial is a
+        fully-worked example.
+  \item \file{src/applications/choupoSolve/main.cpp} --- the entry
+        point.
+\end{itemize}
+
+\begin{keyidea}
+If a case behaves unexpectedly, \emph{read the log}. Every Newton step,
+every Wegstein update, every $\gamma$ value is printed. Black-box
+debugging is exactly the failure mode Choupo refuses to
+participate in.
+\end{keyidea}
+
+\vspace{2cm}
+\noindent\rule{\linewidth}{0.3pt}
+\noindent\small\textit{Colophon.}\quad This manual was typeset in Latin
+Modern with the Choupo shared LaTeX preamble. Sources live in
+\file{docs/}; rebuild with \code{cd docs \&\& make}.
+
+\end{document}

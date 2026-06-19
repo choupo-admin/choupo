@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  WGS sensitivity sweep:  CO conversion vs reactor temperature.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Water-gas shift equilibrium swept over T = 600..1200 K";
+
+verbosity     1;

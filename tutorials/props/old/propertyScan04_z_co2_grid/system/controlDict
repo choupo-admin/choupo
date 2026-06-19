@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Z(T,P) grid for pure CO2 via SRK --- visualises the near-critical breakdown of the ideal-gas approximation";
+
+verbosity     3;

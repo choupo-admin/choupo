@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/controlDict.schema.json",
+  "title": "controlDict",
+  "description": "Meta-control for a case run (system/controlDict).",
+  "type": "object",
+  "properties": {
+    "verbosity": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5,
+      "description": "0 = silent; 3 = default; 5 = every iteration printed"
+    }
+  },
+  "additionalProperties": false
+}

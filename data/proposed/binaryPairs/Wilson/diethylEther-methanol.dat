@@ -1,0 +1,35 @@
+// ChemSep DECHEMA Wilson pair -- diethylEther-methanol (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( diethylEther methanol );
+model       Wilson;
+
+parameters
+{
+    i           diethylEther;
+    j           methanol;
+    A_ij        -1058.56;   // J/mol
+    A_ji        5206.91;   // J/mol
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_diethylEther_methanol   -253.0028;   // CAS 60-29-7 -> 67-56-1
+    A_methanol_diethylEther   1244.4807;   // CAS 67-56-1 -> 60-29-7
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "wilson.ipd";
+    sourceRecord  "60-29-7/67-56-1";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "Wilson";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

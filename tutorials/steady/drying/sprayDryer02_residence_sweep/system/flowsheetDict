@@ -1,0 +1,55 @@
+/*---------------------------------------------------------------------------*\
+  sprayDryer01_sugar  --  flowsheet (one unit, two feeds, two products).
+
+  feed:        100 kg/h of a 40 wt% sucrose solution at 25 °C.
+                 40 kg/h sucrose / 342.30 = 0.11686 kmol/h
+                 60 kg/h water   / 18.015 = 3.33056 kmol/h
+                 total 3.4474 kmol/h ;  z_sucrose = 0.03390
+
+  dryingAir:   50 kmol/h of hot air (modelled as N2) at 200 °C, 1 bar.
+               Dry air (no inlet humidity) for a clean wet-bulb demo.
+
+  The dryer atomises the feed with a 0.1 m disc spinning at 20 000 rpm.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F                  3.4474 kmol/h;
+        T                  298.15 K;            // 25 °C
+        P                  1.0 bar;
+        molarComposition  { water 0.96610;  sucrose 0.03390; }
+    }
+
+    dryingAir
+    {
+        F                  50.0 kmol/h;
+        T                  473.15 K;            // 200 °C hot air
+        P                  1.0 bar;
+        molarComposition  { N2 1.0; }
+        category           hotAir_200C;         // utility tag
+    }
+}
+
+units
+(
+    {
+        name        dryer;
+        type        sprayDryer;
+        inputs      ( feed  dryingAir );
+        outputs     ( powder  exhaustAir );
+
+        operation
+        {
+            wheelDiameter    0.1 m;             // 10 cm spinning disc (HARDWARE)
+            wheelSpeed       20000;             // rpm
+            chamberDiameter  1.0 m;             // drying chamber (HARDWARE)
+            chamberHeight    0.1 m;             // SWEPT by outerDict (value overridden)
+            // residence time is a RESULT (L / v_particle); we sweep the height L.
+        }
+        dryingCurve  sugarDrying;    // KINETICS: Xc + curve, in constant/dryingKinetics
+        // (the equilibrium GAB sorption ISOTHERM is in
+        //  constant/components/sucrose.dat --- thermodynamics, kept separate)
+    }
+);

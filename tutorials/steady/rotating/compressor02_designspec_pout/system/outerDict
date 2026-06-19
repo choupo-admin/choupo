@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  DesignSpec: size the compressor's shaft power to hit a target
+  discharge pressure.
+
+      manipulate   $W_shaft   in [1, 100] kW
+      target       compressor.P_out  =  8 bar
+\*---------------------------------------------------------------------------*/
+
+type         designSpec;
+
+manipulate
+(
+    { variable W_shaft;  initial 10.0 kW;  min 1.0 kW;  max 100.0 kW; }
+);
+
+targets
+(
+    { path  compressor.P_out;   value 8.0 bar;   tol 200 Pa; }
+);
+
+options
+{
+    maxIter      30;
+    tolF         1.0;
+    fdStep       1.0e-3;
+}

@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------*\
+  gasSolidSplitter01_ideal
+  ========================
+
+  The same dusty gas as cyclone01 / bagFilter01 (N2 + 50 kg/h silica), but
+  through an IDEAL, spec-driven separator: you SET the recovery (90 % of the
+  solids to capturedSolids), no efficiency physics, no size classification.
+
+  Use it when a physics model is overkill ("assume 90 % capture"), as a
+  placeholder, or to bound a design.  Contrast: the cyclone COMPUTES ~82 %
+  by size, the bag filter COMPUTES ~99.9 %; here the number is whatever you
+  declare.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            150.0 kmol/h;
+        T            300.0 K;
+        P            1.01325 bar;
+        molarComposition { N2 1.0; }
+        solids
+        {
+            solidFlows   { silica 50.0 kg/h; }
+            diameters    ( 1e-6  2e-6  5e-6  10e-6  20e-6  50e-6 );
+            massFractions( 0.05  0.10  0.20  0.30   0.25   0.10  );
+        }
+    }
+}
+
+units
+(
+    {
+        name        separator;
+        type        gasSolidSplitter;
+        in          feed;
+        outputs     ( cleanGas  capturedSolids );
+        operation   { solidsRecovery 0.90;  gasCarryover 0.0; }
+    }
+);

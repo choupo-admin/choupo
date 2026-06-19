@@ -1,0 +1,35 @@
+// ChemSep DECHEMA Wilson pair -- benzene-pXylene (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( benzene pXylene );
+model       Wilson;
+
+parameters
+{
+    i           benzene;
+    j           pXylene;
+    A_ij        -0.166942;   // J/mol
+    A_ji        21.3999;   // J/mol
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_benzene_pXylene   -0.0399;   // CAS 71-43-2 -> 106-42-3
+    A_pXylene_benzene   5.1147;   // CAS 106-42-3 -> 71-43-2
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "wilson.ipd";
+    sourceRecord  "71-43-2/106-42-3";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "Wilson";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

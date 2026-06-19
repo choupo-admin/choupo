@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/dewT.schema.json",
+  "title": "dewT operation",
+  "description": "Dew-point temperature at fixed pressure: find the T at which the first liquid droplet condenses from a saturated vapour of the given composition.  Solved by Newton-1D in T on Sum_i y_i / K_i(T) = 1.  Hardware-only: specify the pressure P; the dew temperature is the RESULT.",
+  "type": "object",
+  "properties": {
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Pressure",
+      "description": "System pressure at which the dew point is evaluated.",
+      "unit": "Pa"
+    }
+  },
+  "required": ["P"],
+  "additionalProperties": false
+}

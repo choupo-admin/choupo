@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Cooled WGS via reactiveFlash (B1) -- cross-checks the elementPotential V+L result";
+verbosity     2;

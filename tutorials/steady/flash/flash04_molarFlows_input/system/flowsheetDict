@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  flash04_molarFlows_input  --  same benzene/toluene flash as flash01, but the
+                                feed is declared via per-species molar flows.
+
+  Instead of writing  F = 100 kmol/h  + composition { benzene 0.40; toluene 0.60; },
+  this case writes the absolute molar flow of each species:
+
+      molarFlows
+      {
+          benzene  40 kmol/h;
+          toluene  60 kmol/h;
+      }
+
+  The parser sums to F_total = 100 kmol/h and derives x_benzene = 0.4,
+  x_toluene = 0.6.  Physically equivalent to flash01 -- and the result
+  table is identical to printer precision (V/F = 0.304, L = 69.6 kmol/h,
+  V = 30.4 kmol/h).
+
+  Demonstrates the (d) form of stream declaration; see userGuide
+  "Composition basis" for the five accepted forms.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        T            370.0 K;
+        P              1.0 bar;
+        molarFlows
+        {
+            benzene   40.0 kmol/h;
+            toluene   60.0 kmol/h;
+        }
+    }
+}
+
+units
+(
+    {
+        name        flash04;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 370.0 K;  P 1.0 bar; }
+    }
+);

@@ -1,0 +1,3 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    tb_acetone             Tb_K             322.11             1e-4

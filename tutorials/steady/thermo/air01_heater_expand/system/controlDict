@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Predefined mixture: heat a stream fed with `components ( air )`, which expands to N2/O2/Ar at load time";
+verbosity     2;

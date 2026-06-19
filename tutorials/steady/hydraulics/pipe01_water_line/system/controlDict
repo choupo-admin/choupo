@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for tutorial pipe01_water_line.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Pipe pressure drop: 2000 kmol/h water in a 0.1 m x 50 m commercial-steel line (Churchill friction)";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

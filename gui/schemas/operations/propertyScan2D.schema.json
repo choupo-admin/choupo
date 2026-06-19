@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/propertyScan2D.schema.json",
+  "title": "propertyScan2D operation",
+  "description": "Two-dimensional property sweep: vary two state variables on a regular grid, evaluating each property at every (x, y) node.  Writes a long-form CSV (one row per node) ready to be pivoted into a heatmap -- the PropsView's CsvAutoPlot renders it that way with a property selector.  NaN cells are written when a property evaluation fails at a corner (e.g. an unphysical T_bubble at low P) and the loop continues.",
+  "type": "object",
+  "properties": {
+    "varyX": {
+      "type": "object",
+      "title": "X axis",
+      "properties": {
+        "variable": { "type": "string", "title": "Axis variable (T, P, x[<comp>])" },
+        "from":     { "type": "number", "title": "Lower bound" },
+        "to":       { "type": "number", "title": "Upper bound" },
+        "n":        { "type": "integer", "minimum": 2, "title": "Number of points" }
+      },
+      "required": ["variable", "from", "to", "n"]
+    },
+    "varyY": {
+      "type": "object",
+      "title": "Y axis",
+      "properties": {
+        "variable": { "type": "string", "title": "Axis variable" },
+        "from":     { "type": "number" },
+        "to":       { "type": "number" },
+        "n":        { "type": "integer", "minimum": 2 }
+      },
+      "required": ["variable", "from", "to", "n"]
+    },
+    "state": {
+      "type": "object",
+      "title": "Held state",
+      "description": "The state values held fixed across the grid -- typically just the composition."
+    },
+    "properties": {
+      "type": "array",
+      "title": "Properties to evaluate",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "output": {
+      "type": "object",
+      "title": "Output file",
+      "properties": {
+        "file": { "type": "string", "title": "CSV filename" }
+      },
+      "required": ["file"]
+    }
+  },
+  "required": ["varyX", "varyY", "properties", "output"],
+  "additionalProperties": true
+}

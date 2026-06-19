@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/shortcutColumn.schema.json",
+  "title": "shortcutColumn operation",
+  "description": "Preliminary column design by the Fenske-Underwood-Gilliland (FUG) shortcut method.  Specify the two key components and their recoveries to the distillate, plus the operating reflux (refluxRatio directly, or refluxFactor = R/R_min).  Returns N_min (Fenske), R_min (Underwood), the actual stage count N (Gilliland) and the feed stage (Kirkbride).  Assumes constant relative volatility -- not for azeotropes; use the rigorous distillationColumn for those.",
+  "type": "object",
+  "properties": {
+    "lightKey": {
+      "type": "string",
+      "title": "Light key",
+      "description": "The more-volatile key component, sharp at the top."
+    },
+    "heavyKey": {
+      "type": "string",
+      "title": "Heavy key",
+      "description": "The less-volatile key component, sharp at the bottom."
+    },
+    "recoveryLK": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Light-key recovery to distillate",
+      "description": "Fraction of the feed light key that leaves in the distillate (e.g. 0.99).",
+      "unit": "-"
+    },
+    "recoveryHK": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Heavy-key recovery to distillate",
+      "description": "Fraction of the feed heavy key that leaves in the distillate (e.g. 0.01).",
+      "unit": "-"
+    },
+    "refluxRatio": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating reflux ratio",
+      "description": "Reflux ratio R directly; must exceed R_min.  Use this OR refluxFactor.",
+      "unit": "-"
+    },
+    "refluxFactor": {
+      "type": "number",
+      "exclusiveMinimum": 1,
+      "title": "Reflux factor R / R_min",
+      "description": "Operating reflux as a multiple of the minimum (e.g. 1.3).  Use this OR refluxRatio.",
+      "unit": "-"
+    }
+  },
+  "required": ["lightKey", "heavyKey", "recoveryLK", "recoveryHK"],
+  "additionalProperties": false
+}

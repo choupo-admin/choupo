@@ -1,0 +1,7 @@
+name      SS304;
+density   8000;
+F_M       2.34;      // Turton 4th ed. Appendix A
+sigma_y   138;
+maxT      870;
+maxP      100;
+thermalConductivity 16.2;  // W/(m·K)  (typical, for HX wall conduction)

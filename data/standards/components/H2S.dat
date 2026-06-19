@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Hydrogen sulfide  (H2S, CAS 7783-06-4)
+
+  Sour-gas contaminant in natural gas and biogas.  Removed by amine
+  scrubbing; recovered as elemental S via the Claus process
+  (2 H2S + SO2 -> 3 S + 2 H2O at 1000-1500 K) --- another good
+  GibbsReactor target with strong T sensitivity.
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+  reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
+  literature value, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        H2S;
+formula     H2S;
+CAS         7783-06-4;
+
+// role solute (v0.28+): in a water solvent the K-value comes from
+// HenrysLaw/H2S-water.dat instead of Antoine/Raoult.
+role        solute;
+
+MW          34.082;            // kg/kmol
+Tc          373.40;             // K
+Pc          89.63;              // bar
+omega       0.090;              // [-]
+Tb          213.60;             // K
+HvapTb      18670;              // J/mol
+Vliq        3.49e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    -20630.0;        // J/mol  -- ideal-gas reference
+    s_298      205.79;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.22883   806.62   -25.770);
+    Trange        (188  340);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (31.94   1.436e-3   2.432e-5   -1.176e-8);
+    Trange        (250  1500);
+}

@@ -1,0 +1,10 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    gamma_naoh             Lphi_AAD_abs_Jmol 23.6761            1e-4
+diag    gamma_naoh             Lphi_AAD_rel_pct 4.9683             1e-4
+diag    gamma_naoh             Lphi_extrap_maxdev_Jmol 15897.6903         1e-4
+diag    gamma_naoh             Lphi_nMeas       29.0000            1e-4
+diag    gamma_naoh             aw_1m            0.9665             1e-4
+diag    gamma_naoh             gamma_pm_1m      0.6679             1e-4
+diag    gamma_naoh             gamma_pm_3m      0.7838             1e-4
+diag    gamma_naoh             phi_1m           0.9471             1e-4

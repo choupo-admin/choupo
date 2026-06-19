@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  fitBinaryPair -- regress NRTL a_ij/b_ij/a_ji/b_ji of the ethanol-water
+  binary pair against experimental Tbub-vs-x data at 1 atm.
+\*---------------------------------------------------------------------------*/
+
+type      fitBinaryPair;
+
+pair      ethanol-water;
+data      constant/experiments/ethanol-water-101kPa;
+unit      bt01;
+
+// Optional knobs (defaults shown):
+// maxIter   30;
+// tolerance 1.0e-6;
+// fdStep    1.0e-4;
+// lambda0   1.0e-3;

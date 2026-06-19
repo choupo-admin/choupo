@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Four components, two pairs:
+    benzene / benzeneAW   -- non-polar:  Antoine (data fit) vs Ambrose-Walton
+    ethanol / ethanolAW   -- associating: Antoine (data fit) vs Ambrose-Walton
+
+  The *AW twins are case-local components (constant/components/) that reuse the
+  same Tc/Pc/omega but route Psat through corresponding states.  Side by side on
+  one axis you SEE where corresponding states is good (benzene) and where it is
+  not (ethanol).
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  benzeneAW  ethanol  ethanolAW );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

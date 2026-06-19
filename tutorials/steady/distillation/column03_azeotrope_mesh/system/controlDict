@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "Azeotropic distillation (ethanol/water, NRTL) by the rigorous simultaneous MESH method";
+verbosity     3;
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    profiles       { }     // per-stage T, x_i, y_i down the column
+    spreadsheet    { }     // coloured .ods (streams + balances + profile)
+}

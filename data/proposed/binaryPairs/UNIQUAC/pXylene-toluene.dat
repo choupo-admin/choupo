@@ -1,0 +1,35 @@
+// ChemSep DECHEMA UNIQUAC pair -- pXylene-toluene (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( pXylene toluene );
+model       UNIQUAC;
+
+parameters
+{
+    i           pXylene;
+    j           toluene;
+    a_ij        -60.2384;   // K
+    a_ji        61.0864;   // K
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_toluene_pXylene   121.3912;   // CAS 108-88-3 -> 106-42-3
+    A_pXylene_toluene   -119.706;   // CAS 106-42-3 -> 108-88-3
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "uniquac.ipd";
+    sourceRecord  "108-88-3/106-42-3";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "UNIQUAC";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

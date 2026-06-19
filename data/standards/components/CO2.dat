@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Carbon dioxide  (CO2, CAS 124-38-9)
+  Above its triple point (216.55 K, 5.18 bar) CO2 has a normal liquid
+  range only up to Tc = 304.13 K.  In process work above ambient T it
+  is permanently gaseous.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        CO2;
+formula     CO2;
+noncondensable true;     // permanent carrier gas (psychrometric carrier)
+CAS         124-38-9;
+
+// role solute (v0.28+): when the thermo package declares a solvent
+// for which a HenrysLaw/CO2-<solvent>.dat entry exists (water,
+// MEA, ...), the K-value comes from Henry's law instead of the
+// Raoult/γ-φ form.  Falls back to Raoult/γ-φ when no Henry entry
+// is available --- backwards-compatible with existing CO2-bearing
+// tutorials (gibbs cases use GibbsReactor, which does not call Kvec).
+role        solute;
+
+MW          44.010;       // kg/kmol
+Tc          304.13;       // K
+Pc          73.83;        // bar
+omega       0.225;        // [-]
+Tb          194.65;       // K  (sublimation point at 1 atm)
+HvapTb      25230;        // J/mol  (estimate at triple-point T)
+Vliq        4.70e-5;      // m^3/mol  (47.0 cm^3/mol at 273 K)
+diffusionVolume  26.9;          // Fuller diffusion volume [-]
+
+gibbsFormation
+{
+    dHf_298   -393520.0;          // J/mol  -- ideal-gas reference
+    s_298     213.790;            // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (6.81228   1301.679   -3.494);
+    Trange        (154  204);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3  (ideal-gas Cp
+    // polynomial -- individual literature value, primary re-citation pending)
+    coefficients  (19.80   7.344e-2   -5.602e-5   1.715e-8);
+    Trange        (250  1500);
+}
+
+// Liquid Cp -- physically extrapolated stub (CO2 is gas or solid at
+// normal P; liquid only above 5.18 bar).  Same purpose as the N2 stub.
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (90.0);          // J/(mol·K), constant approximation
+}

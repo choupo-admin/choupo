@@ -1,0 +1,108 @@
+/*---------------------------------------------------------------------------*\
+  membrane10_dspmde_divalent  --  the charge-aware NF signature, glass-box.
+
+  THREE parallel NF270 elements, one per salt, all on the SAME membrane
+  (NF270_dspmde, with the DSPM-DE charged-pore tier) at the SAME 10 bar /
+  5 mM feed.  The point is the REJECTION ORDERING that the Donnan-Steric Pore
+  Model with Dielectric Exclusion produces from first principles:
+
+       R_obs(MgSO4)  >  R_obs(CaCl2)  >  R_obs(NaCl)
+       (2:2 divalent)   (2:1 mixed)      (1:1 monovalent)
+
+  WHY (Bowen-Welfoot 2002): the membrane carries a NEGATIVE fixed charge
+  (X_d = -40 mol/m3).  The CO-ION (the anion, here Cl- / SO4--) is excluded by
+  Donnan; a DIVALENT co-ion (SO4--) is excluded far more strongly than a
+  monovalent one (z^2 in the Donnan + Born partition).  So MgSO4 -- whose
+  co-ion is divalent -- is rejected most; NaCl -- whose co-ion is the
+  monovalent Cl- -- least.  This is the classic NF fingerprint that plain
+  solution-diffusion (one B_s per salt) cannot predict mechanistically.
+
+  All data is case-local (self-contained): the salts carry an electrolyte{}
+  ion decomposition, the ions carry the radius/D0 transport tier, and the
+  membrane carries the poreModel{} block.
+
+  `transport DSPM-DE;` selects the charged-pore law; drop it (or set
+  `transport solutionDiffusion;`) to compare against the baseline.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed_NaCl
+    {
+        F            200.0 kmol/h;
+        T            298.15 K;
+        P            10.0 bar;
+        // 5 mM NaCl: c_NaCl = 5 mol/m3 = 5e-3 kmol/m3; in a ~55.5 kmol/m3
+        // aqueous basis z_NaCl ~ 5e-3 / 55.5 = 9.0e-5.
+        molarComposition  { water 0.99991;  NaCl 0.00009; }
+    }
+    feed_CaCl2
+    {
+        F            200.0 kmol/h;
+        T            298.15 K;
+        P            10.0 bar;
+        molarComposition  { water 0.99991;  CaCl2 0.00009; }
+    }
+    feed_MgSO4
+    {
+        F            200.0 kmol/h;
+        T            298.15 K;
+        P            10.0 bar;
+        molarComposition  { water 0.99991;  MgSO4 0.00009; }
+    }
+}
+
+units
+(
+    {
+        name        NF_NaCl;
+        type        spiralWoundModule;
+        in          feed_NaCl;
+        outputs     ( ret_NaCl  perm_NaCl );
+        operation
+        {
+            membrane         NF270_dspmde;
+            transport        DSPM-DE;
+            area             5.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;
+            nNodes           50;
+        }
+    }
+    {
+        name        NF_CaCl2;
+        type        spiralWoundModule;
+        in          feed_CaCl2;
+        outputs     ( ret_CaCl2  perm_CaCl2 );
+        operation
+        {
+            membrane         NF270_dspmde;
+            transport        DSPM-DE;
+            area             5.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;
+            nNodes           50;
+        }
+    }
+    {
+        name        NF_MgSO4;
+        type        spiralWoundModule;
+        in          feed_MgSO4;
+        outputs     ( ret_MgSO4  perm_MgSO4 );
+        operation
+        {
+            membrane         NF270_dspmde;
+            transport        DSPM-DE;
+            area             5.0;
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;
+            nNodes           50;
+        }
+    }
+);

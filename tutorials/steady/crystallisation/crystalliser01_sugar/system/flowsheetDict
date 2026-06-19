@@ -1,0 +1,24 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser01_sugar / flowsheetDict   (LEAF node)
+
+  A hot sugar solution (z_sucrose 0.15, ~3.35 kg/kg water, below saturation
+  at 80 C where c_sat ~ 3.8) is cooled to 20 C (c_sat ~ 2.0 kg/kg).  The
+  excess crystallises.  Magma = crystals (s[]) + saturated mother liquor.
+\*---------------------------------------------------------------------------*/
+
+name        cryst;
+type        crystalliser;
+operation   { operatingTemperature 293.15 K; }     // cool to 20 C (a setpoint)
+
+boundary    { inlets ( feed );  outlets ( magma ); }
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            353.15 K;          // 80 C hot solution
+        P              1.0 bar;
+        molarComposition  { water 0.85;  sucrose 0.15; }
+    }
+}

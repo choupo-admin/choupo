@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: propylene glycol refrigeration brine (closed secondary loop).
+
+  Sources: Sinnott & Towler 6ed (2022) §6.5.3.
+
+  When to use:
+    For process duties needing a cold side below the freezing margin of
+    plain chilled water (~5 C floor) down to about -10 C.  Typical
+    applications: freeze crystallisers, pharmaceutical lyophilisation
+    pre-cool, food-industry pasteurisation cooling.
+
+    Primary refrigerant (ammonia / propylene) chills the brine in a
+    secondary HX; the brine then circulates to many scattered consumers.
+    More efficient than direct expansion when loads are distributed.
+
+  Note: Cost grows steeply as T_in drops (Carnot penalty); below -25 C
+  the secondary loop becomes unattractive — switch to direct refrigerant.
+\*---------------------------------------------------------------------------*/
+
+utility     refrigerationPG;
+tier        cooling;
+mechanism   sensible;                  // 5 K loop rise; no phase change
+
+components  ( propyleneGlycol30 );     // pseudo-component
+state       subcooledLiquid;
+P           3.0 bar;
+T_in        273.15 K;                  // 0 C delivery
+T_out       278.15 K;                  // 5 C return (typical 5 K rise)
+
+// Energy rejected per kg: Cp_avg × ΔT for the 5 K loop rise.
+// Cp_avg at T_avg = 276 K from the polynomial fit: 3784 J/kg·K.
+dutyPerKg   18900.0;                   // J/kg  (3784 × 5)
+
+cost        6.0;                       // €/GJ rejected
+costYear    2022;
+description "Propylene-glycol-30 refrigeration brine (0 -> 5 C)";

@@ -1,0 +1,7 @@
+components       ( ethanol  water  aceticAcid  ethylAcetate );
+
+// Ideal Raoult for pedagogical simplicity: the still leg then shows
+// classic Rayleigh enrichment without the NRTL azeotrope complication
+// (which is the subject of still02 instead).
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

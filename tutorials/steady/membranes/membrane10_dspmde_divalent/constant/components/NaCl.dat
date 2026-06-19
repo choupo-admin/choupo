@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Sodium chloride (NaCl, CAS 7647-14-5)
+
+  A non-volatile fully-dissociating 1-1 salt --- the canonical solute
+  for RO desalination tutorials.  Brackish water is ~5 g/L NaCl;
+  seawater is ~35 g/L (~0.6 mol/L NaCl).
+
+  At dilute aqueous concentrations the ideal van't Hoff form
+      π = ν R T c        with ν = 2
+  predicts the osmotic pressure to within ~5 % up to ~1 mol/L; for
+  precise screening at higher concentrations one switches to the
+  Pitzer or electrolyte-NRTL activity models (both implemented; selected
+  with `activityModel { model pitzer; }` / `{ model eNRTL; }`).  Beyond
+  membranes, NaCl now also drives the evaporator (BPE from a_w) and the
+  crystalliser (saturation from the ion-activity Ksp) tutorials.
+
+  Properties relevant to membrane simulation:
+    MW             58.44 g/mol
+    dissociation    2 (fully dissociated 1-1 electrolyte)
+    nonvolatile    true (never appears in the vapour)
+
+  The vapour-pressure block is left empty: with nonvolatile=true
+  the runtime never reads it.  Liquid Cp is intentionally absent
+  too --- membrane simulations do not run an energy balance on the
+  solute side; for tutorials that DO need an energy balance with
+  dissolved salt the Cp of the salt-free water dominates by 2-3
+  orders of magnitude and the salt contribution is neglected.
+\*---------------------------------------------------------------------------*/
+
+name           NaCl;
+formula        NaCl;
+CAS            7647-14-5;
+
+MW             58.44;          // g/mol  (= kg/kmol)
+nonvolatile    true;
+dissociation   2;              // van't Hoff factor for π = ν R T c
+
+// Salt dissociation map for the electrolyte activity model (pitzer).  cation/anion
+// are ion NAMES into data/standards/electrolyte/{ions,pairs}.dat; solubility is the
+// measured saturation molality.  Intrinsic salt chemistry, declared ONCE -- a case
+// selects `activityModel { model pitzer; }` and re-types nothing.
+electrolyte
+{
+    cation     Na;          // -> ions.dat (z = +1)
+    anion      Cl;          // -> ions.dat (z = -1); pairs.dat (Na,Cl)
+    solubility 6.144;       // m_sat [mol/kg], 25 C
+    dissolutionEnthalpy 3880;  // J/mol; standard enthalpy of solution NaCl(s)->Na+(aq)+Cl-(aq),
+                               //   +3.88 kJ/mol (Ksp(T) van't Hoff; small -> NaCl ~T-flat)
+    provenance { solubility { origin measured; method "Pinho & Macedo, J. Chem. Eng. Data 50 (2005) 29 (aqueous, 25 C; primary)"; } }
+}
+
+// Solid-crystal properties for the population-balance crystalliser (MSMPR/FVM):
+// particle density + volume shape factor (V = k_v L^3).  NaCl grows as CUBES.
+// PRIMARY: halite density 2.165 g/cm^3 (crystallographic, public domain); k_v = 1.0 (cube).
+solid
+{
+    rho_p   2165.0;     // crystalline NaCl (halite) density [kg/m^3]
+    k_v     1.0;        // volume shape factor (cube)
+}

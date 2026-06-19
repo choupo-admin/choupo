@@ -1,0 +1,10 @@
+application   choupoBatch;
+description   "Isothermal batch reactor: consecutive A -> B -> C with k1 > k2; intermediate B peaks then decays";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         1500;     // s   (~ 3 * tau_2 = ample to see B rise + peak + decay)
+deltaT          1.0;      // s
+writeInterval   25;       // s   (dense enough to resolve the B peak around t ~ 200 s)

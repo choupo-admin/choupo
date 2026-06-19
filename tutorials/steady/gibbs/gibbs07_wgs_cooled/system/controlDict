@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Cooled WGS Gibbs reactor (350 K): water condenses, shifting the equilibrium (multi-phase)";
+verbosity     2;

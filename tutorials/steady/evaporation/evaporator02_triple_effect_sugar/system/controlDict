@@ -1,0 +1,26 @@
+application   choupoSolve;
+description   "Triple-effect cocurrent evaporator: 22500 kg/h sugar solution 5%->25% (MCFT Ex. 10.4)";
+verbosity     3;
+
+// Mass-basis display recovers the textbook framing of the problem
+// (kg/h, kg/kmol, w_i fractions) so the V/F splits and the L3 =
+// 4500 kg/h target are immediately legible.
+units
+{
+    pressure       kPa;
+    temperature    K;
+    flow           kg/h;
+}
+
+// Reports (v0.41+) -> reports/<domain>/.  This triple-effect cascade
+// tags its three steam chests with a `category`, so the utilities
+// report rolls up the total LP-steam demand --- the headline number
+// for an evaporator-train design.
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    utilities      { }
+    computed       { }
+    spreadsheet    { }
+}

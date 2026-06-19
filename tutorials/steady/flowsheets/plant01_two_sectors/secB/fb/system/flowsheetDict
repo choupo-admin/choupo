@@ -1,0 +1,5 @@
+/* LEAF flash in sector B (hotter -- re-flashes secA's liquid) */
+name        fb;
+type        isothermalFlash;
+operation   { T 378.0 K;  P 1.0 bar; }
+boundary    { inlets ( feed );  outlets ( liquid  vapor ); }

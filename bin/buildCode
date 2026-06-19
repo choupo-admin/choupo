@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+# =============================================================================
+#  buildCode  --  COMPILE a case's own unit operations (does NOT run it)
+#
+#  Build-time user code (v0.42+).  A case may ship C++ under `code/`
+#  defining new unit-op types --- the high point of the course: the
+#  student stops being a user and becomes an author.  This script
+#  compiles that code against libchoupo.a + the choupoSolve entry
+#  point into a per-case binary (case/code/.build/choupoCase).
+#
+#  It only BUILDS --- to run the case, use `runCase` (which compiles
+#  first if the case has a code/ folder).  buildCode is the
+#  development-loop command: edit, buildCode, see compiler errors, fix.
+#
+#  NO runtime dlopen, NO macro self-registration: the new types are
+#  linked at build time and registered through the case's own
+#  `registerUserTypes()` (which replaces the empty library stub).
+#
+#  The case's code/ folder must contain:
+#    * one or more <MyOp>.{H,cpp} deriving from UnitOperation
+#    * a registerUserTypes() definition that calls
+#        Choupo::UnitOperation::registerType("myOp", ...);
+#
+#  Usage:
+#      buildCode tutorials/steady/userOp01_yield_reactor
+#      buildCode .            # current directory (or run from inside code/)
+# =============================================================================
+
+set -euo pipefail
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -h|--help) sed -n '3,26p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        --) shift; break ;;
+        -*) echo "buildCode: unknown option '$1'" >&2; exit 1 ;;
+        *)  break ;;
+    esac
+done
+
+CASE="${1:-.}"
+CASE_ABS=$(cd "$CASE" 2>/dev/null && pwd) || {
+    echo "buildCode: '$CASE' is not a directory" >&2; exit 1; }
+
+# Friendly: if pointed at (or run from inside) a case's code/ folder,
+# step up to the case itself --- the student edits inside code/ and will
+# naturally run buildCode from there.
+if [ "$(basename "$CASE_ABS")" = code ] && [ -d "$CASE_ABS/../system" ]; then
+    CASE_ABS=$(dirname "$CASE_ABS")
+fi
+
+if [ ! -d "$CASE_ABS/code" ]; then
+    echo "buildCode: '$CASE_ABS' has no code/ folder." >&2
+    echo "           A case needs a code/ folder with its own unit ops to use buildCode." >&2
+    echo "           For a plain case (built-in unit ops only), use runCase." >&2
+    exit 1
+fi
+
+# Project root = parent of this script's bin/ directory.
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+CXX="${CXX:-g++}"
+
+echo "buildCode: ensuring libchoupo.a is up to date ..."
+make -C "$ROOT" --no-print-directory lib
+
+# Which binary's entry to link against -- read the case's `application`
+# (walking UP, like the engine's fractal cascade; a composite sector inherits
+# the plant controlDict).  choupoSolve (default) for a flowsheet case;
+# choupoProps for a case whose own op is a PropertyOperation (a student's own
+# property-estimation method).
+APP=""
+p="$CASE_ABS"
+for _ in 1 2 3 4 5 6; do
+    if [ -f "$p/system/controlDict" ]; then
+        APP=$(grep -oP '^[[:space:]]*application[[:space:]]+\K\w+' "$p/system/controlDict" | head -1)
+        break
+    fi
+    np=$(dirname "$p"); [ "$np" = "$p" ] && break; p="$np"
+done
+APP="${APP:-choupoSolve}"
+case "$APP" in
+    choupoSolve|choupoProps) ;;
+    *) echo "buildCode: application '$APP' has no case-local code/ support yet (only choupoSolve, choupoProps)." >&2
+       exit 1 ;;
+esac
+echo "buildCode: target binary = $APP (from the case's application)"
+
+LIB=$(find "$ROOT/build" -name libchoupo.so | head -1)
+MAIN=$(find "$ROOT/build" -path "*applications/$APP/main.o" | head -1)
+if [ -z "$LIB" ] || [ -z "$MAIN" ]; then
+    echo "buildCode: could not locate libchoupo.so or $APP/main.o (run 'make all' first)." >&2
+    exit 1
+fi
+LIBDIR=$(dirname "$LIB")
+
+# Auxiliary objects of THIS application that the binary needs but that are NOT
+# in libchoupo.so -- everything in the app's build dir except main.o (linked as
+# $MAIN), the empty registerUserTypes stub (the case's code/ provides the real
+# one), and the WASM-only entry.  Without these, symbols main.o references
+# (e.g. computeAad in AadCompare.o) are undefined at link time.
+APP_AUX=$(find "$(dirname "$MAIN")" -maxdepth 1 -name '*.o' \
+    ! -name 'main.o' ! -name 'registerUserTypesStub.o' ! -name 'wasmEntry.o' \
+    | tr '\n' ' ')
+
+OUTDIR="$CASE_ABS/code/.build"
+mkdir -p "$OUTDIR"
+BIN="$OUTDIR/choupoCase"
+
+USER_SRC=$(find "$CASE_ABS/code" -maxdepth 1 -name '*.cpp')
+if [ -z "$USER_SRC" ]; then
+    echo "buildCode: no .cpp files in '$CASE_ABS/code'." >&2
+    exit 1
+fi
+
+# Optional extra compiler/linker flags.
+# A case may add include dirs and link external libraries (a property
+# library, GSL, Eigen, ...) by writing `code/options` with lines:
+#
+#     INCLUDE = -I/opt/coolprop/include
+#     LIBS    = -L/opt/coolprop/lib -lCoolProp
+#     FLAGS   = -O3 -ffast-math
+#
+# These are the student's own dependencies, on the student's own code ---
+# the ENGINE (src/) stays dependency-free; only this case's code/ may
+# reach outside.  `#` comments allowed.
+EXTRA_INC=""; EXTRA_LIBS=""; EXTRA_FLAGS=""
+OPTS="$CASE_ABS/code/options"
+if [ -f "$OPTS" ]; then
+    # `|| true`: a key absent (or all lines commented) makes grep exit 1,
+    # which under `set -e` would abort the script.  Tolerate no-match.
+    EXTRA_INC=$(grep -oP '^\s*INCLUDE\s*=\s*\K.*' "$OPTS" | tr '\n' ' ') || true
+    EXTRA_LIBS=$(grep -oP '^\s*LIBS\s*=\s*\K.*'   "$OPTS" | tr '\n' ' ') || true
+    EXTRA_FLAGS=$(grep -oP '^\s*FLAGS\s*=\s*\K.*' "$OPTS" | tr '\n' ' ') || true
+    if [ -n "$EXTRA_INC$EXTRA_LIBS$EXTRA_FLAGS" ]; then
+        echo "buildCode: extra flags from code/options:"
+        [ -n "$EXTRA_INC" ]   && echo "             INCLUDE = $EXTRA_INC"
+        [ -n "$EXTRA_LIBS" ]  && echo "             LIBS    = $EXTRA_LIBS"
+        [ -n "$EXTRA_FLAGS" ] && echo "             FLAGS   = $EXTRA_FLAGS"
+    fi
+fi
+
+# Link: choupoSolve main.o + the case's own code (which provides
+# registerUserTypes) + the engine library, plus any code/options extras.
+# The empty library stub is NOT linked here, so the case's
+# registerUserTypes() resolves the symbol.  Print the EXACT command ---
+# this is plain build-time g++, nothing hidden, no runtime dlopen.
+# Link DYNAMICALLY against libchoupo.so (the shared-library model): the
+# per-case binary references the engine, it does not embed it.  rpath is
+# the ABSOLUTE engine build dir (the binary lives elsewhere, in
+# case/code/.build/).
+echo "buildCode: the compile command is plain g++ (build-time, nothing hidden):"
+echo ""
+echo "    $CXX -std=c++17 -O2 $EXTRA_FLAGS -I $ROOT/src $EXTRA_INC \\"
+echo "        $MAIN $APP_AUX \\"
+for s in $USER_SRC; do echo "        $s \\"; done
+echo "        -L$LIBDIR -lchoupo -Wl,-rpath,$LIBDIR $EXTRA_LIBS \\"
+echo "        -o $BIN"
+echo ""
+# shellcheck disable=SC2086
+"$CXX" -std=c++17 -O2 $EXTRA_FLAGS -I "$ROOT/src" $EXTRA_INC \
+    "$MAIN" $APP_AUX $USER_SRC \
+    -L"$LIBDIR" -lchoupo -Wl,-rpath,"$LIBDIR" $EXTRA_LIBS \
+    -o "$BIN"
+echo "buildCode: built $BIN"
+echo "buildCode: OK --- to run the case, use:  runCase $CASE_ABS"

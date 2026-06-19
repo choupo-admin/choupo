@@ -1,0 +1,10 @@
+application   choupoBatch;
+description   "Single-reactor recipe with T_setpoint steps: 320 K → 350 K @ 200 s → 380 K @ 500 s";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         900;      // s
+deltaT          1.0;      // s
+writeInterval   15;       // s

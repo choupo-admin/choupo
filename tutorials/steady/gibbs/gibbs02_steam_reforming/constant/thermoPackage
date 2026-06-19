@@ -1,0 +1,9 @@
+/*---------------------------------------------------------------------------*\
+  Five-species gas-phase Gibbs reactor:
+    CH4, water (H2O), CO, CO2, H2  over  C, H, O.
+\*---------------------------------------------------------------------------*/
+
+components       ( CH4  water  CO  CO2  H2 );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

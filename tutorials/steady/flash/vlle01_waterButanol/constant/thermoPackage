@@ -1,0 +1,63 @@
+/*---------------------------------------------------------------------------*\
+  thermoPackage  --  water / 1-butanol with vapour + two liquid phases.
+
+  At T ≈ 92-93 °C and 1 atm the water / 1-butanol mixture forms a
+  hetero-azeotrope: a vapour phase coexists with two liquid phases
+  (aqueous and organic).  NRTL parameters here are the same set used
+  in extraction01_waterButanol (v0.18, hand-tuned to give a clear LL
+  gap); Antoine vapour pressures come from the component database.
+
+  The IsothermalFlash solves the 3-phase problem by direct Gibbs
+  minimisation on the 4-dimensional (β_V, β_α, y_water, x_α_water)
+  simplex --- ideal gas for the vapour, NRTL for both liquids.
+\*---------------------------------------------------------------------------*/
+
+components       ( water  nButanol );
+
+phases
+(
+    {
+        name      vapor;
+        type      vapor;
+        eos
+        {
+            model       idealGas;
+        }
+    }
+
+    {
+        name      aqueous;
+        type      liquid;
+        activity
+        {
+            model       NRTL;
+            pairs
+            (
+                {
+                    i       water;       j       nButanol;
+                    a_ij    0.0;        b_ij    1500;
+                    a_ji    0.0;        b_ji    1200;
+                    alpha   0.30;
+                }
+            );
+        }
+    }
+
+    {
+        name      organic;
+        type      liquid;
+        activity
+        {
+            model       NRTL;
+            pairs
+            (
+                {
+                    i       water;       j       nButanol;
+                    a_ij    0.0;        b_ij    1500;
+                    a_ji    0.0;        b_ji    1200;
+                    alpha   0.30;
+                }
+            );
+        }
+    }
+);

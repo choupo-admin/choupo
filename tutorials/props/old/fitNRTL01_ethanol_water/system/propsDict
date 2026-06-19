@@ -1,0 +1,90 @@
+/*---------------------------------------------------------------------------*\
+  fitNRTL01_ethanol_water
+  =======================
+
+  Levenberg-Marquardt regression of the four NRTL pair coefficients
+  (a_ij, b_ij, a_ji, b_ji; alpha fixed at 0.3) against 11 bubble-T
+  measurements of ethanol/water at 1.01325 bar (DECHEMA subset).
+
+  How the loop works:
+
+      1. Read INITIAL pair coefficients from thermoPackage.
+      2. Build a temporary ThermoPackage with those coefficients.
+      3. For each (x_eth, T_exp) row, run BubblePoint::compute and
+         record residual = T_bub_model - T_exp.
+      4. Build Jacobian J_ij = d(residual_i)/d(param_j) by forward-
+         difference (4 extra ThermoPackage builds per LM iter).
+      5. Solve  (JᵀJ + λ diag(JᵀJ)) δp = -Jᵀr  (Gauss-Jordan).
+      6. Clamp δp to bounds, evaluate trial chi2; accept (λ *= 0.7)
+         or reject (λ *= 2.5).
+      7. Stop when relative chi2 change < tolerance, OR maxIter.
+
+  Outputs:
+      fit_history.csv  --  chi2 + parameter trajectory per iteration
+      parity.csv       --  T_bub model vs experiment at the optimum,
+                            for the GUI parity plot
+
+  Pedagogical hook: this fit CONVERGES to a low chi2 (the model
+  reproduces the data well), yet the Fit view reports it as NOT
+  individually identifiable -- max|correlation| = 1.000 between
+  a_ij and b_ij (and between a_ji and b_ji).  The reason is structural:
+  NRTL tau = a + b/T is linear in BOTH a and b/T, so at a SINGLE
+  pressure (all 11 points are at 1 atm) a and b/T cannot be separated
+  -- only their combination is pinned.  Try varying the INITIAL values
+  by +/-50% and rerun: the chi2 optimum is reached from many starts,
+  but the FITTED a/b values differ wildly between starts.  That is the
+  signature of unidentifiable (exchangeable) parameters -- the OPPOSITE
+  of well-determined.  To separate a from b, add bubble-T data at a
+  DIFFERENT PRESSURE.  This is exactly the lesson the identifiability
+  statistics exist to teach: a good fit is not trustworthy parameters.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        fit_nrtl;
+        type        fitParameters;
+
+        parameters
+        (
+            { path  activityModel.pairs[0].a_ij;   initial -0.500;  min -5.0;     max  5.0;    }
+            { path  activityModel.pairs[0].b_ij;   initial  200.0;  min -1500.0;  max  1500.0; }
+            { path  activityModel.pairs[0].a_ji;   initial  2.500;  min -5.0;     max  5.0;    }
+            { path  activityModel.pairs[0].b_ji;   initial -400.0;  min -1500.0;  max  1500.0; }
+        );
+
+        residual
+        {
+            kind        T_bubble;
+            P           1.01325 bar;
+            data
+            (
+                0.05  361.95
+                0.10  359.95
+                0.20  358.05
+                0.30  357.30
+                0.40  356.85
+                0.50  356.20
+                0.60  355.30
+                0.70  354.50
+                0.80  353.30
+                0.90  351.85
+                0.95  351.45
+            );
+        }
+
+        options
+        {
+            maxIter      40;
+            tolerance    1.0e-4;
+            fdStep       1.0e-3;
+            lambda0      1.0e-3;
+        }
+
+        output
+        {
+            fit_log     fit_history.csv;
+            parity      parity.csv;
+        }
+    }
+);

@@ -1,0 +1,9 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0555555555556    1e-4
+stream  permeate               F                0.0149592593212    1e-4
+stream  retentate              F                0.040651649066     1e-4
+kpi     NFunit                 J_w_avg          5.38800899738e-05  1e-4
+kpi     NFunit                 R_obs_glucose    0.66266039444      1e-4
+kpi     NFunit                 dP_feed          100000             1e-4
+kpi     NFunit                 water_recovery   0.269176136422     1e-4

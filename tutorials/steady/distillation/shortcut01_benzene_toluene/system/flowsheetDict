@@ -1,0 +1,57 @@
+/*---------------------------------------------------------------------------*\
+  shortcut01_benzene_toluene
+  ==========================
+
+  Preliminary column design by the Fenske-Underwood-Gilliland (FUG)
+  shortcut method (the built-in `shortcutColumn`).  The same benzene/
+  toluene separation as the rigorous `column01`, but designed in closed
+  form: you specify the key recoveries and the reflux, and FUG returns
+  the minimum stages, the minimum reflux, the actual stage count and the
+  feed location.
+
+  Feed:  100 kmol/h, 50/50 benzene/toluene, saturated liquid, 1 atm.
+  Keys:  LK = benzene, HK = toluene (α ≈ 2.4).
+  Spec:  99 % of the benzene to the distillate, 1 % of the toluene.
+  Reflux: R = 1.3 · R_min.
+
+  Expected (α ≈ 2.4):
+      N_min  ≈ 10.5   (Fenske, total reflux)
+      R_min  ≈ 1.2    (Underwood)
+      N      ≈ 22     (Gilliland, at R = 1.3 R_min)
+      distillate ~99 % benzene, bottoms ~99 % toluene; mass closes 100 %.
+
+  Compare with the rigorous column01 (Wang-Henke): FUG is a fast design
+  estimate; the rigorous column is the verification.  FUG does NOT handle
+  azeotropes --- it assumes constant relative volatility.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            365.0 K;
+        P            1.01325 bar;
+        vf           0.0;            // saturated liquid (q = 1)
+        molarComposition { benzene 0.5;  toluene 0.5; }
+    }
+}
+
+units
+(
+    {
+        name        column;
+        type        shortcutColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            lightKey      benzene;
+            heavyKey      toluene;
+            recoveryLK    0.99;       // 99 % of feed benzene to the top
+            recoveryHK    0.01;       //  1 % of feed toluene to the top
+            refluxFactor  1.3;        // R = 1.3 * R_min
+        }
+    }
+);

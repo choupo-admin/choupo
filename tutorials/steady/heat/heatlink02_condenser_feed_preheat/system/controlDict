@@ -1,0 +1,9 @@
+application   choupoSolve;
+description   "Feedback heat-link (energy tear): column condenser preheats its OWN feed";
+
+verbosity     3;
+
+reports
+{
+    utilityAllocation { }
+}

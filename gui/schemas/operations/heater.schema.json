@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/heater.schema.json",
+  "title": "heater operation",
+  "description": "Operation block of a credo-pure single-stream heater.  Hardware-only: specify the absolute thermal power Q (W or kW; positive = heating, negative = cooling).  The outlet temperature T_out is a RESULT of the enthalpy balance, not a spec.  For 'I need T_out = X' wrap the unit in a DesignSpec outerDict that manipulates $Q with a target on this unit's T_out KPI.",
+  "type": "object",
+  "properties": {
+    "Q": {
+      "type": "number",
+      "title": "Thermal power (hardware)",
+      "description": "Absolute thermal power delivered to the stream.  Positive heats, negative cools.  Think of it as the electrical rating of the heater or the firing rate of a burner.",
+      "unit": "W"
+    },
+    "Tref": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Enthalpy reference temperature",
+      "description": "Reference temperature for the enthalpy integrals.  Only differences enter the balance.",
+      "unit": "K",
+      "default": 298.15
+    }
+  },
+  "required": ["Q"],
+  "additionalProperties": false
+}

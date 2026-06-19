@@ -1,0 +1,4 @@
+// kinetics1D needs no thermo; one component keeps the loader happy.
+components       ( aceticAcid );
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

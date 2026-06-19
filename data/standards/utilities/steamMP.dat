@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: medium-pressure (MP) saturated steam, plant header.
+
+  Sources: Sinnott & Towler 6ed (2022) §6.5.3; Ulrich & Vasudevan 2004.
+
+  When to use:
+    The workhorse steam level for distillation reboilers, sterilizers,
+    moderate-T jacketed reactors.  Choose MP whenever your duty needs
+    a hot-side T in the 130-175 C range — LP can't reach, HP would be
+    wasteful (higher €/GJ for unused ΔT).
+\*---------------------------------------------------------------------------*/
+
+utility     steamMP;
+tier        heating;
+mechanism   condensation;
+
+components  ( water );
+state       saturatedVapour;
+P           11.0 bar;                  // ≈ 10 barg
+T_in        457.2 K;                   // 184.0 C
+T_out       457.2 K;                   // 184.0 C  (condensate, same T)
+
+// Energy delivered per kg condensed: latent heat of water at T_sat = 184 C
+dutyPerKg   1991000.0;                 // J/kg  (Hvap_water @ 11 bar, steam tables)
+
+cost        15.0;                      // €/GJ delivered
+costYear    2022;
+description "Medium-pressure saturated steam header (≈ 10 barg, T_sat ≈ 184 C)";

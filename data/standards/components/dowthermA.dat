@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Dowtherm A  (eutectic of 73.5 wt% diphenyl oxide + 26.5 wt% biphenyl)
+  Pseudo-component for use as a high-temperature liquid heat-transfer fluid.
+
+  Sources:
+    Dow Chemical Technical Data Sheet, "Dowtherm A Heat Transfer Fluid",
+      Doc 176-01463-01 (saturated liquid property tables at 100/200/300/400 C
+      were extracted, then linear/quadratic fits below).
+    Tc, Pc, omega are eutectic-mixture estimates (pseudo-component); these
+      are individual literature/estimated values -- primary re-citation
+      pending (IST review).
+
+  Use:
+    Pseudo-fluid for the `dowthermA` utility (closed-loop sensible heat carrier
+    in the 285-650 K range, ~13 to ~377 C).  Do NOT put in a reactor or any
+    case where you actually need ΔHrxn — this entry has NO gibbsFormation
+    block on purpose (the heat-carrier never reacts in normal use).
+
+  Limits:
+    Cp polynomial good to ~5 % across 373-673 K (the Dow TDS range).
+    No Antoine block — Dowtherm A may be vaporised at high T but
+    the typical utility loop runs liquid-phase only; if you need
+    vapour-phase data, add it case-locally.
+\*---------------------------------------------------------------------------*/
+
+name        dowthermA;
+formula     "(C6H5)2O + C6H5C6H5 eutectic";
+CAS         8004-13-5;          // pseudo-mixture CAS for Dowtherm A
+
+MW          165.8;               // g/mol  (mass-weighted: 0.735*170 + 0.265*154)
+Tc          770.0;               // K   (mixture estimate)
+Pc          31.0;                // bar (mixture estimate)
+omega       0.40;                // acentric factor (mixture estimate)
+Tb          530.15;              // K   (257 C, normal boiling point)
+HvapTb      39000.0;             // J/mol at Tb (Dow TDS)
+Vliq        1.55e-4;             // m^3/mol at 298 K (MW / ρ(298))
+
+role        nonvolatile;         // utility heat-carrier, never appears in a flash
+
+liquidHeatCapacity
+{
+    // Linear fit of Dow TDS Cp data at 100, 200, 300, 400 C:
+    //   Cp [J/kg·K] = 681 + 3.04 * T[K]
+    // Converted to molar: multiply by MW/1000 = 0.1658 kg/mol
+    model         polynomial;
+    coefficients  (112.9   0.5036);
+    Trange        (285  670);
+}

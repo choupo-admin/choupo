@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Nitrogen  (N2, CAS 7727-37-9)
+  Element in its standard state -- dHf_298 = 0; s_298 is the only
+  thermodynamic anchor.  Carries over as the (nearly) inert diluent in
+  air-fed combustion.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        N2;
+formula     N2;
+noncondensable true;     // permanent carrier gas (psychrometric carrier)
+CAS         7727-37-9;
+
+MW          28.013;       // kg/kmol
+Tc          126.20;       // K
+Pc          33.98;        // bar
+omega       0.039;        // [-]
+Tb          77.35;        // K
+HvapTb      5577;         // J/mol
+Vliq        3.46e-5;      // m^3/mol  (34.6 cm^3/mol at Tb)
+diffusionVolume  18.5;          // Fuller diffusion volume [-]
+
+gibbsFormation
+{
+    dHf_298   0.0;                // J/mol  -- element in standard state
+    s_298     191.610;            // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.7362   264.651   -6.788);
+    Trange        (50  126);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3  (ideal-gas Cp
+    // polynomial -- individual literature value, primary re-citation pending)
+    coefficients  (31.15   -1.357e-2   2.680e-5   -1.168e-8);
+    Trange        (250  1500);
+}
+
+// Liquid Cp -- physically extrapolated stub (N2 is gas at any normal
+// process temperature).  Required so the engine's enthalpy iteration
+// can read a Cp_L for every component in a stream, even when x_N2 = 0
+// in that stream (the multiplication still zeroes the contribution but
+// the lookup must succeed).  Value ~ Cp_L at boiling point 77 K.
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (56.0);          // J/(mol·K), constant approximation
+}

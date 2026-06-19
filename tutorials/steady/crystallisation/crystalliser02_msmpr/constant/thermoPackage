@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser02_msmpr / thermoPackage
+
+  water (solvent) + sucrose (crystallising solute).  The sucrose .dat carries
+  both the solid-liquid equilibrium `solubility { coefficients (...) }` (the
+  saturation curve c_sat(T)) and the `solid { rho_p; k_v; }` block (particle
+  density + shape factor) the population balance needs as its number<->mass
+  bridge.  The crystallisation KINETICS live in constant/crystallisation.
+\*---------------------------------------------------------------------------*/
+
+components       ( water  sucrose );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

@@ -1,0 +1,94 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  rankine01_water  --  simplified Rankine (gas-phase only)
+  =================
+
+  A pedagogical Rankine cycle that demonstrates:
+    * a turbine extracting work from superheated steam,
+    * an ElectricLoad consuming the turbine's shaft via an energy wire,
+    * a thermal efficiency derived from the unit KPIs.
+
+  Simplification (documented, deliberate): the cycle runs entirely in
+  the gas phase --- there is no liquid leg and no phase change.  A real
+  Rankine has a pump + boiler that crosses the saturation line; that
+  needs a multi-phase Boiler unit op which is on the v0.0.45 roadmap.
+
+  For the closed Rankine demonstration here:
+
+      feedSteam (superheated, 5 bar, 800 K)
+        -> steamTurbine (-300 kW, eta 0.85)  : expand to 0.5 bar
+        -> cooler        (heater, Q < 0)      : pre-cool the exhaust
+        -> exhaust (vapour, 0.5 bar, ~350 K)
+
+  Shaft routing (the new electricLoad unit, v0.0.44):
+      steamTurbine.shaft  ----wire---->  generator (electricLoad, eta 0.97)
+
+  Hand check:
+    1 mol/s of steam, ideal-gas Cp ~ 35 J/(mol·K)
+    Turbine extracts 300 kW => 300000 / 35 ~ 8570 K isen drop?  No,
+    that's absurd; the actual w_isen = 300000 / 0.85 = 353 kJ/mol;
+    means T drop ~ 353000 / 35 ~ 10 K... isentropic expansion ratio
+    (P_out / P_in)^((gamma-1)/gamma) needs gamma ~ 1.32 for steam,
+    ratio (T2/T1) = (P2/P1)^0.24, with P_ratio = 0.1, T_ratio ~ 0.575
+    => T2_isen ~ 800 * 0.575 ~ 460 K; w_isen = 35 * (800-460) ~ 11.9 kJ/mol
+    => W_isen at 1 mol/s = 11.9 kW => W_real = 0.85 * 11.9 = 10.1 kW.
+    Specifying 300 kW for turbine is OVER-spec for these conditions ---
+    the solver will infer the necessary expansion ratio.
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    W_electric { compute "generator.W_electric"; unit kW; }
+    eta_cycle  { compute "generator.W_electric / cooler.Q"; }
+}
+
+streams
+{
+    feedSteam
+    {
+        F             3.6 kmol/h;             // = 1 mol/s
+        T           800.0 K;                   // 527 C, superheated
+        P             5.0 bar;
+        state         superheatedVapour;
+        molarComposition { water 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        steamTurbine;
+        type        turbine;
+        in          feedSteam;
+        outputs     ( exhaust );
+
+        operation
+        {
+            W_shaft  -10.0 kW;       // realistic for this F + P_ratio
+            eta       0.85;
+        }
+
+        energyOutputs
+        (
+            { name shaft;  kind work;  expression "-W_shaft";  unit W; }
+        );
+    }
+
+    {
+        name        cooler;
+        type        heater;
+        in          exhaust;
+        outputs     ( cooled );
+        operation   { Q -8.0 kW; }
+    }
+
+    {
+        name        generator;
+        type        electricLoad;
+        operation   { eta 0.97; }
+
+        energyInputs
+        (
+            { from steamTurbine.shaft;  kind work;  target W_shaft; }
+        );
+    }
+);

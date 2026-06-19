@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  feed -> isothermal flash -> heater on the liquid.
+
+  The flash splits the feed into vapour + liquid (the pseudo-component
+  participates in VLE through its critical{} + Ambrose-Walton Psat).  The
+  heater then adds sensible heat to the liquid; energyBalance reports the
+  implied duty, and it CLOSES because the lump carries gasIdeal + liquidPure
+  Cp.  No reaction -> no formation datum needed (matching the lump's omitted
+  gibbsFormation).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            420.0 K;
+        P              1.0 bar;
+        molarComposition  { toluene 0.55;  petCut_C7plus 0.45; }
+    }
+}
+
+units
+(
+    {
+        name        flash01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );    // flash produced-stream order: liquid first
+        operation   { T 420.0 K;  P 1.0 bar; }
+    }
+    {
+        name        cooler01;
+        type        heater;             // a heater with NEGATIVE duty = a cooler
+        in          liquid;
+        outputs     ( coldLiquid );
+        operation   { Q -30.0 kW; }     // remove duty -- T_out is the RESULT; the
+                                        // lump's liquid Cp makes the balance close
+                                        // (and the liquid stays sub-cooled, no phase change)
+    }
+);

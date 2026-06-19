@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  chemicalPlantTutorial / system/controlDict   (PLANT level)
+
+  The controlDict CASCADES down the folder tree: a sector or unit inherits
+  this one and overrides only what it changes (same overlay rule as the
+  data).  So this is the only controlDict the plant strictly needs.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;        // the recursive plant solver will live here
+description   "Sugar plant -- fractal multi-sector proxy: a JuiceSplitter feeding three sectors (CONCENTRATION + DRYING + FERMENTATION)";
+
+verbosity     3;
+
+// Reports run over the FLATTENED plant (all units across all sectors), so the
+// stream table, mass balance and energy balance close over the whole factory
+// at once -- per-unit too, with the namespaced equipment (concentration.evap1,
+// drying.SD, ...).
+reports { streamTable {}  massBalance {}  energyBalance {}  utilities {}  spreadsheet {} }

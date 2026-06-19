@@ -1,0 +1,60 @@
+/*---------------------------------------------------------------------------*\
+  evaporator04_orange_juice_simple --- outer driver (MCFT Ex. 10.2).
+
+  TWO design unknowns:
+      $A          heat-exchange area      (textbook question (a))
+      $F_steam    live-steam flow         (textbook question (b))
+
+  TWO constraints (the textbook's GIVEN specifications):
+      (1) productConc.F_mass = 5000 kg/h         (50 wt% target;
+                                                  2500 kg/h sólidos / 0.50)
+      (2) evap.P = 14 kPa                        (operating pressure given
+                                                  by the textbook, set by
+                                                  the vacuum pump)
+
+  Why TWO unknowns and TWO constraints
+  ------------------------------------
+  In Mode 2 (credo-pure) the evaporator computes P_op from the heat
+  balance:  T_boil = T_steam − Q/(U·A),  P_op = P_sat(T_boil).  So
+  P_op is NOT a user input --- it depends on $A and $F_steam.
+
+  But the textbook GIVES P_op = 14 kPa as the operating spec.  To make
+  the simulation match the textbook, we ITERATE $A so that the computed
+  P_op equals 14 kPa.  Simultaneously $F_steam iterates to hit the
+  50 wt% product spec.  Newton-ND 2-D, converges in ~3-4 evaluations.
+
+  After convergence the KPIs answer questions (a), (b), (c) directly:
+      effect.A          = textbook area (a)
+      effect.F_steam    = textbook steam flow (b)
+      effect.F_vap_mass = capacity (c)
+      effect.economy    = economy (c)
+\*---------------------------------------------------------------------------*/
+
+type         designSpec;
+
+manipulate
+(
+    { variable A;        initial 80.0   m2;     min 20.0  m2;       max 200.0  m2;     }
+    { variable F_steam;  initial 500.0  kmol/h; min 100.0 kmol/h;   max 5000.0 kmol/h; }
+);
+
+targets
+(
+    // (1) Product spec: 50 wt% solids on 2500 kg/h solidos in = 5000 kg/h.
+    { path  productConc.F_mass;   value 5000.0 kg/h;   tol 1.0 kg/h; }
+
+    // (2) Textbook operating-pressure spec.
+    { path  evap.P;               value 14000  Pa;     tol 20 Pa; }
+);
+
+options
+{
+    maxIter      30;
+    tolF         1.0;
+    fdStep       1.0e-4;
+}
+
+report
+{
+    file         designspec_history.csv;
+}

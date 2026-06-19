@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------*\
+  Methane combustion in air at 1800 K, 1 bar.
+  Equivalence ratio φ = 1 (stoichiometric).  Air = O2 + 3.76 N2.
+  Seven species (CH4, O2, N2, CO, CO2, water, H2) over four elements
+  (C, H, O, N): R = N − M = 3 independent reactions.
+
+  At adiabatic flame conditions (~2200 K) we'd see significant
+  dissociation (NO, OH, atomic O); at 1800 K most products are still
+  the major species and CO/CO2 ratio is small but non-zero.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Gibbs reactor: methane combustion in stoichiometric air at 1800 K";
+
+verbosity     3;

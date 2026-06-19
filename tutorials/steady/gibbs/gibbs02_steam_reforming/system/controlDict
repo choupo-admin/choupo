@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  Steam reforming of methane at 1000 K, 1 bar.
+  Demonstrates a Gibbs equilibrium with R = N − M = 5 − 3 = 2
+  independent reactions:
+        CH4 + H2O  <->  CO + 3 H2          (reforming, endothermic)
+        CO  + H2O  <->  CO2 + H2           (water-gas shift)
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Gibbs reactor: steam reforming of methane at 1000 K";
+
+verbosity     3;

@@ -1,0 +1,122 @@
+/*---------------------------------------------------------------------------*\
+  process05_isomerization_recycle
+  ===============================
+
+  Reactor + distillation with recycle of the unconverted reactant ---
+  the canonical flowsheet for exercising the reports{} layer (stream
+  table, mass balance with closure, energy balance) on a non-trivial
+  topology with a tear stream.
+
+       freshFeed (neoPentane) ─┐
+                               ▼
+                          [mixer] ◄──────────── recycle (neoPentane) ──┐
+                               │                                       │
+                               ▼                                       │
+                          [reactor]   neoPentane -> nPentane (CSTR)    │
+                               │                                       │
+                               ▼                                       │
+                          [column]  (distillation, alpha ~ 2.5)        │
+                            │     │                                    │
+              distillate ───┘     └─── bottoms                         │
+              (neoPentane,              (nPentane,                     │
+               recycled) ───────────────────────────────────► (recycle)
+                                        the PRODUCT
+
+  Chemistry: neoPentane -> nPentane is an isomerization --- 1:1 in moles
+  AND mass (identical MW 72.15).  So at steady state the fresh feed
+  (1 kmol/h neoPentane) equals the product (1 kmol/h nPentane in the
+  bottoms), and the overall MASS BALANCE CLOSES TO 100 %.  The recycle
+  carries per-pass unconverted neoPentane back to the reactor, so the
+  OVERALL conversion is ~100 % (product is 99 % nPentane) even though
+  the per-pass conversion is only ~80 %.
+
+  Tuning notes (honest):
+    * The loop runs at 5 bar so every neoPentane/nPentane stream is a
+      genuine LIQUID at its temperature.  neoPentane's Antoine here boils
+      at ~275 K at 1 bar (Psat(320 K) ~4.3 bar), so a 1 bar loop would
+      flash the feed + recycle to VAPOUR --- the phase is a CONSEQUENCE of
+      (T,P,z) (Duhem), not a silent liquid default.  At 5 bar the bubble
+      point clears ~326 K, so the warm reactor (~327 K) and the recycled
+      distillate stay liquid, as the flowsheet intends.
+    * The reaction uses a LOW activation energy on purpose --- a high-Ea
+      rate would make the per-pass conversion collapse against the recycle
+      temperature and destabilise the loop.  Low Ea decouples conversion
+      from the recycle temperature.
+    * `distillateRate` is FIXED here (the column's spec).  It cannot
+      perfectly track the per-pass unconverted neoPentane, so the
+      recycle carries some nPentane (product) along --- exactly why
+      real recycle loops need a purge.  Closing the recycle PURITY
+      would be a DesignSpec manipulating distillateRate; left out here
+      to keep the case a single pass for reviewing the reports.
+
+  This is the case to open in the GUI and to read the reports/ CSVs
+  from:  streamTable.csv, massBalance.csv (+ _byUnit), energyBalance_byUnit.csv.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    freshFeed
+    {
+        F            1.0 kmol/h;
+        T          320.0 K;
+        P            5.0 bar;
+        molarComposition  { neoPentane 1.0;  nPentane 0.0; }
+    }
+
+    // Tear stream --- Wegstein iterates from this guess.  In SS it is
+    // ~1 kmol/h of nearly pure neoPentane (the column distillate).
+    recycle
+    {
+        F            0.31 kmol/h;
+        T          290.0 K;
+        P            5.0 bar;
+        molarComposition  { neoPentane 0.99;  nPentane 0.01; }
+    }
+}
+
+tearStreams           ( recycle );
+recycleSolver          Newton;        // Newton on the tear variables (default)
+recycleTol             1e-5;
+recycleMaxIter         150;
+recycleWegsteinQmin    0.0;       // direct substitution (robust)
+recycleWegsteinQmax    0.0;
+
+units
+(
+    {
+        name        mixer;
+        type        mixer;
+        inputs      ( freshFeed  recycle );
+        outputs     ( mixed );
+    }
+
+    {
+        name        reactor;
+        type        cstr;
+        in          mixed;
+        outputs     ( reactorOut );
+
+        operation   { V_R 0.0040; }       // ~80 % per-pass conversion
+        reaction    isomerization;
+    }
+
+    {
+        name        column;
+        type        distillationColumn;
+        in          reactorOut;
+        outputs     ( recycle  bottoms );  // distillate = recycle (neoP),
+                                           // bottoms    = product (nP)
+        operation
+        {
+            nStages        12;
+            feedStage      6;
+            refluxRatio    2.0;
+            distillateRate 0.31 kmol/h;    // ~ the per-pass unconverted neoP
+            feedQuality    1.0;            // saturated-vapour feed
+            P              5.0 bar;
+        }
+
+        compositionTol   1e-7;
+        maxOuterIter     300;
+    }
+);

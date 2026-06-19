@@ -1,0 +1,10 @@
+application   choupoBatch;
+description   "Adiabatic batch esterification (AcOH + EtOH -> EtOAc + H2O), exothermic, starting cold (320 K); thermal runaway to ~445 K then plateau as ethanol is consumed";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         600;      // s   (10 min --- enough to see induction + runaway + plateau)
+deltaT          0.5;      // s   (smaller than batch01 because kinetics speeds up by ~10^3)
+writeInterval   10;       // s   (denser trajectory snapshots --- T(t) is the story here)

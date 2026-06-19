@@ -1,0 +1,62 @@
+/*---------------------------------------------------------------------------*\
+  thermoPackage  --  water / 1-butanol binary  with NRTL.
+
+  NRTL parameters hand-tuned around literature values (Sørensen-Arlt,
+  DECHEMA LLE Vol. 5) to give a clear pedagogical LLE for the water /
+  1-butanol binary at 25 °C: the aqueous phase carries ≈ 98 % water
+  and the organic phase ≈ 40 % water, with β ≈ 0.30 by mass balance.
+
+      τ_12 (water → butanol)   = 1200 / T(K)   → at 298 K: τ ≈ 4.0
+      τ_21 (butanol → water)   =   50 / T(K)   → at 298 K: τ ≈ 0.17
+      α                         = 0.30
+
+  Both liquid phases share the same NRTL parameters; the LL split is
+  driven by the curvature of γ(x) at this temperature, not by
+  different parameters per phase.
+
+  The simulator solves the LL flash by direct Gibbs-energy
+  minimisation on the simplex (Nelder-Mead, 4 multi-starts) --- robust
+  against the K = 1 saddle that traps Newton-on-residual methods
+  in symmetric LLE landscapes (see CLAUDE.md §9 for the history).
+\*---------------------------------------------------------------------------*/
+
+components       ( water  nButanol );
+
+phases
+(
+    {
+        name      aqueous;
+        type      liquid;
+        activity
+        {
+            model       NRTL;
+            pairs
+            (
+                {
+                    i       water;       j       nButanol;
+                    a_ij    0.0;        b_ij    1200;
+                    a_ji    0.0;        b_ji    50;
+                    alpha   0.30;
+                }
+            );
+        }
+    }
+
+    {
+        name      organic;
+        type      liquid;
+        activity
+        {
+            model       NRTL;
+            pairs
+            (
+                {
+                    i       water;       j       nButanol;
+                    a_ij    0.0;        b_ij    1200;
+                    a_ji    0.0;        b_ji    50;
+                    alpha   0.30;
+                }
+            );
+        }
+    }
+);

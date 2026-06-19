@@ -1,0 +1,91 @@
+/*---------------------------------------------------------------------------*\
+  propertyPoint03_pr_audit
+  ========================
+
+  The Peng-Robinson sibling of propertyPoint02_srk_audit: the SAME five
+  reference states, switched to `model PR`, so the two EoS can be compared
+  side by side.  PR shares SRK's repulsive term and differs in the
+  attractive term (ε = 1−√2, σ = 1+√2; a_c = 0.45724 R²Tc²/Pc) --- its
+  defining advantage is the near-critical / liquid-density region.
+
+    state            T       P     regime                 SRK Z    PR Z
+    -----            -----   ----  ---------------------  ------   ------
+    A: CH4 ambient   298.15  1     near-ideal gas          0.998    0.998
+    B: CH4 subcrit   200     30    sub-critical dense gas  0.77     0.756
+    C: N2  dense     300     100   repulsive               1.04     0.989  (NIST ~1.03)
+    D: CO2 supercrit 350     80    near critical           0.75     0.722  (NIST ~0.49)
+    E: NG mix        300     50    kij infrastructure      0.93     0.908
+
+  PR gives a SYSTEMATICALLY lower Z than SRK (smaller b = 0.0778, larger
+  a_c = 0.45724): more attraction, less repulsion.  Near-critical CO2 (D)
+  edges toward the NIST value, the textbook reason PR is preferred for
+  CO2 / light-gas systems; but supercritical N2 density (C) shows PR's
+  known under-prediction.  Cubic EoS are both weak right at the critical
+  point --- neither reaches NIST's 0.49 for D.  Z = P·v_molar / (R·T).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        A_CH4_ambient;
+        type        propertyPoint;
+        state { T 298.15 K;  P   1.0 bar;  composition { CH4 1.0; } }
+        reference
+        {
+            source  "near-ideal gas analytical (PR collapses to ideal at low P)";
+            Z       0.998;
+            tol     0.01;
+        }
+    }
+    {
+        name        B_CH4_subcrit;
+        type        propertyPoint;
+        state { T 200.00 K;  P  30.0 bar;  composition { CH4 1.0; } }
+        reference
+        {
+            source  "Sandler 4th ed. (PR sibling of B in SRK case)";
+            Z       0.756;
+            tol     0.02;
+        }
+    }
+    {
+        name        C_N2_dense;
+        type        propertyPoint;
+        state { T 300.00 K;  P 100.0 bar;  composition { N2 1.0; } }
+        reference
+        {
+            // PR systematically under-predicts vs NIST (~1.03) at high-P
+            // supercritical N2.  We audit against the published PR value
+            // (the code must reproduce PR theory); the gap vs NIST is a
+            // limitation of PR, not the implementation.
+            source  "Published PR value; NIST REFPROP ≈ 1.03";
+            Z       0.989;
+            tol     0.02;
+        }
+    }
+    {
+        name        D_CO2_supercrit;
+        type        propertyPoint;
+        state { T 350.00 K;  P  80.0 bar;  composition { CO2 1.0; } }
+        reference
+        {
+            // PR is the textbook choice for CO2 / light-gas systems but
+            // is still fundamentally weak right at the critical point.
+            // Audit vs published PR (0.722) -- NIST measures ~0.49.
+            source  "Published PR value; NIST REFPROP = 0.49 (cubic EoS limit near Tc)";
+            Z       0.722;
+            tol     0.02;
+        }
+    }
+    {
+        name        E_natgas_mix;
+        type        propertyPoint;
+        state { T 300.00 K;  P  50.0 bar;  composition { CH4 0.85;  N2 0.10;  CO2 0.05; } }
+        reference
+        {
+            source  "Published PR value (kij = 0)";
+            Z       0.908;
+            tol     0.02;
+        }
+    }
+);

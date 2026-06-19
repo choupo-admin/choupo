@@ -1,0 +1,7 @@
+/* Case-local eNRTL tau for KCl (overlay).
+   ILLUSTRATIVE PROXY: 1:1 alkali chloride, taken = Chen & Evans water-NaCl; refit for production. */
+enrtl
+(
+    { cation K; anion Cl; tau_m_ca 8.885; tau_ca_m -4.549; alpha 0.2;
+      source "proxy of Chen & Evans water-NaCl (1:1 alkali chloride)"; }
+);

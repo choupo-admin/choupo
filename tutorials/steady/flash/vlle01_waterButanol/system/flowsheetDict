@@ -1,0 +1,61 @@
+/*---------------------------------------------------------------------------*\
+  vlle01_waterButanol  --  isothermal flash with `phaseSet VLLE`.
+
+  At T = 365 K, P = 1 bar with the NRTL parameters declared in
+  `constant/thermoPackage`, the water + 1-butanol system is hot enough
+  for substantial vapour formation but the LL miscibility gap has just
+  closed for the equimolar feed.  The VLLE solver therefore reports a
+  TWO-PHASE V + L result (sol.threePhase == false), and the flowsheet
+  emits THREE streams with the empty "organic" carrying F = 0.
+
+  This demonstrates:
+
+      * the new IsothermalFlash VLLE branch (direct Gibbs-energy
+        minimisation on the 2n-dimensional (β_V, β_α, y[0..n-2],
+        x_α[0..n-2]) simplex, with multi-start Nelder-Mead);
+      * the 2-phase fallback path inside the VLLE branch (one phase
+        collapses to β ≈ 0 → demoted to V+L);
+      * the 3-output flowsheet contract for VLLE (always emit V +
+        Lα + Lβ; absent phases get F = 0 so the topology stays
+        fixed regardless of the optimum's regime).
+
+  True 3-phase coexistence at fixed T and P is a 1-D curve in
+  parameter space for binaries (Gibbs phase rule F = 2 + 2 - 3 = 1)
+  --- a heteroazeotrope is a *point* on the saturation envelope at
+  each pressure.  Pedagogically robust 3-phase tutorials live in
+  ternary systems (F = 2 + 3 - 3 = 2, a 2-D region); a ternary
+  VLLE example is scheduled with the solids work in v0.20.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            365.0 K;
+        P            1.013 bar;
+        molarComposition  { water 0.50;  nButanol 0.50; }
+    }
+}
+
+units
+(
+    {
+        name        decanter01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( vapor  aqueous  organic );
+
+        operation
+        {
+            T          365.0 K;
+            P          1.013 bar;
+            phaseSet   VLLE;
+            alphaRich  water;
+            betaRich   nButanol;
+        }
+
+        compositionTol   1e-5;
+        maxOuterIter     200;
+    }
+);

@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dodecamethylcyclohexasiloxane  (C12H36O6Si6, CAS 540-97-6)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Colonna-FPE-2008
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        dodecamethylcyclohexasiloxane;
+formula     C12H36O6Si6;
+CAS         540-97-6;
+
+MW          444.9240;        // kg/kmol  [CoolProp]
+Tc          645.7583;        // K        [CoolProp EOS]
+Pc          9.61416;        // bar      [CoolProp EOS]
+omega       0.73600;        // [-]      [CoolProp EOS]
+Tb          518.1100;        // K  normal boiling [CoolProp]
+HvapTb      44069.4;        // J/mol  at Tb     [CoolProp]
+Vliq        4.5953e-04;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.15078   1751.58   -95.3941);
+    Trange        (290.59  632.84);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (136.451  1.75019  -0.00109067  2.83929e-07);
+    Trange        (255  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (482.815  0.555259  0.000672179  -3.54642e-07);
+    Trange        (323  518);
+}
+
+sublimation
+{
+    tripleT   270.2000;        // K   [CoolProp]
+    tripleP   0.1598;        // Pa  [CoolProp]
+    // Hfus / Hsub absent: CoolProp models no solid phase.  The
+    // sublimation curve stays undrawn until measured Hsub lands.
+}
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Colonna-FPE-2008";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 1.21%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 1.27%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.07%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+}

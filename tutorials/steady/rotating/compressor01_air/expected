@@ -1,0 +1,19 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.001              1e-4
+stream  out                    F                0.001              1e-4
+kpi     compressor01           F                0.001              1e-4
+kpi     compressor01           P_in             100000             1e-4
+kpi     compressor01           P_out            890211.642995      1e-4
+kpi     compressor01           T_in             298.15             1e-4
+kpi     compressor01           T_out            633.374206884      1e-4
+kpi     compressor01           T_out_isen       551.37943898       1e-4
+kpi     compressor01           W_isen           7500               1e-4
+kpi     compressor01           W_isen_kW        7.5                1e-4
+kpi     compressor01           W_shaft          10000              1e-4
+kpi     compressor01           W_shaft_kW       10                 1e-4
+kpi     compressor01           dS_gen           4.22615345389      1e-4
+kpi     compressor01           dT               335.224206884      1e-4
+kpi     compressor01           dT_isen          253.22943898       1e-4
+kpi     compressor01           eta_isen         0.75               1e-4
+kpi     compressor01           ratio            8.90211642995      1e-4

@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  Peng-Robinson audit package --- identical components / kij to the SRK audit,
+  only `model SRK` -> `model PR`.  The kij values are nominally SRK-fit
+  (Sandler Table 7.4-1); PR has its own optimal kij in the literature, but
+  reusing them keeps the two audits directly comparable.
+\*---------------------------------------------------------------------------*/
+
+components       ( N2  CH4  CO2 );
+
+activityModel    { model  ideal; }
+
+equationOfState
+{
+    model       PR;
+
+    binaryInteractions
+    (
+        { i  N2;    j  CH4;   kij  0.0289; }
+        { i  CO2;   j  CH4;   kij  0.0919; }
+        { i  N2;    j  CO2;   kij -0.017;  }
+    );
+}

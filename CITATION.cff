@@ -1,0 +1,47 @@
+cff-version: 1.2.0
+message: >-
+  If you use Choupo in published work — a paper, thesis, technical
+  report, talk, course notes — please cite it as below.  Doing so
+  helps the project demonstrate academic impact and supports
+  continued open development.
+title: "Choupo — Open Chemical Process Simulator"
+abstract: >-
+  Educational chemical-process simulator written in C++17.  Provides
+  a transparent, source-readable alternative to commercial simulators
+  for teaching mass and energy balances, thermodynamics, separation
+  processes, reactor design, equilibrium computation, and process
+  flowsheeting.  Architecture is layered into an outer driver
+  (sensitivity, optimisation, parameter estimation), a simulator core
+  (sequential-modular with Wegstein recycle), and a post-processor
+  (sizing, costing).  Licensed under GPL-3.0-or-later.
+type: software
+authors:
+  - family-names: Geraldes
+    given-names: Vítor
+repository-code: "https://github.com/vitorgeraldes/Choupo"
+url: "https://github.com/vitorgeraldes/Choupo"
+license: "GPL-3.0-or-later"
+keywords:
+  - chemical engineering education
+  - process simulation
+  - flowsheet
+  - thermodynamics
+  - flash separation
+  - distillation
+  - Gibbs reactor
+  - NRTL
+  - Wilson
+  - parameter estimation
+  - C++
+version: "0.2.0"
+date-released: "2026-06-09"
+preferred-citation:
+  type: software
+  title: "Choupo — Open Chemical Process Simulator"
+  authors:
+    - family-names: Geraldes
+      given-names: Vítor
+  version: "0.2.0"
+  year: 2026
+  url: "https://github.com/vitorgeraldes/Choupo"
+  license: "GPL-3.0-or-later"

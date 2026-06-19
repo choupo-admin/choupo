@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  CASE-LOCAL electrolyte catalogue --- IONS (Na+, Cl-) for the
+  electrodialysis tutorial.  Self-contained: copies only the rows this
+  case uses, with the ION-TRANSPORT TIER (radius [m], D0 [m2/s]) the
+  electrodialysisStack needs.
+
+  z / MW: USGS PHREEQC pitzer.dat (public domain).
+  radius / D0: derived from E. R. Nightingale, J. Phys. Chem. 63 (1959)
+  1381 (effective hydrated radius + limiting ionic conductance lambda0;
+  D0 = R T lambda0 / (z^2 F^2) by Nernst-Einstein).  See
+  data/standards/electrolyte/PROVENANCE.md.  radius in raw SI metres
+  (nm in the comment); `nm` is not a parser unit alias.
+\*---------------------------------------------------------------------------*/
+
+ions
+(
+    { species Na; ion "Na+"; z +1; MW 22.99;  radius 3.58e-10; D0 1.33e-09; }   // r 0.358 nm, lambda0 50.1 (Nightingale 1959)
+    { species Cl; ion "Cl-"; z -1; MW 35.453; radius 3.32e-10; D0 2.03e-09; }   // r 0.332 nm, lambda0 76.3 (Nightingale 1959)
+);

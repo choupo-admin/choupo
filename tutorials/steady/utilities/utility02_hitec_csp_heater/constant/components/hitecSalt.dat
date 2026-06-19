@@ -1,0 +1,55 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/hitecSalt.dat
+// sha256   73722443a43a08c159935f3b374f4980f1ab85f52d15c96d1e744780a602c09b
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: HITEC molten salt  (7-49-44 mol% NaNO3-NaNO2-KNO3,
+                                  equivalent to 7-40-53 wt%)
+  Pseudo-component for use as a high-temperature molten-salt heat carrier.
+
+  Sources:
+    Sohal et al., "Engineering Database of Liquid Salt Thermophysical
+      and Thermochemical Properties", INL/EXT-10-18297 Rev. 1, June 2013,
+      Idaho National Laboratory.  §2.1.4 NaNO3-NaNO2-KNO3.
+      Original correlations from Janz et al. 1981.
+
+  Use:
+    Pseudo-fluid for the `hitecSalt` utility (closed-loop sensible heat
+    carrier in the 142-535 C range; melts at 415 K, thermally unstable above
+    ~538 C).  Choose HITEC over Dowtherm A when service temperature exceeds
+    ~400 C.  Do NOT put in a reactor or any case where you actually need
+    ΔHrxn — this entry has NO gibbsFormation block on purpose.
+
+  Limits:
+    ρ:  range 470-870 K, ±2 %     (Janz 1981 linear)
+    μ:  range 420-710 K, ±16 %    (Janz 1981 cubic)
+    Cp: range 426-776 K, ±5 %     (Janz 1981 quadratic)
+    k:  no reliable T-correlation; treat as ≈ 0.55 W/(m·K) constant.
+\*---------------------------------------------------------------------------*/
+
+name        hitecSalt;
+formula     "(NaNO3)_{0.07}(NaNO2)_{0.49}(KNO3)_{0.44}";
+CAS         "n/a";              // mixture, no single CAS
+
+// Mass-weighted MW: 0.07*85 + 0.40*69 + 0.53*101 = 87.4 g/mol
+MW          87.4;
+Tb          0;                   // does not boil (decomposes above ~538 C)
+Vliq        4.50e-5;             // m^3/mol at 465 K (MW / ρ(465))
+
+role        nonvolatile;         // molten salt, never enters VLE
+
+liquidHeatCapacity
+{
+    // Janz et al. 1981, via Sohal et al. 2013 eq. (2.34):
+    //   Cp [J/kg·K] = 5806 - 10.833*T[K] + 7.2413e-3*T[K]^2
+    // Converted to molar (× MW/1000 = 0.0874 kg/mol):
+    //   Cp [J/mol·K] = 507.4 - 0.9468*T + 6.33e-4*T^2
+    model         polynomial;
+    coefficients  (507.4   -0.9468   6.33e-4);
+    Trange        (415  810);
+}

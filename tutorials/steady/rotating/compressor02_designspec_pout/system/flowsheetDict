@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  compressor02_designspec_pout
+  ============================
+
+  Same air compressor as compressor01, but now answering the DESIGN
+  question:  "what shaft power do I need to discharge at exactly 8 bar?"
+
+  The credo forbids specifying P_out on the unit op (it's a result).
+  Instead the outer DesignSpec manipulates the hardware variable
+  $W_shaft until the computed compressor.P_out hits the 8-bar target.
+  This is the rotating-equipment analogue of sizing an evaporator's
+  area to hit a product concentration.
+
+  Converges to W_shaft ~ 9.1 kW (slightly below compressor01's 10 kW,
+  which over-shot to 8.9 bar).
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    W_shaft   10.0  kW;       // initial guess; DesignSpec iterates it
+}
+
+streams
+{
+    feed
+    {
+        F             3.6 kmol/h;
+        T           298.15 K;
+        P             1.0  bar;
+        molarComposition  { N2 0.79;  O2 0.21; }
+    }
+}
+
+units
+(
+    {
+        name        compressor;
+        type        compressor;
+        in          feed;
+        outputs     ( out );
+
+        operation
+        {
+            W_shaft   $W_shaft;          // manipulated by the DesignSpec
+            eta        0.75;
+        }
+    }
+);

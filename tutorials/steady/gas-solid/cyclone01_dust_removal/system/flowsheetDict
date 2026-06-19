@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  cyclone01_dust_removal
+  ======================
+
+  A dusty gas (N2 carrying 50 kg/h of silica) passes through a cyclone.
+  The cyclone separates BY SIZE: coarse particles spin to the wall and
+  fall out (capturedSolids), fine particles follow the gas (cleanGas).
+  This is the whole point of the PSD --- a cyclone is a size classifier,
+  not a simple splitter.
+
+  Lapple cut diameter d50 ~ 2.7 um for this geometry/flow.  The grade
+  efficiency η(d) = 1/(1+(d50/d)^2): ~12 % at 1 um, ~93 % at 10 um.
+  Overall collection ~ 82 % of the dust mass; the escaping fines are the
+  sub-d50 tail (why a cyclone is a pre-cleaner, followed by a bag filter).
+
+  Gas:    150 kmol/h N2, 300 K, 1 atm
+  Dust:   50 kg/h silica, ρ_p = 2650 kg/m^3, PSD 1..50 um
+  Cyclone: body diameter 0.5 m, 5 effective turns
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            150.0 kmol/h;
+        T            300.0 K;
+        P            1.01325 bar;
+        molarComposition { N2 1.0; }
+        solids
+        {
+            solidFlows   { silica 50.0 kg/h; }
+            diameters    ( 1e-6  2e-6  5e-6  10e-6  20e-6  50e-6 );   // m
+            massFractions( 0.05  0.10  0.20  0.30   0.25   0.10  );
+        }
+    }
+}
+
+units
+(
+    {
+        name        cyclone;
+        type        cyclone;
+        model       Lapple;
+        in          feed;
+        outputs     ( cleanGas  capturedSolids );
+        operation   { bodyDiameter 0.5 m;  numberOfTurns 5; }
+    }
+);

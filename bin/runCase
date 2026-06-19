@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+# =============================================================================
+#  runCase  --  one-line case runner
+#
+#  Dispatches the case to the right binary based on the `application`
+#  field of the case's system/controlDict:
+#
+#      application choupoSolve;  -> ./choupoSolve   (default)
+#      application choupoBatch;  -> ./choupoBatch
+#      application choupoCtrl;   -> ./choupoCtrl
+#
+#  Writes the log inside the case directory (log.<application>) so
+#  each case carries its own output.
+#
+#  Usage:
+#      cd tutorials/steady/flash01_benzene_toluene && runCase   # cwd
+#      runCase .                                                 # same
+#      runCase tutorials/steady/flash01_benzene_toluene          # explicit
+#      runCase $CHOUPO_HOME/tutorials/batch/batch01_first_order
+#
+#  Options:
+#      -a   append to existing log instead of refusing
+#      -q   quiet (print only the converged-result lines)
+# =============================================================================
+
+set -euo pipefail
+
+APPEND=
+QUIET=
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -a) APPEND=1; shift ;;
+        -q) QUIET=1;  shift ;;
+        -h|--help)
+            sed -n '3,20p' "$0" | sed 's/^# \{0,1\}//'
+            exit 0
+            ;;
+        --) shift; break ;;
+        -*) echo "runCase: unknown option '$1'" >&2; exit 1 ;;
+        *)  break ;;
+    esac
+done
+
+CASE="${1:-.}"
+CASE_ABS=$(cd "$CASE" 2>/dev/null && pwd) || {
+    echo "runCase: '$CASE' is not a directory" >&2; exit 1; }
+
+# Friendly: if run from inside a case's code/ folder, step up to the case.
+if [ "$(basename "$CASE_ABS")" = code ] && [ -d "$CASE_ABS/../system" ]; then
+    CASE_ABS=$(dirname "$CASE_ABS")
+fi
+
+# A case has a controlDict and EITHER a flowsheetDict (solve/batch/ctrl) OR a
+# propsDict (choupoProps -- e.g. a custom property-estimation op in code/).
+if [ ! -f "$CASE_ABS/system/controlDict" ] || \
+   { [ ! -f "$CASE_ABS/system/flowsheetDict" ] && [ ! -f "$CASE_ABS/system/propsDict" ]; }; then
+    echo "runCase: '$CASE_ABS' does not look like a case (need system/controlDict + flowsheetDict or propsDict)" >&2
+    exit 1
+fi
+
+# Cases that ship their own unit ops under code/ are compiled into a
+# per-case binary and run --- transparently, via buildCode.  runCase
+# stays the single "just run it" command whether or not the case has
+# custom code.
+RUNNER=
+if [ -d "$CASE_ABS/code" ]; then
+    # Case-local code/: buildCode compiles a per-case binary against the entry
+    # named by `application` (choupoSolve default, or choupoProps for a custom
+    # property-estimation op).  Read it here too, for the log name + message.
+    APP=$(grep -oP '^[[:space:]]*application[[:space:]]+\K\w+' \
+            "$CASE_ABS/system/controlDict" 2>/dev/null | head -1)
+    APP="${APP:-choupoSolve}"
+    RUNNER="$(dirname "$0")/buildCode"
+else
+    # Dispatch by `application` field; default to choupoSolve.
+    APP=$(grep -oP '^[[:space:]]*application[[:space:]]+\K\w+' \
+            "$CASE_ABS/system/controlDict" 2>/dev/null | head -1)
+    APP="${APP:-choupoSolve}"
+    case "$APP" in
+        choupoSolve|choupoBatch|choupoCtrl|choupoProps) ;;
+        *)
+            echo "runCase: controlDict has 'application $APP;' which is not a known binary" >&2
+            echo "         (expected one of: choupoSolve, choupoBatch, choupoCtrl, choupoProps)" >&2
+            exit 1
+            ;;
+    esac
+    RUNNER="$APP"
+fi
+
+LOG="$CASE_ABS/log.$APP"
+
+if [ -f "$LOG" ] && [ -z "$APPEND" ]; then
+    echo "runCase: '$LOG' exists; remove it or pass -a." >&2
+    exit 1
+fi
+
+echo "Running case: $CASE_ABS"
+echo "  log:    $LOG"
+
+if [ "$RUNNER" != "$APP" ]; then
+    # Case-local code/: compile it FIRST, with the g++ command shown on
+    # the terminal (NOT hidden in the log) --- build-time, glass-box.
+    echo "  binary: $APP (case-local code/ --- compiling it first)"
+    echo "  ----------------------------------------------------------------"
+    "$RUNNER" "$CASE_ABS"           # buildCode only compiles; output shown here
+    echo "  ----------------------------------------------------------------"
+    RUN_BIN="$CASE_ABS/code/.build/choupoCase"
+else
+    echo "  binary: $APP"
+    RUN_BIN="$APP"
+fi
+
+if [ -n "$APPEND" ]; then
+    "$RUN_BIN" "$CASE_ABS" >> "$LOG" 2>&1
+else
+    "$RUN_BIN" "$CASE_ABS"  > "$LOG" 2>&1
+fi
+rc=$?
+
+if [ $rc -eq 0 ]; then
+    if [ -n "$QUIET" ]; then
+        grep -E '(Converged|V/F:|T_bubble:|T_dew:|T_out:|Conversion|Final stream|Recycle converged|Trajectory written)' "$LOG" | head -6
+    else
+        echo "  done.  Inspect with:  less $LOG"
+    fi
+else
+    echo "  FAILED (exit $rc) -- last 20 lines of log:" >&2
+    tail -20 "$LOG" >&2
+fi
+exit $rc

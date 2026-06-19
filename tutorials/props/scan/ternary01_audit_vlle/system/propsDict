@@ -1,0 +1,12 @@
+operations
+(
+    {
+        name      lle;
+        type      propertyScanTernary;
+        mode      vlle;                 // full vapour + 2-liquid (3-phase) classification
+        state     { T 350 K;  P 1 bar; }
+        grid      { n 14; }             // intervals per edge (interior nodes)
+        tieStride 3;                    // a tie-line every 3rd split node
+        output    { file ternary.csv; }
+    }
+);

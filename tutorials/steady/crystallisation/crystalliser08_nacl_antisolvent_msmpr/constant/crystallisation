@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser08 / constant/crystallisation -- NaCl crystallisation KINETICS.
+
+  Equipment/sample-dependent power-law kinetics (axiom 3: case-local), referenced
+  by `crystallisation naclKinetics;`.  KEPT SEPARATE from the saturation, which
+  for NaCl comes from the eNRTL ion-activity Ksp (the antisolvent supersaturation),
+  not a solubility curve.
+
+      growth      G  = k_g (S-1)^g            [m/s]
+      nucleation  B0 = k_b (S-1)^b M_T^j      [#/(m^3 s)]   (S = c/c_sat)
+
+  Values are ILLUSTRATIVE order-of-magnitude power laws (the FitParameters
+  calibration targets) chosen to give a realistic ~100-200 um NaCl crystal at the
+  antisolvent supersaturation -- NOT a measured dataset.  Replace with fitted
+  kinetics for a real system.
+\*---------------------------------------------------------------------------*/
+
+naclKinetics
+{
+    growth
+    {
+        k_g   2.0e-8;     // m/s
+        g     1.0;
+    }
+    nucleation
+    {
+        k_b   5.0e11;     // #/(m^3 s)
+        b     2.0;
+        j     0.0;        // magma-independent (primary-style) for this first cut
+    }
+}

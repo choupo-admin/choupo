@@ -1,0 +1,165 @@
+/*---------------------------------------------------------------------------*\
+  evaporator05_counter_current  --  COUNTER-CURRENT (BACKWARD-FEED)
+                                     triple-effect evaporator, Mode-2,
+                                     credo-pure.
+
+  Problem (textbook givens, MCFT 10.38 numerics, counter-current variant):
+    Feed         1.25 kg/s, 10 wt% solids, 294 K
+    Live steam   170 kPa  (saturated vapour) entering EFFECT 1 (hot end)
+    P_3 (cold end) such that T_3 = 325 K  ->  13.5 kPa
+    U_1          3100 W/(m²·K)
+    U_2          2500 W/(m²·K)
+    U_3          1700 W/(m²·K)
+    Spec         productConc = 40 wt% solids  (exits from effect 1)
+    Equal areas  A_1 = A_2 = A_3 = A          (single $A by reference)
+
+  Wiring  (LIQUID flows 3 -> 2 -> 1 ;  VAPOUR flows 1 -> 2 -> 3 ;
+           OPPOSITE directions  =>  counter-current):
+
+      feed (294 K, 10 %)          productConc (40 %, exits effect 1)
+            |                                 ^
+            v                                 |
+      +---------+   L3to2   +---------+   L2to1   +---------+
+      | effect3 |<----------| effect2 |<----------| effect1 |
+      |  COLD   |           |  MID    |           |  HOT    |
+      +----+----+           +----+----+           +----+----+
+           ^                     ^                     ^
+           |                     |                     |
+        V2 (from 2)           V1 (from 1)           liveSteam
+        chest of 3            chest of 2            (170 kPa)
+           |
+           v
+        V3 -> condenser
+        cond1, cond2, cond3 -> condensate terminals
+
+  Recycle structure
+  -----------------
+  Both V_1 and V_2 flow OPPOSITE to the liquid: effect 1 produces V_1
+  which feeds effect 2's chest; effect 2 produces V_2 which feeds
+  effect 3's chest.  In the directed graph this creates a CYCLE:
+
+        effect3 --L3to2--> effect2 --L2to1--> effect1
+              ^                                  |
+              | V2                            V1 |
+              |                                  v
+              +-- effect2 <-- effect1 (V1 chest) +
+
+  So we DECLARE V_1 and V_2 as TEAR STREAMS.  The flowsheet executive
+  runs effect3 -> effect2 -> effect1 once per pass, with the initial
+  V_1 / V_2 guesses from the streams block; at end of pass the
+  newly-produced V_1, V_2 are compared with the old.  Wegstein
+  (or plain direct substitution) iterates until they match.
+
+  In Mode 2 each effect computes T_boil and P_op locally from the
+  chest T and the hardware (A, U) --- so the only thing that the
+  Wegstein loop actually iterates is V_i.F (the produced flows).
+  T and P_op stabilise IMMEDIATELY (single pass).  Convergence in
+  ~3-5 Wegstein passes.
+
+  Design unknowns (in outerDict):
+      $A          common heat-exchange area
+      $F_steam    live-steam flow
+
+  Constraints:
+      productConc.F_mass = 0.3125 kg/s    (40 wt%)
+      effect3.P = 13.5 kPa                (textbook terminal vacuum)
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    A          20.0   m2;       // initial guess close to expected
+    F_steam    80.0   kmol/h;   // initial guess close to expected
+}
+
+streams
+{
+    feed
+    {
+        T            294.0 K;
+        P            200.0 kPa;
+        massFlows
+        {
+            agua     1.125  kg/s;
+            solidos  0.125  kg/s;
+        }
+    }
+
+    liveSteam
+    {
+        F                $F_steam;
+        P                170.0  kPa;
+        state            saturatedVapour;       // -> T = T_sat(170 kPa) ~ 388 K
+        molarComposition  { agua 1.0; }
+        category         LP_steam_170kPa;
+    }
+
+    // -------------------------- TEAR STREAMS --------------------------
+    //  V_1: produced by effect 1, consumed by effect 2's chest.
+    //  V_2: produced by effect 2, consumed by effect 3's chest.
+    //  Initial guesses below; Wegstein refines them.
+    V1
+    {
+        F                0.017 kmol/s;          // ~ 61 kmol/h (1/3 of total V)
+        T                375.0 K;
+        P                100.0 kPa;
+        molarComposition  { agua 1.0; }
+    }
+
+    V2
+    {
+        F                0.017 kmol/s;
+        T                355.0 K;
+        P                 50.0 kPa;
+        molarComposition  { agua 1.0; }
+    }
+}
+
+tearStreams            ( V1 V2 );
+recycleSolver          Wegstein;   // this case is tuned for damped Wegstein
+                                   //   (the qmin below); `Newton` also converges
+                                   //   it (the EO-flavoured tear solver, v0.76).
+recycleTol             1.0e-5;
+recycleMaxIter        120;
+recycleWegsteinQmin   -0.7;        // strong damping; counter-current
+recycleWegsteinQmax    0.0;        //   recycles can over-shoot.
+
+units
+(
+    // Declaration order = LIQUID flow direction (cold -> hot).
+    // Each effect's liquid input is produced by the unit declared
+    // immediately before it (DAG on the liquid side).  V_1, V_2 are
+    // the back-edges (recycles) that Wegstein converges.
+    {
+        name        effect3;                    // COLD end (gets the feed)
+        type        evaporator;
+        inputs      ( feed   V2 );
+        outputs     ( L3to2  V3  cond3 );
+        operation
+        {
+            area       $A;
+            U        1700.0  W/m2/K;
+        }
+    }
+    {
+        name        effect2;
+        type        evaporator;
+        inputs      ( L3to2  V1 );
+        outputs     ( L2to1  V2  cond2 );
+        operation
+        {
+            area       $A;
+            U        2500.0  W/m2/K;
+        }
+    }
+    {
+        name        effect1;                    // HOT end (live steam)
+        type        evaporator;
+        inputs      ( L2to1  liveSteam );
+        outputs     ( productConc  V1  cond1 );
+        operation
+        {
+            area       $A;
+            U        3100.0  W/m2/K;
+        }
+    }
+);

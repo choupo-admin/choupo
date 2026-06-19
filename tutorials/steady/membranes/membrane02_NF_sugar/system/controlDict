@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "NF270 partial rejection of glucose at 10 bar (canonical NF: 10 g/L sugar feed)";
+
+verbosity     3;

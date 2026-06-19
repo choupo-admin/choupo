@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- ethanol-pXylene (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( ethanol pXylene );
+model       NRTL;
+
+parameters
+{
+    i           ethanol;
+    j           pXylene;
+    a_ij        0.0;
+    b_ij        513.707;   // K
+    a_ji        0.0;
+    b_ji        447.536;   // K
+    alpha       0.618;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_ethanol_pXylene   1020.8405;   // CAS 64-17-5 -> 106-42-3
+    A_pXylene_ethanol   889.3461;   // CAS 106-42-3 -> 64-17-5
+    alpha               0.618;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "64-17-5/106-42-3";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

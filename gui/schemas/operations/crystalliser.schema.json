@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/crystalliser.schema.json",
+  "title": "crystalliser operation",
+  "description": "Crystalliser.  Two `model`s: `equilibrium` (default) is the cooling-yield model --- a solution is cooled to the operating temperature, the solubility falls and the excess crystallises, the mother liquor leaving saturated (yield, dissolved solute and cooling duty Q are RESULTS from the solute's `solubility {}` curve).  `MSMPR` is the continuous mixed-suspension mixed-product-removal crystalliser solved by the method of moments: the kinetics (referenced from constant/crystallisation) set the particle-size distribution, and the steady supersaturation, growth/nucleation rate, dominant crystal size and magma density are RESULTS.  One product: the magma (crystals in the solid phase + mother liquor).",
+  "type": "object",
+  "properties": {
+    "operatingTemperature": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating temperature",
+      "description": "The temperature the crystalliser holds (an operating setpoint).  The mother liquor leaves saturated (equilibrium) or supersaturated (MSMPR) at this temperature; cooling it further raises the yield.  The cooling duty Q needed to reach it is a RESULT.",
+      "unit": "K"
+    },
+    "volume": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Working volume (MSMPR)",
+      "description": "Working suspension volume of the continuous vessel (MSMPR model only).  Sets the residence time tau = V/Q, which together with the kinetics fixes the steady supersaturation and the particle-size distribution.  Ignored by the equilibrium model.",
+      "unit": "m3"
+    }
+  },
+  "required": ["operatingTemperature"],
+  "additionalProperties": false
+}

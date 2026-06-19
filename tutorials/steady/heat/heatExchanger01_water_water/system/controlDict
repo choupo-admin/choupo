@@ -1,0 +1,13 @@
+application   choupoSolve;
+description   "Two-stream heat exchanger (eps-NTU): hot/cold water recovery";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }     // hot loses = cold gains
+    profiles       { }     // T_hot, T_cold along the area (the pinch)
+    spreadsheet    { }
+}

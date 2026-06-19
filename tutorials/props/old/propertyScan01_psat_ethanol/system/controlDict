@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Antoine vapour-pressure curve P_sat(T) for pure ethanol from 250 K to 400 K";
+
+verbosity     3;

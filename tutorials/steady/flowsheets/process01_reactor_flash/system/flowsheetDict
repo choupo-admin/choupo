@@ -1,0 +1,45 @@
+/*---------------------------------------------------------------------------*\
+  Two-unit flowsheet:   feed → CSTR → flash → (liquid, vapour)
+
+                    feed                 reactorOut
+        ────────────────►   reactor   ────────────────►   separator
+                            (CSTR)                       (T 355, P 1 bar)
+                                                              │     │
+                                                  liqProd ◄──┘     └──► vapProd
+
+  Reaction kinetics are in constant/reactions
+  Solver defaults are in system/solverDict
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            1.0 kmol/h;
+        T            350.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+    }
+}
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+
+        operation   { V_R 0.005; }
+        reaction    esterification_etac;
+    }
+
+    {
+        name        separator;
+        type        isothermalFlash;
+        in          reactorOut;
+        outputs     ( liqProd  vapProd );
+
+        operation   { T 365.0 K;  P 1.0 bar; }
+    }
+);

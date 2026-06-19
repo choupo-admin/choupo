@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Water pump: 2 kW shaft, eta 0.65 --- incompressible, P_out / T_out are RESULTS";
+
+verbosity     3;

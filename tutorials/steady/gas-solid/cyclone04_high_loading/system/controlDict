@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "Cyclone high dust loading -- Muschelknautz mass-loading effect";
+verbosity     3;
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    profiles       { }
+    spreadsheet    { }
+}

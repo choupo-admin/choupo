@@ -1,0 +1,59 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser07_nacl_antisolvent_cooled  --  ANTISOLVENT + COOLING
+
+      brine  ──┐
+            [cryst @ 5 C] ──┬──► crystals      (wet NaCl cake)
+      ethanol─┘             └──► motherLiquor  (saturated supernatant)
+
+  Identical drowning-out feed to crystalliser06 (saturated brine + ethanol,
+  salt-free x_ethanol ~ 0.40), but the crystalliser is COOLED to 5 C.  Two levers
+  now stack:
+    * ANTISOLVENT  -- ethanol lowers the dielectric -> mixed-solvent gamma_pm(T).
+    * COOLING      -- the electrolyte model is temperature-dependent: tau(T) =
+      tau_25 * 298.15/T (the Delta_g/RT form, like the molecular NRTL), the
+      Debye-Huckel A_DH(T) follows eps_w(T)/rho_w(T), the Born term is at T, and
+      the saturation product Ksp(T) shifts by van't Hoff with NaCl's enthalpy of
+      solution (dissolutionEnthalpy in NaCl.dat).
+  Result: m_sat ~ 0.885 -> 0.681 mol/kg, yield 61% -> 70% vs the isothermal 06.
+  (For NaCl alone cooling is weak -- solubility is nearly T-flat; the antisolvent
+  carries most of the effect.  A salt with a large dHsol, e.g. KNO3, would gain
+  far more from cooling.)
+
+  Self-contained: components live in constant/components/.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    brine
+    {
+        F            100.0 kmol/h;
+        T            298.15 K;
+        P              1.0 bar;
+        molarComposition  { water 0.9003;  NaCl 0.0997; }   // saturated aqueous NaCl
+    }
+
+    ethanol
+    {
+        F             60.0 kmol/h;
+        T            298.15 K;
+        P              1.0 bar;
+        molarComposition  { ethanol 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        cryst;
+        type        crystalliser;
+        inputs      ( brine  ethanol );
+        outputs     ( crystals  motherLiquor );
+
+        operation
+        {
+            operatingTemperature 278.15 K;   // COOLED to 5 C (vs 25 C in crystalliser06)
+            cakeMoisture         0.10;
+            solidsRecovery       1.0;
+        }
+    }
+);

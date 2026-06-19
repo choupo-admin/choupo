@@ -1,0 +1,4 @@
+components       ( ethanol  water  aceticAcid  ethylAcetate );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

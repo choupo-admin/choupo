@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: Dowtherm A heat transfer fluid (closed-loop sensible carrier).
+
+  Sources: Sinnott & Towler 6ed (2022) §6.5.3.
+
+  When to use:
+    For process duties needing a hot side above the practical ceiling of
+    HP steam (~250 C) up to ~370 C.  Typical applications: heat input to
+    a steam reformer, reactor jacket of a vacuum residue cracker, heating
+    a tar / asphalt rundown line.
+
+    Closed loop: the fluid is heated in a fired heater, distributed to
+    consumers, returned, re-heated.  Cheaper than steam at high T because
+    the boiler does not have to make superheated HP steam — pressure stays
+    near atmospheric.
+
+  Note: For duties above ~400 C, switch to `hitecSalt`.
+\*---------------------------------------------------------------------------*/
+
+utility     dowthermA;
+tier        heating;
+mechanism   sensible;                  // 80 K loop drop; no phase change
+
+components  ( dowthermA );             // pseudo-component
+state       subcooledLiquid;
+P           5.0 bar;                   // loop pressure (avoids cavitation at 350 C)
+T_in        623.15 K;                  // 350 C delivery
+T_out       543.15 K;                  // 270 C return (typical 80 K drop)
+
+// Energy delivered per kg: Cp_avg × ΔT for the 80 K loop drop.
+// Cp_avg at T_avg = 583 K (310 C) from the polynomial fit: 2453 J/kg·K.
+dutyPerKg   196000.0;                  // J/kg  (2453 × 80)
+
+cost        10.0;                      // €/GJ delivered
+costYear    2022;
+description "Dowtherm A heat transfer loop (350 -> 270 C)";

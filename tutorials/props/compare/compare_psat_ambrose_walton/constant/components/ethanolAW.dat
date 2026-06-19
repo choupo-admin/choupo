@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: ethanolAW  --  a copy of ethanol whose vapour pressure is PREDICTED
+  by Ambrose-Walton corresponding states (Tc, Pc, omega) instead of the fitted
+  Antoine of the catalogue ethanol.  Ethanol is strongly hydrogen-bonding /
+  associating: this is exactly where a corresponding-states correlation
+  DEGRADES.  Overlaid on the catalogue Antoine, the gap is the lesson -- for an
+  associating species, fit Antoine to data; do NOT trust corresponding states.
+\*---------------------------------------------------------------------------*/
+
+name        ethanolAW;
+MW          46.069;        // kg/kmol
+Tc          513.92;        // K
+Pc          61.48;         // bar
+omega       0.6490;        // [-]
+Tb          351.44;        // K
+HvapTb      38560;         // J/mol
+Vliq        5.850e-5;      // m^3/mol
+
+vaporPressure
+{
+    model    AmbroseWalton;   // Tc/Pc/omega taken from the component above
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (9.014   0.2141   -8.39e-5   1.373e-9);
+    Trange        (200  1500);
+}

@@ -1,0 +1,5 @@
+components       ( CO2 );
+
+activityModel    { model  ideal; }
+
+equationOfState  { model  SRK; }

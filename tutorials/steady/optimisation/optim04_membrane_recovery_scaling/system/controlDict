@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Brackish RO: maximise water recovery up to the scaling limit (SQP, scaling constraints active at the optimum)";
+
+verbosity     3;

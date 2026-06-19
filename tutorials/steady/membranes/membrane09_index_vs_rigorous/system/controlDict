@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Seawater RO at high recovery: industry calcite indices (LSI / Stiff-Davis / Ryznar) vs the rigorous activity SI at the membrane WALL";
+
+verbosity     3;

@@ -1,0 +1,71 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict --- ED02 over-limiting current electrodialysis
+  ===========================================================================
+
+  Same stack as ED01, but run on a MORE DILUTE diluate (0.02 mol/kg) at a
+  LOW cross-flow velocity and a HIGH current.  The diluate-side limiting
+  current density i_lim (Cowan-Brown) is small; the applied current density
+  EXCEEDS it, so the stack runs in the OVER-LIMITING regime.
+
+  Choupo does NOT silently clamp the current (the "no silent crutch" credo):
+  it computes the unclamped Faraday transfer and prints a LOUD warning that
+  i > i_lim -- the diluate boundary layer is ion-depleted, water splitting /
+  pH swings set in, and the real current efficiency would collapse.  The
+  student SEES the regime and the i/i_lim ratio, then chooses to reduce the
+  current or raise the flow / feed concentration.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    diluateFeed
+    {
+        F            20.0 mol/s;
+        T            298.15 K;
+        P            1.5 bar;
+        molarComposition { water 0.99928;  Na 0.00036;  Cl 0.00036; }
+    }
+    concentrateFeed
+    {
+        F            5.0 mol/s;
+        T            298.15 K;
+        P            1.5 bar;
+        molarComposition { water 0.982301;  Na 0.008850;  Cl 0.008850; }
+    }
+}
+
+units
+(
+    {
+        name        edStack;
+        type        electrodialysisStack;
+        inputs      ( diluateFeed  concentrateFeed );
+        outputs     ( diluate  concentrate );
+
+        operation
+        {
+            N_cellpairs       20;
+            current           5.5;        // A (raw SI) -- HIGH: drives i > i_lim
+            xi                0.9;
+            membraneArea      0.2 m2;
+            channelThickness  0.5 mm;
+            channelLength     0.4 m;
+            linearVelocity    0.01 m/s;   // LOW cross-flow -> small k -> small i_lim
+            E_electrodes      1.5;        // V (raw SI)
+            membrane          CMX_AMX;
+        }
+
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+    {
+        name        rectifier;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from edStack.power;  kind work;  target W_shaft; }
+        );
+    }
+);

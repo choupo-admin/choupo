@@ -1,0 +1,24 @@
+# =============================================================================
+#  code/options  --  extra compile/link flags for THIS case's code
+#  (entirely optional; omit it and the defaults are used)
+#
+#  buildCode reads three keys and injects them into the g++ command:
+#
+#     INCLUDE = ...   extra header search dirs  (-I...)
+#     LIBS    = ...   libraries to link         (-L... -l...)
+#     FLAGS   = ...   extra compiler flags      (-O3, -ffast-math, ...)
+#
+#  These are the STUDENT's own dependencies, on the student's own code.
+#  The Choupo engine (src/) stays dependency-free; only this code/ may
+#  reach outside.  Lines starting with # are comments.
+#
+#  Example --- link an external property library (CoolProp) and add Eigen
+#  headers (uncomment + adjust paths to use):
+#
+#     INCLUDE = -I/opt/coolprop/include -I/usr/include/eigen3
+#     LIBS    = -L/opt/coolprop/lib -lCoolProp
+#     FLAGS   = -O3
+#
+#  This tutorial's YieldReactor needs nothing beyond the engine, so all
+#  three are left commented out (no extra flags).
+# =============================================================================

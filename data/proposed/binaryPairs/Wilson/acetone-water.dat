@@ -1,0 +1,35 @@
+// ChemSep DECHEMA Wilson pair -- acetone-water (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( acetone water );
+model       Wilson;
+
+parameters
+{
+    i           acetone;
+    j           water;
+    A_ij        1839.45;   // J/mol
+    A_ji        5880.57;   // J/mol
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_acetone_water   439.64;   // CAS 67-64-1 -> 7732-18-5
+    A_water_acetone   1405.49;   // CAS 7732-18-5 -> 67-64-1
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "wilson.ipd";
+    sourceRecord  "67-64-1/7732-18-5";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "Wilson";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

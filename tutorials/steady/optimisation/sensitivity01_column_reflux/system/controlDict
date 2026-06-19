@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Sweep reflux ratio across the column01 case";
+
+verbosity     1;

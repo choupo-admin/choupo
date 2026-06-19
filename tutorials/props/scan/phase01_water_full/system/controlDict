@@ -1,0 +1,8 @@
+/*  Complete pure-compound P-T phase diagram of water: liquid-vapour saturation
+    (to the critical point) + solid-vapour sublimation + solid-liquid fusion
+    (the negative-slope ice line) + triple and critical points.  Clapeyron
+    physics in the purePhaseDiagram engine op; cited solid data in the solid{}
+    block (IAPWS/CRC, see solidPhaseData.ts).  Run-only smoke. */
+application   choupoProps;
+description   "Complete P-T phase diagram of water (purePhaseDiagram, solid+liquid+vapour)";
+verbosity     2;

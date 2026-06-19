@@ -1,0 +1,78 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  PSEUDO-COMPONENT: petCut_C7plus   (a petroleum cut -- NOT a real species)
+
+  A petroleum pseudo-component LUMPS hundreds of real species (a heavy-naphtha
+  / kerosene cut of a crude assay) into ONE characterisation point.  It is an
+  ORDINARY component .dat resolved by EXACT NAME, but it carries ONLY the
+  fields a lump can honestly own:
+
+    identity { MW }        -- a lump average molar mass (NO formula / CAS:
+                              there is no single molecule)
+    critical { Tc Pc omega}-- corresponding-states constants of the cut
+    gasIdeal  { Cp }       -- ideal-gas heat capacity (NO Hf_298 / S_298:
+                              gibbsFormation needs a stoichiometric reaction,
+                              and a lump has none)
+    liquidPure{ Tb Vliq Cp Psat }  -- enough to FLASH and to close an
+                              energy balance.
+
+  The numbers below were produced by Riazi-Daubert (1987) from the assay
+  anchors (Tb = 447.3 K, SG = 0.730) -- see the SIBLING tutorial
+  props/estimate/estimate_petroleum_cut, which generates this very file and
+  validates it against n-decane (the nearest real species: Tc ~ exact, omega
+  within ~2 %, MW / Pc within the correlation's stated ~6 %).  This
+  hand-curated copy is the worked example: it FLASHES and its enthalpy
+  balance CLOSES.
+
+  PROVENANCE SCREAMS what it is: status ESTIMATE, origin estimated, lumped
+  true -- "NOT a real species".  Estimation has error, and a lump has more.
+\*---------------------------------------------------------------------------*/
+
+identity
+{
+    name        petCut_C7plus;
+    // formula / CAS OMITTED -- a pseudo-component is a LUMP, not a molecule.
+    MW          151.51;           // g/mol  lump-average molar mass (Riazi-Daubert)
+}
+
+critical    // corresponding-states constants of the lumped cut
+{
+    Tc      617.80;               // K     (Riazi-Daubert from Tb,SG)
+    Pc      19.78;                // bar   (Riazi-Daubert from Tb,SG)
+    omega   0.4813;               // [-]   Lee-Kesler from (Tb,Tc,Pc)
+}
+
+gasIdeal    // ideal-gas Cp ONLY -- NO formation datum (a lump has no reaction)
+{
+    Cp
+    {
+        model         polynomial;
+        // Cp_ig [J/(mol K)] = a0 + a1 T + a2 T^2 + a3 T^3   (Kesler-Lee 1976)
+        coefficients  (11.27   0.896253   -3.423096e-04   0.0);
+        Trange        (250  1000);
+    }
+}
+
+liquidPure  // pure-liquid (Raoult) reference -- Psat IS f(T)
+{
+    Tb         447.30;            // K      pseudo normal boiling point (assay anchor)
+    Vliq       2.03e-4;           // m^3/mol  Rackett at 298 K (estimate)
+    Cp
+    {
+        model         polynomial;
+        // Cp_liq approximated by the ideal-gas polynomial (a lump estimate).
+        coefficients  (11.27   0.896253   -3.423096e-04   0.0);
+        Trange        (250  600);
+    }
+    // Ambrose-Walton corresponding states from critical{} -- FLASHABLE with
+    // no measured Antoine data.
+    Psat { model AmbroseWalton; }
+}
+
+provenance
+{
+    status        "ESTIMATE";
+    origin        estimated;
+    lumped        true;
+    method        "Riazi-Daubert (1987) from (Tb=447.3 K, SG=0.730); omega Lee-Kesler; Cp_ig Kesler-Lee (1976); Psat Ambrose-Walton; Vliq Rackett";
+    note          "petroleum pseudo-component, NOT a real species -- a lump of hundreds of species characterised by (Tb, SG)";
+}

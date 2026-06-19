@@ -1,0 +1,70 @@
+===============================================================================
+  Choupo  --  Rebuilding the .exe from source on Windows
+===============================================================================
+
+  You only need this if you want to *modify* the simulator, not to use it.
+  To just use it, follow README-windows.txt.
+
+-------------------------------------------------------------------------------
+  Option A: MSYS2 + MinGW-w64 (recommended)
+-------------------------------------------------------------------------------
+
+  1. Install MSYS2 from https://www.msys2.org/  (~700 MB).
+
+  2. Open the "MSYS2 MinGW64" shortcut.
+
+  3. Install the toolchain:
+
+         pacman -Syu --noconfirm
+         pacman -S --noconfirm mingw-w64-x86_64-gcc make
+
+  4. Navigate to the source directory:
+
+         cd /c/Choupo      # adjust the path to where you unzipped
+
+  5. Build:
+
+         make all                  # release, optimized
+         make MODE=debug all       # with -O0 -g for debugging
+
+  The .exe ends up at  build\linux64Gcc\choupoSolve.exe  (the platform
+  label says "linux64" because MSYS2 emulates a Unix-like environment;
+  the actual binary is a native Windows .exe).
+
+  A symlink-ish choupoSolve.exe also appears at the project root.
+
+-------------------------------------------------------------------------------
+  Option B: Cross-compile from Linux (which is how this distribution was built)
+-------------------------------------------------------------------------------
+
+  On any Linux box with mingw-w64 installed (apt: mingw-w64):
+
+         make windows
+
+  produces a static  build\win64MinGW\choupoSolve.exe  that runs on any
+  Windows 10/11 64-bit machine, no DLLs required.
+
+-------------------------------------------------------------------------------
+  Source layout
+-------------------------------------------------------------------------------
+
+  src\                    C++17 source (no external deps).
+  data\                   Component + material database.
+  tutorials\              End-to-end cases.
+  bin\                    Linux bash + Windows .bat helpers.
+  etc\                    Shell env (bashrc + setEnv.bat).
+  make\                   Makefile fragments (compiler.mk, rules.mk, wasm.mk).
+  docs\                   LaTeX sources for the manuals (rebuild: cd docs && make).
+
+  See docs\developerGuide.pdf for full guidance on adding unit operations,
+  thermodynamic models, materials, and tutorials.
+
+-------------------------------------------------------------------------------
+  Licence
+-------------------------------------------------------------------------------
+
+  GPL-3.0-or-later.  See LICENSE.  Free for academic, research, personal, and
+  commercial use; modification and redistribution permitted under the same
+  terms.  The licence does not grant rights to the "Choupo"
+  name or marks --- those are a trademark of TalentGround Lda.  See
+  TRADEMARKS.md.

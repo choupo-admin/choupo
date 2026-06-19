@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------*\
+  estimate_ethanol_benzene
+  ========================
+  Two Joback estimates, side by side, to SEE the method's spread:
+
+    ethanol  (1 CH3 + 1 CH2 + 1 OH)  -- a strong H-bonder; Joback's Tb comes
+             out ~14 K LOW (337 vs 351 K).  The honest limit, in plain sight.
+    benzene  (6 arCH)                -- aromatic ring; Joback Tc/Tb within
+             ~1.5%.  Group contribution at its best.
+
+  The lesson is the CONTRAST: an estimate is a starting point whose error you
+  must SEE, not a number to trust blindly.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        estimate_ethanol;
+        type        estimateComponent;
+        component   ethanol;
+        groups      ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
+        reference   { source "NIST"; Tb 351.4 K; Tc 514.0 K; Pc 61.4 bar; omega 0.644; }
+        output      { proposal auto; }   // write constant/components/ethanol.estimate-<date>.dat
+    }
+    {
+        name        estimate_benzene;
+        type        estimateComponent;
+        component   benzene;
+        groups      ( { group arCH; count 6; } );
+        reference   { source "NIST"; Tb 353.2 K; Tc 562.0 K; Pc 48.9 bar; omega 0.210; }
+        output      { proposal auto; }   // write constant/components/benzene.estimate-<date>.dat
+    }
+);

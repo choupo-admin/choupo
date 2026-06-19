@@ -1,0 +1,4 @@
+components       ( CH4  O2  N2  CO  CO2  water  H2  NO );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

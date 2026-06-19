@@ -1,0 +1,22 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  liquidFeed             F                0.0277777777778    1e-4
+stream  richGas                F                0.029140357434     1e-4
+stream  strippedLiquid         F                0.0264151981216    1e-4
+stream  strippingGas           F                0.0277777777778    1e-4
+kpi     stripper               F_richGas        0.029140357434     1e-4
+kpi     stripper               F_strippedLiquid 0.0264151981216    1e-4
+kpi     stripper               K_NH3            3.62862883208      1e-4
+kpi     stripper               K_water          0.170562530402     1e-4
+kpi     stripper               L_in             0.0277777777778    1e-4
+kpi     stripper               S_NH3            3.62862883208      1e-4
+kpi     stripper               S_water          0.170562530402     1e-4
+kpi     stripper               T_bottom         313.524974667      1e-4
+kpi     stripper               T_top            315.973930965      1e-4
+kpi     stripper               V_in             0.0277777777778    1e-4
+kpi     stripper               V_over_L         1                  1e-4
+kpi     stripper               dT_drop          16.4750253327      1e-4
+kpi     stripper               nonIsothermal    1                  1e-4
+kpi     stripper               recovery_NH3     0.981057352452     1e-4
+kpi     stripper               recovery_water   0                  1e-4
+kpi     stripper               stages           6                  1e-4

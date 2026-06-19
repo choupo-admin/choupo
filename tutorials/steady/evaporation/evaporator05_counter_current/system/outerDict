@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  evaporator05_counter_current --- outer driver.
+
+  Same design unknowns + constraints as the co-current variant:
+
+    Unknowns:
+      $A          common heat-exchange area (m²)
+      $F_steam    live-steam flow entering effect 1 (kmol/s)
+
+    Constraints (2):
+      (1) productConc.F_mass = 0.3125 kg/s   (textbook 40 wt% target;
+                                              productConc exits effect 1)
+      (2) effect3.P = 13.5 kPa                (textbook terminal vacuum;
+                                              effect 3 is the COLD end)
+
+  Note the inner Wegstein loop (over V_1, V_2 tear streams) runs INSIDE
+  each evaluation of the outer DesignSpec --- nested Newton over
+  $A, $F_steam wrapping Wegstein over V_1, V_2 wrapping Newton-1D in
+  V/F inside each evaporator.  Three levels.  In practice the inner
+  loops converge in ~1-3 iterations each (Mode 2 is mostly linear in
+  the tear F's), so the total cost is modest.
+\*---------------------------------------------------------------------------*/
+
+type         designSpec;
+
+manipulate
+(
+    { variable A;        initial 20.0   m2;     min 15.0  m2;       max 35.0   m2;     }
+    { variable F_steam;  initial 80.0   kmol/h; min 60.0  kmol/h;   max 120.0  kmol/h; }
+);
+
+targets
+(
+    { path  productConc.F_mass;   value 0.3125 kg/s;   tol 1.0e-4 kg/s; }
+    { path  effect3.P;            value 13500 Pa;       tol 100 Pa; }
+);
+
+options
+{
+    maxIter      40;
+    tolF         1.0;
+    fdStep       1.0e-3;        // larger relative step for noisy cascade
+}
+
+report
+{
+    file         designspec_history.csv;
+}

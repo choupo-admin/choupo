@@ -1,0 +1,35 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser02_msmpr / flowsheetDict   (LEAF node)
+
+  Continuous MSMPR crystalliser.  A hot near-saturated sugar solution is fed
+  to a cooled, well-mixed vessel of working volume V; the magma (crystals +
+  mother liquor) is withdrawn at the same volumetric rate, so the residence
+  time is tau = V / Q.  `model MSMPR` selects the population-balance path
+  (method of moments); the kinetics are referenced from
+  constant/crystallisation.
+\*---------------------------------------------------------------------------*/
+
+name        cryst;
+type        crystalliser;
+model       MSMPR;
+
+crystallisation  sucroseKinetics;        // -> constant/crystallisation
+
+operation
+{
+    operatingTemperature  293.15 K;      // hold at 20 C (cooled, a setpoint)
+    volume                5.0 m3;         // working suspension volume (hardware)
+}
+
+boundary    { inlets ( feed );  outlets ( magma ); }
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            353.15 K;            // 80 C hot, near-saturated solution
+        P              1.0 bar;
+        molarComposition  { water 0.85;  sucrose 0.15; }
+    }
+}

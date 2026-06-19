@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  Bubble-T of a 30/70 ethanol/water liquid at 1 atm  (NRTL).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;            // not actually used by bubbleT
+        T            350.0 K;            // initial T guess
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.30;  water 0.70; }
+    }
+}
+
+units
+(
+    {
+        name        bubble01;
+        type        bubbleT;
+        in          feed;
+        outputs     ( );               // saturation calc -- no stream output
+
+        operation   { P 1.01325 bar; }
+    }
+);

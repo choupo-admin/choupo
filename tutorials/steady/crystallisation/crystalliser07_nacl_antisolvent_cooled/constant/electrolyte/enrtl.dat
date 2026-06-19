@@ -1,0 +1,5 @@
+/* Case-local eNRTL tau (overlay). PRIMARY: Chen & Evans, AIChE J. 32 (1986) 444. */
+enrtl
+(
+    { cation Na; anion Cl; tau_m_ca 8.885; tau_ca_m -4.549; alpha 0.2; source "Chen & Evans, AIChE J. 32 (1986) 444"; }
+);

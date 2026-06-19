@@ -1,0 +1,66 @@
+/*---------------------------------------------------------------------------*\
+  recipe02_setpoint_ramp  --  isothermal batch reactor with a staged
+  temperature programme controlled by the recipe layer.
+
+  The reactor starts at 320 K, where the first-order Arrhenius
+  reaction is very slow (k_320 ≈ 3.7e-4 s⁻¹, τ ≈ 2700 s).  Two recipe
+  events ramp the setpoint upward:
+
+      t = 200 s  →  320 K → 350 K   (k jumps ~10x to 3.58e-3 s⁻¹)
+      t = 500 s  →  350 K → 380 K   (k jumps another ~7x to 0.025 s⁻¹)
+
+  In the trajectory CSV the temperature column shows a clean
+  step-change at each event, and the conversion curve shows the
+  corresponding three regimes:
+
+      0   ≤ t < 200 s   barely-moving plateau  (slow)
+      200 ≤ t < 500 s   visible drop in n_ethanol  (moderate)
+      500 ≤ t           rapid quench to full conversion (fast)
+
+  Demonstrates the recipe layer's `setParameter` action without
+  inter-unit transfers, so this is the cleanest possible test of the
+  parameter-change pathway.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        initial
+        {
+            T            320.0 K;
+            P            1.013 bar;
+            V            0.001;
+            totalMoles   0.0185;
+            molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+        }
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   320.0 K;            // K  (overwritten by the recipe at 200 s)
+        }
+
+        reaction    esterification_etac;
+    }
+);
+
+recipe
+(
+    {
+        time     200;
+        action   setParameter;
+        unit     reactor;
+        key      T_setpoint;
+        value    350.0;
+    }
+    {
+        time     500;
+        action   setParameter;
+        unit     reactor;
+        key      T_setpoint;
+        value    380.0;
+    }
+);

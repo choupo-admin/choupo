@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  plant01_two_sectors  --  the RECURSIVE node (fractal step 3).
+
+  A FACTORY whose children are SECTORS that are themselves composite (each a
+  flowsheet of one flash).  Recursion: plant -> sector -> unit.  Tests nested
+  namespacing (secA.fa, secB.fb) and multi-level cabling (feed -> secA ->
+  secA/liquid -> secB).  The whole plant runs from one command.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Recursive plant: factory of two composite sectors (fractal step 3)";
+verbosity     3;
+reports { streamTable {}  massBalance {} }

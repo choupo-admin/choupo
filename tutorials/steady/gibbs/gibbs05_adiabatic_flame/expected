@@ -1,0 +1,23 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.00556666666667   1e-4
+stream  flueGas                F                0.00556666667727   1e-4
+kpi     burner                 F_in_kmol_h      20.04              1e-4
+kpi     burner                 F_out_kmol_h     20.0400000382      1e-4
+kpi     burner                 N_in_mol_s       5.56666666667      1e-4
+kpi     burner                 N_out_mol_s      5.56666667727      1e-4
+kpi     burner                 P                100000             1e-4
+kpi     burner                 T                1491.59375592      1e-4
+kpi     burner                 converged        1                  1e-4
+kpi     burner                 lambda_C         -432004.965478     1e-4
+kpi     burner                 lambda_H         -169165.436777     1e-4
+kpi     burner                 lambda_N         -91572.3916592     1e-4
+kpi     burner                 lambda_O         -115067.749413     1e-4
+kpi     burner                 outerIterations  3                  1e-4
+kpi     burner                 y_CH4            4.76645298277e-30  1e-4
+kpi     burner                 y_CO             2.12873499217e-09  1e-4
+kpi     burner                 y_CO2            0.0498999977763    1e-4
+kpi     burner                 y_H2             1.6793244438e-09   1e-4
+kpi     burner                 y_N2             0.750499998571     1e-4
+kpi     burner                 y_O2             0.099800001714     1e-4
+kpi     burner                 y_water          0.0997999981307    1e-4

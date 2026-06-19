@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser04_size_dependent_growth / thermoPackage
+\*---------------------------------------------------------------------------*/
+
+components       ( water  sucrose );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

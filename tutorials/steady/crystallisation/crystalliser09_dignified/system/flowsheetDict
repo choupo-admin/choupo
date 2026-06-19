@@ -1,0 +1,44 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser09_dignified / system/flowsheetDict   (CASE -- composite)
+
+  The SAME process as crystalliser09, reorganised so EACH unit op is a dignified
+  folder (cryst1/ cryst2/ recovery/), each with its own system/ + constant/.  The
+  topology is here (children + connections); the recycle (recoveredEthanol) is a
+  case-level tear.  recovery/ carries its OWN model (NRTL) + pair data -- the
+  per-unit constant in action.
+\*---------------------------------------------------------------------------*/
+
+children    ( cryst1  cryst2  recovery );
+
+boundary
+{
+    inlets   ( feed  freshEthanol );
+    outlets  ( KHT_cake  KCl_cake  stillage );
+}
+
+streams
+{
+    feed             { F 100 kmol/h; T 323.15 K; P 1 bar; molarComposition { water 0.9475; KCl 0.0512; potassiumBitartrate 0.00133; } }
+    freshEthanol     { F 15 kmol/h;  T 298.15 K; P 1 bar; molarComposition { ethanol 1.0; } }
+    recoveredEthanol { F 85 kmol/h;  T 351 K;    P 1 bar; molarComposition { ethanol 0.81; water 0.19; } }  // TEAR guess
+}
+
+tearStreams      ( recoveredEthanol );
+recycleSolver     Newton;
+recycleTol        1e-5;
+recycleMaxIter    150;
+recycleWegsteinQmin 0.0;
+recycleWegsteinQmax 0.0;
+
+connections
+(
+    { from feed;                       to cryst1/feed;             }
+    { from cryst1/liquor1;             to cryst2/liquor1;          }   // unit -> unit
+    { from freshEthanol;               to cryst2/freshEthanol;     }
+    { from recovery/recoveredEthanol;  to recoveredEthanol;        }   // producer -> bare tear
+    { from recoveredEthanol;           to cryst2/recoveredEthanol; }   // bare tear -> cryst2 (RECYCLE)
+    { from cryst2/finalLiquor;         to recovery/finalLiquor;    }
+    { from cryst1/KHT_cake;            to KHT_cake;                }   // unit -> case outlet
+    { from cryst2/KCl_cake;            to KCl_cake;                }
+    { from recovery/stillage;          to stillage;                }
+);

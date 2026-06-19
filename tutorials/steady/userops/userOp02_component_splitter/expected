@@ -1,0 +1,8 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.0134722222222    1e-4
+stream  feed                   F                0.0277777777778    1e-4
+stream  overhead               F                0.0143055555556    1e-4
+kpi     splitter               F_bottoms_kmol_h 48.5               1e-4
+kpi     splitter               F_overhead_kmol_h 51.5               1e-4
+kpi     splitter               overhead_fraction 0.515              1e-4

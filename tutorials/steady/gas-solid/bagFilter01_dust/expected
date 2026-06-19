@@ -1,0 +1,17 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  capturedSolids         F                0                  1e-4
+stream  cleanGas               F                0.0416666666667    1e-4
+stream  feed                   F                0.0416666666667    1e-4
+kpi     baghouse               airToCloth_m_min 1.53857549963      1e-4
+kpi     baghouse               arealDustLoad    0.5                1e-4
+kpi     baghouse               dP_filter        2745.33935569      1e-4
+kpi     baghouse               efficiency       0.999334225794     1e-4
+kpi     baghouse               faceVelocity     0.0256429249938    1e-4
+kpi     baghouse               filterArea       40                 1e-4
+kpi     baghouse               mu_gas           1.78433840676e-05  1e-4
+kpi     baghouse               penetration      0.000665774205525  1e-4
+kpi     baghouse               rho_gas          1.13794383208      1e-4
+kpi     baghouse               solidsCaptured_mass 0.0138796420249    1e-4
+kpi     baghouse               solidsEscaped_mass 9.24686396563e-06  1e-4
+kpi     baghouse               solidsIn_mass    0.0138888888889    1e-4

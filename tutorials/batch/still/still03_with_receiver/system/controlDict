@@ -1,0 +1,9 @@
+application   choupoBatch;
+description   "Rayleigh still distilling INTO a receiver tank (dischargeTo accumulator)";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         600;      // s
+deltaT          1.0;      // s
+writeInterval   20;       // s

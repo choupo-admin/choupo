@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: neo-Pentane  (2,2-dimethylpropane, C5H12, CAS 463-82-1)
+  -- case-local.  An ISOMER of n-pentane (identical MW 72.15, so the
+  isomerization conserves mass EXACTLY), but much more volatile
+  (Tb 9.5 degC vs 36 degC -> relative volatility ~2.5), so the column
+  separates it cleanly into the distillate.  Used as the reactant /
+  recycled species in the isomerization-with-recycle test case.
+  Data: Reid-Prausnitz-Poling 4th ed. + NIST WebBook (rounded).
+\*---------------------------------------------------------------------------*/
+
+name        neoPentane;
+formula     C5H12;
+CAS         463-82-1;
+
+MW          72.150;
+Tc          433.80;
+Pc          31.99;          // bar
+omega       0.1970;
+Tb          282.65;         // K  (9.5 degC)
+HvapTb      22740;          // J/mol
+Vliq        1.220e-4;       // m^3/mol
+
+gibbsFormation
+{
+    dHf_298   -168050.0;        // J/mol  -- ideal-gas reference
+    s_298     306.390;          // J/(mol*K)  -- third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;     // log10(P/bar) = A - B/(T + C),  T in K
+    coefficients  (3.91440   923.880   -38.530);
+    Trange        (250  300);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;  // J/(mol*K)
+    coefficients  (-16.20   0.5919   -3.530e-4   8.200e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;  // J/(mol*K)
+    coefficients  (165.0);
+    Trange        (260  300);
+}

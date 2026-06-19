@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  USER-DEFINED COMPONENT --- "solidos" (generic non-volatile dissolved
+                                         solids; textbook abstraction).
+
+  The MCFT problem 10.38 specifies only one thermal property of the
+  solute: the AQUEOUS-SOLUTION heat capacity is 4.18 kJ/(kg·K), the
+  same as pure water.  In a binary mass-fraction-weighted mixing rule
+  (Cp_mix = w_water · Cp_water + w_solids · Cp_solids), this is exactly
+  satisfied if Cp_solids,mass = 4.18 kJ/(kg·K).  The molar Cp is then
+  Cp_mol = MW · Cp_mass.  Picking MW = 180 (a glucose-equivalent
+  reference, but kept generic here) gives:
+
+      Cp_mol_solids  =  180 · 4180  =  752 400 J/(kmol·K)
+                                  =  752.4   J/(mol·K)
+
+  No Antoine block (role = nonvolatile -> the VLE engine treats it as
+  K = 0).  No BPE (K_b not declared, so the evaporator's BPE term is
+  identically zero --- matching the textbook's "elevações desprezáveis").
+\*---------------------------------------------------------------------------*/
+
+name             solidos;
+formula          generic;
+
+MW               180.0;        // glucose-equivalent placeholder
+role             nonvolatile;
+dissociation     1;             // no ionic dissociation
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (752.4);     // J/(mol·K)  -- mass-basis 4.18 kJ/(kg·K)
+    Trange        (273  393);
+}

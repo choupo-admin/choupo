@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  GLOBAL thermo package: ethanol/water, ideal liquid + ideal gas (Raoult).
+  This is the default for any unit that does NOT carry a `thermo { ... }`
+  override.  Here two units DO override it (see flowsheetDict):
+    - the turbine uses SRK (a real gas at high pressure);
+    - the flash uses NRTL (a non-ideal liquid -- the ethanol/water azeotrope).
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water );
+
+activityModel    { model ideal;    }
+equationOfState  { model idealGas; }

@@ -1,0 +1,57 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  pipe01_water_line
+
+  A single PIPE element.  Water enters at 5 bar and flows through 50 m of
+  0.1 m commercial-steel pipe with two elbows, a globe valve, and a 2 m
+  rise.  The pressure DROP is a COMPUTED RESULT of the geometry and the
+  flow --- the pipe has NO pressure knob (information follows the streams:
+  a pipe only dissipates, a pump would raise P, a valve would set a
+  let-down P).
+
+    feed (5 bar liquid, 2000 kmol/h)
+      -> [P1 pipe]   D, L, roughness, dz, fittings -> ΔP (result)
+      -> downstream  (P reduced by the computed ΔP, T held)
+
+  Friction factor: Churchill (default) --- one explicit correlation across
+  laminar / transition / turbulent.  Re ~ 1.5e5 here, so the flow is
+  turbulent and all three ΔP terms (friction, fittings, elevation) matter.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            2000.0 kmol/h;
+        T            300.0 K;
+        P              5.0 bar;
+        molarComposition  { water 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        P1;
+        type        pipe;
+        model       Churchill;          // Churchill (default) | Haaland | Colebrook
+        in          feed;
+        outputs     ( downstream );
+
+        operation
+        {
+            geometry
+            {
+                D          0.1     m;    // internal diameter
+                L          50.0    m;    // straight length
+                roughness  4.6e-5  m;    // commercial steel (eps)
+                dz         2.0     m;    // outlet 2 m above inlet (rise costs P)
+
+                fittings
+                (
+                    { K 0.9;  count 2; }   // two 90-degree elbows
+                    { K 10.0;          }   // one globe valve, fully open
+                );
+            }
+        }
+    }
+);

@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for H2S in liquid water.
+
+  Reference: Sander, R. (2015) Atmos. Chem. Phys. 15, 4399-4981.
+
+      H_xp(298)  ≈  5.5e7 Pa  =  550 bar           (sparingly soluble)
+
+  Used for sour-gas amine plants (modelling the physical solubility
+  step before the H2S + amine acid-base chemistry takes over) and
+  for hydrogen-sulfide removal by water scrubbing at high pressure.
+
+      dH_diss(H2S-water)  ≈  -19200 J/mol
+\*---------------------------------------------------------------------------*/
+
+solute      H2S;
+solvent     water;
+
+model       vantHoff;
+H_ref       5.5e7 Pa;             // = 550 bar at 298.15 K
+T_ref       298.15 K;
+enthalpy    -19200  J/mol;
+Trange      ( 273  373 );

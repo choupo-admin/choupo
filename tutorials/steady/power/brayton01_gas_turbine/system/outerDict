@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  DesignSpec: close the Brayton cycle by sizing the turbine shaft power so
+  the exhaust returns to the feed pressure (1.013 bar).
+
+      manipulate   $W_turb   in [-50, -1] kW
+      target       turbine.P_out  =  1.013 bar
+\*---------------------------------------------------------------------------*/
+
+type         designSpec;
+
+manipulate
+(
+    { variable W_turb;  initial -16.0 kW;  min -50.0 kW;  max -1.0 kW; }
+);
+
+targets
+(
+    { path  turbine.P_out;   value 1.013 bar;   tol 300 Pa; }
+);
+
+options
+{
+    maxIter      40;
+    tolF         1.0;
+    fdStep       1.0e-3;
+}

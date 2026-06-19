@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "DSPM-DE NF: Born dielectric-exclusion toggle (same NaCl feed, poreDielectric on vs off)";
+
+verbosity     3;

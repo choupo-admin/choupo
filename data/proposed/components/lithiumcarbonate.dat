@@ -1,0 +1,34 @@
+// ============================================================
+//  PROPOSAL (SOLID) -- review before promoting to data/standards/
+//  name lithiumcarbonate   CAS 554-13-2   (lithium carbonate)   formula CLi2O3
+//  provenance  Hfs<-stripped  S0s<-stripped  Cp_solid<-gap (via chemicals/thermo)
+//  license     scalars+rho_p = facts; Cp = Lastovka (open estimate); formation = student supplies (cite primary)
+//  status UNVERIFIED PROPOSAL   generated 2026-06-07 solids ingestion
+// ============================================================
+
+name        lithiumcarbonate;
+formula     CLi2O3;
+CAS         554-13-2;
+MW          73.8909;        // kg/kmol
+role        nonvolatile;
+solid
+{
+    rho_p   2110;        // particle density [kg/m^3]
+}
+// gibbsFormation STRIPPED: dHf/s_298 below were from [excluded source] (excluded). Re-source from
+// CODATA Key Values / primary calorimetry + cite, then uncomment:
+// gibbsFormation
+// {
+//     dHf_298   FILL;   // value removed (excluded source); student supplies, cite primary
+//     s_298     FILL;   // value removed (excluded source); student supplies, cite primary
+//     phase     solid;
+// }
+
+// --- review status (machine-readable; data/proposed UNVERIFIED tier) ----------
+//  This file lives in data/proposed/ (NOT the verified data/standards/ tree).
+//  A student must REVIEW the values and PROMOTE it before they are trusted.
+provenance
+{
+    status  "UNVERIFIED ESTIMATE -- student-review pending (data/proposed tier)";
+    review  { state pending; reviewer student; }
+}

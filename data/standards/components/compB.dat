@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------*\
+  Component: compB  -- synthetic component for VLLE algorithm audit.
+  Identical Antoine to compB and compC (Psat ≈ 0.5 bar at 350 K).
+  Pedagogically only --- not a real substance.
+\*---------------------------------------------------------------------------*/
+
+name        compB;
+formula     B;
+CAS         00-00-0;
+
+MW          50.0;
+Tc          550.0;
+Pc          40.0;
+omega       0.20;
+Tb          355.0;
+HvapTb      35000;
+Vliq        1.0e-4;
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.0   1700.0   -30.0);   // log10 P_bar = A - B/(T + C)
+    Trange        (300  400);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (80.0   0.0   0.0   0.0);
+    Trange        (200  500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (120.0);
+    Trange        (300  400);
+}

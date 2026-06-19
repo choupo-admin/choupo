@@ -1,0 +1,80 @@
+/*--- SEPARATION sector -- PROPERTY analyses (the flash's VLE).
+  Fractal: these belong to THIS sector; opening SEPARATION shows only these.
+  ethanol-water bubble-T vs x: ideal / NRTL / Wilson, vs DECHEMA lab data. */
+experimental
+(
+    {
+        name       etoh_water_101kPa;
+        dataset    "constant/experiments/ethanol-water-Txy-101kPa";   // measured y -> lab points in x-y / T-y too
+        kind       txy;  component ethanol;
+        source     "DECHEMA / Gmehling-Onken Vol.I (pedagogical subset)";
+        models     ( etoh_water_ideal  etoh_water_nrtl  etoh_water_wilson );
+    }
+);
+operations
+(
+    {
+        // CONSISTENCY of the DATA itself (test the data, not just fit it).
+        // Back-computes gamma from measured (x,T,y) via modified Raoult and runs
+        // Gibbs-Duhem: pointwise slope residual + Herington area + gamma^inf.
+        name        vle_consistency;  type vleConsistency;
+        component   ethanol;  partner water;
+        dataset     "constant/experiments/ethanol-water-Txy-101kPa";
+        state       { P 1.01325 bar; }
+        output      { file vle_consistency.csv; }
+    }
+    {
+        // Phase 2: fit the Antoine equation to measured Psat(T) and cross-check
+        // dHvap via Clausius-Clapeyron (with the (T+C) correction).
+        name        psat_water_fit;  type vaporPressureFit;
+        component   water;
+        dataset     "constant/experiments/psat-water";
+        output      { file psat_water_fit.csv; }
+    }
+    {
+        // Phase 2: fit Cp(T) to data + Kirchhoff cross-check (Cp_ig - Cp_L = d(dHvap)/dT).
+        name        cp_water_liquid_fit;  type heatCapacityFit;
+        component   water;  degree 2;
+        dataset     "constant/experiments/cp-water-liquid";
+        output      { file cp_water_liquid_fit.csv; }
+    }
+    {
+        name        gamma_etoh_water;  type propertyScan1D;
+        rationale   "inspect the activity coefficients NRTL predicts across composition";
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
+        state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo      { activityModel { model NRTL;
+            pairs ( { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; } ); } }
+        properties  ( gamma_ethanol  gamma_water );  output { file gamma_etoh_water.csv; }
+    }
+    {
+        name        etoh_water_ideal;  type propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
+        state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo      { activityModel { model ideal; } }
+        // (x, T_bubble, y_eq_ethanol) trio -> the comparison can switch to the
+        // x-y McCabe view with every model overlaid.  Ideal (Raoult) has NO
+        // azeotrope: its equilibrium curve never meets the y=x diagonal.
+        properties  ( T_bubble  y_eq_ethanol );  output { file etoh_water_ideal.csv; }
+    }
+    {
+        name        etoh_water_nrtl;  type propertyScan1D;
+        rationale   "ethanol-water is strongly non-ideal (1 atm azeotrope near x=0.894); NRTL captures it, ideal does not";
+        source      "DECHEMA Vol.I (Gmehling-Onken)";
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
+        state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo      { activityModel { model NRTL;
+            pairs ( { i ethanol; j water; a_ij -0.8009; b_ij 246.18; a_ji 3.4578; b_ji -586.0809; alpha 0.30; } ); } }
+        properties  ( T_bubble  y_eq_ethanol );  output { file etoh_water_nrtl.csv; }
+    }
+    {
+        name        etoh_water_wilson;  type propertyScan1D;
+        rationale   "Wilson is the other common 2-parameter activity model; compare to NRTL on the same data";
+        source      "DECHEMA Vol.I (Gmehling-Onken)";
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
+        state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo      { activityModel { model Wilson;
+            pairs ( { i ethanol; j water; A_ij 1157.95; A_ji 4081.65; } ); } }
+        properties  ( T_bubble  y_eq_ethanol );  output { file etoh_water_wilson.csv; }
+    }
+);

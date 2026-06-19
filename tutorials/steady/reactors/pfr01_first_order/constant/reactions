@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  Esterification (Fischer):   AcOH + EtOH  ->  EtOAc + H2O
+
+  A MASS-CONSERVING first-order test reaction (60.052 + 46.069 = 88.106 +
+  18.015 = 106.121 g/mol on both sides), replacing the old non-conserving
+  ethanol -> water toy reaction (which destroyed ~28 g/mol and left the
+  mass-balance report ~50 % open).  Pseudo-first-order: rate = k.[ethanol]
+  (order 1 in ethanol, 0 in the acid), so the SAME first-order Arrhenius
+  kinetics carry over; only the chemistry now closes.
+\*---------------------------------------------------------------------------*/
+
+esterification_etac
+{
+    limitingReactant   ethanol;
+
+    stoichiometry
+    (
+        { component aceticAcid;    nu -1;  order 0; }
+        { component ethanol;       nu -1;  order 1; }
+        { component ethylAcetate;  nu  1;  order 0; }
+        { component water;         nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      1.0e8;
+        Ea     7.0e4;
+    }
+}

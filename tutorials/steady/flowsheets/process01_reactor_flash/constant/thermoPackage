@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------*\
+  thermoPackage for process01_reactor_flash
+
+  The whole flowsheet uses one global thermoPackage — every unit sees
+  the same component list and the same mixture models.  Per-unit
+  packages will arrive in a later version (and are rarely useful in
+  introductory chemical engineering).
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water  aceticAcid  ethylAcetate );
+
+// Ideal liquid (Raoult): this is a reactor + separation KINETICS demo,
+// not a VLE-accuracy demo, and a 4-component NRTL would need all 6 binary
+// pairs.  The flash still separates by relative volatility (Antoine).
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

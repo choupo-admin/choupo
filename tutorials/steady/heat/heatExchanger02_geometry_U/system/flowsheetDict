@@ -1,0 +1,78 @@
+/*---------------------------------------------------------------------------*\
+  heatExchanger02_geometry_U
+  ==========================
+
+  A shell-and-tube heat exchanger whose overall coefficient U and area are
+  COMPUTED from the bundle geometry plus per-side convective correlations
+  (the `model geometry;` path), instead of being specified.  This is the
+  glass-box answer to "where does U come from?".
+
+  Hot water (shell side) is cooled by cold water (tube side), clean service.
+
+  Method:
+    * tube-side h_i : Gnielinski  Nu = (f/8)(Re-1000)Pr/[1+12.7 sqrt(f/8)(Pr^2/3-1)]
+                      (Incropera & DeWitt, Fund. of Heat and Mass Transfer, 6th ed.)
+    * shell-side h_o: Kern method  Nu = 0.36 Re_s^0.55 Pr^1/3
+                      (Kern, Process Heat Transfer, 1950) on the bundle
+                      equivalent diameter D_e and crossflow mass flux G_s.
+    * U on the OUTSIDE area: 1/U = 1/h_o + r_o ln(r_o/r_i)/k_wall + r_o/(r_i h_i)
+    * area = pi d_o L n_tubes
+
+  Properties are IF97 water (rho, mu, lambda) at each stream temperature.
+
+  Expected order of magnitude (clean water-water): U ~ 2000-3000 W/(m2.K),
+  the SHELL side controlling, both sides turbulent (Re ~ 3-4 e4).  The exact
+  numbers are pinned by --record (self-consistency) -- they are RESULTS.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    hotShell
+    {
+        F            5995.0 kmol/h;     // ~30 kg/s water
+        T            330.0 K;
+        P            3.0 bar;
+        molarComposition { water 1.0; }
+    }
+
+    coldTube
+    {
+        F            7993.0 kmol/h;     // ~40 kg/s water
+        T            300.0 K;
+        P            3.0 bar;
+        molarComposition { water 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        hx;
+        type        heatExchanger;
+        model       geometry;
+        inputs      ( hotShell  coldTube );
+        outputs     ( hotOut  coldOut );
+
+        operation
+        {
+            flow        counter;
+            tubeStream  coldTube;        // which inlet is inside the tubes
+
+            geometry
+            {
+                tubeID         0.016 m;
+                tubeOD         0.019 m;
+                tubeLength     4.88  m;
+                nTubes         160;
+                passes         1;
+                shellID        0.387 m;
+                baffleSpacing  0.305 m;
+                tubePitch      0.025 m;
+                wallMaterial   carbonSteel;   // -> k = 50 W/(m.K)
+            }
+
+            tubeSide  { model Gnielinski; }
+            shellSide { model Kern;       }
+        }
+    }
+);

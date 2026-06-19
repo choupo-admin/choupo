@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Ethylene  (C2H4, CAS 74-85-1)
+
+  Largest-volume organic feedstock worldwide --- the building block of
+  polyethylene, ethylene oxide, ethylbenzene.  Produced by steam
+  cracking of ethane/naphtha; an obvious target for the Choupo
+  GibbsReactor when modelling thermal cracking equilibria.
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+  reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
+  literature value, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        C2H4;
+formula     C2H4;
+CAS         74-85-1;
+
+MW          28.054;            // kg/kmol
+Tc          282.34;             // K
+Pc          50.41;              // bar
+omega       0.087;              // [-]
+Tb          169.42;             // K
+HvapTb      13530;              // J/mol
+Vliq        4.91e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    52280.0;         // J/mol  -- ideal-gas reference
+    s_298      219.32;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.91382   596.526   -16.844);
+    Trange        (150  283);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (3.806   0.1566   -8.348e-5   1.755e-8);
+    Trange        (250  1500);
+}
+
+groups
+{
+    joback ( { group eCH2; count 2; } );
+}

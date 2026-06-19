@@ -1,0 +1,52 @@
+/*---------------------------------------------------------------------------*\
+  Stand-alone heater --- credo-pure (v0.34+).
+
+  Hardware spec:  Q = 100 kW  (the absolute thermal power delivered by
+                                the heater -- think of it as the
+                                electrical rating).
+
+  Streams IN  ->  OP (Q only)  ->  Streams OUT
+
+  Feed is 100 kmol/h of 50/50 ethanol/water at 300 K.  The simulator
+  solves the enthalpy balance H_out = H_in + Q/F to compute T_out as a
+  RESULT.  With Q = 100 kW the outlet temperature lands near 338 K
+  (Cp_mix ~ 94 J/(mol*K) at this composition); the exact value falls out
+  of the Newton-1D in T.
+
+  NOTE (duty reduced 160 -> 100 kW).  At 160 kW the outlet reached
+  ~360 K, ABOVE the 50/50 ethanol/water bubble point at 1 atm -- the old
+  single-phase heater silently reported a physically-impossible
+  "superheated liquid".  The new saturation guard refuses that (a heater
+  is sensible-only); a duty that boils belongs to a `phaseChanger` /
+  `boiler` (see steady/heat/phasechange01_partial_condenser and
+  steady/power/rankine02_water).  100 kW keeps this the clean
+  sensible-heat lesson it was meant to be.
+
+  If you instead need a specific T_out (say "I want exactly 338 K"),
+  wrap the heater in a DesignSpec outerDict that manipulates $Q with a
+  target on `heater01.T_out`.  The unit op itself never specifies its
+  outlet state -- that is the credo we adopted in v0.33.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            300.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.5;  water 0.5; }
+    }
+}
+
+units
+(
+    {
+        name        heater01;
+        type        heater;
+        in          feed;
+        outputs     ( hotStream );
+
+        operation   { Q  100.0 kW; }   // hardware --  T_out is the result (sensible; stays liquid)
+    }
+);

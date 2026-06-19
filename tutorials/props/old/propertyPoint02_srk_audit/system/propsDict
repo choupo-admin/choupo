@@ -1,0 +1,104 @@
+/*---------------------------------------------------------------------------*\
+  propertyPoint02_srk_audit
+  =========================
+
+  Five reference states for the SRK EoS, spanning ideal / sub-critical /
+  dense / supercritical / mixture-with-kij regimes.  Validated against
+  Sandler 4th-ed worked examples (B) and NIST REFPROP (C, D, E).
+
+    state            T       P     phase regime              expected Z
+    -----            -----   ----  --------------------      ----------
+    A: CH4 ambient   298.15  1     near-ideal gas            ~0.998
+    B: CH4 subcrit   200     30    sub-critical, dense gas   ~0.77
+    C: N2  dense     300     100   high-Tr, high-P repulsive ~1.04
+    D: CO2 supercrit 350     80    near critical, SRK weak   NIST ~0.49 (SRK ~0.75)
+    E: NG mix        300     50    kij infrastructure        ~0.93
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        A_CH4_ambient;
+        type        propertyPoint;
+        state
+        {
+            T              298.15 K;
+            P                1.0  bar;
+            composition  { CH4 1.0; }
+        }
+        reference
+        {
+            source  "near-ideal gas analytical";
+            Z       0.998;
+            tol     0.01;          // 1 %
+        }
+    }
+    {
+        name        B_CH4_subcrit;
+        type        propertyPoint;
+        state
+        {
+            T              200.00 K;
+            P               30.0  bar;
+            composition  { CH4 1.0; }
+        }
+        reference
+        {
+            source  "Sandler 4th ed. worked example";
+            Z       0.77;
+            tol     0.02;          // 2 %
+        }
+    }
+    {
+        name        C_N2_dense;
+        type        propertyPoint;
+        state
+        {
+            T              300.00 K;
+            P              100.0  bar;
+            composition  { N2 1.0; }
+        }
+        reference
+        {
+            source  "NIST REFPROP";
+            Z       1.04;
+            tol     0.03;          // 3 % (SRK weaker at high P)
+        }
+    }
+    {
+        name        D_CO2_supercrit;
+        type        propertyPoint;
+        state
+        {
+            T              350.00 K;
+            P               80.0  bar;
+            composition  { CO2 1.0; }
+        }
+        reference
+        {
+            // SRK near the CO2 critical point is fundamentally weak;
+            // we audit against the published SRK value (0.75), not NIST (0.49).
+            // The Choupo SRK implementation must reproduce SRK theory --- the
+            // gap vs NIST is a limitation of the MODEL, not the code.
+            source  "Sandler 4th ed. (SRK); NIST REFPROP = 0.49";
+            Z       0.75;
+            tol     0.02;
+        }
+    }
+    {
+        name        E_natgas_mix;
+        type        propertyPoint;
+        state
+        {
+            T              300.00 K;
+            P               50.0  bar;
+            composition  { CH4 0.85;  N2 0.10;  CO2 0.05; }
+        }
+        reference
+        {
+            source  "NIST REFPROP (kij = 0)";
+            Z       0.93;
+            tol     0.02;
+        }
+    }
+);

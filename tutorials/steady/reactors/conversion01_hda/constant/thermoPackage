@@ -1,0 +1,6 @@
+/*---------------------------------------------------------------------------*\
+  thermoPackage -- conversion01_hda.  Four gas-phase species, ideal start.
+\*---------------------------------------------------------------------------*/
+components ( toluene H2 benzene CH4 );
+activityModel    { model ideal;    }
+equationOfState  { model idealGas; }

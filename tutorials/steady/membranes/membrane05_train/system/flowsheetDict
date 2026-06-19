@@ -1,0 +1,97 @@
+/*---------------------------------------------------------------------------*\
+  membrane05_train  --  a MULTI-ELEMENT TRAIN: 3 SW30HR spiral-wound
+  elements in series, seawater RO (the same feed + per-element geometry as
+  membrane04, which is the single element).  `elements 3;` chains them: the
+  retentate of element 1 is the feed of element 2, and so on; the permeate
+  is collected over the whole train.  Both the spacer k_film and the spacer
+  pressure drop (Schock-Miquel) are computed from the local hydraulics, so
+  they fall element by element as the flow drops.
+
+  The pedagogical point is the per-element DEGRADATION reported in the KPIs
+  (recovery_elemK, c_ret_elemK): element 1 sees fresh feed (high P, low c)
+  and recovers the most; the last element sees concentrated, lower-pressure
+  brine (P dropped by friction + the inter-element connector loss) and
+  recovers far less.  The train recovery is the cumulative sum --- higher
+  than a single element, but with diminishing returns down the train.
+
+  membrane01_RO_NaCl_seawater  --  the canonical first-membrane case.
+
+  Feed: 35 g/L NaCl (seawater concentration), water makes up the rest.
+        With c_NaCl = 35/58.44 = 0.599 kmol/m³ and c_water in seawater
+        ≈ 1025 kg/m³ ÷ 18 kg/kmol = 56.94 kmol/m³, the mole fractions
+        are  z_NaCl = 0.599 / (0.599 + 56.94) = 0.01040  and
+             z_water = 0.9896.
+        Feed molar flow F = 575 kmol/h (≈ 10 m³/h of seawater).
+
+  Module: a single SW30HR-style spiral-wound element, 35 m² active
+          area, 1 m channel length.  Feed pressure 55 bar (typical
+          for seawater RO --- enough head to overcome ~30 bar of
+          osmotic pressure at 35 g/L plus channel ΔP plus a net
+          driving force of ~22 bar).  Permeate pressure 1 bar.
+
+  Mass transfer: k_film = 5e-5 m/s (typical spacer-enhanced value;
+          a Schock-Miquel correlation at this flow gives ~5 × 10⁻⁵
+          m/s; we hardcode the value here and explore the effect of
+          changing it in tutorial membrane03).
+
+  Expected (with the SW30HR parameters):
+      water recovery       ≈ 18 %                 (single pass)
+      observed NaCl rej.   ≈ 99.5 %               (typical for SW30HR)
+      average water flux   ≈ 20–25 LMH
+      feed ΔP              =  2 bar (set linearly via dP_feed_total)
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            575.0 kmol/h;             // kmol/h  (~10 m³/h of seawater)
+        T            298.15 K;            // K
+        P            55.0 bar;              // bar
+        molarComposition  { water 0.98960;  NaCl 0.01040; }
+    }
+}
+
+units
+(
+    {
+        name        ROunit;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );    // 0 = retentate, 1 = permeate
+
+        operation
+        {
+            membrane         SW30HR;            // from data/standards/membranes/
+            area             35.0;              // m²
+            length           1.0;               // m
+            P_permeate       1.0 bar;               // bar
+            nNodes           100;               // discretisation per element
+
+            // Multi-element TRAIN (v0.74): 3 elements in series.  `area` and
+            // `length` are PER ELEMENT; the retentate of one feeds the next.
+            // `interElementDP` is the connector loss between elements.
+            elements         3;
+            interElementDP   0.2 bar;
+
+            // BOTH k_film and the pressure drop COMPUTED from the spacer-
+            // channel hydraulics (v0.74).  The channel geometry
+            // (channelHeight, spacerPorosity, viscosity) is shared by the two
+            // models --- declared once here in massTransfer.
+            massTransfer
+            {
+                model          SchockMiquel;     // Sh = a Re^b Sc^c
+                channelHeight  0.7 mm;            // feed-spacer channel height
+                spacerPorosity 0.9;
+                diffusivity    1.6e-9;            // m²/s  (NaCl in water)
+                viscosity      1.0e-3;            // Pa·s  (seawater ~ water)
+                // a 0.065;  b 0.875;  c 0.25;    // Schock-Miquel defaults
+            }
+            pressureDrop
+            {
+                model          SchockMiquel;     // dP/dz = lambda rho u^2 / 2 d_h
+                // a 6.23;  b 0.30;               // Schock-Miquel friction defaults
+            }
+        }
+    }
+);

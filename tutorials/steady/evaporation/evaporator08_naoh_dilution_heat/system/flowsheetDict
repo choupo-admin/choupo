@@ -1,0 +1,50 @@
+/*---------------------------------------------------------------------------*\
+  evaporator08_naoh_dilution_heat  --  the heat of dilution, IN the duty
+
+  Single-effect caustic (NaOH) evaporator -- the McCabe enthalpy-concentration
+  classic.  NaOH is the FIRST calorimetrically fitted salt (Silvester-Pitzer
+  dbeta/dT vs Parker NSRDS-NBS 2, rel-AAD 4.97%), so this evaporator's duty
+  CLIMBS THE MEASURED L_phi CURVE: concentrating caustic absorbs extra heat
+  beyond sensible+latent, and the run prints it as its own named line:
+
+      heat of dilution = X kW   (L_phi: m a -> b mol/kg, calorimetric fit)
+
+  Contrast evaporator06 (NaCl, calorimetricFit false): same machinery, but
+  there the dilution heat is OMITTED and the run says so loudly.  The feed
+  (m ~ 2.0) concentrates to m ~ 4-5 mol/kg -- inside the Parker fit window
+  (<= 6), so no extrapolation flag; push the steam rate up and watch the
+  [electrolyte] EXTRAPOLATED advisory fire.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F                  100.0 kmol/h;
+        T                  298.15 K;
+        P                    1.0 bar;
+        molarComposition  { water 0.965;  NaOH 0.035; }   // ~ 2.0 mol/kg caustic
+    }
+    saturatedSteam130C
+    {
+        F                   75.0 kmol/h;
+        P                    2.7 bar;
+        state            saturatedVapour;
+        molarComposition  { water 1.0; }
+        category         HP_steam_2.7bar;
+    }
+}
+units
+(
+    {
+        name        evap;
+        type        evaporator;
+        inputs      ( feed  saturatedSteam130C );
+        outputs     ( concentrated  vapour  condensate );
+        operation
+        {
+            area        20.0 m2;
+            U         2000.0 W/m2/K;
+        }
+    }
+);

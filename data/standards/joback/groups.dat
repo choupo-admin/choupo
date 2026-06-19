@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Joback & Reid (1987) first-order group-contribution parameters, tabulated in
+  Poling, Prausnitz & O'Connell, "The Properties of Gases and Liquids", 5th ed.,
+  Table 2-2.  The full 40-group table (was hard-coded in Joback.cpp; moved here so
+  the parameters are visible + editable alongside the other curated property data).
+
+  Per group: MW[g/mol], nA (atom count, for Pc), dimensionless dTc, dPc,
+  dVc[cm3/mol], dTb, dHf/dGf[kJ/mol], ideal-gas Cp contributions cpa..cpd,
+  and dHv[kJ/mol] (heat of vaporisation at Tb).  Tokenizer-safe keys (e=ene,
+  yne=alkyne, ar=aromatic, r=saturated ring).  Loaded by src/propertyOps/Joback.cpp.
+\*---------------------------------------------------------------------------*/
+
+groups
+(
+    { name CH3;         MW 15.035; nA 4; dTc 0.0141; dPc -0.0012; dVc 65; dTb 23.58; dHf -76.45; dGf -43.96; cpa 19.50; cpb -8.08e-3; cpc 1.53e-4; cpd -9.67e-8; dHv 2.373; }
+    { name CH2;         MW 14.027; nA 3; dTc 0.0189; dPc 0.0000; dVc 56; dTb 22.88; dHf -20.64; dGf 8.42; cpa -0.909; cpb 9.50e-2; cpc -5.44e-5; cpd 1.19e-8; dHv 2.226; }
+    { name CH;          MW 13.019; nA 2; dTc 0.0164; dPc 0.0020; dVc 41; dTb 21.74; dHf 29.89; dGf 58.36; cpa -23.0; cpb 2.04e-1; cpc -2.65e-4; cpd 1.20e-7; dHv 1.691; }
+    { name C;           MW 12.011; nA 1; dTc 0.0067; dPc 0.0043; dVc 27; dTb 18.25; dHf 82.23; dGf 116.02; cpa -66.2; cpb 4.27e-1; cpc -6.41e-4; cpd 3.01e-7; dHv 0.636; }
+    { name eCH2;        MW 14.027; nA 3; dTc 0.0113; dPc -0.0028; dVc 56; dTb 18.18; dHf -9.630; dGf 3.77; cpa 23.6; cpb -3.81e-2; cpc 1.72e-4; cpd -1.03e-7; dHv 1.724; }
+    { name eCH;         MW 13.019; nA 2; dTc 0.0129; dPc -0.0006; dVc 46; dTb 24.96; dHf 37.97; dGf 48.53; cpa -8.00; cpb 1.05e-1; cpc -9.63e-5; cpd 3.56e-8; dHv 2.205; }
+    { name eC;          MW 12.011; nA 1; dTc 0.0117; dPc 0.0011; dVc 38; dTb 24.14; dHf 83.99; dGf 92.36; cpa -28.1; cpb 2.08e-1; cpc -3.06e-4; cpd 1.46e-7; dHv 2.138; }
+    { name OH;          MW 17.007; nA 2; dTc 0.0741; dPc 0.0112; dVc 28; dTb 92.88; dHf -208.04; dGf -189.20; cpa 25.7; cpb -6.91e-2; cpc 1.77e-4; cpd -9.88e-8; dHv 16.826; }   // alcohol
+    { name ether;       MW 15.999; nA 1; dTc 0.0168; dPc 0.0015; dVc 18; dTb 22.42; dHf -132.22; dGf -105.00; cpa 25.5; cpb -6.32e-2; cpc 1.11e-4; cpd -5.48e-8; dHv 2.406; }   // -O- non-ring
+    { name ketone;      MW 28.010; nA 2; dTc 0.0380; dPc 0.0031; dVc 62; dTb 76.75; dHf -133.22; dGf -120.50; cpa 6.45; cpb 6.70e-2; cpc -3.57e-5; cpd 2.86e-9; dHv 7.488; }   // >C=O non-ring
+    { name aldehyde;    MW 29.018; nA 3; dTc 0.0379; dPc 0.0030; dVc 82; dTb 72.24; dHf -162.03; dGf -143.48; cpa 30.9; cpb -3.36e-2; cpc 1.60e-4; cpd -9.88e-8; dHv 6.002; }   // -CHO
+    { name acid;        MW 45.018; nA 4; dTc 0.0791; dPc 0.0077; dVc 89; dTb 169.09; dHf -426.72; dGf -387.87; cpa 24.1; cpb 4.27e-2; cpc 8.04e-5; cpd -6.87e-8; dHv 19.20; }   // -COOH
+    { name ester;       MW 44.010; nA 3; dTc 0.0481; dPc 0.0005; dVc 82; dTb 81.10; dHf -337.92; dGf -301.95; cpa 24.5; cpb 4.02e-2; cpc 4.02e-5; cpd -4.52e-8; dHv 6.930; }   // -COO-
+    { name arCH;        MW 13.019; nA 2; dTc 0.0082; dPc 0.0011; dVc 41; dTb 26.73; dHf 2.09; dGf 11.30; cpa -2.14; cpb 5.74e-2; cpc -1.64e-6; cpd -1.59e-8; dHv 2.544; }   // aromatic =CH-
+    { name arC;         MW 12.011; nA 1; dTc 0.0143; dPc 0.0008; dVc 32; dTb 31.01; dHf 46.43; dGf 54.05; cpa -8.25; cpb 1.01e-1; cpc -1.42e-4; cpd 6.78e-8; dHv 3.059; }   // aromatic =C<
+    { name alleneC;     MW 12.011; nA 1; dTc 0.0026; dPc 0.0028; dVc 36; dTb 26.15; dHf 142.14; dGf 136.7; cpa 27.4; cpb -0.0557; cpc 0.000101; cpd -5.02e-08; dHv 2.661; }   // cumulated =C=
+    { name yneCH;       MW 13.019; nA 2; dTc 0.0027; dPc -0.0008; dVc 46; dTb 9.2; dHf 79.3; dGf 77.71; cpa 24.5; cpb -0.0271; cpc 0.000111; cpd -6.78e-08; dHv 1.155; }   // alkyne tripleCH
+    { name yneC;        MW 12.011; nA 1; dTc 0.002; dPc 0.0016; dVc 37; dTb 27.38; dHf 115.51; dGf 109.82; cpa 7.87; cpb 0.0201; cpc -8.33e-06; cpd 1.39e-09; dHv 3.302; }   // alkyne tripleC
+    { name rCH2;        MW 14.027; nA 3; dTc 0.01; dPc 0.0025; dVc 48; dTb 27.15; dHf -26.8; dGf -3.68; cpa -6.03; cpb 0.0854; cpc -8e-06; cpd -1.8e-08; dHv 2.398; }   // ring -CH2-
+    { name rCH;         MW 13.019; nA 2; dTc 0.0122; dPc 0.0004; dVc 38; dTb 21.78; dHf 8.67; dGf 40.99; cpa -20.5; cpb 0.162; cpc -0.00016; cpd 6.24e-08; dHv 1.942; }   // ring >CH-
+    { name rC;          MW 12.011; nA 1; dTc 0.0042; dPc 0.0061; dVc 27; dTb 21.32; dHf 79.72; dGf 87.88; cpa -90.9; cpb 0.557; cpc -0.0009; cpd 4.69e-07; dHv 0.644; }   // ring >C<
+    { name F;           MW 18.998; nA 1; dTc 0.0111; dPc -0.0057; dVc 27; dTb -0.03; dHf -251.92; dGf -247.19; cpa 26.5; cpb -0.0913; cpc 0.000191; cpd -1.03e-07; dHv -0.67; }   // fluorine
+    { name Cl;          MW 35.453; nA 1; dTc 0.0105; dPc -0.0049; dVc 58; dTb 38.13; dHf -71.55; dGf -64.31; cpa 33.3; cpb -0.0963; cpc 0.000187; cpd -9.96e-08; dHv 4.532; }   // chlorine
+    { name Br;          MW 79.904; nA 1; dTc 0.0133; dPc 0.0057; dVc 71; dTb 66.86; dHf -29.48; dGf -38.06; cpa 28.6; cpb -0.0649; cpc 0.000136; cpd -7.45e-08; dHv 6.582; }   // bromine
+    { name I;           MW 126.904; nA 1; dTc 0.0068; dPc -0.0034; dVc 97; dTb 93.84; dHf 21.06; dGf 5.74; cpa 32.1; cpb -0.0641; cpc 0.000126; cpd -6.87e-08; dHv 9.52; }   // iodine
+    { name OHar;        MW 17.007; nA 2; dTc 0.024; dPc 0.0184; dVc -25; dTb 76.34; dHf -221.65; dGf -197.37; cpa -2.81; cpb 0.111; cpc -0.000116; cpd 4.94e-08; dHv 12.499; }   // phenolic -OH
+    { name etherRing;   MW 15.999; nA 1; dTc 0.0098; dPc 0.0048; dVc 13; dTb 31.22; dHf -138.16; dGf -98.22; cpa 12.2; cpb -0.0126; cpc 6.03e-05; cpd -3.86e-08; dHv 4.682; }   // ring -O-
+    { name ketoneRing;  MW 28.010; nA 2; dTc 0.0284; dPc 0.0028; dVc 55; dTb 94.97; dHf -164.5; dGf -126.27; cpa 30.4; cpb -0.0829; cpc 0.000236; cpd -1.31e-07; dHv 6.645; }   // ring >C=O
+    { name Oother;      MW 15.999; nA 1; dTc 0.0143; dPc 0.0101; dVc 36; dTb -10.5; dHf -247.61; dGf -250.83; cpa 6.82; cpb 0.0196; cpc 1.27e-05; cpd -1.78e-08; dHv 5.909; }   // =O other
+    { name NH2;         MW 16.023; nA 3; dTc 0.0243; dPc 0.0109; dVc 38; dTb 73.23; dHf -22.02; dGf 14.07; cpa 26.9; cpb -0.0412; cpc 0.000164; cpd -9.76e-08; dHv 10.788; }   // primary amine
+    { name NH;          MW 15.015; nA 2; dTc 0.0295; dPc 0.0077; dVc 35; dTb 50.17; dHf 53.47; dGf 89.39; cpa -1.21; cpb 0.0762; cpc -4.86e-05; cpd 1.05e-08; dHv 6.436; }   // secondary amine
+    { name rNH;         MW 15.015; nA 2; dTc 0.013; dPc 0.0114; dVc 29; dTb 52.82; dHf 31.65; dGf 75.61; cpa 11.8; cpb -0.023; cpc 0.000107; cpd -6.28e-08; dHv 6.93; }   // ring >NH
+    { name N;           MW 14.007; nA 1; dTc 0.0169; dPc 0.0074; dVc 9; dTb 11.74; dHf 123.34; dGf 163.16; cpa -31.1; cpb 0.227; cpc -0.00032; cpd 1.46e-07; dHv 1.896; }   // tertiary amine
+    { name eN;          MW 14.007; nA 1; dTc 0.0255; dPc -0.0099; dVc 0; dTb 74.6; dHf 23.61; dGf 0; cpa 0; cpb 0; cpc 0; cpd 0; dHv 3.335; }   // =N- nonring (thermo lacks Vc/Cp/dGf -> 0; Gf/Cp unreliable for this group)
+    { name reN;         MW 14.007; nA 1; dTc 0.0085; dPc 0.0076; dVc 34; dTb 57.55; dHf 55.52; dGf 79.93; cpa 8.83; cpb -0.00384; cpc 4.35e-05; cpd -2.6e-08; dHv 6.528; }   // ring =N-
+    { name CN;          MW 26.018; nA 2; dTc 0.0496; dPc -0.0101; dVc 91; dTb 125.66; dHf 88.43; dGf 89.22; cpa 36.5; cpb -0.0733; cpc 0.000184; cpd -1.03e-07; dHv 12.851; }   // nitrile
+    { name NO2;         MW 46.005; nA 3; dTc 0.0437; dPc 0.0064; dVc 91; dTb 152.54; dHf -66.57; dGf -16.83; cpa 25.9; cpb -0.00374; cpc 0.000129; cpd -8.88e-08; dHv 16.738; }   // nitro
+    { name SH;          MW 33.068; nA 2; dTc 0.0031; dPc 0.0084; dVc 63; dTb 63.56; dHf -17.33; dGf -22.99; cpa 35.3; cpb -0.0758; cpc 0.000185; cpd -1.03e-07; dHv 6.884; }   // thiol
+    { name S;           MW 32.060; nA 1; dTc 0.0119; dPc 0.0049; dVc 54; dTb 68.78; dHf 41.87; dGf 33.12; cpa 19.6; cpb -0.00561; cpc 4.02e-05; cpd -2.76e-08; dHv 6.817; }   // sulfide -S-
+    { name rS;          MW 32.060; nA 1; dTc 0.0019; dPc 0.0051; dVc 38; dTb 52.1; dHf 39.1; dGf 27.76; cpa 16.7; cpb 0.00481; cpc 2.77e-05; cpd -2.11e-08; dHv 5.984; }   // ring -S-
+);

@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Hydrogen cyanide  (HCN, CAS 74-90-8)
+
+  Produced industrially by the Andrussow process (CH4 + NH3 + 3/2 O2 ->
+  HCN + 3 H2O over Pt-Rh gauze).  Also a fuel-NOx side-product in
+  combustion of N-bearing fuels (coal char).  Highly polar, strongly
+  associated in the liquid phase.
+  Sources: gibbsFormation cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); constants and idealGasHeatCapacity --
+  individual literature values, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        HCN;
+formula     HCN;
+CAS         74-90-8;
+
+MW          27.026;            // kg/kmol
+Tc          456.65;             // K
+Pc          53.90;              // bar
+omega       0.388;              // [-]
+Tb          298.85;             // K
+HvapTb      25220;              // J/mol
+Vliq        3.91e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    135140.0;        // J/mol  -- ideal-gas reference
+    s_298      201.83;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.06280   1340.530   -29.510);
+    Trange        (257  306);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (21.86   6.062e-2   -4.961e-5   1.815e-8);
+    Trange        (250  1500);
+}

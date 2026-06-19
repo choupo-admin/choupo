@@ -1,0 +1,74 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  MEASURED relative apparent molal enthalpy  Phi_L(m)  at 25 C
+  NaOH(aq) and NaCl(aq) -- the calorimetric REFIT + AAD target of the
+  electrolyte-enthalpy build (docs/electrolyte-enthalpy-spec.md, slices 2-3).
+
+  PRIMARY SOURCE (public domain, acquired 2026-06-11, transcribed from the
+  scanned tables by visual read -- SPOT-CHECK before design use):
+    Parker, V. B., "Thermal Properties of Aqueous Uni-univalent Electrolytes",
+    NSRDS-NBS 2 (1965), Table XIV A (pp. 55-56), US-gov public domain.
+    https://nvlpubs.nist.gov/nistpubs/Legacy/NSRDS/nbsnsrds2.pdf
+    (local copy: bin/curate/refs/nbsnsrds2.pdf, gitignored)
+
+  UNITS: phiL in thermochemical cal/mol AS PUBLISHED (1 cal_th = 4.184 J).
+  Phi_L -> 0 at infinite dilution (the asymmetric reference anchor).
+  Sign: positive = heat ABSORBED on dilution from m to infinite dilution.
+
+  The shape is the lesson: NaOH rises to ~+121 at m~0.28, dips NEGATIVE
+  (-22 at m~3), recrosses zero at m~4, then climbs steeply (+4,260 at
+  m~22) -- no anchored-tau model reproduces this; it must be FITTED.
+\*-----------------------------------------------------------------------------*/
+
+provenance
+{
+    origin   measured;
+    method   "Parker NSRDS-NBS 2 (1965) Table XIV A, smoothed best values; transcribed from the primary scan 2026-06-11";
+    validity (273 308);          // the table is the 25 C isotherm; T-extension needs Cp_phi (Table VI)
+}
+
+naoh    // Phi_L [cal/mol], 25 C   (m [mol/kg])
+(
+    { m 0.000111; phiL 5; }    { m 0.000555; phiL 11; }   { m 0.00111; phiL 15; }
+    { m 0.00278;  phiL 23; }   { m 0.00555;  phiL 32; }   { m 0.00793; phiL 38; }
+    { m 0.01110;  phiL 44; }   { m 0.01388;  phiL 49; }   { m 0.01850; phiL 55; }
+    { m 0.02775;  phiL 65; }   { m 0.03700;  phiL 72; }   { m 0.05000; phiL 81; }
+    { m 0.05551;  phiL 84; }   { m 0.0617;   phiL 87; }   { m 0.0694;  phiL 90; }
+    { m 0.0793;   phiL 95; }   { m 0.0925;   phiL 99; }   { m 0.1000;  phiL 101; }
+    { m 0.1110;   phiL 104; }  { m 0.1388;   phiL 110; }  { m 0.1850;  phiL 116; }
+    { m 0.2000;   phiL 117; }  { m 0.2775;   phiL 121; }  { m 0.3700;  phiL 118; }
+    { m 0.5000;   phiL 115; }  { m 0.5551;   phiL 112; }  { m 0.7401;  phiL 99; }
+    { m 1.0000;   phiL 78; }   { m 1.1101;   phiL 67; }   { m 1.3877;  phiL 44; }
+    { m 1.5000;   phiL 36; }   { m 1.8502;   phiL 13; }   { m 2.0000;  phiL 4; }
+    { m 2.2202;   phiL -4; }   { m 2.5000;   phiL -14; }  { m 2.7753;  phiL -20; }
+    { m 3.0000;   phiL -22; }  { m 3.5000;   phiL -16; }  { m 3.7004;  phiL -10; }
+    { m 4.0000;   phiL 0; }    { m 4.5000;   phiL 26; }   { m 4.6255;  phiL 34; }
+    { m 5.0000;   phiL 61; }   { m 5.5506;   phiL 112; }  { m 5.8427;  phiL 142; }
+    { m 6.0000;   phiL 161; }  { m 6.1674;   phiL 181; }  { m 6.5301;  phiL 229; }
+    { m 6.9383;   phiL 289; }  { m 7.0000;   phiL 299; }  { m 7.4008;  phiL 364; }
+    { m 7.9295;   phiL 457; }  { m 8.0000;   phiL 469; }  { m 8.5394;  phiL 575; }
+    { m 9.0000;   phiL 672; }  { m 9.2510;   phiL 727; }  { m 10.0000; phiL 903; }
+    { m 10.0920;  phiL 926; }  { m 11.1012;  phiL 1178; } { m 12.3346; phiL 1513; }
+    { m 13.8765;  phiL 1955; } { m 15.0000;  phiL 2290; } { m 15.8589; phiL 2543; }
+    { m 17.0788;  phiL 2903; } { m 18.5020;  phiL 3307; } { m 20.0000; phiL 3722; }
+    { m 22.2024;  phiL 4260; }
+);
+
+nacl    // Phi_L [cal/mol], 25 C   (m [mol/kg]) -- the smoke-test oracle:
+(       //   the anchored Pitzer FD gave +523 at m=6 where this says -479.
+    { m 0.000111; phiL 5; }    { m 0.000555; phiL 11; }   { m 0.00111; phiL 14; }
+    { m 0.00278;  phiL 22; }   { m 0.00555;  phiL 31; }   { m 0.00793; phiL 37; }
+    { m 0.01110;  phiL 42; }   { m 0.01388;  phiL 46; }   { m 0.01850; phiL 51; }
+    { m 0.02775;  phiL 59; }   { m 0.03700;  phiL 64; }   { m 0.05000; phiL 71; }
+    { m 0.05551;  phiL 73; }   { m 0.0617;   phiL 75; }   { m 0.0694;  phiL 78; }
+    { m 0.0793;   phiL 80; }   { m 0.0925;   phiL 83; }   { m 0.1000;  phiL 84; }
+    { m 0.1110;   phiL 85; }   { m 0.1388;   phiL 87; }   { m 0.1850;  phiL 88; }
+    { m 0.2000;   phiL 87; }   { m 0.2775;   phiL 83; }   { m 0.3700;  phiL 74; }
+    { m 0.5000;   phiL 57; }   { m 0.5551;   phiL 49; }   { m 0.7401;  phiL 20; }
+    { m 1.0000;   phiL -23; }  { m 1.1101;   phiL -41; }  { m 1.3877;  phiL -85; }
+    { m 1.5000;   phiL -104; } { m 1.8502;   phiL -156; } { m 2.0000;  phiL -172; }
+    { m 2.2202;   phiL -207; } { m 2.5000;   phiL -242; } { m 2.7753;  phiL -274; }
+    { m 3.0000;   phiL -299; } { m 3.5000;   phiL -349; } { m 3.7004;  phiL -367; }
+    { m 4.0000;   phiL -390; } { m 4.5000;   phiL -423; } { m 4.6255;  phiL -430; }
+    { m 5.0000;   phiL -449; } { m 5.5506;   phiL -469; } { m 5.8427;  phiL -476; }
+    { m 6.0000;   phiL -479; } { m 6.1674;   phiL -480; }
+);

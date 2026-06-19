@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser03_pbe_size_independent / thermoPackage
+
+  Same components and models as crystalliser02_msmpr.  The whole point is
+  that only `model FVM` (in flowsheetDict) differs; the thermo identifies
+  with the MSMPR validation.
+\*---------------------------------------------------------------------------*/
+
+components       ( water  sucrose );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

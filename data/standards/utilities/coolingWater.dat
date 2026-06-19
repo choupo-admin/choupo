@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: cooling water from the plant cooling tower.
+
+  Sources: Sinnott & Towler 6ed (2022) §6.5.3.
+
+  When to use:
+    The first-choice cooling utility on any plant.  Cheapest cooling per
+    GJ rejected (energy is dumped to ambient air via the tower).  Use
+    whenever the process side T > ~40 C so that an LMTD of ~10-20 K is
+    feasible against the 25-35 C tower loop.  For process T < ~25 C
+    switch to `chilledWater`.
+\*---------------------------------------------------------------------------*/
+
+utility     coolingWater;
+tier        cooling;
+mechanism   sensible;                  // 10 K rise; no phase change
+
+components  ( water );
+state       subcooledLiquid;
+P           3.0 bar;                   // header pressure for distribution
+T_in        298.15 K;                  // 25 C tower outlet
+T_out       308.15 K;                  // 35 C return (typical 10 K rise)
+
+// Energy rejected per kg: Cp_water × ΔT for the 10 K rise.
+dutyPerKg   41800.0;                   // J/kg  (4180 × 10)
+
+cost        0.4;                       // €/GJ rejected
+costYear    2022;
+description "Once-through cooling water from the plant tower (25 -> 35 C)";

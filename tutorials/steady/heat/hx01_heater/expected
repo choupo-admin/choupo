@@ -1,0 +1,12 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0277777777778  1e-4
+stream  hotStream              F                0.0277777777778  1e-4
+kpi     heater01               F                0.0277777777778  1e-4
+kpi     heater01               P                101325           1e-4
+kpi     heater01               Q                100000           1e-4
+kpi     heater01               Q_kW             100              1e-4
+kpi     heater01               Q_per_mol        3600             1e-4
+kpi     heater01               T_in             300              1e-4
+kpi     heater01               T_out            338.338658147    1e-4
+kpi     heater01               dT               38.338658147     1e-4

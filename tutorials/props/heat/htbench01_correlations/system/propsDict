@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------*\
+  htbench01_correlations --- the heat-transfer correlation self-check bench.
+
+  Mirrors the membrane mass-transfer story (Sherwood) on the heat side
+  (Nusselt): each registered convective correlation RUNS its verify() against
+  a published Nu anchor and the deviation is printed + locked.
+
+    * DittusBoelter  Nu = 0.023 Re^0.8 Pr^0.4   (Incropera Ex 8.4, Nu=205)
+    * Gnielinski     Nu = (f/8)(Re-1000)Pr/[..]  (Incropera Ex 8.4 alt, Nu=224)
+    * Kern (shell)   Nu = 0.36 Re_s^0.55 Pr^1/3  (Kern PHT; closed-form check)
+
+  The per-correlation deviation diags are the golden KPIs.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name   bench;
+        type   heatTransferBench;
+        // aadTolerance 0.05;   // default; honours textbook rounding + scatter
+    }
+);

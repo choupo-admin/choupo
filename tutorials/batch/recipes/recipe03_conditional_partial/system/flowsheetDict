@@ -1,0 +1,77 @@
+/*---------------------------------------------------------------------------*\
+  recipe03_conditional_partial  --  recipe extensions (v0.50).
+
+  Two recipe features beyond the time-triggered transfer/setParameter of
+  v0.23:
+
+    1. CONDITION-TRIGGERED event (`when { ... }` instead of `time`):
+       the event fires the first step its condition becomes true, evaluated
+       on the live vessel state.  Quantities: T, total, n_<comp>, x_<comp>;
+       operators: gt, ge, lt, le.
+
+    2. PARTIAL transfer (`fraction`):  a fraction (0..1) of the source
+       moves; the source keeps the rest.  Default 1.0 == empty the source.
+
+  Here the reactor runs the esterification (ethanol + acetic acid ->
+  ethyl acetate + water; the batch01 first-order Arrhenius test, k ~
+  3.58e-3 s^-1 at 350 K, so n_ethanol = n_ethanol(0).exp(-k t)).  The
+  charge is equimolar (x_ethanol starts at 0.5); when the ethanol mole
+  fraction drops below 0.30, the recipe transfers HALF the reactor
+  contents to a still; the reactor keeps the other half and reacts on,
+  while the still distils its charge.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        initial
+        {
+            T            350.0 K;
+            P            1.013 bar;
+            V            0.001;            // m³
+            totalMoles   0.0185;           // kmol
+            molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+        }
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        reaction    esterification_etac;
+    }
+
+    {
+        name        still;
+        type        batchStill;
+
+        initial
+        {
+            T            350.0 K;            // placeholder; overwritten on charge
+            P            1.013 bar;
+            V            0.001;
+            totalMoles   0.0;               // empty until the recipe charges it
+        }
+
+        operation
+        {
+            P            1.013 bar;
+            F_vap        2.0e-5;            // kmol/s
+        }
+    }
+);
+
+recipe
+(
+    {
+        when      { unit reactor;  quantity x_ethanol;  op lt;  value 0.30; }
+        action    transfer;
+        from      reactor;
+        to        still;
+        fraction  0.5;          // move HALF; the reactor keeps the rest
+    }
+);

@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------*\
+  estimate_acetone
+  ================
+
+  The FIRST stage of the props lifecycle (CREATE -> curate -> wire -> simulate):
+  build a pure-component property set from its molecular GROUPS by Joback
+  group contribution, and SEE each group's contribution add up.
+
+  Acetone CH3-CO-CH3  =  2 x CH3  +  1 x ketone (>C=O).
+
+  The reference block validates the estimate against NIST: Joback lands within
+  ~2% on Tc/Pc/Vc and ~0.3% on dHf -- and you SEE the (small) error, the whole
+  point of "estimation, then trust".  omega comes from (Tb,Tc,Pc) by
+  Lee-Kesler, not a group sum.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        estimate_acetone;
+        type        estimateComponent;
+        component   acetone;
+        groups
+        (
+            { group CH3;     count 2; }
+            { group ketone;  count 1; }
+        );
+        reference
+        {
+            source  "NIST WebBook / Poling et al.";
+            Tb      329.2 K;
+            Tc      508.1 K;
+            Pc      47.0  bar;
+            omega   0.307;
+        }
+        // Opt-in PROMOTE: write a component proposal .dat from the estimate.
+        // `auto` => constant/components/<component>.estimate-<date>.dat -- a
+        // glass-box, reviewable file (ready fields active, gaps as TODOs);
+        // promote with `mv` once the gaps (Vliq, Psat, s_298) are filled.
+        output  { proposal auto; }
+    }
+);

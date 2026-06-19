@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+# =============================================================================
+#  runApplication  --  application runner
+#
+#  Runs the given application and writes its stdout/stderr to log.<appName>
+#  in the current working directory.  Refuses to overwrite an existing log
+#  unless -a (append) is used or the log is removed.
+#
+#  Usage:
+#      runApplication choupoSolve .
+#      runApplication -a choupoSolve tutorials/flash01_benzene_toluene
+# =============================================================================
+
+set -euo pipefail
+
+APPEND=
+case "${1:-}" in
+    -a|-append) APPEND="-a"; shift ;;
+    -h|--help|"")
+        sed -n '3,11p' "$0" | sed 's/^# \{0,1\}//'
+        exit 0
+        ;;
+esac
+
+APP_FULL=$1; shift || true
+APP_NAME=$(basename "$APP_FULL")
+LOG="log.$APP_NAME"
+
+if [ -f "$LOG" ] && [ -z "$APPEND" ]; then
+    cat >&2 <<EOF
+runApplication: '$LOG' already exists in $(pwd)
+                Remove it (rm $LOG) or pass -a to append.
+EOF
+    exit 1
+fi
+
+echo "Running $APP_NAME on $(pwd)"
+[ "$#" -gt 0 ] && echo "  args: $*"
+echo "  log:  $LOG"
+
+if [ -n "$APPEND" ]; then
+    "$APP_FULL" "$@" >> "$LOG" 2>&1
+else
+    "$APP_FULL" "$@" > "$LOG" 2>&1
+fi
+rc=$?
+
+if [ $rc -eq 0 ]; then
+    echo "  done."
+else
+    echo "  FAILED (exit $rc) -- see $LOG" >&2
+fi
+exit $rc

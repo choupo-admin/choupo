@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  Reaction library for ctrl01.  A mild exothermic first-order
+  Arrhenius for the control demo:
+
+      k(T)  =  A · exp(-Ea / RT)        with A = 1e4 s⁻¹,
+                                              Ea = 50 kJ/mol
+      ΔH_rxn = -50 kJ/mol               (mild exotherm)
+
+  At T = 320 K (initial / inlet):  k ≈ 1.8e-4 s⁻¹  (τ ≈ 5600 s)
+  At T = 350 K (setpoint):         k ≈ 3.2e-4 s⁻¹  (τ ≈ 3100 s)
+
+  These are slow rates relative to the residence time (τ_res ≈ 240 s),
+  so the reactor's principal dynamics are temperature, not
+  conversion --- exactly what we want to demonstrate temperature
+  control in isolation.
+\*---------------------------------------------------------------------------*/
+
+compA_to_compB
+{
+    limitingReactant   compA;
+
+    stoichiometry
+    (
+        { component compA;  nu -1;  order 1; }
+        { component compB;  nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      1.0e4;
+        Ea     5.0e4;
+    }
+
+    dH_rxn  -5.0e4;     // J/mol     (exothermic)
+}

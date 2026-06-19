@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- mXylene-methanol (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( mXylene methanol );
+model       NRTL;
+
+parameters
+{
+    i           mXylene;
+    j           methanol;
+    a_ij        0.0;
+    b_ij        413.715;   // K
+    a_ji        0.0;
+    b_ji        498.772;   // K
+    alpha       0.291;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_methanol_mXylene   991.1609;   // CAS 67-56-1 -> 108-38-3
+    A_mXylene_methanol   822.1357;   // CAS 108-38-3 -> 67-56-1
+    alpha               0.291;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "67-56-1/108-38-3";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

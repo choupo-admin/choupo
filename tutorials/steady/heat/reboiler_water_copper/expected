@@ -1,0 +1,20 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0277777777778    1e-4
+stream  wetVapour              F                0.0277777777778    1e-4
+kpi     reboiler               F                0.0277777777778    1e-4
+kpi     reboiler               P                100000             1e-4
+kpi     reboiler               Q                111804.644945      1e-4
+kpi     reboiler               Q_kW             111.804644945      1e-4
+kpi     reboiler               T_in             372                1e-4
+kpi     reboiler               T_out            372.755918611      1e-4
+kpi     reboiler               T_surface        381.390508143      1e-4
+kpi     reboiler               Tsat             372.755918611      1e-4
+kpi     reboiler               area             1.25663706144      1e-4
+kpi     reboiler               chf_margin       0.0709724846287    1e-4
+kpi     reboiler               dT_excess        8.6345895313       1e-4
+kpi     reboiler               q_CHF            1253960.82217      1e-4
+kpi     reboiler               q_nucleate       88996.7151761      1e-4
+kpi     reboiler               regime           0                  1e-4
+kpi     reboiler               vf_in            0                  1e-4
+kpi     reboiler               vf_out           0.0975570824881    1e-4

@@ -1,0 +1,58 @@
+/*---------------------------------------------------------------------------*\
+  batch03_consecutive  --  two first-order reactions in series:
+
+      A  --k1-->  B  --k2-->  C
+
+  with k1 > k2.  This is the textbook series-reaction setup: B is
+  produced from A faster than it is consumed to C, so n_B grows at
+  first, reaches a maximum, then decays as A runs out.
+
+  Analytical solution (constant V, isothermal, first-order):
+
+      n_A(t)  = n_A0 * exp(-k1 t)
+      n_B(t)  = n_A0 * k1 / (k2 - k1) * [exp(-k1 t) - exp(-k2 t)]
+      n_C(t)  = n_A0 - n_A(t) - n_B(t)
+
+  Maximum of n_B at
+
+      t_max  =  ln(k1 / k2) / (k1 - k2)
+
+  With k1 = 0.01 1/s and k2 = 0.002 1/s:
+
+      t_max          = ln(5) / 0.008   ~  201 s
+      n_B_max / n_A0 = (k1/k2)^(k2/(k2-k1)) = 5^(-0.25)  ~  0.669
+
+  The case demonstrates:
+      1. multi-reaction support in BatchReactor (v0.21);
+      2. time-dependent selectivity --- harvesting B at t ~ 200 s
+         maximises yield, waiting longer wastes B to C.
+
+  No species supplies activation energy: both A_pre are quoted with
+  Ea = 0 so that the rate constants are exactly the values above
+  regardless of T (the case is isothermal anyway).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        initial
+        {
+            T            350.0 K;
+            P            1.013 bar;
+            V            0.001;            // m^3
+            totalMoles   0.0100;           // kmol  (10 mol --- simple number)
+            molarComposition  { compA 1.0;  compB 0.0;  compC 0.0; }
+        }
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        reactions  ( A_to_B  B_to_C );
+    }
+);

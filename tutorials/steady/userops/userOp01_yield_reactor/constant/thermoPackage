@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------*\
+  Two C5H12 isomers (case-local components), ideal solution.  The
+  isomerization conserves mass exactly (identical MW 72.15), so the
+  mass balance closes to 100 %.
+\*---------------------------------------------------------------------------*/
+
+components       ( neoPentane  nPentane );
+
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

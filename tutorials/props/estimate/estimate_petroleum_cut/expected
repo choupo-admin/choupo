@@ -1,0 +1,12 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    estimate_petroleum_cut Cp298            248.06             1e-4
+diag    estimate_petroleum_cut MW               151.51             1e-4
+diag    estimate_petroleum_cut Pc_bar           19.78              1e-4
+diag    estimate_petroleum_cut Psat_Tb_bar      0.97               1e-4
+diag    estimate_petroleum_cut SG               0.73               1e-4
+diag    estimate_petroleum_cut Tb_K             447.30             1e-4
+diag    estimate_petroleum_cut Tc_K             617.80             1e-4
+diag    estimate_petroleum_cut Vc_cm3mol        627.46             1e-4
+diag    estimate_petroleum_cut Vliq298_cm3mol   203.43             1e-4
+diag    estimate_petroleum_cut omega            0.48               1e-4

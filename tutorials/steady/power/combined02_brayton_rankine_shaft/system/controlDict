@@ -1,0 +1,11 @@
+application   choupoSolve;
+description   "Combined cycle with SHAFT-SPLIT: gas turbine drives the compressor + net to the generator";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

@@ -1,0 +1,22 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.000277777777778 1e-4
+stream  liqProd                F                0.000108248328241 1e-4
+stream  reactorOut             F                0.000277777777778 1e-4
+stream  vapProd                F                0.000169529449537 1e-4
+kpi     reactor                Da_kTau          1.10929132154    1e-4
+kpi     reactor                F_in_kmol_h      1                1e-4
+kpi     reactor                F_out_kmol_h     1                1e-4
+kpi     reactor                T                350              1e-4
+kpi     reactor                V_R              0.005            1e-4
+kpi     reactor                X_limiting       0.52590711876    1e-4
+kpi     reactor                k                0.00357499942014 1e-4
+kpi     reactor                tau_s            310.291329081    1e-4
+kpi     reactor                xi_mol_per_s     0.0730426553834  1e-4
+kpi     separator              F_alpha          0.000108248328241 1e-4
+kpi     separator              F_beta           0.000169529449537 1e-4
+kpi     separator              F_in             0.000277777777778 1e-4
+kpi     separator              P                100000           1e-4
+kpi     separator              T                365              1e-4
+kpi     separator              V_over_F         0.610306018332   1e-4
+kpi     separator              phaseSet         0                1e-4

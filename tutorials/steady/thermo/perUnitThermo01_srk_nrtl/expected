@@ -1,0 +1,27 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  expanded               F                0.0138888888889    1e-4
+stream  feed                   F                0.0138888888889    1e-4
+stream  liquid                 F                0.00854830793289   1e-4
+stream  vapor                  F                0.005340580956     1e-4
+kpi     flash                  F_alpha          0.00854830793289   1e-4
+kpi     flash                  F_beta           0.005340580956     1e-4
+kpi     flash                  F_in             0.0138888888889    1e-4
+kpi     flash                  P                100000             1e-4
+kpi     flash                  T                353                1e-4
+kpi     flash                  V_over_F         0.384521828832     1e-4
+kpi     flash                  phaseSet         0                  1e-4
+kpi     turbine                F                0.0138888888889    1e-4
+kpi     turbine                P_in             600000             1e-4
+kpi     turbine                P_out            553956.972451      1e-4
+kpi     turbine                T_in             430                1e-4
+kpi     turbine                T_out            425.796533401      1e-4
+kpi     turbine                T_out_isen       424.916867817      1e-4
+kpi     turbine                W_gen_kW         3                  1e-4
+kpi     turbine                W_generated      3000               1e-4
+kpi     turbine                W_shaft          -3000              1e-4
+kpi     turbine                dS_gen           0.127047257673     1e-4
+kpi     turbine                dT               -4.20346659856     1e-4
+kpi     turbine                dT_isen          -5.08313218327     1e-4
+kpi     turbine                eta_isen         0.8                1e-4
+kpi     turbine                ratio            1.08311661345      1e-4

@@ -1,0 +1,6 @@
+// The steamTables op runs the IF97 kernel directly (water is the formulation's
+// own substance); the package below is the minimal valid case foundation.
+components ( water );
+phase { type vle; }
+activityModel { model ideal; }
+equationOfState { model idealGas; }

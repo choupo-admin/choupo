@@ -1,0 +1,55 @@
+/*---------------------------------------------------------------------------*\
+  vlle03_audit_artificial  --  algorithm-correctness audit for the VLLE
+  Gibbs-min branch.
+
+  Three synthetic components A, B, C with identical Antoine
+  (Psat ≈ 0.5 bar at 350 K).  NRTL parameters chosen to GUARANTEE
+  three-phase coexistence at T = 350 K, P = 1 bar:
+
+      A-B:  τ_AB = τ_BA = 5    (very strong, near-immiscible)
+      A-C:  τ_AC = τ_CA = 5    (very strong, near-immiscible)
+      B-C:  τ_BC = τ_CB = 0    (ideal, fully miscible)
+
+  Expected behaviour by symmetry and construction:
+      * one liquid phase rich in A (the "isolated" component);
+      * another liquid phase rich in B+C (they pair together);
+      * a vapour phase carrying some of each (Psat is equal so
+        all are equally volatile, ln(P/Psat) ≈ +0.301 at 1 bar).
+
+  Equimolar feed (1/3, 1/3, 1/3).  This case is the litmus test
+  for the VLLE solver: if it cannot find 3-phase here, the bug is
+  in the algorithm, not in any real-system NRTL parameter set.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            350.0 K;
+        P            1.0 bar;
+        molarComposition  { compA 0.3333;  compB 0.3334;  compC 0.3333; }
+    }
+}
+
+units
+(
+    {
+        name        decanter01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( vapor  aqueous  organic );
+
+        operation
+        {
+            T          350.0 K;
+            P          1.0 bar;
+            phaseSet   VLLE;
+            alphaRich  compA;
+            betaRich   compB;
+        }
+
+        compositionTol   1e-5;
+        maxOuterIter     200;
+    }
+);

@@ -1,0 +1,63 @@
+/*---------------------------------------------------------------------------*\
+  brayton01_gas_turbine  --  a closed-loop Brayton (gas-turbine) cycle, the
+  showcase for the gas-aware heater (v0.65).
+
+      feed (air, 1 bar, 298 K)
+        -> compressor  (+10 kW, eta 0.80)  : 1 -> ~9.9 bar, 298 -> 633 K
+        -> combustor   (heater, +20 kW)    : add heat at constant P; the air
+                                             is gas (vf=1) so the heater
+                                             integrates the ideal-gas H_ig
+                                             (N2/O2 carry no liquid Cp) ->
+                                             633 -> ~1246 K
+        -> turbine     (-W_turb, eta 0.85) : expand back to 1.013 bar
+
+  The turbine shaft power is NOT guessed: a DesignSpec (system/outerDict)
+  manipulates $W_turb until the turbine discharges at the feed pressure,
+  closing the cycle.  Net shaft work and thermal efficiency are computed
+  $variables (v0.64), evaluated after the solve from the unit KPIs.
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    W_turb   -16.0 kW;     // turbine shaft power; MANIPULATED by the DesignSpec
+
+    // Post-processing (computed report): the cycle's headline numbers.
+    W_net       { compute "turbine.W_generated - compressor.W_shaft"; unit kW; }
+    eta_thermal { compute "(turbine.W_generated - compressor.W_shaft) / combustor.Q"; }
+}
+
+streams
+{
+    feed
+    {
+        F             3.6 kmol/h;          // 1 mol/s
+        T           298.15 K;
+        P             1.0  bar;
+        molarComposition  { N2 0.79;  O2 0.21; }
+    }
+}
+
+units
+(
+    {
+        name        compressor;
+        type        compressor;
+        in          feed;
+        outputs     ( compressed );
+        operation   { W_shaft 10.0 kW;  eta 0.80; }
+    }
+    {
+        name        combustor;
+        type        heater;
+        in          compressed;
+        outputs     ( hot );
+        operation   { Q 20.0 kW; }
+    }
+    {
+        name        turbine;
+        type        turbine;
+        in          hot;
+        outputs     ( exhaust );
+        operation   { W_shaft $W_turb;  eta 0.85; }
+    }
+);

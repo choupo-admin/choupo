@@ -1,0 +1,25 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser03_pbe_size_independent  --  steady continuous crystalliser
+  solved by the DISCRETISED population balance (finite-volume on a size grid).
+
+  Sanity validation: with `sizeFactor 0` the FVM solver loses the closure
+  assumption of the method of moments but recovers the SAME physical result
+  (n(L) = n0 exp(-L/Gτ), the MSMPR exponential).  Compare against
+  crystalliser02_msmpr -- same kinetics, same feed, same vessel, same
+  numbers to within bin-grid discretisation error.
+
+  The point of the FVM model is to UNLOCK size-dependent growth, where the
+  moment equations do not close.  A `sizeFactor > 0` would tilt the profile
+  toward larger crystals; that's the next tutorial.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Crystalliser FVM-PBE: sanity vs MSMPR (size-independent growth)";
+
+verbosity     3;
+
+reports
+{
+    streamTable  {}
+    massBalance  {}
+}

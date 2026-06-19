@@ -1,0 +1,35 @@
+// ChemSep DECHEMA Wilson pair -- mXylene-pXylene (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( mXylene pXylene );
+model       Wilson;
+
+parameters
+{
+    i           mXylene;
+    j           pXylene;
+    A_ij        968.522;   // J/mol
+    A_ji        -852.097;   // J/mol
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_pXylene_mXylene   -203.6561;   // CAS 106-42-3 -> 108-38-3
+    A_mXylene_pXylene   231.4823;   // CAS 108-38-3 -> 106-42-3
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "wilson.ipd";
+    sourceRecord  "106-42-3/108-38-3";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "Wilson";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

@@ -1,0 +1,78 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/sucrose.dat
+// sha256   7ea388a14c6aa83760c19879658fa59c784b0fb0e814ae963cb1cb5b24068815
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Sucrose (C12H22O11, CAS 57-50-1)
+
+  Non-volatile crystalline disaccharide; the canonical solute for
+  sugar-industry evaporator and crystalliser exercises.  In the
+  Choupo catalogue we ship sucrose with the minimum metadata
+  needed for a non-volatile solute in a single-effect or
+  multi-effect evaporator: MW, role, dissociation = 1, and a
+  liquid Cp tuned so that the mixture Cp(x) reproduces the
+  Honig-style sugar-industry correlation
+
+      Cp(x)  ≈  4.19  -  2.35 · x    [kJ/(kg·K)]
+
+  used in standard MCFT exercises (e.g. Coulson & Richardson 6th
+  ed. Example 14.4; the same coefficients appear in the course
+  notes Exemplo 10.4 for the triple-effect cocurrent evaporator).
+
+  With Cp_liq(sucrose) = 630 J/(mol·K)  and  Cp_liq(water) =
+  75.5 J/(mol·K), the mass-basis mixture Cp computed by
+  thermo.Hliquid recovers 4.07 kJ/(kg·K) at x = 0.05, matching the
+  4.19 - 2.35*0.05 = 4.07 of the correlation to three sig. figs.
+
+  No Antoine block (`nonvolatile true;`); the solute never enters
+  the vapour phase in flash or evaporator routines.
+\*---------------------------------------------------------------------------*/
+
+name           sucrose;
+formula        C12H22O11;
+CAS            57-50-1;
+
+role           nonvolatile;
+MW             342.297;       // kg/kmol  (= g/mol)
+dissociation   1;              // non-electrolyte
+Vliq           2.115e-4;      // apparent molar volume in aqueous solution [m^3/mol]
+
+solid
+{
+    rho_p   1590.0;     // crystalline sucrose density [kg/m^3]
+    k_v     0.5235987756;
+}
+
+solubility
+{
+    // Solid-liquid equilibrium: c_sat(T) in kg sucrose / kg water,
+    // polynomial in T[degC].  ~2.0 kg/kg at 20C, ~3.8 at 80C (literature order).
+    coefficients ( 1.79  0.0074  0.00022 );
+    dHcryst      0.0;     // small for sucrose; neglected here
+}
+
+
+// gibbsFormation kept for Gibbs-reactor consumers that might
+// want to model sugar decomposition (Maillard, caramelisation).
+// NIST WebBook values for crystalline sucrose.
+gibbsFormation
+{
+    dHf_298    -2226100.0;    // J/mol  (-2226.1 kJ/mol, crystalline)
+    s_298      392.4;          // J/(mol·K)
+    phase      solid;          // Hf is for CRYSTALLINE sucrose (NIST)
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Constant Cp = 630 J/(mol·K)  ~= 1.84 kJ/(kg·K) for pure sucrose;
+    // mixing with water's 75.5 J/(mol·K) reproduces Cp(x) = 4.19 -
+    // 2.35 x kJ/(kg·K) to better than 1 % over x = [0, 0.4].
+    coefficients  (630.0);
+    Trange        (270  400);
+}

@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  extraction01_waterButanol  --  Binary LLE tutorial
+
+  Water + 1-butanol at 25 °C.  This system has a well-known liquid-liquid
+  miscibility gap below 125.5 °C (upper critical solution temperature).
+  Equimolar feed → splits into a water-rich phase (~95 % water) and a
+  butanol-rich phase (~50 % water).
+
+  Demonstrates:
+    * `phases (...)` syntax with TWO liquid phases
+    * `phaseSet LL` in the IsothermalFlash
+    * Michelsen TPD stability test to find a robust initial guess
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            298.15 K;
+        P            1.01325 bar;
+        molarComposition  { water 0.70;  nButanol 0.30; }    // inside the LL gap
+    }
+}
+
+units
+(
+    {
+        name        decanter01;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( aqueous  organic );    // (alpha, beta)
+
+        operation
+        {
+            T          298.15 K;
+            P          1.01325 bar;
+            phaseSet   LL;
+            alphaRich  water;        // aqueous phase initial bias
+            betaRich   nButanol;     // organic phase initial bias
+        }
+
+        outerAccelerator    directSubstitution;
+        compositionTol      1e-5;
+        maxOuterIter        200;
+    }
+);

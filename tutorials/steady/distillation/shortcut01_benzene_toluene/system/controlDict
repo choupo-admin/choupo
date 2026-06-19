@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "Shortcut (FUG) design of a benzene/toluene column";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

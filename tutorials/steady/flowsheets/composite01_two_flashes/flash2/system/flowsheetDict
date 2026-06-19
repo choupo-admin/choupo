@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------*\
+  flash2 / system/flowsheetDict   (LEAF -- child of composite01)
+
+  Re-flashes flash1's liquid at a higher temperature (more vaporises).
+\*---------------------------------------------------------------------------*/
+
+name        flash2;
+type        isothermalFlash;
+operation   { T 380.0 K;  P 1.0 bar; }
+
+boundary    { inlets ( feed );  outlets ( liquid  vapor ); }

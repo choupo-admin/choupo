@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/gasSolidSplitter.schema.json",
+  "title": "gasSolidSplitter operation",
+  "description": "Ideal, specification-driven gas-solid separator -- the simple sibling of the cyclone / bag filter.  You SET the split (no efficiency physics, no size classification); the feed PSD passes through unchanged.  Use it when a physics model is overkill, as a placeholder, or to bound a design.",
+  "type": "object",
+  "properties": {
+    "solidsRecovery": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "title": "Solids recovery",
+      "description": "Fraction of the solid mass sent to capturedSolids (default 1.0 = perfect separation).",
+      "unit": "-"
+    },
+    "gasCarryover": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "title": "Gas carryover",
+      "description": "Fraction of the gas leaving WITH the solids outlet (default 0.0 = no gas in the solids stream).",
+      "unit": "-"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,18 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  exhaust                F                0.001              1e-4
+stream  hotAir                 F                0.001              1e-4
+kpi     turbine01              F                0.001              1e-4
+kpi     turbine01              P_in             1000000            1e-4
+kpi     turbine01              P_out            131729.126973      1e-4
+kpi     turbine01              T_in             900                1e-4
+kpi     turbine01              T_out            582.935206477      1e-4
+kpi     turbine01              T_out_isen       524.463853734      1e-4
+kpi     turbine01              W_gen_kW         10                 1e-4
+kpi     turbine01              W_generated      10000              1e-4
+kpi     turbine01              W_shaft          -10000             1e-4
+kpi     turbine01              dS_gen           3.19034018436      1e-4
+kpi     turbine01              dT               -317.064793523     1e-4
+kpi     turbine01              dT_isen          -375.536146266     1e-4
+kpi     turbine01              eta_isen         0.85               1e-4
+kpi     turbine01              ratio            7.59133551538      1e-4

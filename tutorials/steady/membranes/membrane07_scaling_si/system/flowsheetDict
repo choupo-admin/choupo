@@ -1,0 +1,102 @@
+/*---------------------------------------------------------------------------*\
+  membrane07_scaling_si  --  WHERE along the vessel does scaling start?
+
+  Brackish RO on the SAME representative groundwater analysis as
+  tutorials/props/electrolyte/scaling_ro_brackish (~1500 mg/L TDS):
+
+      ion      mg/L     mol/kg w        ion      mg/L     mol/kg w
+      Ca+2       84      0.0021         Cl-       510      0.0144
+      Mg+2       27      0.0011         SO4-2     250      0.0026
+      Na+       363      0.0158         HCO3-     183      0.0030
+      K+         12      0.0003
+
+  Here the analysis is a PROCESS STREAM: the ions are flowsheet
+  components (case-local constant/components/, MW from ions.dat) and
+  the mg/L totals become mole fractions against water
+  (x_i = m_i / 55.55;  m_i = (mg/L)/MW at rho ~ 1 kg/L):
+
+      Ca 3.7731e-5   Mg 1.9998e-5   Na 2.8425e-4   K 5.5253e-6
+      Cl 2.5897e-4   SO4 4.6852e-5  HCO3 5.3989e-5    water = balance
+
+  HARDWARE BY NOMINAL DIAMETER (no `area`): one pressure vessel with
+  6 x 8-inch standard 40-inch elements -- `moduleDiameter 8 in;
+  nModules 6;`.  The per-module area (37.2 m2, 400 ft2 class) comes
+  from the engine's nominal table and the derivation is announced:
+  "6 x 37.2 m2 (8in/40in standard element) = 223.2 m2".
+
+  THE SCALING AUDIT (`scaling {}`): at each module exit the local BULK
+  concentrate AND the membrane-WALL composition (c_m from the module's
+  own film-model polarisation) are speciated (Davies) and the calcite /
+  gypsum saturation indices recorded.  The WALL crosses SI=0 modules
+  before the bulk does -- concentration polarisation, normally an
+  invisible flux penalty, is seen here as THE scaling driver.
+
+  pH 7.0 GIVEN, not solved: the raw well water is already calcite-
+  supersaturated (scaling_ro_brackish solves the raw feed to pH 7.72,
+  SI_calcite = +0.24 -- it would scale in the PIPE, let alone the
+  vessel).  Real brackish plants dose acid for exactly that reason;
+  here the feed is dosed and CONTROLLED at pH 7.0, and the audit asks
+  the honest follow-up: with the dosing in place, where along the
+  vessel does the concentrate STILL reach calcite saturation?
+  (`pH solve;` is also accepted -- it re-solves electroneutrality per
+  module, the undosed scenario.)
+
+  Expected story (KPIs locked by the golden master; recovery 55 %):
+      calcite WALL crosses SI=0 at module 3 of 6 (r_cum = 0.31);
+      calcite BULK is still undersaturated there (-0.27) and only
+      crosses in module 6 (+0.03) -- the wall leads the bulk by three
+      full modules: polarisation IS the scaling driver;
+      gypsum stays undersaturated everywhere (max wall SI = -0.73).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            700.0 kmol/h;        // ~12.6 m3/h of brackish water
+        T            298.15 K;
+        P            13.0 bar;            // brackish RO operating head
+        molarComposition
+        {
+            water    0.99929269;
+            Ca       3.773117e-5;
+            Mg       1.999839e-5;
+            Na       2.842462e-4;
+            K        5.525272e-6;
+            Cl       2.589668e-4;
+            SO4      4.685160e-5;
+            HCO3     5.398907e-5;
+        }
+    }
+}
+
+units
+(
+    {
+        name        vessel;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+
+        operation
+        {
+            membrane         SW30HR;          // case-local constant/membranes/
+            moduleDiameter   8 in;            // nominal spec: 2.5 | 4 | 8 | 16 in
+            nModules         6;               // 6 elements in one vessel
+            P_permeate       1.0 bar;
+            k_film           2.0e-5;          // m/s -- modest crossflow, so the
+                                              // polarisation factor is visible
+            dP_feed_total    0.3 bar;         // per element (linear model)
+            interElementDP   0.1 bar;
+            nNodes           40;              // discretisation per element
+        }
+
+        // The niche question: WHERE does scaling start?  Speciation (Davies,
+        // case-local electrolyte catalogue) at each module exit, bulk + wall.
+        scaling
+        {
+            minerals    ( calcite  gypsum );
+            pH          7.0;                  // acid-dosed + controlled feed
+        }
+    }
+);

@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------*\
+  NH3 / N2 / water for ammonia stripping.  NH3 (role solute + Henry entry)
+  transfers liquid->gas; water is the solvent (stays liquid); N2 is the
+  inert stripping gas.  `solvent water;` selects the Henry constants.
+\*---------------------------------------------------------------------------*/
+
+components       ( NH3  N2  water );
+solvent          water;
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

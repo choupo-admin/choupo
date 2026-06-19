@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "User-code property estimation: a student's OWN linear group-contribution Tb estimator (linearTbEstimate), compiled from code/ and linked into choupoProps.";
+verbosity     3;

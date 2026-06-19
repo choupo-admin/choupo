@@ -1,0 +1,29 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary -- ethylAcetate(1) + water(2).  PARTICULAR to the SEPARATION
+  sector (not in the standard library).  Placeholder literature-style values
+  for the architecture test case -- to be replaced by a real fit (the props
+  fit workflow) and promoted here.
+\*---------------------------------------------------------------------------*/
+
+components  ( ethylAcetate  water );
+model       NRTL;
+
+parameters
+{
+    i           ethylAcetate;
+    j           water;
+    a_ij        0.0;
+    b_ij        600.0;        // K
+    a_ji        0.0;
+    b_ji        1200.0;       // K
+    alpha       0.40;
+}
+
+provenance
+{
+    source        placeholder;
+    citation      "Placeholder for the esterification2sector architecture test case";
+    fitData       "<to be fitted from VLE data>";
+    author        "test case, 2026-05-31";
+    notes         "Strong positive deviation (EtOAc-water near-immiscibility); replace with a real fit + promote.";
+}

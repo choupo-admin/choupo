@@ -1,0 +1,7 @@
+name      SS316;
+density   8000;
+F_M       3.05;      // Turton 4th ed. Appendix A
+sigma_y   138;
+maxT      925;
+maxP      100;
+thermalConductivity 16.3;  // W/(m·K)  (typical, for HX wall conduction)

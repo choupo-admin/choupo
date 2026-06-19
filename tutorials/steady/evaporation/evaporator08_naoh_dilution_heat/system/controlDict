@@ -1,0 +1,3 @@
+application   choupoSolve;
+description "Single-effect NaOH evaporator: the heat of dilution IN the duty (fitted L_phi, Parker-validated)";
+verbosity     3;

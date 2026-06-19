@@ -1,0 +1,4 @@
+components       ( water  glucose );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

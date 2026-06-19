@@ -1,0 +1,36 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    seawater_pitzer        I                0.682801         1e-4
+diag    seawater_pitzer        SI_anhydrite     -1.24594         1e-4
+diag    seawater_pitzer        SI_aragonite     0.553039         1e-4
+diag    seawater_pitzer        SI_calcite       0.667039         1e-4
+diag    seawater_pitzer        SI_gypsum        -0.963852        1e-4
+diag    seawater_pitzer        SI_halite        -2.48856         1e-4
+diag    seawater_pitzer        SI_sylvite       -3.51959         1e-4
+diag    seawater_pitzer        aw               0.979588         1e-4
+diag    seawater_pitzer        gamma_CO2aq      1.10587          1e-4
+diag    seawater_pitzer        gamma_CO3        0.105425         1e-4
+diag    seawater_pitzer        gamma_Ca         0.194354         1e-4
+diag    seawater_pitzer        gamma_HCO3       0.659536         1e-4
+diag    seawater_pitzer        m_CO2aq          1.46852e-05      1e-4
+diag    seawater_pitzer        m_CO3            7.901e-05        1e-4
+diag    seawater_pitzer        m_Ca             0.0101817        1e-4
+diag    seawater_pitzer        m_HCO3           0.00169976       1e-4
+diag    seawater_pitzer        pH               8.2              1e-4
+diag    seawater_davies        I                0.657946         1e-4
+diag    seawater_davies        SI_anhydrite     -0.884439        1e-4
+diag    seawater_davies        SI_aragonite     0.768093         1e-4
+diag    seawater_davies        SI_calcite       0.882093         1e-4
+diag    seawater_davies        SI_gypsum        -0.602239        1e-4
+diag    seawater_davies        SI_halite        -2.39553         1e-4
+diag    seawater_davies        SI_sylvite       -3.39452         1e-4
+diag    seawater_davies        aw               0.979715         1e-4
+diag    seawater_davies        gamma_CO2aq      1                1e-4
+diag    seawater_davies        gamma_CO3        0.308337         1e-4
+diag    seawater_davies        gamma_Ca         0.308337         1e-4
+diag    seawater_davies        gamma_HCO3       0.745172         1e-4
+diag    seawater_davies        m_CO2aq          1.78267e-05      1e-4
+diag    seawater_davies        m_CO3            2.96582e-05      1e-4
+diag    seawater_davies        m_Ca             0.00959171       1e-4
+diag    seawater_davies        m_HCO3           0.00165163       1e-4
+diag    seawater_davies        pH               8.2              1e-4

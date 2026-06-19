@@ -1,0 +1,85 @@
+/*---------------------------------------------------------------------------*\
+  softener_brackish --- ion-exchange SOFTENING removes the scaling driver.
+
+  A three-act story on the SAME brackish RO feed as scaling_ro_brackish /
+  precipitation_ro_brackish:
+
+    (1) raw            scalingScan of the raw water: calcite SI > 0 already at
+                       the feed and climbing with recovery -- the SCALING
+                       PROBLEM (a CaCO3-supersaturated concentrate).
+    (2) softened       the `exchange` op equilibrates the SAME water with a
+                       strong-acid cation resin (SAC_Na, Gaines-Thomas).  Ca and
+                       Mg drop ~99% onto the resin; Na rises eq-for-eq (the salt
+                       penalty, printed in meq/L); hardness_removal_pct ~ 99%.
+    (3) softened_scaling
+                       feed the SOFTENED composition (Ca/Mg gone, Na up) into a
+                       scalingScan: SI_calcite is now NEGATIVE across the whole
+                       recovery range -- the scaling DRIVER is gone.  Removing the
+                       hardness, not chasing the supersaturation, is the cure.
+
+  MODEL (visible in the verbosity>=3 trace): the SAME log-space Newton as
+  speciate, PLUS one master (the free resin site X-), one balance (CEC capacity
+  = sum of equivalents on the sites), and the exchange half-reactions
+  Me(z+) + z X- = MeX (Gaines-Thomas equivalent-fraction activity for the bound
+  species, Davies for the aqueous ions).  Divalent Ca2+ (logK 0.8) is
+  equivalent-fraction-favoured and outcompetes Na+; watch the per-iteration
+  selectivity ratio beta(CaX2)/beta(NaX)^2 climb.
+
+  CROSS-CHECK TOOL: PHREEQC EXCHANGE (same Gaines-Thomas half-reactions).
+
+  THE FRESH-RESIN CAVEAT (printed loudly, non-suppressible): the `exchange` op
+  returns the LIMITING (fully-equilibrated) effluent -- the best a fresh /
+  fully-loaded contactor does per pass.  A real fixed bed leaks rising hardness
+  as the exchange front migrates to breakthrough, then must be regenerated;
+  cycle length and breakthrough are TRANSIENT and not modelled here.
+
+  Brackish water (I ~ 0.03-0.06): Davies-valid, no Pitzer needed; the honesty
+  banner + the I>0.5 Davies advisory cover the boundary.
+
+  Data: case-local constant/electrolyte/ (self-contained USGS PHREEQC snapshot,
+  public domain, + the SAC_Na resin nameplate).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- (1) the RAW water: the scaling problem (calcite SI > 0) ----------------
+    {
+        name        raw;
+        type        scalingScan;
+        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+                      Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
+        pH          solve;
+        recovery    { from 0; to 0.85; n 18; }
+        output      { file scan_raw.csv; }
+    }
+
+    // -- (2) SOFTEN the same water on a SAC resin (Na form) ---------------------
+    {
+        name        softened;
+        type        exchange;
+        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+                      Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
+        pH          solve;
+        exchange    { resin SAC_Na; CEC 2.0 eq/L; }   // heavily dosed: limiting effluent
+        diagSpecies ( CaX2 MgX2 NaX );
+        output      { file softened.csv; }
+    }
+
+    // -- (3) the SOFTENED water, scanned: SI_calcite now NEGATIVE ---------------
+    //    The softened composition (Ca/Mg ~ gone, Na up eq-for-eq) read off the
+    //    op (2) effluent.  Carrying it forward by hand is the honest workflow:
+    //    streams carry the information, no hidden side-channel.
+    {
+        name        softened_scaling;
+        type        scalingScan;
+        // post-exchange aqueous totals (mol/kg) from op (2)'s softened effluent
+        // (cations from the exchange WATER-after ledger; anions unchanged from
+        // the feed -- only cations exchange):
+        totals      { Ca 2.467e-7 mol/kg; Mg 2.271e-7 mol/kg; Na 2.2508e-2 mol/kg;
+                      K 6.957e-7 mol/kg; Cl 1.43852e-2 mol/kg; SO4 2.60254e-3 mol/kg;
+                      HCO3 2.99902e-3 mol/kg; }
+        pH          solve;
+        recovery    { from 0; to 0.85; n 18; }
+        output      { file scan_softened.csv; }
+    }
+);

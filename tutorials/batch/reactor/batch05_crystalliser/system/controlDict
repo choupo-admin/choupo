@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  batch05_crystalliser  --  dynamic batch crystalliser (population balance by
+                            the method of moments, v0.78).
+
+  A closed vessel charged with a SUPERSATURATED sugar solution (S0 ~ 1.23 at
+  20 C) relaxes: crystals nucleate and grow, the dissolved solute depletes,
+  and the supersaturation decays toward equilibrium (S -> 1).  The moments
+  mu0..mu3 are integrated in time by RK4 (the time-dependent sibling of the
+  steady MSMPR crystalliser).  trajectory.csv carries S, the moments, the
+  mean crystal size and the magma density vs time --- the desupersaturation
+  + crystal-growth curves.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Batch crystalliser: supersaturated sugar relaxes, PBE by method of moments";
+
+verbosity     3;
+
+startTime       0;        // s
+endTime         10800;    // s   (3 h --- enough to see S relax substantially)
+deltaT          2.0;      // s   (RK4 step)
+writeInterval   540;      // s

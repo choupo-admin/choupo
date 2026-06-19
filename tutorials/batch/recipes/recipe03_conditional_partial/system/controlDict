@@ -1,0 +1,10 @@
+application   choupoBatch;
+description   "Conditional + partial recipe: react until x_ethanol < 0.30, then transfer 50% to a still";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         1200;     // s
+deltaT          1.0;      // s
+writeInterval   20;       // s

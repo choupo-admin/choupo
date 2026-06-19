@@ -1,0 +1,18 @@
+application   choupoSolve;
+description   "DesignSpec: equal-area triple-effect sugar evaporator (manipulate $A so L3 = 4500 kg/h)";
+verbosity     2;
+
+units
+{
+    pressure       kPa;
+    temperature    K;
+    flow           kg/h;
+}
+
+// reports run on the DesignSpec's replay at the optimum (v0.45+)
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    spreadsheet    { }
+}

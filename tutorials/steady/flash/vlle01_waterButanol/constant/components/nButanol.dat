@@ -1,0 +1,53 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/nButanol.dat
+// sha256   67b7ddea1f5b0f2e7b089110b273b8f5015de47e0cbc16c0a8ff716e5eb843aa
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 1-Butanol  (C4H10O, CAS 71-36-3)
+  Notable LLE: partially miscible with water below 125.5 °C (UCST).
+\*---------------------------------------------------------------------------*/
+
+name        nButanol;
+formula     C4H10O;
+CAS         71-36-3;
+
+MW          74.122;
+Tc          563.05;
+Pc          44.14;
+omega       0.5897;
+Tb          390.81;
+HvapTb      43130;
+Vliq        9.190e-5;
+
+
+gibbsFormation
+{
+    dHf_298   -274600.0;        // J/mol  -- ideal-gas reference
+    s_298     363.620;         // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (NIST/JANAF convention)
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.54607   1351.555   -93.34);
+    Trange        (295  392);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (3.266   0.4180   -2.242e-4   4.685e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (177.0);          // ~177 J/(mol·K) average near 25 °C
+    Trange        (280  390);
+}

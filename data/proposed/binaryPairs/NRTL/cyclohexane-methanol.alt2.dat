@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- cyclohexane-methanol (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( cyclohexane methanol );
+model       NRTL;
+
+parameters
+{
+    i           cyclohexane;
+    j           methanol;
+    a_ij        0.0;
+    b_ij        937.228;   // K
+    a_ji        0.0;
+    b_ji        661.196;   // K
+    alpha       0.441;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_methanol_cyclohexane   1313.9316;   // CAS 67-56-1 -> 110-82-7
+    A_cyclohexane_methanol   1862.4639;   // CAS 110-82-7 -> 67-56-1
+    alpha               0.441;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "67-56-1/110-82-7";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

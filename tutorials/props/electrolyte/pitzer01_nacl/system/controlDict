@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Pitzer mean ionic activity coefficient gamma_pm(m) for NaCl in water at 25 C --- validated vs Robinson & Stokes (AAD 0.17%). The glass-box electrolyte foundation: see the famous gamma_pm dip (~0.66 near 1 m) and the rise above 1 at high concentration.";
+verbosity     2;

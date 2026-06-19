@@ -1,0 +1,10 @@
+/*---------------------------------------------------------------------------*\
+  solidDryer01_sugar  --  contact/through-circulation solid dryer (LEAF form).
+  A wet sugar powder (20 wt% moisture, dry basis X=0.2) is dried toward the
+  equilibrium moisture set by the air's relative humidity and the sugar's
+  sorption isotherm.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Solid dryer: wet sugar powder dried to sorption equilibrium";
+verbosity     3;
+reports { streamTable {}  massBalance {} }

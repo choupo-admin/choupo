@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: N2O  (N2O1, CAS 10024-97-2)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Lemmon-JCED-2006
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        N2O;
+formula     N2O1;
+CAS         10024-97-2;
+
+MW          44.0128;        // kg/kmol  [CoolProp]
+Tc          309.5207;        // K        [CoolProp EOS]
+Pc          72.44817;        // bar      [CoolProp EOS]
+omega       0.16130;        // [-]      [CoolProp EOS]
+Tb          184.6839;        // K  normal boiling [CoolProp]
+HvapTb      16473.2;        // J/mol  at Tb     [CoolProp]
+Vliq        5.9242e-05;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.37287   746.283   -13.6952);
+    Trange        (182.83  303.33);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (20.6295  0.0769241  -6.31586e-05  2.08437e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (116.879  -0.441505  0.0010054  9.56848e-07);
+    Trange        (187  185);
+}
+
+sublimation
+{
+    tripleT   182.3300;        // K   [CoolProp]
+    tripleP   87837.4392;        // Pa  [CoolProp]
+    // Hfus / Hsub absent: CoolProp models no solid phase.  The
+    // sublimation curve stays undrawn until measured Hsub lands.
+}
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Lemmon-JCED-2006";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.37%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.35%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+}

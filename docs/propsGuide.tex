@@ -1,0 +1,754 @@
+\documentclass[11pt,a4paper]{article}
+\newcommand{\docTitle}{Props Workflow Guide}
+\input{preamble.tex}
+
+\title{}
+\author{}
+\date{}
+
+\begin{document}
+
+\manualfrontmatter{Properties Guide}{
+Choupo is a trademark of TalentGround Lda.
+
+Anthropic, Claude, and Claude Code are trademarks or registered trademarks of
+Anthropic, PBC.
+
+NIST WebBook is a product or service of the National Institute of Standards
+and Technology.
+}
+
+\pagenumbering{roman}
+\setcounter{tocdepth}{2}
+\markboth{Contents}{Contents}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+
+% =====================================================================
+%   Introduction --- the difficulty, the map, the promise
+% =====================================================================
+\begin{quote}
+\itshape ``Thermodynamics is a funny subject. The first time you go through it,
+you don't understand it at all. The second time you go through it, you think you
+understand it, except for one or two points. The third time you go through it,
+you know you don't understand it, but by that time you are so used to it, it
+doesn't bother you any more.''
+\upshape\par\smallskip\hfill --- Arnold Sommerfeld
+\end{quote}
+
+\section{Introduction: the difficulty, the map, the promise}
+
+\emph{What this guide is --- and is not.}  This is the props-\textbf{mode
+workflow} guide: how you \emph{estimate} a missing compound, \emph{fit} its
+binary pairs, and \emph{consistency-test} the data --- the see-then-decide loop
+of the Props/Explore workspace.  It is \emph{not} the property \emph{theory}.
+For the first-principles derivations of NRTL, Wilson, UNIQUAC, UNIFAC, the cubic
+equations of state (SRK, Peng--Robinson), the electrolyte models (Pitzer,
+eNRTL, aqueous speciation), Henry's law, Rackett, Ambrose--Walton, sublimation
+and the NASA--CEA Gibbs-of-formation data, see the \textbf{Theory Guide} (the
+in-GUI model panels deep-link straight into it).
+
+If thermodynamics felt slippery the first time --- the formalism pristine, yet
+somehow never self-sufficient when you sat down with real data --- you are in
+good company: Sommerfeld, who reshaped quantum physics, said he never wrote his
+thermodynamics book because he never felt he had understood the subject.  The
+difficulty is real, but it is not formal incompleteness.  It is that an
+\emph{axiomatic-looking} macroscopic theory rests, underneath, on emergent
+statistical facts and on parameters that must be \emph{measured}, not derived.
+The confusion is the seam between the two showing through.  This guide does not
+hide that seam --- it makes it the organising idea.
+
+\subsection{The target: where theory grips}
+
+Picture property prediction as a target (Figure~\ref{fig:bullseye}): pristine at
+the core, increasingly empirical toward the rim.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[font=\sffamily]
+  % Concentric shells: pristine (white) core out to empirical (grey) rim.
+  \fill[gray!28,draw=gray!55] (0,0) circle (5cm);
+  \fill[gray!20,draw=gray!55] (0,0) circle (4cm);
+  \fill[gray!13,draw=gray!55] (0,0) circle (3cm);
+  \fill[gray!7, draw=gray!55] (0,0) circle (2cm);
+  \fill[white,  draw=gray!55] (0,0) circle (1cm);
+  % Ring titles (upper band of each shell).
+  \node[font=\bfseries\small,align=center] at (0,0)   {The four\\laws};
+  \node[font=\small,align=center]          at (0,1.5) {Formalism};
+  \node[font=\bfseries\small,text=accent]  at (0,2.5) {Models};
+  \node[font=\small,align=center]          at (0,3.5) {Data};
+  \node[font=\small,align=center]          at (0,4.5) {Process \& numerics};
+  % Descriptors (lower band) so the map reads without the caption.
+  \node[font=\scriptsize\itshape,align=center]         at (0,-1.45) {$H,S,G$, Maxwell,\\equilibrium};
+  \node[font=\scriptsize\itshape,align=center,text=accent] at (0,-2.45) {EoS $\cdot$ $\gamma$ $\cdot$ kinetics};
+  \node[font=\scriptsize\itshape,align=center]         at (0,-3.45) {fitted parameters,\\finite range};
+  \node[font=\scriptsize\itshape,align=center]         at (0,-4.55) {flash, column, recycle};
+\end{tikzpicture}
+\caption{The layers of property prediction. The two inner shells follow from the
+laws alone. The accent shell --- \emph{constitutive models} --- is the first
+fault line: the laws say \emph{that} fugacities must match across phases, never
+\emph{how} to compute one for a real mixture. From there outward, the theory is
+necessary but no longer sufficient.}
+\label{fig:bullseye}
+\end{figure}
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item \textbf{The four laws (core).}\quad The zeroth, first, second and third
+  laws define temperature, internal energy, entropy, and --- via Nernst --- an
+  absolute zero of entropy. Parameter-free.
+\item \textbf{Formalism.}\quad Pure manipulation yields the potentials $H$, $G$,
+  $A$, the Maxwell relations, the equilibrium criteria (equality of fugacity
+  across phases, $\Delta G=-RT\ln K$ for reaction) and the phase rule. Still
+  derivable from nothing but the laws.
+\item \textbf{Constitutive models --- where it first grips.}\quad The laws
+  require fugacities to be equal across phases; they do not tell you how to
+  \emph{compute} a fugacity for a real mixture. You must supply a model they do
+  not give you --- an equation of state, an activity model, a kinetic law. In
+  Choupo: \code{idealGas}/\code{SRK}/\code{PR}; \code{ideal}/\code{NRTL}/%
+  \code{Wilson}/\code{UNIFAC}.
+\item \textbf{Data --- ``go to the laboratory.''}\quad Those models carry
+  parameters thermodynamics cannot predict: $T_c$, $P_c$, $\omega$, the Antoine
+  constants, $C_p^\circ(T)$, $\Delta H_f^\circ$, $S^\circ$, the NRTL $a_{ij}$.
+  Each is measured or estimated, and each has a finite validity range. In
+  Choupo, these are the \code{.dat} files.
+\item \textbf{Process \& numerics.}\quad Where the predicted numbers are
+  consumed --- flash, distillation, recycle --- and grip a second time, now
+  numerically (multiple EoS roots, phase stability, initialisation).
+\end{itemize}
+
+\begin{keyidea}
+Sommerfeld's difficulty is this picture: a theory that \emph{looks} axiomatic to
+the rim, but stops being self-sufficient at the accent shell. The honest move is
+not to paper over the seam between rigorous derivation and fitted correlation ---
+it is to show exactly where it runs.
+\end{keyidea}
+
+\subsection{The glass-box promise}
+
+Because the outer shells are empirical, every number Choupo predicts should
+travel with two things attached:
+
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item \textbf{Provenance} --- which method produced it (rigorous derivation,
+  fitted correlation, or group-contribution estimate) and the source of each
+  parameter (a measured datum or an estimate).
+\item \textbf{Validity awareness} --- whether a correlation is \emph{extrapolating
+  beyond its fitted range}, with a warning when it is, rather than a confident
+  number where none is warranted.
+\end{itemize}
+
+\begin{intuition}
+Ask Choupo for the vapour pressure of nitrogen at room temperature and it
+\emph{refuses}: $\mathrm{N_2}$ is supercritical there (its critical temperature
+is $-147\,$\textdegree C), and a saturation pressure does not exist above the
+critical point. The $P^{\mathrm{sat}}$ curve simply \emph{breaks} at $T_c$
+instead of extrapolating Antoine into a meaningless ${\sim}600\,$bar. That
+refusal is the whole promise in miniature: the model declines to invent a number
+the physics forbids.
+\end{intuition}
+
+\subsection{Where we are heading}
+
+A single property over a wide temperature span is not one problem --- it is
+several physical regimes stitched together, and your confidence in any predicted
+number rises and collapses as you cross them. Figure~\ref{fig:ribbon} is the
+destination of this guide: the vapour pressure of a
+\textbf{water\,/\,ethanol\,/\,benzene} mixture from $-200$ to $1000\,$\textdegree C,
+drawn not as a curve but as a band of \emph{confidence}.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[font=\sffamily]
+  % x = (T + 200) * 0.0125  -> -200 maps to 0, +1000 maps to 15.
+  \def\barh{0.85}
+  \fill[gray!12]   (0,0)     rectangle (2.25,\barh);   % no data (cryogenic)
+  \fill[accent!78] (2.25,0)  rectangle (3.75,\barh);   % measured
+  \fill[gray!40]   (3.75,0)  rectangle (7.175,\barh);  % fitted -> extrapolating
+  \fill[gray!12]   (7.175,0) rectangle (15,\barh);     % supercritical / decomposes
+  \draw[gray!55]   (0,0) rectangle (15,\barh);
+  % Band labels.
+  \node[font=\scriptsize,align=center]          at (1.125,\barh+0.34) {no data\\\itshape(all solid)};
+  \node[font=\scriptsize,text=white]            at (3.0,\barh/2)      {measured};
+  \node[font=\scriptsize,align=center]          at (5.46,\barh/2)     {fitted $\rightarrow$ extrapolating};
+  \node[font=\scriptsize,align=center]          at (11.1,\barh/2)     {supercritical / decomposes --- \itshape does it exist?};
+  % Critical-temperature wall (where the property ceases to exist).
+  \draw[densely dashed,accent,thick] (7.175,-0.15) -- (7.175,\barh+0.7);
+  \node[font=\scriptsize,text=accent,align=center,above] at (7.175,\barh+0.7) {water $T_c$\\\itshape no $P^{\mathrm{sat}}$ beyond};
+  % Temperature ticks.
+  \foreach \t/\x in {-200/0, 0/2.5, 100/3.75, 1000/15} {
+    \draw (\x,0) -- (\x,-0.14);
+    \node[font=\scriptsize,below] at (\x,-0.14) {\t};
+  }
+  \node[font=\scriptsize,below] at (7.5,-0.62) {temperature ($^\circ$C)};
+\end{tikzpicture}
+\caption{The same property, five honesties. A narrow window where we actually
+have data; degradation outward as the correlation extrapolates; a hard
+\emph{wall} at the critical temperature where the property ceases to exist (the
+nitrogen refusal, generalised); and a cryogenic desert where every species has
+frozen solid (ethanol last, at $-114\,$\textdegree C) and there is simply no
+data. The theory runs to both edges; reality and data do not.}
+\label{fig:ribbon}
+\end{figure}
+
+We build each piece of that picture in the chapters that follow --- estimating a
+missing component (\S\ref{ch:joback}), curating the mixture models against lab
+points (\S\ref{ch:pairs}), and testing whether the data itself is even consistent
+(\S\ref{ch:consistency-props}). We read that span regime by regime at the end of
+this introduction (\S\ref{sec:span}), and return to solve it numerically, end to
+end, at the close.
+
+\subsection{Anatomy of a component: where the numbers come from}
+
+Open any \code{.dat} and you see a flat list of numbers. The natural question ---
+the one this whole guide turns on --- is: \emph{which of these are independent
+inputs, and which derived properties does the engine actually build from them?}
+Let us read \file{acetone.dat} field by field and follow each number to the
+property it feeds and to the line of code that consumes it.
+
+\begin{center}\footnotesize
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Field} & \textbf{What it is, and what it builds} \\
+\midrule
+\multicolumn{2}{@{}l}{\itshape Identity} \\
+\code{MW} & molar mass; converts molar $\leftrightarrow$ mass everywhere. \\
+\addlinespace[2pt]
+\multicolumn{2}{@{}l}{\itshape Caloric anchors --- \code{gibbsFormation}} \\
+\code{dHf\_298} $\Delta H_f^\circ$ & the \emph{position} of the enthalpy scale: bond energy $C_p$ knows nothing about (combustion calorimetry). \\
+\code{s\_298} $S^\circ$ & the \emph{absolute} (third-law) entropy at 298\,K --- a true zero-referenced value, not a difference. \\
+\addlinespace[2pt]
+\multicolumn{2}{@{}l}{\itshape Caloric shape --- \code{idealGasHeatCapacity}} \\
+\code{coefficients} $C_p^\circ(T)$ & the master correlation: integrated to give the \emph{temperature shape} of $H$, $S$, $G$ (below). \\
+\addlinespace[2pt]
+\multicolumn{2}{@{}l}{\itshape Corresponding-states trio} \\
+\code{Tc}, \code{Pc} & critical point: set the \emph{size} of the cubic-EoS attraction term $a_c$, and the reduced temperature $T_r=T/T_c$. \\
+\code{omega} $\omega$ & acentric factor: sets the \emph{temperature shape} of that attraction, $\alpha(T_r;\omega)$ --- how non-spherical / polar the molecule is. \\
+\addlinespace[2pt]
+\multicolumn{2}{@{}l}{\itshape Phase change} \\
+\code{Tb}, \code{HvapTb} & boiling point + latent heat at $T_b$; with \code{Tc} drive Watson's $\Delta H_{\mathrm{vap}}(T)$. \\
+\code{Vliq} & liquid molar volume (Poynting, liquid density). \\
+\addlinespace[2pt]
+\multicolumn{2}{@{}l}{\itshape Correlations \& recipes} \\
+\code{vaporPressure} & Antoine $\log_{10}P^{\mathrm{sat}}=A-B/(T+C)$, with its \code{Trange}; the saturation curve. \\
+\code{groups} & the molecular decomposition a group-contribution estimator / UNIFAC reads (the curation recipe, \S\ref{ch:joback}). \\
+\code{diffusionVolume} & Fuller gas diffusivity $\Rightarrow$ Lewis number (wet-bulb). \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsubsection*{The caloric engine: \texorpdfstring{$H$, $S$, $G$}{H, S, G} from \texorpdfstring{$C_p$}{Cp}}
+
+This is the mechanism behind ``other properties that derive from here'' --- and
+it is worth seeing \emph{how one arrives at $S(T)$}, since that is the step that
+trips everyone up. Start from the laws, at constant pressure. Heat capacity
+\emph{is} the temperature slope of enthalpy, $C_p=(\partial H/\partial T)_P$, so
+\[
+dH = C_p\,dT.
+\]
+For entropy, the second law gives $dS=\delta q_{\mathrm{rev}}/T$; at constant
+pressure the reversible heat is $\delta q_{\mathrm{rev}}=C_p\,dT$, hence
+\[
+dS = \frac{C_p}{T}\,dT.
+\]
+That single step --- dividing by $T$ --- is the whole origin of the $\int C_p/T$.
+Integrate each from a reference temperature and add the 298\,K anchor; Choupo
+stores $C_p^\circ(T)$ and the two anchors (\emph{not} tables of $H$, $S$) and
+evaluates:
+\begin{align}
+H^\circ(T) &= \underbrace{\Delta H_f^\circ}_{\text{position}} + \int_{298.15}^{T} C_p^\circ(T')\,dT'
+   &&\text{\footnotesize(\code{Component::h\_pure\_ig}, \file{Component.cpp})}\\
+S^\circ(T) &= \underbrace{S^\circ_{298}}_{\text{absolute}} + \int_{298.15}^{T} \frac{C_p^\circ(T')}{T'}\,dT'
+   &&\text{\footnotesize(\code{Component::s\_pure\_ig})}\\
+G^\circ(T) &= H^\circ(T) - T\,S^\circ(T)
+\end{align}
+For a mixture the engine adds the entropy of mixing $-R\sum y_i\ln y_i$ and the
+pressure term $-R\ln(P/P_{\mathrm{ref}})$ (\code{ThermoPackage::S\_ig}). That is
+the \emph{entire} ideal-gas caloric model --- no hidden tables.
+
+These integrals are not done numerically. For a polynomial $C_p$ the primitive
+is elementary --- it was solved \emph{once, on paper} --- so each call evaluates
+a closed form,
+\[
+\int_{T_{ref}}^{T}\!\frac{C_p^\circ}{T'}\,dT'
+   = a_0\ln\frac{T}{T_{ref}} + \sum_{k\geq1}\frac{a_k}{k}\bigl(T^k-T_{ref}^k\bigr),
+\]
+exact to machine precision in a handful of operations (\code{PolynomialCp::S}).
+The standard correlations all share this property (NASA, Aly--Lee, Shomate have
+closed primitives too); Choupo never runs a quadrature loop for $C_p$.
+
+\begin{example}[Acetone $H$ and $S$ at 400\,K --- by hand, then by Choupo]
+With $C_p^\circ(T)=6.301+0.2606\,T-1.253\!\times\!10^{-4}T^2+2.038\!\times\!10^{-8}T^3$
+(units J\,mol$^{-1}$K$^{-1}$), integrating from 298.15 to 400\,K:
+\[
+\int C_p^\circ\,dT' = 8431~\text{J/mol},\qquad
+\int \frac{C_p^\circ}{T'}\,dT' = 24.19~\text{J/(mol·K)}.
+\]
+So $H^\circ(400)=-217100+8431=\mathbf{-208669}$~J/mol and
+$S^\circ(400)=295.30+24.19=\mathbf{319.49}$~J/(mol·K). Running
+\code{choupoProps} on a one-point scan returns exactly
+$H_{\mathrm{ig}}=-208669$~J/mol, $S_{\mathrm{ig}}=319.49$~J/(mol·K). The number
+on the page is the number in the code --- and at 298.15\,K both integrals vanish,
+so $H=\Delta H_f^\circ$ and $S=S^\circ_{298}$, the anchors laid bare.
+\end{example}
+
+\begin{keyidea}
+$C_p$ gives the \emph{shape}; the formation values give the \emph{position}.
+That is why the \code{.dat} lists $C_p^\circ(T)$ \emph{and} $\Delta H_f^\circ$,
+$S^\circ$ separately --- not redundancy. And note the asymmetry: entropy has an
+absolute zero for free (third law: $S\!\to\!0$ for a perfect crystal at
+$T\!=\!0$), so $S^\circ_{298}$ is a genuine absolute; enthalpy has \emph{no}
+natural zero, so $\Delta H_f^\circ$ must be \emph{measured} and supplied.
+\end{keyidea}
+
+\subsubsection*{What the critical properties and acentric factor actually do}
+
+$T_c$, $P_c$, $\omega$ do nothing in the caloric equations above --- they enter
+only when you ask for \emph{real-fluid} behaviour through a cubic equation of
+state. There the attraction term is $a(T)=a_c\,\alpha(T_r)$, with $a_c$ fixed by
+$T_c,P_c$ and the temperature shape fixed by $\omega$ (Soave/SRK):
+\[
+\alpha(T) = \bigl[\,1 + m(1-\sqrt{T_r})\,\bigr]^2,\quad
+m = 0.48508 + 1.55171\,\omega - 0.15613\,\omega^2,\quad T_r=\tfrac{T}{T_c}
+\]
+(\code{SRK.cpp}; Peng--Robinson uses the analogous $\kappa(\omega)$). This
+$a(T)$ is what produces the departure functions $H-H^\circ$, $S-S^\circ$ and the
+compressibility $Z$ --- the real-gas correction layered on top of the ideal-gas
+caloric result. The same $T_c,T_b$ also drive Watson's latent heat,
+$\Delta H_{\mathrm{vap}}(T)=\Delta H_{\mathrm{vap}}(T_b)\,
+[(T_c-T)/(T_c-T_b)]^{0.38}$ (\code{Component.cpp}).
+
+\begin{intuition}
+So why does \file{acetone.dat} carry $\omega$ at all if you are running the
+default \code{idealGas}? Because the data is \emph{model-agnostic} and the model
+decides which fields wake up. Under \code{idealGas} there is no departure, and
+$\omega,T_c,P_c$ are simply never read. Select \code{SRK} for a high-pressure
+compressor and the very same numbers come alive. The \code{.dat} is the
+laboratory record; the model is the question you ask of it.
+\end{intuition}
+
+\subsection{From \texorpdfstring{$G$}{G} to equilibrium: what \texorpdfstring{$\Delta G^\circ$}{dG0} is (and is not)}
+
+The single most common confusion in this whole subject is $\Delta G^\circ$
+versus $\Delta G$. It is worth settling once, because $G$ is what the reactors
+minimise and it is built from exactly the $H$ and $S$ above.
+
+\textbf{First, the $^\circ$.}\quad It means \emph{reference state} --- each
+species pure, ideal gas, at $1$\,bar --- but \emph{at the reaction temperature}
+$T$. It does \emph{not} mean ``at 298\,K.'' So $\Delta G^\circ=\Delta G^\circ(T)$
+varies with temperature; $\Delta G^\circ(298)$ is just one point on a curve.
+
+\textbf{Then, the two are not the same thing.}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item $\Delta G^\circ$ is the Gibbs change if reactants $\rightarrow$ products
+  with \emph{everything in its standard state}. It is a \emph{fixed number} --- a
+  property of the reaction at $T$.
+\item $\Delta G$ is the \emph{actual} Gibbs change at the real composition (the
+  real partial pressures). It is the \emph{driving force}.
+\end{itemize}
+The reaction quotient $Q$ bridges them, and equilibrium is where the driving
+force --- not the reference number --- vanishes:
+\[
+\Delta G = \Delta G^\circ + RT\ln Q,
+\qquad
+\Delta G = 0 \text{ at equilibrium} \;\Rightarrow\;
+\boxed{\;\Delta G^\circ = -RT\ln K\;}
+\]
+
+\begin{keyidea}
+At equilibrium it is $\Delta G$ that is zero, \emph{never} $\Delta G^\circ$.
+$\Delta G^\circ$ stays fixed and merely sets \emph{where} the equilibrium sits
+(the value of $K$); the system gets there by shifting $Q$ until $\Delta G=0$. And
+$\Delta G^\circ>0$ does not mean ``no reaction'' --- it means $K<1$, i.e.\ partial
+conversion. Only the sign and size of $K$ change.
+\end{keyidea}
+
+\textbf{Where the number comes from} --- straight back to the caloric engine:
+\[
+\Delta G^\circ(T) = \Delta H^\circ(T) - T\,\Delta S^\circ(T)
+   = \sum_i \nu_i\, g_i^\circ(T),
+\qquad g_i^\circ(T) = h^{\mathrm{ig}}_i(T) - T\,s^{\mathrm{ig}}_i(T).
+\]
+Note the subtlety that confuses everyone: $h^{\mathrm{ig}}$ carries the
+\emph{formation} enthalpy ($\Delta H_f^\circ$, an elements datum) while
+$s^{\mathrm{ig}}$ is the \emph{absolute} (third-law) entropy. Mixing the two
+references looks wrong --- but it is exactly right, because in a \emph{balanced}
+reaction the element contributions cancel through $\sum_i\nu_i$. That is precisely
+why the \code{.dat} carries $\Delta H_f^\circ$ \emph{and} $S^\circ$ separately:
+each plays a different role, and they combine correctly only across a balanced
+stoichiometry (\code{Component::g\_pure\_ig}; consumed in
+\code{PFR.cpp}/\code{CSTR.cpp} as $K=\exp(-\Delta G^\circ/RT)$ and in the Gibbs
+reactor's direct $G$-minimisation).
+
+\smallskip
+\noindent\textbf{How $K$ moves with $T$ (Gibbs--Helmholtz).}\quad
+$\Delta G^\circ(T)$ is not a frozen datum --- it has its own temperature law, and
+that law is a workhorse relation worth knowing by name. Gibbs--Helmholtz states
+$\left[\partial(G/T)/\partial T\right]_P = -H/T^2$; applied to
+$\Delta G^\circ=-RT\ln K$ it collapses to the van~'t~Hoff equation,
+\[
+\boxed{\;\frac{d\ln K}{dT} = \frac{\Delta H^\circ}{RT^2}\;}
+\]
+which is just Le~Chatelier made quantitative: an exothermic reaction
+($\Delta H^\circ<0$) has $K$ \emph{falling} as $T$ rises. In Choupo it doubles as
+a glass-box self-check --- the $K(T)$ the reactors build from $g^\circ(T)$ at each
+temperature must show exactly this slope, or the enthalpy and the equilibrium
+constant are disagreeing with each other.
+
+\begin{intuition}
+These relations are not ornaments. Gibbs--Helmholtz is \emph{how the equilibrium
+moves with temperature} (above); its sibling, the \textbf{Gibbs--Duhem} equation
+$\sum_i x_i\,\mathrm{d}\ln\gamma_i = 0$ (constant $T,P$), says the activity
+coefficients of a mixture are \emph{not independent}. That single constraint is
+exactly why measured VLE data can be \emph{tested} for thermodynamic consistency
+--- and why an activity model is built from one $G^{\mathrm{E}}$ function rather
+than fitting each $\gamma_i$ freely. It is the engine of
+\S\ref{ch:consistency-props}.
+\end{intuition}
+
+\subsection{A worked span: water\,/\,ethanol\,/\,benzene, \texorpdfstring{$-200$}{-200} to \texorpdfstring{$1000\,$\textdegree C}{1000 C}}
+\label{sec:span}
+
+Put the three together and sweep the temperature. This one mixture crosses
+\emph{every} regime of property prediction, and is the honest way to see both how
+properties are obtained \emph{and} where the models give out --- which is exactly
+the colour band of Figure~\ref{fig:ribbon}, now read regime by regime. (Critical
+temperatures: ethanol $241\,$\textdegree C, benzene $289\,$\textdegree C, water
+$374\,$\textdegree C; melting points: ethanol $-114$, water $0$, benzene
+$5.5\,$\textdegree C.)
+
+\begin{center}\footnotesize
+\begin{tabularx}{\linewidth}{@{}p{2.45cm}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Regime} & \textbf{How a property is obtained} & \textbf{Where the model gives out} \\
+\midrule
+$-200$ to $\sim0\,$\textdegree C \newline {\scriptsize solids (SLE)}
+ & melting points $T_m$, $\Delta H_{\mathrm{fus}}$, solid $C_p$; freezing-point depression; sublimation $P^{\mathrm{sat}}$
+ & \textbf{low-T edge.} Below every Antoine \code{Trange}: $P^{\mathrm{sat}}$ would extrapolate blindly. Solid-phase data is sparse --- a cryogenic \emph{data desert}. \\
+\addlinespace
+$\sim0$ to $\sim65\,$\textdegree C \newline {\scriptsize two liquids (LLE)}
+ & activity model (\code{NRTL}/\code{UNIFAC}) for $\gamma$; water/benzene nearly immiscible, ethanol the cosolvent
+ & VLE-fitted parameters do \emph{not} serve LLE; \code{Wilson} cannot represent a liquid split at all; without $T$-dependent parameters the miscibility gap appears/vanishes wrongly. \\
+\addlinespace
+$\sim65$ to $\sim100\,$\textdegree C \newline {\scriptsize boiling (VLLE)}
+ & Antoine $P^{\mathrm{sat}}$ $+$ $\gamma$--$\phi$ $+$ three-phase flash (Gibbs minimisation); ethanol/water + ternary azeotrope ($\sim64.9\,$\textdegree C)
+ & azeotrope sensitivity --- a small $\gamma$ error moves the column design; bubble-point (Wang--Henke) distillation is unstable \emph{through} an azeotrope (use \code{method simultaneous}). \\
+\addlinespace
+$\sim100$ to $\sim290\,$\textdegree C \newline {\scriptsize vapour $\to$ near-critical}
+ & cubic EoS (\code{SRK}/\code{PR}) with $k_{ij}$; departure functions $H-H^\circ$, $S-S^\circ$, $Z$
+ & cubics degrade as the critical region is approached; $k_{ij}$ often needs to be made temperature-dependent over so wide a span. \\
+\addlinespace
+$\sim290$ to $374\,$\textdegree C \newline {\scriptsize mixed super/sub-critical}
+ & the method itself must switch $\gamma$--$\phi$ $\rightarrow$ $\phi$--$\phi$ (one EoS for every phase)
+ & above a species' $T_c$ the activity-coefficient picture loses meaning; no single $\gamma$ model spans the switch; near-critical accuracy is poor. \\
+\addlinespace
+$374$ to $1000\,$\textdegree C \newline {\scriptsize supercritical $+$ reaction}
+ & $\phi$--$\phi$ EoS; wide-range $C_p^\circ(T)$ for the caloric terms
+ & \textbf{high-T edge.} $P^{\mathrm{sat}}$ ceases to exist above $T_c$ (Choupo \emph{refuses} it, \S1.2); and the species thermally \emph{decompose} --- the fixed-component assumption fails: do they still exist? \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The two edges --- the ones you asked to watch --- fail for opposite reasons but
+teach the same lesson. At the \textbf{cold edge} there is simply no data: every
+correlation is fitted to a window that starts well above $73\,$K, the species are
+frozen, and a confident number there would be invention, not prediction. At the
+\textbf{hot edge} the theory keeps producing numbers --- Antoine will gladly
+report a vapour pressure at $800\,$\textdegree C --- but the \emph{physics} has
+moved on: past each $T_c$ no saturation exists, and past a few hundred degrees
+the molecules are no longer the molecules in the \code{.dat}. In both cases the
+correct output is a \emph{flag}, not a figure.
+
+\begin{pitfall}
+No single model spans this axis. A run that quietly uses one $\gamma$ model and
+one cubic from $-200$ to $1000\,$\textdegree C is not ``general'' --- it is
+extrapolating through three regime changes in silence. The wide span is not one
+problem; it is five problems wearing one temperature axis.
+\end{pitfall}
+
+\begin{intuition}
+What Choupo ships \emph{today} covers the middle of this span honestly: cubic
+EoS, \code{ideal}/\code{NRTL}/\code{Wilson}/\code{UNIFAC} activity, Antoine
+$P^{\mathrm{sat}}$, Watson $\Delta H_{\mathrm{vap}}$, three-phase VLLE by Gibbs
+minimisation, and azeotropic columns via the simultaneous MESH solver. It does
+\emph{not} (yet) carry association models (PC-SAFT/CPA) for the hydrogen-bonding
+non-ideality, nor electrolyte or wide-range near-critical packages. So for the
+H-bonding mid-span and the two edges, Choupo's job is not to fake accuracy it
+does not have --- it is to predict where it can and to \emph{say so} where it
+cannot. That honesty is the product.
+\end{intuition}
+
+% =====================================================================
+\section{Why a separate guide}
+% =====================================================================
+
+The Theory Guide answers \emph{how a model works} --- how a flash splits, how
+an EoS predicts $Z$, how Levenberg--Marquardt minimises a residual.  This guide
+answers a question that comes \emph{before} that: \emph{where do the numbers
+that feed the models come from?}  A simulation is only as good as the $T_c$,
+the NRTL pair, the heat of formation it stands on, and those are not handed
+down --- they are estimated, fitted, and tested.
+
+Choupo treats that as a first-class phase with its own binary (\code{choupoProps})
+and its own lifecycle:
+
+\begin{quote}
+\textbf{CREATE} a component (from groups) \;$\rightarrow$\; \textbf{CURATE} the
+mixture models (fit pairs, test data, choose by evidence) \;$\rightarrow$\;
+\textbf{WIRE} the flowsheet \;$\rightarrow$\; \textbf{SIMULATE}.
+\end{quote}
+
+A \code{propsDict} of \code{operations} drives the first two stages.  A case may
+have \emph{no} \code{flowsheetDict} at all (a pure properties case --- the
+compound bench), or carry one and use props to curate the thermo it will
+simulate.  Same files, same engine; only the centre of the GUI differs.
+
+\begin{intuition}
+The usual reflex is to click a property method and trust a badge.  Choupo's
+stance (the ``see, then decide'' principle) is the opposite: you make the
+estimate or the fit \emph{visible} --- the group build-up, the model curve
+against the lab points, the consistency residual --- and decide from the
+evidence in front of you.  Estimation has error; the point is to see it.
+\end{intuition}
+
+% =====================================================================
+\section{Creating a component: Joback group contribution}\label{ch:joback}
+% =====================================================================
+
+When a component is missing from the catalogue and from the literature, you can
+\emph{estimate} its pure-component constants from its molecular structure ---
+the groups it is built from.  Choupo implements the \textbf{Joback} method
+(Joback \& Reid, 1987; tabulated in Poling, Prausnitz \& O'Connell, \emph{The
+Properties of Gases and Liquids}, 5th ed.), the \code{estimateComponent}
+property operation.
+
+\subsection{The method}
+
+Each first-order group contributes a tabulated increment.  Summing the
+increments and substituting into Joback's correlations gives the constants
+(with $n_A$ the total number of atoms):
+
+\begin{align}
+T_b      &= 198.2 + \textstyle\sum_i n_i\,\Delta T_{b,i} \\
+T_c      &= T_b \,\big/\, \big(0.584 + 0.965\,\Sigma\Delta T_c - (\Sigma\Delta T_c)^2\big) \\
+P_c      &= \big(0.113 + 0.0032\,n_A - \Sigma\Delta P_c\big)^{-2} \quad[\text{bar}] \\
+V_c      &= 17.5 + \textstyle\sum_i n_i\,\Delta V_{c,i} \quad[\text{cm}^3/\text{mol}] \\
+\Delta H_f^{\circ}(298) &= 68.29 + \textstyle\sum_i n_i\,\Delta H_{f,i} \quad[\text{kJ/mol, ideal gas}] \\
+\Delta H_{\text{vap}}(T_b) &= 15.30 + \textstyle\sum_i n_i\,\Delta H_{v,i} \\
+C_p^{\text{ig}}(T) &= (\Sigma a - 37.93) + (\Sigma b + 0.210)T
+                    + (\Sigma c - 3.91\!\times\!10^{-4})T^2
+                    + (\Sigma d + 2.06\!\times\!10^{-7})T^3 .
+\end{align}
+
+The acentric factor $\omega$ is \emph{not} a group sum; Choupo derives it from
+$(T_b, T_c, P_c)$ by the Lee--Kesler correlation, with $T_{br}=T_b/T_c$ and
+$P_c$ in atm:
+\begin{equation}
+   \omega = \frac{-\ln P_c - 5.97214 + 6.09648/T_{br} + 1.28862\ln T_{br} - 0.169347\,T_{br}^6}
+                 {15.2518 - 15.6875/T_{br} - 13.4721\ln T_{br} + 0.43577\,T_{br}^6}.
+\end{equation}
+
+A few first-order group increments (Joback \& Reid; the full table is in the
+code, \code{src/propertyOps/EstimateComponent.cpp}):
+\begin{center}\small
+\begin{tabular}{lrrrr}
+\toprule
+group & $\Delta T_b$ & $\Delta T_c$ & $\Delta P_c$ & $\Delta H_f$ (kJ/mol)\\
+\midrule
+$-$CH$_3$        & 23.58 & 0.0141 & $-0.0012$ & $-76.45$ \\
+$>$CH$_2$        & 22.88 & 0.0189 & $\ \ 0.0000$ & $-20.64$ \\
+$-$OH (alcohol)  & 92.88 & 0.0741 & $\ \ 0.0112$ & $-208.04$ \\
+$>$C$=$O (ketone)& 76.75 & 0.0380 & $\ \ 0.0031$ & $-133.22$ \\
+aromatic $=$CH$-$& 26.73 & 0.0082 & $\ \ 0.0011$ & $\ \ 2.09$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Worked example: acetone}
+
+Acetone, $\mathrm{CH_3\!-\!CO\!-\!CH_3}$, decomposes into $2\times\code{CH3}$ and
+$1\times\code{ketone}$.  The operation prints the build-up and validates against
+a \code{reference} block:
+
+\begin{center}\small
+\begin{tabular}{lrrr}
+\toprule
+Property & Joback & Reference (NIST) & Dev. \\
+\midrule
+$T_b$   & 322.1\,K        & 329.2\,K  & $-2.2\%$ \\
+$T_c$   & 500.6\,K        & 508.1\,K  & $-1.5\%$ \\
+$P_c$   & 48.0\,bar       & 47.0\,bar & $+2.2\%$ \\
+$V_c$   & 209.5\,cm$^3$/mol& 209\,cm$^3$/mol & $\approx 0$ \\
+$\omega$& 0.295           & 0.307     & $-3.9\%$ \\
+$\Delta H_f^{\circ}$ & $-217.8$\,kJ/mol & $-217.1$\,kJ/mol & $+0.3\%$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Within a few percent on the criticals and almost exact on $\Delta H_f$ --- and
+you \emph{see} the error, because the reference sits beside the estimate.
+
+\begin{intuition}
+\textbf{Know the method's limits.}  Joback is weak on $T_b$ of strongly
+hydrogen-bonding species (ethanol's $T_b$ comes out $\sim$14\,K low), and it
+yields \emph{no} Antoine / vapour-pressure parameters --- those need a fit
+(\S\ref{ch:pairs}) or a corresponding-states correlation, a separate step.  An
+estimate is a starting point you then anchor to data, never a final answer.
+\end{intuition}
+
+\begin{tutoriallink}
+\file{tutorials/props/estimate/estimate\_acetone} --- the example above, groups in,
+validated estimate out.
+\end{tutoriallink}
+
+% =====================================================================
+\section{Curating mixture models: fitting binary pairs}\label{ch:pairs}
+% =====================================================================
+
+A pure-component set is not enough for a mixture: the non-ideality lives in the
+\emph{binary interactions} (NRTL, Wilson).  Those parameters are regressed
+against experimental VLE data by Levenberg--Marquardt --- the \code{fitParameters}
+operation.
+
+\subsection{The activity-coefficient models}
+
+For a binary, the \textbf{NRTL} model gives the liquid-phase activity
+coefficients from three adjustable numbers per pair --- $\tau_{12},\tau_{21}$
+(temperature-dependent) and the non-randomness $\alpha$:
+\begin{equation}
+   \tau_{ij} = a_{ij} + \frac{b_{ij}}{T}, \qquad G_{ij} = \exp(-\alpha\,\tau_{ij}),
+\end{equation}
+\begin{equation}
+   \ln\gamma_1 = x_2^2\!\left[\tau_{21}\!\left(\frac{G_{21}}{x_1+x_2 G_{21}}\right)^{\!2}
+   + \frac{\tau_{12}\,G_{12}}{\left(x_2+x_1 G_{12}\right)^2}\right],
+\end{equation}
+and $\ln\gamma_2$ by swapping the indices.  So a pair carries four fittable
+coefficients $(a_{12},b_{12},a_{21},b_{21})$ plus a fixed $\alpha$ (often $0.3$).
+\textbf{Wilson} is the two-parameter alternative,
+\begin{equation}
+   \ln\gamma_1 = -\ln(x_1+\Lambda_{12}x_2)
+   + x_2\!\left[\frac{\Lambda_{12}}{x_1+\Lambda_{12}x_2}
+   - \frac{\Lambda_{21}}{x_2+\Lambda_{21}x_1}\right],
+\end{equation}
+which cannot represent a liquid--liquid split (use NRTL when one is suspected).
+
+\subsection{The residual the fit minimises}
+
+The measurable is the bubble temperature.  At a fixed pressure $P$ and liquid
+composition $x$, the bubble point is the $T$ that closes modified Raoult,
+\begin{equation}
+   \sum_i x_i\,\gamma_i(x,T)\,P_i^{\text{sat}}(T) = P
+   \label{eq:bubbleT}
+\end{equation}
+(a Newton-1D in $T$; $P_i^{\text{sat}}$ from Antoine).  Levenberg--Marquardt
+then drives the pair coefficients $\theta=(a_{12},b_{12},a_{21},b_{21})$ to
+minimise the sum of squared bubble-temperature residuals against the data,
+\begin{equation}
+   \min_{\theta}\ \sum_k \big[\,T_{\text{bub}}(x_k;\theta) - T_{k}^{\text{exp}}\,\big]^2 .
+\end{equation}
+
+\begin{intuition}
+\textbf{A low residual is not a good fit.}  At a \emph{single} pressure
+$\tau_{ij}=a_{ij}+b_{ij}/T$ is nearly linear in both $a_{ij}$ and $b_{ij}/T$
+over the narrow $T$ range of one isotherm/isobar, so $a$ and $b$ are
+\emph{correlated} --- many $(a,b)$ pairs fit equally well and the optimum is a
+valley, not a point.  \code{fitParameters} forms $J^{\mathsf T}J$ at the optimum
+and reports the parameter correlation + confidence intervals so you SEE this;
+the Theory Guide's \emph{Levenberg--Marquardt} and \emph{What is fittable}
+chapters derive the diagnostic.  Fit across pressures, or fix $b$, to break it.
+\end{intuition}
+
+\subsection{See, then decide: the model overlay}
+
+Before fitting, look.  Declare one scan \code{operation} per candidate model
+(ideal, NRTL, Wilson), emitting the $(x, T_{\text{bubble}}, y_{\text{eq}})$
+trio, and an \code{experimental \{\}} entry that overlays them --- and, with a
+\code{dataset}, draws the measured points on top.  The student sees which model
+the data actually picks: for ethanol/water at 1\,atm the ideal curve misses the
+azeotrope entirely while NRTL lands on it.
+
+\begin{tutoriallink}
+\file{tutorials/props/compare/compare\_vle\_etoh\_water} --- ideal vs.\ NRTL bubble/dew
+curves overlaid with measured VLE points (Carey \& Lewis, 1932).
+\end{tutoriallink}
+
+\subsection{Fit, then promote}
+
+When a model earns its keep, \code{fitParameters} regresses its coefficients to
+the data and writes a proposal to
+\file{constant/binaryPairs/<model>/<pair>.fit-<date>.dat}.  Promotion is a
+deliberate, visible act: you inspect the parity plot and the identifiability
+statistics (confidence intervals, parameter correlation) the fit reports ---
+never a ``good fit'' badge --- and copy the proposal into the case's
+\code{constant/} when you trust it.
+
+% =====================================================================
+\section{Testing the data itself: consistency}\label{ch:consistency-props}
+% =====================================================================
+
+Before fitting a model \emph{to} data, test whether the data is even
+thermodynamically consistent --- a fit to bad data is a polished wrong answer.
+The \code{vleConsistency} operation does this in three steps.
+
+\subsection{Step 1 --- activity coefficients straight from the data}
+
+It does not assume a model.  From each measured $(x_1, y_1, T)$ at the run
+pressure $P$, modified Raoult gives the activity coefficient of each component
+directly:
+\begin{equation}
+   \gamma_i = \frac{y_i\,P}{x_i\,P_i^{\text{sat}}(T)},
+   \qquad P_i^{\text{sat}}(T)\ \text{from Antoine}.
+\end{equation}
+These are \emph{experimental} $\gamma_i$ --- the test now asks whether they obey
+thermodynamics.
+
+\subsection{Step 2 --- the Gibbs--Duhem point test}
+
+The Gibbs--Duhem equation is the constraint every real mixture must satisfy at
+constant $T,P$:
+\begin{equation}
+   \sum_i x_i\,\mathrm{d}\ln\gamma_i = 0
+   \quad\Longrightarrow\quad
+   x_1\frac{\mathrm{d}\ln\gamma_1}{\mathrm{d}x_1}
+   + x_2\frac{\mathrm{d}\ln\gamma_2}{\mathrm{d}x_1} = 0 \ \ (\text{binary}).
+   \label{eq:gd}
+\end{equation}
+The operation evaluates the left-hand side at each interior point (central
+differences in $x_1$) and reports its max and mean magnitude --- the
+\emph{point residual}.  A consistent set keeps it near zero.  (Isobaric data
+adds a small $-H^{\mathrm E}/RT^2 \cdot \mathrm{d}T/\mathrm{d}x$ term, dropped
+here; stated as a caveat, not hidden.)
+
+\subsection{Step 3 --- the Herington area test}
+
+Integrate \eqref{eq:gd} across the whole composition range: for an isothermal
+set Gibbs--Duhem forces the net area of $\ln(\gamma_1/\gamma_2)$ to vanish.
+Herington's isobaric form compares that net area to the absolute area and
+corrects for the boiling-range:
+\begin{equation}
+   D = 100\,\frac{\left|\displaystyle\int_0^1 \ln\dfrac{\gamma_1}{\gamma_2}\,\mathrm{d}x_1\right|}
+                 {\displaystyle\int_0^1 \left|\ln\dfrac{\gamma_1}{\gamma_2}\right|\mathrm{d}x_1},
+   \qquad
+   J = 150\,\frac{T_{\max}-T_{\min}}{T_{\min}},
+\end{equation}
+(both integrals by the trapezoid rule over the sorted points).  The set
+\textbf{passes} when $|D-J| < 10$.  The GUI's consistency card plots
+$\ln\gamma_1,\ \ln\gamma_2$ and $\ln(\gamma_1/\gamma_2)$ vs $x_1$ with the net
+area shaded --- you SEE the $\pm$ areas cancel, not just the number.
+
+Finally the infinite-dilution coefficients $\gamma_1^\infty,\gamma_2^\infty$
+(the dilute-end limits) are reported --- the most stringent point of any model
+later fitted to the set.
+
+\begin{tutoriallink}
+\file{tutorials/props/compare/compare\_vle\_etoh\_water} --- the \code{vleConsistency} op
+on the Carey--Lewis ethanol/water data (Herington $|D-J|=4.6<10$, PASS).
+\end{tutoriallink}
+
+\vfill
+\noindent\rule{\linewidth}{0.3pt}
+\noindent\small This guide grows with the props pillar.  Planned: a second
+group-contribution method (Constantinou--Gani) to compare against Joback;
+group contribution for liquid viscosity; a structure (SMILES) front-end for the
+compound bench.
+\end{document}

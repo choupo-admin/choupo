@@ -1,0 +1,11 @@
+/*---------------------------------------------------------------------------*\
+  Benzene/toluene, ideal solution (Raoult).  The shortcut split uses only
+  the compositions and flows --- no VLE is solved --- but the thermo
+  package still defines the component set the streams carry.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene );
+
+activityModel    { model  ideal; }
+
+equationOfState  { model  idealGas; }

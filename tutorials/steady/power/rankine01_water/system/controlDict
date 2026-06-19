@@ -1,0 +1,11 @@
+application   choupoSolve;
+description   "Rankine steam cycle: pump -> boiler -> turbine -> condenser";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

@@ -1,0 +1,66 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Propane  (C3H8, CAS 74-98-6)
+  Sources:   vaporPressure  -- Rips 1963 (primary measured set)
+             constants  -- cross-checked vs CoolProp 7.2.0 reference EOS;
+                           Cp -- individual literature value, primary
+                           re-citation pending (IST review)
+             gibbsFormation  -- NASA TM-4513 (McBride-Gordon-Reno 1993),
+                                ideal-gas, 298 K
+\*---------------------------------------------------------------------------*/
+
+name        propane;
+formula     C3H8;
+CAS         74-98-6;
+
+MW          44.096;        // kg/kmol
+Tc          369.83;        // K
+Pc          42.48;         // bar
+omega       0.1520;        // [-]
+Tb          231.02;        // K     normal boiling point
+HvapTb      19040;         // J/mol latent heat at Tb
+Vliq        8.42e-5;       // m³/mol saturated-liquid molar volume (84.2 cm³/mol)
+
+gibbsFormation
+{
+    dHf_298   -104700.0;      // J/mol  -- ideal-gas reference
+    s_298     270.30;         // J/(mol·K)
+    phase     gas;
+}
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- Psat(Tb) ~ 1.04 bar (3% at the
+    // lower range edge; the Rips set covers the practical 231-321 K window)
+    coefficients  (3.98292   819.296   -24.417);
+    Trange        (230.6  320.7);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   -- Cp(298) = 73.8
+    coefficients  (-4.224   0.3063   -1.586e-4   3.215e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // approximate constant ~100 J/(mol·K); a real liquid only below ~231 K (1 atm)
+    // or under pressure (refrigerant duty)
+    coefficients  (100.0);
+    Trange        (170  300);
+}
+
+provenance
+{
+    vaporPressure  "Rips 1963 (primary measured set)";
+    constants      "cross-checked vs CoolProp 7.2.0 reference EOS";
+    gibbsFormation "NASA TM-4513 (McBride-Gordon-Reno 1993), ideal-gas, 298 K";
+}
+
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } );
+    joback ( { group CH3; count 2; } { group CH2; count 1; } );
+}

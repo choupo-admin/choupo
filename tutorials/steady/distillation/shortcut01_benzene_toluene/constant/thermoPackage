@@ -1,0 +1,9 @@
+/*---------------------------------------------------------------------------*\
+  Benzene/toluene, ideal solution (Raoult) --- constant-alpha system, the
+  natural domain of the FUG shortcut method.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

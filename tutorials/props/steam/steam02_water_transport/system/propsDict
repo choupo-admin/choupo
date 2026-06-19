@@ -1,0 +1,59 @@
+/*---------------------------------------------------------------------------*\
+  steam02_water_transport --- the IAPWS water transport route.
+
+  Water flagged `pureFluids { water { method IF97; } }` routes the transport
+  accessors to the matching IAPWS releases:
+
+    * viscosity            -> R12-08 (industrial, critical enhancement off)
+    * thermal_conductivity -> R15-11 (background, critical enhancement off)
+    * surface_tension      -> R1-76  (saturation line)
+
+  The (rho,T) viscosity / conductivity kernels get their density from the
+  IF97 thermodynamic kernel at the SATURATION state (the legacy transport
+  accessors carry no pressure, so p = p_sat(T) is the physical convention --
+  saturated liquid / saturated vapour).  Surface tension is a saturation-line
+  property and takes only T.
+
+  `pins` evaluates the three properties at 25/50/75/100 degC; the golden
+  master locks them at reltol 1e-5 (the formulation is verified to 1e-8 by
+  IAPWSTransport::verify(), which fires on every run).  `scan` writes a fine
+  sweep for the plot.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    // --- coarse pins: the four canonical points (golden master) -----------
+    {
+        name        pin_25C;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity  thermal_conductivity  surface_tension );
+    }
+    {
+        name        pin_50C;
+        type        propertyPoint;
+        state       { T 323.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity  thermal_conductivity  surface_tension );
+    }
+    {
+        name        pin_75C;
+        type        propertyPoint;
+        state       { T 348.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity  thermal_conductivity  surface_tension );
+    }
+    {
+        name        pin_100C;
+        type        propertyPoint;
+        state       { T 373.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity  thermal_conductivity  surface_tension );
+    }
+
+    // --- fine sweep for the plot ------------------------------------------
+    {
+        name        transport_scan;
+        type        propertyScan1D;
+        vary        { variable T;  from 280 K;  to 370 K;  n 46; }
+        state       { P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity  thermal_conductivity  surface_tension );
+        output      { file water_transport.csv; }
+    }
+);

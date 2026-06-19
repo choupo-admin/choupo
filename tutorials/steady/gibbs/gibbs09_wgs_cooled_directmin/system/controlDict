@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Cooled WGS via directMin (B2, Nelder-Mead direct G-min) -- cross-checks A/B1 to ~0.3%";
+verbosity     2;

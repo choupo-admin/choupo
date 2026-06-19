@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Three-phase VLLE flash of water + 1-butanol near the heteroazeotrope (T = 366 K, P = 1.013 bar)";
+
+verbosity     3;

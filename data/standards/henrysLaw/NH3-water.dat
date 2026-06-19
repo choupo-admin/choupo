@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for NH3 in liquid water.
+
+  Reference: Sander, R. (2015) Atmos. Chem. Phys. 15, 4399-4981.
+  Pedagogical baseline; for industrial absorption design with high
+  NH3 loadings the chemical equilibrium
+
+      NH3 + H2O  <-->  NH4+ + OH-
+
+  shifts the effective solubility and a reactive-absorption model
+  is required.  H below describes the *physical* solubility only.
+
+      H_xp(298)  ≈  0.99  bar               (very soluble)
+
+  Equivalently: at 1 bar of pure NH3 gas the equilibrium mole
+  fraction of NH3 in water is ~ 1 / 0.99 = 1.01 (i.e. ~ 100 wt%
+  loading), so the linear form is only valid at the dilute end
+  (x_NH3 < 0.05 ish).
+
+      dH_diss(NH3-water)  ≈  -33700 J/mol
+\*---------------------------------------------------------------------------*/
+
+solute      NH3;
+solvent     water;
+
+model       vantHoff;
+H_ref       9.9e4 Pa;             // = 0.99 bar at 298.15 K
+T_ref       298.15 K;
+enthalpy    -33700  J/mol;
+Trange      ( 273  373 );

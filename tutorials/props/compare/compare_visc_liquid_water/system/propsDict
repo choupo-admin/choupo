@@ -1,0 +1,39 @@
+/*---------------------------------------------------------------------------*\
+  compare_visc_liquid_water
+  =========================
+
+  COMPARE 2 liquid-viscosity correlations for pure water, T = 280-360 K.
+
+    * Andrade: ln(µ) = A + B/T --- 2-parameter, simplest fit, OK over
+               a narrow T window.
+    * Vogel  : ln(µ) = A + B/(T + C) --- 3-parameter, captures the
+               curvature better, recommended for wider T ranges.
+
+  Pedagogical point: for a project using water transport in a non-trivial
+  T window (e.g. 25-90 °C for a heated reactor), the student should know
+  WHICH correlation he is committing to.  This case shows the disagreement
+  is small at room T (~3 %) but grows at higher T (~10 % at 360 K).
+  Validate against the textbook value: µ_water @ 298 K ≈ 8.9 × 10⁻⁴ Pa·s.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        mu_andrade;
+        type        propertyScan1D;
+        vary        { variable T;  from 280 K;  to 360 K;  n 41; }
+        state       { P 1 bar;  composition { water 1.0; } }
+        thermo      { transport { liquidViscosity { model Andrade; } } }
+        properties  ( viscosity_liquid );
+        output      { file mu_andrade.csv; }
+    }
+    {
+        name        mu_vogel;
+        type        propertyScan1D;
+        vary        { variable T;  from 280 K;  to 360 K;  n 41; }
+        state       { P 1 bar;  composition { water 1.0; } }
+        thermo      { transport { liquidViscosity { model Vogel; } } }
+        properties  ( viscosity_liquid );
+        output      { file mu_vogel.csv; }
+    }
+);

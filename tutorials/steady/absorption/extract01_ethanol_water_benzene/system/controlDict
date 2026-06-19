@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Counter-current LL extraction: recover ethanol from water with benzene";
+
+verbosity     3;

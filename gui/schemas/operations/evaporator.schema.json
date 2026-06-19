@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/evaporator.schema.json",
+  "title": "evaporator operation",
+  "description": "Single-effect evaporator modelled as PHYSICAL EQUIPMENT.  Two inlets (feed liquid + heating steam) and three outlets (concentrated liquid, solvent vapour, condensate).  The unit op accepts only physical parameters --- heat-exchange area, overall HTC, operating pressure --- and computes V/F, duty Q, T_boil (with BPE = K_b * m_solute), and steam demand from the energy balance Q = U.A.dT.  External targets such as 'V/F = 0.5' or 'x_outlet = 0.25' are NOT operation parameters here; they belong on an outer DesignSpec controller.",
+  "type": "object",
+  "properties": {
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating pressure",
+      "description": "Vapour-side pressure of the evaporator.  Sets the solvent's saturation temperature; the actual boiling point is T_sat + K_b * m_solute (BPE).",
+      "unit": "Pa"
+    },
+    "area": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Heat-exchange area",
+      "description": "Physical heat-transfer surface area of the tube bundle / heating jacket.",
+      "unit": "m^2"
+    },
+    "U": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Overall heat-transfer coefficient",
+      "description": "Overall HTC across the heating-side film + tube wall + boiling-side film.  Typical values: clean steam-water 2000-3000, scaled or low-pressure 800-1500.",
+      "unit": "W/(m^2.K)"
+    },
+    "Tref": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Enthalpy reference temperature",
+      "description": "Reference for the sensible-heat integrals.  Only differences enter the balance.",
+      "unit": "K",
+      "default": 298.15
+    }
+  },
+  "required": ["P", "area", "U"],
+  "additionalProperties": false
+}

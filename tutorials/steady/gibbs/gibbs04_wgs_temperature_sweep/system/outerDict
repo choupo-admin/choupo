@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  Sweep the WGS reactor temperature from 600 to 1200 K.
+  Le Chatelier prediction: WGS is mildly exothermic (ΔH_r°(298) ≈
+  -41 kJ/mol), so the forward conversion DROPS as T rises.  The plot
+  of y_CO2 vs T is the classical "low-temperature shift" argument
+  for industrial WGS reactor design (the two-stage HT/LT reactor
+  configuration in ammonia and methanol plants).
+\*---------------------------------------------------------------------------*/
+
+type    sweep;
+
+parameter
+{
+    target    units[0].operation.T;
+    range     ( 600  1200 );
+    nPoints   13;
+}
+
+responses
+(
+    wgs.T
+    wgs.y_CO
+    wgs.y_CO2
+    wgs.y_water
+    wgs.y_H2
+    wgs.iterations
+);
+
+report
+{
+    format   csv;
+    file     sweep_results.csv;
+}

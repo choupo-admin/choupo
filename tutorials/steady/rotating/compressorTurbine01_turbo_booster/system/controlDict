@@ -1,0 +1,35 @@
+/*---------------------------------------------------------------------------*\
+  compressorTurbine01_turbo_booster
+  =================================
+
+  The defining v0.80 case: an ENERGY STREAM (a direct scalar wire)
+  between two unit ops.  A turbine extracts shaft work from a hot
+  exhaust gas; the same shaft drives a compressor that boosts a
+  separate stream of ambient air to a higher pressure.
+
+  Elsewhere this is often a "work stream"; in Choupo (per the v0.80
+  just-wiring design discussion) it is a one-line cabling in the
+  flowsheet: the consumer declares `energyInputs ( { from <unit>.<port>;
+  kind work; target W_shaft; } )`, the producer declares
+  `energyOutputs ( { name <port>; kind work; expression "-W_shaft"; } )`,
+  and the Flowsheet copies the resolved scalar (the producer's
+  expression evaluated against its operation + KPIs) into the
+  consumer's `operation.W_shaft` BEFORE its solve() runs.
+
+  Pedagogical point: no DesignSpec, no $variables --- the link IS the
+  wire.  The full Brayton cycle (where W_turb + W_comp = 0 makes
+  W_net = 0 and you need a shaft-split + DesignSpec on the fuel) is
+  v0.81+; this minimal case shows the wire in isolation.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Turbo-booster: turbine shaft drives a compressor (energy wire)";
+
+verbosity     3;
+
+reports
+{
+    streamTable     {}
+    energyStreams   {}
+    energyBalance   {}
+}

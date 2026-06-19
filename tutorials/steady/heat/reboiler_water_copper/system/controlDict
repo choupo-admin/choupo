@@ -1,0 +1,25 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  reboiler_water_copper  --  meta-control
+
+  A steam-heated copper-surface pool reboiler whose duty EMERGES from the
+  Rohsenow (1952) NUCLEATE-boiling flux + the wall + the heating-medium film,
+  via the phaseChanger `model geometry;` + `boiling { ... }` resolution.
+
+  HONESTY-AS-STRUCTURE: the nucleate flux is +/-100% uncertain (the
+  surface-fluid C_sf is surface-finish lab data), so the run prints the
+  RELIABLE Zuber CHF ceiling FIRST, the indicative nucleate flux WITH its
+  [q/2, 2q] scatter band, and the CHF margin (SAFE/BURNOUT).  C_sf has NO
+  default -- it is student-supplied with a mandatory citation.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Steam-heated copper-surface pool reboiler: Rohsenow nucleate flux -> duty, Zuber CHF ceiling (geometry mode)";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

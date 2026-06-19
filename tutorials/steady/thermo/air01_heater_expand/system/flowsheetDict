@@ -1,0 +1,43 @@
+/*---------------------------------------------------------------------------*\
+  air01_heater_expand  --  showcase for TRACK A predefined-mixture expansion.
+
+  The thermoPackage lists `components ( air )`.  At load time the loader
+  splices `air` into N2 + O2 + Ar (see constant/thermoPackage).  A single
+  heater then adds 5 kW to a 1 mol/s air stream at 1 bar, 298.15 K.  The air
+  is gas (vf = 1), so the heater integrates the ideal-gas mixture H_ig over
+  the three real components -> a correct MULTICOMPONENT result.
+
+  Z-SEEDING NOTE (glass-box honesty):
+    The expansion captures the member mole fractions (N2 0.7808 / O2 0.2095 /
+    Ar 0.0093) as a per-component seed on the ThermoPackage
+    (`mixtureSeedVector()`).  The feed below STATES the same fractions
+    explicitly so the case is self-evident and the result is unambiguous --
+    a stream that declares its own composition always wins over the seed.
+    The seed exists so a future feed that OMITS its composition can be filled
+    from the mixture defaults; that wiring lives in the stream-construction
+    path (Flowsheet / Composition), not in this case.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F             3.6 kmol/h;          // 1 mol/s
+        T           298.15 K;
+        P             1.0  bar;
+        vf            1.0;                  // air is a gas at 1 bar, 298 K
+        // Member fractions of `air` (matches the announced expansion).
+        molarComposition  { N2 0.7808;  O2 0.2095;  Ar 0.0093; }
+    }
+}
+
+units
+(
+    {
+        name        airHeater;
+        type        heater;
+        in          feed;
+        outputs     ( hot );
+        operation   { Q 5.0 kW; }
+    }
+);

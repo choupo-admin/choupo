@@ -1,0 +1,15 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    estimate_acetone       Cp298            74.97              1e-4
+diag    estimate_acetone       Hvap_kJmol       27.53              1e-4
+diag    estimate_acetone       MW               58.08              1e-4
+diag    estimate_acetone       Pc_bar           48.02              1e-4
+diag    estimate_acetone       Psat_298_bar     0.39               1e-4
+diag    estimate_acetone       Psat_Tb_bar      0.98               1e-4
+diag    estimate_acetone       Tb_K             322.11             1e-4
+diag    estimate_acetone       Tc_K             500.56             1e-4
+diag    estimate_acetone       Vc_cm3mol        209.50             1e-4
+diag    estimate_acetone       Vliq298_cm3mol   82.11              1e-4
+diag    estimate_acetone       dGf_kJmol        -154.54            1e-4
+diag    estimate_acetone       dHf_kJmol        -217.83            1e-4
+diag    estimate_acetone       omega            0.30               1e-4

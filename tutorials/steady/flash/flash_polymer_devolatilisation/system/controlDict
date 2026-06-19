@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  flash_polymer_devolatilisation
+  ==============================
+
+  POLYMER-AS-PSEUDO worked example (ZERO new code -- the same data model as a
+  petroleum cut).  A polystyrene melt still carrying ~15 mol% residual toluene
+  is flashed: the solvent boils off (vapour), the polymer stays in the liquid
+  (it is `role nonvolatile;`, so K = 0 -- it never enters the vapour).  This is
+  a solvent-devolatilisation step, the canonical place a single fixed-average-MW
+  polymer lump is an acceptable approximation.
+
+  The polymer .dat lives in constant/components/polystyrene.dat (SELF-CONTAINED)
+  and carries a LOUD note: Choupo models ONE fixed average MW, NOT the
+  molecular-weight distribution -- Polymers-Plus-class methods are out of scope.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Devolatilise a polystyrene melt: flash off residual toluene; the polymer (fixed-MW pseudo-component, role nonvolatile) stays liquid";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

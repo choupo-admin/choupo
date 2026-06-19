@@ -1,0 +1,6 @@
+/*--- the esterification CSTR -- the unit op inside REACTION.  Kinetics
+  (esterification_etac) in REACTION/constant/reactions (walk-up).  CURATION:
+  not wired yet (no boundary). */
+type        cstr;
+operation   { V_R 0.5; }
+reaction    esterification_etac;

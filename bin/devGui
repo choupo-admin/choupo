@@ -1,0 +1,82 @@
+#!/bin/bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+#---------------------------------------------------------------------------#
+#  devGui  --  start the Choupo Vite dev server idempotently.
+#
+#  Use this instead of `npm run dev` so previous instances are cleaned up
+#  before a new one is launched.  Avoids the cumulative inotify-handle
+#  leak that orphan Vite processes (left behind when their parent shell
+#  dies) produce on systems with the default fs.inotify.max_user_instances
+#  = 128 (Ubuntu et al).
+#
+#  Idempotent behaviour:
+#    1. Find any prior `node .../vite` processes and SIGTERM them.
+#    2. Wait briefly for them to release inotify handles + ports.
+#    3. exec the new Vite with polling-mode chokidar so even a packed
+#       inotify table cannot stop the dev server from starting.
+#
+#  The polling fallback (CHOKIDAR_USEPOLLING=1) is the harmless way out:
+#  ~2 % CPU on the disk poll vs the kernel-event fan-out of inotify.  For
+#  permanently fixing the underlying kernel limit:
+#
+#    echo 'fs.inotify.max_user_instances = 1024' \
+#         | sudo tee /etc/sysctl.d/40-inotify.conf
+#    sudo sysctl --system
+#
+#  After that the polling flag can be dropped and HMR returns to its
+#  native event-driven speed.
+#---------------------------------------------------------------------------#
+
+set -e
+
+# 1. Reap any prior vite processes (dev or preview).
+prior=$(pgrep -f 'node .*\.bin/vite' 2>/dev/null || true)
+if [ -n "$prior" ]; then
+    echo "[devGui] killing prior vite processes: $prior"
+    kill $prior 2>/dev/null || true
+    # Give them a moment to release watches + listening sockets.
+    sleep 1
+    # Anyone still alive after SIGTERM -- be more emphatic.
+    still=$(pgrep -f 'node .*\.bin/vite' 2>/dev/null || true)
+    if [ -n "$still" ]; then
+        echo "[devGui] SIGKILL the stubborn ones: $still"
+        kill -KILL $still 2>/dev/null || true
+        sleep 0.5
+    fi
+fi
+
+# 2. Locate gui/ relative to this script -- bin/ and gui/ are siblings.
+script_dir=$(dirname "$(readlink -f "$0")")
+cd "$script_dir/../gui"
+
+# 3. exec the fresh dev server.  `exec` replaces the current bash process
+#    so there is one less Node parent layer to leak.
+echo "[devGui] starting Vite dev server at http://127.0.0.1:5173/"
+exec env CHOKIDAR_USEPOLLING=1 npm run dev "$@"

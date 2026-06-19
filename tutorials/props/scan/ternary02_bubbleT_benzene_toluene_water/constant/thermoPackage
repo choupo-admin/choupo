@@ -1,0 +1,5 @@
+/*  Simple VLE package — ideal liquid + ideal gas.  A ternary boiling-temperature
+    surface needs only the three vapour pressures (no binary pairs / no LL gap). */
+components ( benzene toluene water );
+activityModel   { model ideal; }
+equationOfState { model idealGas; }

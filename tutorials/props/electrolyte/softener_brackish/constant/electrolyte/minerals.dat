@@ -1,0 +1,20 @@
+/* Case-local scaling minerals (ECLIPSES the standard catalogue -- taken
+   whole). SNAPSHOT of data/standards/electrolyte/minerals.dat 2026-06-11,
+   restricted to the masters of this analysis {H Ca Mg Na K Cl SO4 HCO3}.
+   Source: USGS PHREEQC phreeqc.dat (public domain). */
+
+minerals
+(
+    { mineral anhydrite; formula "CaSO4"; masters ( { ion Ca; nu 1; } { ion SO4; nu 1; } );
+      logK25 -4.25; dH -22400; source "USGS PHREEQC phreeqc.dat (public domain); lit: 50 - 160oC, 1 - 1e3 atm, anhydrite dissolution, Blount and Dickson, 1973, Am. Mineral. 58, 323"; }
+    { mineral aragonite; formula "CaCO3"; masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 1.993; dH -25731.6; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { mineral calcite; formula "CaCO3"; masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 1.879; dH -28078.8; source "USGS PHREEQC phreeqc.dat (public domain); lit: 0 - 300 C, Ellis, 1959, Plummer and Busenberg, 1982"; }
+    { mineral gypsum; formula "CaSO4:2H2O"; masters ( { ion Ca; nu 1; } { ion SO4; nu 1; } ); nuWater 2;
+      logK25 -4.55; dH -6700; source "USGS PHREEQC phreeqc.dat (public domain); lit: fits the appendix data of Appelo, 2015, AG 55, 62"; }
+    { mineral halite; formula "NaCl"; masters ( { ion Na; nu 1; } { ion Cl; nu 1; } );
+      logK25 1.57; dH 1370; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { mineral sylvite; formula "KCl"; masters ( { ion K; nu 1; } { ion Cl; nu 1; } );
+      logK25 0.9; dH 8500; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+);

@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: NF270_dspmde_noBorn  --  the Born-OFF twin of NF270_dspmde.
+
+  IDENTICAL to NF270_dspmde.dat (same r_p, A_k/dx, X_d) EXCEPT it omits
+  `poreDielectric`.  With no poreDielectric the DSPM-DE law sets eps_p =
+  epsWater(T), so the Born dielectric-exclusion term dW_i = 0 -- the model
+  reduces to plain DSPM (steric + Donnan only).  The membrane11 tutorial runs
+  the SAME NaCl feed through this twin and through NF270_dspmde so the student
+  SEES the Born contribution as the rejection difference between the two.
+
+  See data/standards/membranes/NF270_dspmde.dat for the full per-value
+  provenance (Bowen-Mohammad-Hilal 1997, Bowen-Welfoot 2002, Deen 1987).
+\*---------------------------------------------------------------------------*/
+
+name           NF270_dspmde_noBorn;
+kind           NF;
+manufacturer   "DuPont FilmTec";
+
+A_w            1.0e-5  m/s/bar;
+
+permeabilities
+{
+    NaCl       5.0e-6  m/s;
+    MgSO4      5.0e-8  m/s;
+    CaCl2      1.0e-6  m/s;
+    glucose    8.0e-6  m/s;
+}
+
+poreModel
+{
+    poreRadius             6.0e-10;   // m   (0.60 nm, hydrated-radius basis)
+    porosityOverThickness  5.0e6;     // 1/m (A_k/Delta_x)
+    chargeDensity          -5;        // mol/m3, SIGNED
+    // poreDielectric INTENTIONALLY ABSENT -> Born term OFF (plain DSPM).
+}
+
+P_max          41.4;
+T_max          318;
+pH_min         3;
+pH_max         10;
+MWCO           200;

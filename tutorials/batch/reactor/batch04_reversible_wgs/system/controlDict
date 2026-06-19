@@ -1,0 +1,10 @@
+application   choupoBatch;
+description   "Batch reversible water-gas shift (CO + H2O <-> CO2 + H2) at 600 K; conversion relaxes to X_eq";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         1200;     // s
+deltaT          1.0;      // s   (RK4 step)
+writeInterval   60;       // s   (trajectory snapshot)

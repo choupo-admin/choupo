@@ -1,0 +1,1444 @@
+\documentclass[11pt,a4paper]{article}
+\newcommand{\docTitle}{Developer Guide}
+\newcommand{\soloDevAuthor}{}   % the Developer Guide is Vítor Geraldes alone (he authored the code)
+\input{preamble.tex}
+
+\begin{document}
+
+\manualfrontmatter{Developer Guide}{
+Choupo is a trademark of TalentGround Lda.
+
+Anthropic, Claude, and Claude Code are trademarks or registered trademarks of
+Anthropic, PBC.
+
+Linux is a registered trademark of Linus Torvalds.
+
+Python is a trademark or registered trademark of the Python Software
+Foundation.
+}
+
+% =====================================================================
+%   Table of contents
+% =====================================================================
+\pagenumbering{roman}
+\setcounter{tocdepth}{2}
+\markboth{Contents}{Contents}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% =====================================================================
+\section*{Preface --- the contract this code makes with you}
+\addcontentsline{toc}{section}{Preface --- the contract this code makes with you}
+
+If you have written CFD glue for a CFD solver, or stared too long at a
+black-box solver, you already know why this project exists.
+Every Newton step is auditable. Every dispatch is explicit. Every
+dependency is in the C\texttt{++} standard library. The price of that
+discipline is that contributors have to play by a few rules. They are
+short, and they are non-negotiable.
+
+This guide is opinionated on purpose. Read \S\ref{sec:phil} carefully
+--- those three principles override everything else --- and treat
+\S\ref{sec:donts} as the project's only blunt list of don'ts.
+
+
+% =====================================================================
+\section{Philosophy --- the contract we promise}\label{sec:phil}
+
+\begin{whatyoulllearn}
+The three invariants that every contribution is judged against, in
+plain language.
+\end{whatyoulllearn}
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Pedagogical clarity beats elegance.}
+        The simulator must be readable by a chemical-engineering
+        student in their third year. No template metaprogramming, no
+        auto-magic, no clever short-circuits. Every Newton iteration
+        and every $K$-value must be inspectable in both the source and
+        the run-time output.
+
+  \item \textbf{Source transparency --- no hidden registration.}
+        Every factory base class has an \emph{explicit}
+        \code{registerBuiltins()} called from \file{main.cpp}. No
+        \code{REGISTER\_TYPE(MyClass)} macros, no static initialisers,
+        no linker-dependent constructors. The student grep-searches
+        \code{registerBuiltins} and \emph{sees} every built-in type.
+
+  \item \textbf{Dependency purity --- no copyleft or restrictive libraries linked into the binary.}
+        \cpp{}~17, the C\texttt{++} standard library, and GNU make.
+        Nothing else. No Boost, no Eigen, no Sundials, no CMake.
+        Hand-rolled Newton, Gauss elimination, RK4, Wegstein, Michelsen.
+\end{enumerate}
+
+\begin{keyidea}
+An ``industrial-grade'' contribution that violates any of these will
+be rejected even if it converges better and runs faster.
+\end{keyidea}
+
+% =====================================================================
+\section{Repository tour}
+
+\begin{whatyoulllearn}
+What lives where. Useful as a map; you'll come back to it.
+\end{whatyoulllearn}
+
+\begin{lstlisting}
+Choupo/
+|-- Makefile                       top-level: release/debug switch
+|-- make/
+|   |-- compiler.mk                CXX, CXXFLAGS, PLATFORM detection
+|   |-- rules.mk                   pattern rules + dependency tracking
+|   `-- wasm.mk                    Emscripten WASM build (gui/)
+|-- build/<PLATFORM>[Debug]/       all.o/.d/binary (gitignored)
+|-- choupoSolve               symlink -> last built binary
+|-- etc/bashrc                     sourceable shell env
+|-- bin/                           runCase, runApplication, listCases, cleanCase
+|-- data/
+|   |-- components/                 <name>.dat --- component database
+|   |-- materials/                  <name>.dat --- material database
+|   `-- README.md                   data-file format
+|-- docs/                          THIS FILE + userGuide.{md,tex,pdf}
+|-- src/
+|   |-- core/                       Dictionary, SimulationResult, Constants, Types
+|   |-- streams/                    ProcessStream
+|   |-- thermo/                     Component, ThermoPackage, Database +
+|   |                                phase/, vaporPressure/, activityCoefficient/,
+|   |                                equationOfState/, heatCapacity/
+|   |-- materials/                  Material, MaterialRegistry
+|   |-- solver/                     NewtonRaphson, NewtonND, Wegstein, StabilityTest
+|   |-- unitOperations/             UnitOperation base + per-category folders
+|   |-- outerDriver/                OuterDriver base + SweepDriver + FitBinaryPair
+|   |-- postProcessing/             PostProcessor base + Sizing/Costing passes
+|   |-- propertyOps/                PropertyOperation base (choupoProps)
+|   |-- control/                    Controller base + PID/Schedule (choupoCtrl)
+|   `-- applications/               choupoSolve / choupoBatch / choupoCtrl /
+|                                     choupoProps -- one main.cpp per binary
+|-- tests/                         regression scripts (bin/runTests)
+|-- tutorials/                     end-to-end cases (104 at, under
+|                                     steady/ batch/ ctrl/ props/ plant/)
+|-- gui/                           web GUI (see CLAUDE.md Sec. 12)
+|-- LICENSE                        GPL-3.0-or-later
+`-- README.md
+\end{lstlisting}
+
+\begin{keyidea}
+There is \emph{one binary per problem class}, four in all --- they share
+the same library under \file{src/\{core,thermo,solver,\dots\}} and differ
+only in their \file{applications/<name>/main.cpp}:
+\begin{itemize}[leftmargin=*,nosep]
+  \item \file{choupoSolve} --- steady-state simulation, $F(\mathbf{x})=0$
+        (root-finding);
+  \item \file{choupoBatch} --- batch / recipe-driven, per-vessel ODE
+        integration + time-triggered events;
+  \item \file{choupoCtrl}  --- dynamic continuous + control,
+        $d\mathbf{Y}/dt = f(\mathbf{Y},\mathbf{u},t)$ with PID/schedule
+        controllers;
+  \item \file{choupoProps} --- property evaluation + parameter fitting
+        (a distinct problem class: neither root-finding nor integration).
+\end{itemize}
+We split by \emph{problem class}, never by numerical \emph{strategy} (no
+\code{*Foam}-style proliferation): within each binary the strategies
+(Newton, Wegstein, RK4, Nelder--Mead, \dots) are run-time selections via
+dicts, not compile-time ones.
+\end{keyidea}
+
+% =====================================================================
+\section{Build system}
+
+\begin{lstlisting}
+make all              # release, -O2, build/linux64Gcc/
+make MODE=debug all   # -O0 -g3, build/linux64GccDebug/
+make print            # show resolved variables
+make clean            # rm objs + binary for current MODE
+make distclean        # rm entire build/
+\end{lstlisting}
+
+Sources are discovered with \code{find src -name '*.cpp'} --- drop a new
+\file{.cpp} anywhere under \file{src/} and it picks up automatically.
+Header dependencies are auto-tracked via \code{-MMD -MP} (\file{.d} files
+alongside each \file{.o}).
+
+Platform string is derived from \code{uname -s -m}. Currently only
+\code{linux64Gcc} is exercised; \code{darwin64Clang} and
+\code{linux64Clang} should ``just work'' with the same Makefile (modulo
+\code{<filesystem>} linking on older toolchains --- see
+\S\ref{sec:debug}).
+
+The WASM build (\code{make wasm}) is a sibling target --- see
+\file{make/wasm.mk} and \file{CLAUDE.md} \S13 for the Emscripten quirks.
+
+% =====================================================================
+\section{Build architecture: shared library, optional modules, case code}
+\label{sec:build-arch}
+
+Since the build is \emph{dynamic} and \emph{modular}.  Three forces
+drove it: incremental compilation (change one binary, don't rebuild the
+engine), a clean extension story (users add unit ops without touching
+\file{src/}), and --- load-bearing for the modular architecture ---
+making it hard to produce a standalone binary that carries the whole
+engine inside.  The model: an engine built as a shared
+library, and small binaries that \emph{reference} it.
+
+\begin{keyidea}
+A binary never embeds the engine; it links \file{libchoupo.so} at
+build time and finds it at run time via \code{rpath}.  A binary copied to
+a machine without the library simply does not start.  This is the
+same model --- one engine, many small binaries that share it, so
+rebuilding a binary never rebuilds the engine.
+\end{keyidea}
+
+\subsection{The shared engine library (\file{libchoupo.so})}
+
+\code{make lib} archives every engine object (everything under
+\file{src/} except the per-application entry points) into a single shared
+object:
+
+\begin{lstlisting}
+make lib              # -> build/<plat>/libchoupo.so   ($(CXX) -shared)
+\end{lstlisting}
+
+The engine is compiled \code{-fPIC} (position-independent) on Linux.  Each
+binary then links \code{-lchoupo} with \code{rpath} set to
+\code{\$ORIGIN} --- the binary's own directory --- which is where the
+\file{.so} is built; the project-root symlinks resolve to the real binary
+location, so \code{\$ORIGIN} still points at the \file{.so}.  The result
+is tiny binaries:
+
+\begin{center}
+\begin{tabular}{@{}l r l@{}}
+\toprule
+Artefact & Size & Contains the engine? \\
+\midrule
+\file{libchoupo.so}             & 1.7 MB & it \emph{is} the engine \\
+\file{choupoSolve} (binary)     & 86 KB  & no --- references it \\
+\file{choupoCase} (a user's)    & $\sim$100 KB & no --- references it \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{pitfall}
+The \code{win64MinGW} cross-build keeps \emph{static} linking on purpose:
+the generated \file{.exe} is self-contained.  The \code{LIB\_DEP} /
+\code{LIB\_LINK} Makefile variables carry the platform branch (objects
+directly for \code{win64MinGW}, \code{-lchoupo} on Linux).
+\end{pitfall}
+
+\subsection{Optional modules --- a clean modular split}
+
+The engine can carry OPTIONAL modules as separate \file{.so} files, so a
+slim core (the teaching engine) builds without them.  The membrane module is
+Vítor's NF/RO research code --- conceptually distinct from the core and kept
+in its own library so a core-only build is possible.  Everything is
+GPL-3.0-or-later; the split is modular, not a licence boundary:
+
+\begin{center}
+\begin{tabular}{@{}l l l@{}}
+\toprule
+Library & Contents & Licence \\
+\midrule
+\file{libchoupo.so}          & core (thermo, solver, unit ops, reports) & GPL-3.0-or-later \\
+\file{libchoupoMembrane.so}  & NF/RO membrane (\code{spiralWoundModule}) & GPL-3.0-or-later \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The mechanism is the same link-time stub-swap used for user code
+(\S\ref{sec:case-code}), applied to a module:
+
+\begin{enumerate}[leftmargin=1.6em]
+  \item The optional unit op lives under its own folder
+    (\file{src/unitOperations/membrane/}); its objects are filtered
+    \emph{out} of \code{LIB\_OBJS} and compiled into
+    \file{libchoupoMembrane.so} instead.
+  \item It is \textbf{not} registered in
+    \code{UnitOperation::registerBuiltins()} (the core must not depend on
+    it).  Instead a \file{registerMembrane.cpp} in the module defines a
+    \code{registerModules()} hook that registers the type via the usual
+    explicit factory.
+  \item \code{choupoSolve/main.cpp} calls \code{registerModules()} right
+    after \code{registerBuiltins()}.  The core binary links an empty
+    \file{registerModulesStub.cpp} \emph{only} when the module is absent;
+    the Makefile (\code{MEMBRANE\_PRESENT := \$(wildcard
+    src/unitOperations/membrane)}) links exactly the \file{.so}
+    \emph{or} the stub, never both.
+\end{enumerate}
+
+\begin{lstlisting}
+# slim core-only build: remove the module source, rebuild
+rm -rf src/unitOperations/membrane && make all
+# -> only libchoupo.so is produced; the membrane type is unknown:
+#    "unknown type 'spiralWoundModule'"
+\end{lstlisting}
+
+\textbf{To add another optional module}, do exactly what the membrane
+does: a folder under \file{src/}, kept out of \code{registerBuiltins()},
+with its own \code{registerModules()} compiled into its own \file{.so}.
+(When a \emph{second} module appears, generalise the single
+\code{registerModules()} hook into a small list --- still explicit, still
+no auto-registration.)
+
+\subsection{Case-local code (\file{case/code/})}
+\label{sec:case-code}
+
+A user --- a student, a customer --- may write their own \cpp{} under a
+case's \file{code/} folder and have it compiled into a per-case binary.
+Build-time only: \textbf{no runtime \code{dlopen}, no macro
+self-registration}, faithful to the glass-box credo.
+
+\begin{lstlisting}
+case/
+  code/
+    MyOp.H  MyOp.cpp        # the user's unit op (derives UnitOperation)
+    registerUserTypes.cpp   # defines registerUserTypes() -> registerType("myOp",...)
+    options                 # OPTIONAL: extra -I / -l / flags (see below)
+  system/  constant/
+\end{lstlisting}
+
+\paragraph{What \file{code/} can register.}  The primary, tutorialised
+use is a new \emph{unit operation}.  But \code{registerUserTypes()} runs
+\emph{after} every \code{registerBuiltins()}, so it can register
+\textbf{any type with an explicit factory} --- the same hook, the same
+pattern:
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+What & via & Status \\
+\midrule
+unit operation & \code{UnitOperation::registerType} & demonstrated (userOp01/02) \\
+thermo model ($\gamma$, EoS, $P^{\mathrm{sat}}$, $c_p$) &
+  \code{ActivityModel::registerModel}, \dots & possible, no tutorial yet \\
+outer driver (sweep / optim / DesignSpec) & \code{OuterDriver::registerType} & possible \\
+report / sizing / costing & \code{Report::registerType}, \dots & possible \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{What the user writes.}  Three files in \file{code/}: the unit
+op (\file{MyOp.\{H,cpp\}}, a normal class deriving \code{UnitOperation}
+with a \code{solve()} override), and \file{registerUserTypes.cpp}, which
+puts the class in the factory:
+
+\begin{lstlisting}
+// case/code/registerUserTypes.cpp
+void registerUserTypes() {
+    Choupo::UnitOperation::registerType(
+        "myOp", [] { return std::make_unique<Choupo::MyOp>(); });
+}
+\end{lstlisting}
+
+\paragraph{How it is compiled.}  \code{bin/buildCode} runs one ordinary
+\code{g++} (it prints the exact command --- nothing hidden):
+
+\begin{lstlisting}
+g++ -std=c++17 -O2 -I src \             # (1) the engine's headers
+    build/<plat>/.../choupoSolve/main.o \  # (2) the engine main() (calls
+                                            #     registerUserTypes)
+    case/code/registerUserTypes.cpp \   # (3) the user's registration
+    case/code/MyOp.cpp \                # (4) the user's unit op
+    -Lbuild/<plat> -lchoupo [-lchoupoMembrane] \  # (5) engine.so (+ optional module)
+    -Wl,-rpath,build/<plat> \           # (6) where to find the.so at run time
+    -o case/code/.build/choupoCase     # (7) the per-case binary (~100 KB)
+\end{lstlisting}
+
+\noindent The user's \file{.cpp} are compiled fresh each time (their
+\file{.o} are temporaries in \file{/tmp}, dropped after linking --- only
+the binary remains).  The binary links the engine \file{.so}
+DYNAMICALLY (5): it references the engine, never embeds it.
+
+\paragraph{The trick --- who supplies \code{registerUserTypes()}.}  The
+engine's \file{main.o} \emph{calls} \code{registerUserTypes()} (right
+after \code{registerBuiltins()}) but does \emph{not} define it --- an
+unresolved symbol.  The linker resolves it from exactly one place, and
+that place is the build-time choice:
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l X l@{}}
+\toprule
+Binary & \code{registerUserTypes()} from & Result \\
+\midrule
+stock \code{choupoSolve}  & \file{registerUserTypesStub.cpp} (empty) & registers nothing \\
+the case's \code{choupoCase} & \file{case/code/registerUserTypes.cpp} & registers \code{myOp} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent In the \code{buildCode} command above the stub is \emph{not}
+linked --- only the user's file is --- so the linker resolves the symbol
+with the user's definition.  Plain symbol resolution, no weak symbols, no
+\code{dlopen}, no macros.  (Optional modules use the same pattern with
+\code{registerModules()}, \S4.2.)
+
+\paragraph{How it is used --- at run time.}
+\begin{lstlisting}
+choupoCase runs:
+  main()
+    -> UnitOperation::registerBuiltins()  // cstr, flash, mixer,...
+    -> registerModules()                  // optional modules (membrane.so)
+    -> registerUserTypes()   // THE USER'S: registry()["myOp"] = constructor
+  Flowsheet reads  type myOp;  in flowsheetDict
+    -> UnitOperation::New("myOp")         // look up in the std::map
+    -> the user's constructor -> object -> the user's solve()
+\end{lstlisting}
+
+\noindent The factory is just a \code{std::map<string, function>};
+\code{registerType} adds an entry, \code{New} looks one up.  \code{myOp}
+sits beside the built-in types --- no special case.
+
+\paragraph{What \code{solve()} receives --- streams and thermo.}  The
+op's whole world arrives through two arguments:
+\begin{lstlisting}
+int solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosity);
+\end{lstlisting}
+
+\emph{Streams (the \code{dict}).}  Choupo is sequential-modular: an op
+does NOT rummage a global stream registry.  The \code{Flowsheet}
+\emph{injects} the unit's inlet stream into the \code{dict} as sub-dicts,
+plus the unit's own \code{operation} block:
+\begin{lstlisting}
+auto feed = dict->subDict("feed");        // F (kmol/s SI), T, P of the inlet
+auto comp = dict->subDict("composition"); // mole fractions z_i
+auto oper = dict->subDict("operation");   // YOUR parameters (from flowsheetDict)
+\end{lstlisting}
+You read your inputs, compute, and publish outputs into \code{produced\_};
+the Flowsheet binds them to the next units by the \code{outputs (... )}
+order.  (For several inlets, the unit declares \code{inputs (a b )} and
+reads each.)
+
+\emph{Thermodynamics (the \code{thermo}).}  The \code{ThermoPackage\&}
+gives full access to whatever models the case configured --- you do not
+need to know \emph{which} ($\gamma$ = NRTL? EoS = SRK?); you call the
+method and the selected model answers:
+\begin{lstlisting}
+thermo.n();  thermo.indexOf("benzene");  thermo.comp(i);  // count, index, Component
+thermo.comp(i).vp().Psat_Pa(T);                            // vapour pressure (Antoine/...)
+thermo.Kvec(T, P, x, y);                                   // K-values (the case's gamma-phi)
+thermo.activity().gamma(T, x);                             // activity coefficients gamma_i
+thermo.Hliquid(T, x);  thermo.Hvapour(T, y);              // sensible-datum enthalpies
+thermo.H_real(T, P, y);                                    // real gas (H_ig + EoS departure)
+thermo.H_stream_formation(T, P, vf, z);                    // elements-datum (carries Hf)
+\end{lstlisting}
+So a user op can flash, balance energy, or solve an equilibrium with the
+case's thermo --- exactly what the built-in CSTR / flash / column do; it
+is a first-class citizen, not an add-on.
+
+\begin{pitfall}
+\textbf{Transport properties (viscosity, conductivity, diffusivity) do
+not exist yet} --- they are on the roadmap as a \code{TransportModel}
+with a factory.  When they land they will be reachable through the same
+\code{thermo} handle; today a user op has thermodynamics only.
+\end{pitfall}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Command & What it does \\
+\midrule
+\code{buildCode <case>} & \emph{compiles only} (shows the exact g++
+command, reports compiler errors); the development-loop command \\
+\code{runCase <case>}   & \emph{runs} the case --- and if it has a
+\file{code/} folder, compiles it first (visibly) via \code{buildCode} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Both step up automatically if invoked from inside the \file{code/}
+folder.  External dependencies (a property library, GSL, Eigen, \dots)
+go in an optional \file{code/options} file:
+
+\begin{lstlisting}
+# case/code/options
+INCLUDE = -I/opt/coolprop/include
+LIBS    = -L/opt/coolprop/lib -lCoolProp
+FLAGS   = -O3
+\end{lstlisting}
+
+\begin{pitfall}
+User code lives in \file{case/code/}, \textbf{never} in \file{src/}.
+Three reasons: isolation (the engine tree stays auditable), authorship /
+licence (\file{src/} is GPL-3.0-or-later; the user owns their
+\file{code/}), and pedagogy (a clear engine-vs-mine boundary).  Those
+external libraries are the \emph{user's} dependencies on the
+\emph{user's} code --- the engine itself stays dependency-free.
+\end{pitfall}
+
+% =====================================================================
+\section{Core types}
+
+\begin{whatyoulllearn}
+Four types live in \file{src/core/} and \file{src/streams/} and propagate
+through every layer of the simulator: get familiar with them before
+touching anything else.
+\end{whatyoulllearn}
+
+\subsection{\code{Dictionary}}
+
+hierarchical plain text. Every case dict is parsed into a
+\code{Dictionary}. Key operations:
+
+\begin{lstlisting}[language=C++]
+auto d = Dictionary::fromFile("system/flowsheetDict");
+
+scalar  T = d->lookupScalar("T");                       // raw
+scalar  P = d->lookupScalar("P", Dims::pressure);       // dim-checked
+auto    sub = d->subDict("operation");
+auto    units = d->lookupDictList("units");
+auto    comps = d->lookupWordList("components");
+
+// Path-based mutation --- used by outer drivers
+d->setScalarAtPath("units[0].operation.refluxRatio", 3.2);
+\end{lstlisting}
+
+The tokenizer treats \code{[} and \code{]} as word chars (so paths
+work). Optional \code{FoamFile} headers are skipped silently for
+compatibility with files from other tools.
+
+\paragraph{Three input forms for scalars.} The parser
+accepts named-unit (\code{P 1 bar;}), the bracket
+(\code{A\_w [-1 2 1 0 0] 1.5e-12;}), and raw SI (\code{R 0.5;}).
+Named and bracket forms tag the entry with its physical dimensions
+\code{[M L T Theta N]} so the dim-checked
+\code{lookupScalar(key, expectedDims)} overload can throw a
+clear error on mismatch.  Raw entries pass unchecked --- the
+caller is asserting the value is canonical SI.
+
+Available named dimensions live under \code{Dims::} in
+\file{src/core/Dimensions.H} (\code{pressure}, \code{molarFlow},
+\code{massFlow}, \code{temperature}, \code{length}, \code{area},
+\code{volume}, \code{concentration}, \code{molarHeatCap},
+\code{viscosity}, \code{diffusivity}, \code{permeabilityWater},
+\code{massTransferCoeff},...).  Adopt them at the call sites where
+the unit op reads its operating parameters.
+
+\subsection{\code{ProcessStream}}
+
+What travels between unit operations (units: SI canonical):
+
+\begin{lstlisting}[language=C++]
+struct ProcessStream {
+    std::string         name;
+    scalar              F;       // kmol/s
+    scalar              T;       // K
+    scalar              P;       // Pa
+    std::vector<scalar> z;       // mole fractions, size = NC
+    scalar              vf;      // vapor fraction (VLE outputs)
+};
+\end{lstlisting}
+
+Mass-basis flow is a derived view, not a stored field --- if you
+need kg/s, call \code{F\_mass(stream, thermo)} from
+\file{src/streams/StreamMass.H}, which computes
+$F\cdot\sum_i z_i\,\mathrm{MW}_i$ on demand.  One source of
+truth for the flow (molar); mass cannot drift out of sync.
+
+When you produce streams in your unit-op, fill \emph{all} fields.
+At print sites you typically scale by 3600 for kmol/h and by
+$10^{-5}$ for bar, or hand the value plus its dimensions to
+\code{DisplayUnits::instance().format(v, dims)} which honours the
+case's \code{controlDict.units} preferences.
+
+\subsection{\code{SimulationResult}}
+
+What a single pass produces --- input to post-processors and outer
+drivers:
+
+\begin{lstlisting}[language=C++]
+struct SimulationResult {
+    std::map<std::string, ProcessStream>     streams;
+    std::map<std::string, std::map<std::string, scalar>> kpis;
+    std::map<std::string, EquipmentSizing>   sizings;      // SizingPass
+    std::map<std::string, CostBreakdown>     costs;        // CostingPass
+    bool                                     converged;
+};
+\end{lstlisting}
+
+The \code{kpis} map is keyed \code{unitName} $\to$ \code{\{ kpiName $\to$
+value \}}. Outer drivers read it; post-processors append to
+\code{sizings} / \code{costs}.  (The \code{sizings} field was named
+\code{dimensions} until; renamed because \code{Dimensions} is
+now the physical-dimensions tag.)
+
+\subsection{\code{ThermoPackage}}
+
+Holds:
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item components (vector of \code{Component}),
+  \item one or more \code{Phase} instances (vapor / liquid / solid),
+  \item convenience getters: \code{nComponents()}, \code{component(i)},
+        \code{phase(name)}, \code{Psat(i, T)}, \code{gamma(phase, x, T)},
+        etc.
+\end{itemize}
+
+Every unit operation receives a \code{const ThermoPackage\&} in
+\code{solve()}.
+
+% =====================================================================
+\section{The factory pattern --- explicit, no macros}\label{sec:factory}
+
+\begin{whatyoulllearn}
+The single registration mechanism used everywhere in the code, and
+why we refuse the macro-based alternative.
+\end{whatyoulllearn}
+
+Every extensible base class follows this template:
+
+\begin{lstlisting}[language=C++]
+class UnitOperation {
+public:
+    using Factory = std::function<std::unique_ptr<UnitOperation>()>;
+
+    static void registerType(const std::string& name, Factory f);
+    static std::unique_ptr<UnitOperation> New(const std::string& type);
+    static std::vector<std::string> availableTypes();
+    static void registerBuiltins();          // <-- called in main()
+
+    // ---- virtual interface ----
+    virtual const std::string& type() const = 0;
+    virtual int  solve(const DictPtr&, const ThermoPackage&, int verbosity) = 0;
+    virtual std::vector<ProcessStream> producedStreams() const { return {}; }
+    virtual std::map<std::string, scalar> kpis() const { return {}; }
+
+protected:
+    // helpers...
+};
+\end{lstlisting}
+
+\code{registerBuiltins()} (in the corresponding \file{.cpp}) is the
+single place that \emph{lists every type}:
+
+\begin{lstlisting}[language=C++]
+void UnitOperation::registerBuiltins()
+{
+    auto reg = [](const std::string& n, Factory f) { registerType(n, f); };
+
+    reg("isothermalFlash", []{ return std::make_unique<IsothermalFlash>(); });
+    reg("flash",           []{ return std::make_unique<IsothermalFlash>(); });
+    reg("adiabaticFlash",  []{ return std::make_unique<AdiabaticFlash>();  });
+    reg("bubbleT",         []{ return std::make_unique<BubblePoint>();     });
+    reg("dewT",            []{ return std::make_unique<DewPoint>();        });
+    reg("cstr",            []{ return std::make_unique<CSTR>();            });
+    reg("pfr",             []{ return std::make_unique<PFR>();             });
+    reg("heatExchanger",   []{ return std::make_unique<HeatExchanger>();   });
+    reg("HX",              []{ return std::make_unique<HeatExchanger>();   });
+    reg("mixer",           []{ return std::make_unique<Mixer>();           });
+    reg("splitter",        []{ return std::make_unique<Splitter>();        });
+    reg("distillationColumn", []{ return std::make_unique<DistillationColumn>(); });
+    reg("column",             []{ return std::make_unique<DistillationColumn>(); });
+}
+\end{lstlisting}
+
+\code{main.cpp} calls each \code{registerBuiltins()} once at startup, in
+order. That is the \emph{entire} registration story. No magic, no
+surprises.
+
+\begin{pitfall}
+Do \emph{not} introduce \code{REGISTER\_TYPE(...)} macros,
+anonymous-namespace static instances, or any pattern that runs
+registration as a side effect of TU loading. We have rejected this
+approach explicitly because the linker can drop unused TUs and the
+failure mode is silent.
+\end{pitfall}
+
+% =====================================================================
+\section{Adding a new unit operation}
+
+\begin{whatyoulllearn}
+Five steps and roughly thirty minutes for a simple one --- skeleton,
+implementation, registration, tutorial, regression.
+\end{whatyoulllearn}
+
+\subsection{Step 1 --- Skeleton}
+
+Create \file{src/unitOperations/<category>/MyOp.H}:
+
+\begin{lstlisting}[language=C++]
+#pragma once
+#include "core/Dictionary.H"
+#include "thermo/ThermoPackage.H"
+#include "unitOperations/UnitOperation.H"
+
+namespace Choupo {
+
+class MyOp : public UnitOperation {
+public:
+    MyOp() = default;
+    const std::string& type() const override { return type_; }
+
+    int solve(const DictPtr&         dict,
+              const ThermoPackage&   thermo,
+              int                    verbosity) override;
+
+    std::vector<ProcessStream> producedStreams() const override { return produced_; }
+    std::map<std::string, scalar> kpis() const override { return kpis_; }
+
+private:
+    inline static const std::string type_ = "myOp";
+    std::vector<ProcessStream>      produced_;
+    std::map<std::string, scalar>   kpis_;
+};
+
+} // namespace Choupo
+\end{lstlisting}
+
+\subsection{Step 2 --- Implementation}
+
+\file{src/unitOperations/<category>/MyOp.cpp} --- implement
+\code{solve()}. Boilerplate to follow:
+
+\begin{lstlisting}[language=C++]
+int MyOp::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosity)
+{
+    // 1. Read inputs from dict --- let lookups throw on missing keys
+    auto op = dict->subDict("operation");
+    const scalar T = op->lookupScalar("T");
+    //...
+
+    // 2. Read inlet stream(s)
+    const ProcessStream& inlet = inlets_.at(0);
+
+    // 3. Echo inputs (verbosity >= 3)
+    if (verbosity >= 3) {
+        std::cout << "  [MyOp] T = " << T << " K, F_in = " << inlet.F << " kmol/h\n";
+    }
+
+    // 4. Solve the model --- use solver/ classes for Newton/Wegstein
+    NewtonRaphson nr;
+    nr.setVerbose(verbosity >= 3);
+    auto root = nr.solve([&](scalar x){ /* g(x) */ return /*...*/; },
+                         x0, /*tol=*/1e-8, /*maxIter=*/50);
+
+    // 5. Build produced streams
+    ProcessStream out = inlet;       // copy --- keeps thermo, name overwritten
+    out.name = "myOp_out";
+    out.T = T;
+    out.F = /*... */;
+    produced_.push_back(out);
+
+    // 6. Populate KPIs
+    kpis_["conversion"] = /*... */;
+    kpis_["T_out"]      = T;
+
+    return 0;     // 0 == converged
+}
+\end{lstlisting}
+
+\subsection{Step 3 --- Register}
+
+Edit \file{src/unitOperations/UnitOperation.cpp}:
+
+\begin{lstlisting}[language=C++]
+#include "<category>/MyOp.H"
+//...
+void UnitOperation::registerBuiltins() {
+    //...
+    reg("myOp", []{ return std::make_unique<MyOp>(); });
+}
+\end{lstlisting}
+
+\subsection{Step 4 --- Tutorial}
+
+Create \file{tutorials/myOp01\_quick\_smoke/} with
+\file{system/controlDict}, \file{system/flowsheetDict}, and
+\file{constant/thermoPackage}. Keep the case trivial so it doubles as a
+regression test.
+
+\subsection{Step 5 --- Regression}
+
+\begin{lstlisting}
+make all
+for t in tutorials/*/; do
+./choupoSolve "$t" > /dev/null 2>&1 && \
+        echo "PASS $(basename $t)" || echo "FAIL $(basename $t)"
+done
+\end{lstlisting}
+
+All previously-passing tutorials \emph{must} still pass.
+
+% =====================================================================
+\section{Adding a new thermodynamic model}
+
+Same factory pattern, with \code{ActivityModel} / \code{EquationOfState}
+/ \code{VaporPressureModel} / \code{HeatCapacityModel} / \code{Phase} as
+the base.
+
+\paragraph{Example --- adding UNIQUAC as an activity model.}
+
+\begin{enumerate}[leftmargin=*]
+  \item \file{src/thermo/activityCoefficient/UNIQUAC.\{H,cpp\}}
+        inheriting \code{ActivityModel}. Override
+        \code{gamma(x, T)}, \code{readFromDict(...)}, \code{type()}.
+  \item In \file{src/thermo/activityCoefficient/ActivityModel.cpp}:
+\begin{lstlisting}[language=C++]
+#include "UNIQUAC.H"
+//...
+void ActivityModel::registerBuiltins() {
+    reg("ideal",  []{ return std::make_unique<Ideal>();   });
+    reg("NRTL",   []{ return std::make_unique<NRTL>();    });
+    reg("Wilson", []{ return std::make_unique<Wilson>();  });
+    reg("UNIQUAC",[]{ return std::make_unique<UNIQUAC>(); });   // new
+}
+\end{lstlisting}
+  \item Use it in a tutorial's \file{thermoPackage}:
+\begin{lstlisting}[language=dict]
+activityModel { model UNIQUAC; pairs (... ); }
+\end{lstlisting}
+\end{enumerate}
+
+% =====================================================================
+\section{Property operations (\code{choupoProps})}\label{sec:propops}
+
+\code{choupoProps} runs \emph{property operations} rather than a flowsheet.
+Each inherits \code{PropertyOperation} (same explicit factory as everywhere
+else; \code{registerBuiltins()} is called from
+\file{src/propertyOps/PropertyOperation.cpp}). An op reads a \code{state}
+(\(T\), \(P\), composition), a \code{properties} list and an \code{output}
+block, and writes a CSV the GUI auto-plots. Built-ins: \code{propertyPoint},
+\code{propertyScan1D}, \code{propertyScan2D}, \code{propertyScanTernary},
+\code{fitParameters}, \code{vleConsistency}, \code{estimateComponent}. Property
+keywords live in \file{PropertyEvaluator.cpp}: per-component
+\code{Psat\_<c>}, \code{gamma\_<c>}, \code{y\_eq\_<c>}, \code{Cp\_liquid\_<c>}
+(each guarded --- e.g.\ \code{Psat} on a component with no vapour-pressure
+model throws a clear error instead of dereferencing null), and mixture scalars
+\code{Z}, \code{v\_molar}, \code{H\_real}, \code{S\_real}, transport, etc.
+\code{PropertyScan1D} wraps each evaluation in \code{try/catch}, writing
+\code{nan} on failure so one undefined component never aborts the whole scan.
+
+\paragraph{\code{propertyScanTernary} --- ternary phase diagrams by reuse.}
+Walks the composition simplex (\(x_1+x_2+x_3=1\)) at fixed \((T,P)\) and, at
+every node, calls the SAME solver the \code{isothermalFlash} unit op calls ---
+so the diagram cannot disagree with a single flash. Three \code{mode}s:
+\begin{itemize}[leftmargin=*]
+  \item \code{bubbleT} --- a boiling-temperature \emph{surface}: per node
+        \code{BubblePoint::compute}; needs only the three vapour pressures
+        (ideal binaries are fine), no liquid-liquid data.
+  \item \code{lle} (default) --- a \emph{solubility} map: the liquid--liquid
+        flash (\code{PhaseSet::LL}) gives a clean binodal + tie-lines, no
+        spurious subcooled vapour (the extraction/decanter view).
+  \item \code{vlle} --- the full vapour\,+\,two-liquid classification
+        (\code{PhaseSet::VLLE}).
+\end{itemize}
+Each simplex node is independent, so the scan is embarrassingly parallel: the
+optional \code{shard \{ k; n; \}} block computes only rows with \(i \bmod n = k\)
+(round-robin, balanced). The GUI fans \(N=\)\,cores\(-2\) shards across \(N\)
+WASM workers and merges the partial CSVs (the union of shards reproduces the
+full grid exactly). No physics is reimplemented --- the op is a triangular loop
++ a classifier + a CSV writer over \code{solveCore}/\code{BubblePoint}.
+
+\paragraph{Adding a property op.} Mirror the recipe of
+\S\ref{sec:factory}: implement \file{src/propertyOps/MyOp.\{H,cpp\}} inheriting
+\code{PropertyOperation} (override \code{type()}, \code{run(dict,thermo,verbosity)},
+optionally \code{diagnostics()}), then one \code{reg("myOp", ...)} line in
+\code{PropertyOperation::registerBuiltins()}. Rebuild the native binary AND the
+WASM (\code{make wasm-gui}) or the browser will not see the new op.
+
+% =====================================================================
+\section{Adding components, materials, reactions}
+
+These are \emph{data-driven} --- no \cpp{} changes needed.
+
+\subsection{Components}
+
+Choupo's component data is organised in two tiers:
+
+\begin{itemize}[leftmargin=*]
+  \item \file{data/standards/components/<name>.dat} --- the
+        \textbf{curated central catalogue} shipped with the simulator
+        (46 components at v0.0.40).  Treat this directory as read-only
+        from a case author's point of view: changes here are reviewed
+        edits to the standard library.
+  \item \file{<case>/constant/components/<name>.dat} --- \textbf{per-case
+        overlays}, where a user adds bespoke or sample-specific data for
+        a single case (a particular powder's sorption isotherm, a new
+        membrane solute, a laboratory measurement).  At load time
+        \code{Database} overlays the per-case file
+        \emph{field-by-field} on top of the standard catalogue entry,
+        so the overlay can extend or override individual fields without
+        having to repeat the whole component definition.
+\end{itemize}
+
+The file format is identical in both tiers:
+
+\begin{lstlisting}[language=dict]
+component <name>;
+mw     78.11;            // g/mol
+Tc    562.05;            // K
+Pc     48.95;            // bar
+omega  0.2103;
+Tb    353.24;            // K
+Hvap_Tb  30720.0;        // J/mol at Tb
+Vliq   89.4e-6;          // m^3/mol (Wilson)
+
+vaporPressure
+{
+    model    Antoine;
+    A        4.01814;
+    B        1203.835;
+    C       -53.226;
+}
+
+idealGasHeatCapacity
+{
+    model       polynomial;
+    coeffs      ( -31.368  0.4746  -3.107e-4  8.524e-8 );
+    Tmin        200.0;
+    Tmax        1500.0;
+}
+
+liquidHeatCapacity
+{
+    model       polynomial;
+    coeffs      ( 162.94  -0.3493  9.51e-4  0.0 );
+    Tmin        278.0;
+    Tmax        500.0;
+}
+
+gibbsFormation
+{
+    dHf_298     82930.0;        // J/mol  (NIST ideal-gas value)
+    s_298         269.20;       // J/(mol*K)  (third-law absolute)
+    phase       gas;            // phase in which dHf_298 / s_298 are tabulated
+}
+\end{lstlisting}
+
+Source the values from DIPPR / Reid-Prausnitz-Poling and \emph{cite the
+source in a top-of-file comment} so they stay auditable.
+
+\paragraph{The \code{phase} field (mandatory in \code{gibbsFormation}).}
+The reference state for formation enthalpy is documented in the Theory
+Guide (chapter on the elements datum).  The \code{phase} keyword tells
+the solver in \emph{which phase} \code{dHf\_298} is tabulated, so
+\code{Component::h\_formation(T, targetPhase)} can build the right
+integration path through Hvap / Hfus jumps and the matching $c_p$ leg.
+Three values are allowed:
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\code{phase} & required data & typical species \\
+\midrule
+\code{gas}    & \code{idealGasHeatCapacity}, plus \code{HvapTb}+Tc+Tb if the
+                liquid leg of any stream is needed
+              & \emph{the convention --- all 45 standard volatiles + radicals;
+                 follows NIST / JANAF} \\
+\code{liquid} & \code{liquidHeatCapacity}; \code{HvapTb}+Tc+Tb if any
+                stream goes through the gas leg
+              & reserved for compounds whose Hf is published in the
+                condensed datum (rare) \\
+\code{solid}  & \code{liquidHeatCapacity} (used as the dissolved-solute
+                approximation $c_p^{\mathrm{solid}}\!\approx\!c_p^{\mathrm{liq}}$)
+              & crystalline non-volatiles whose Hf cannot be referenced to
+                gas because the compound never vaporises (sucrose) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The default is \code{gas} for backward compatibility with pre-v0.0.40
+component files, but \textbf{new components should always declare it
+explicitly} so the datum is unambiguous at the source of truth.  A
+\code{solid} or \code{liquid} declaration without the matching $c_p$
+model throws a clear error from \code{Component::h\_formation} the
+first time a stream containing the component is evaluated.
+
+Add the new component name to the case's \code{thermoPackage.components
+(...)} list (or to a per-case \file{constant/components/<name>.dat}
+overlay if the data is sample-specific) and the new entry is picked up
+automatically --- no recompile needed.
+
+\subsection{Materials}
+
+\file{data/materials/<name>.dat}:
+
+\begin{lstlisting}[language=dict]
+material <name>;
+rho          7900.0;     // kg/m^3
+F_M          1.0;        // Guthrie material factor
+sigma_y      138.0e6;    // Pa
+maxT         700.0;      // K
+maxP         50.0;       // bar
+\end{lstlisting}
+
+\code{MaterialRegistry::loadFrom()} slurps the directory on simulator
+start. No registration step needed.
+
+\subsection{Utilities}
+
+\file{data/standards/utilities/<name>.dat} catalogues a plant utility
+(steam header, cooling-water loop, hot-oil loop, refrigeration brine).
+The same registry pattern as materials and membranes: the
+\code{UtilityCatalogue::loadFrom(dataRoot)} call in each main slurps
+the directory at startup; the stream parser then resolves
+\code{utility <name>;} keys against it.
+
+\begin{lstlisting}[language=dict]
+utility     steamLP;
+tier        heating;            // heating | cooling
+mechanism   condensation;       // condensation | sensible | evaporation
+
+components  ( water );
+state       saturatedVapour;
+P           2.5 bar;
+T_in        400.3 K;
+T_out       400.3 K;             // condensate same T as steam
+
+dutyPerKg   2186000.0;           // J/kg delivered  (Hvap_water at T_sat)
+cost        12.0;                // EUR/GJ delivered
+costYear    2022;
+description "Low-pressure saturated steam header";
+\end{lstlisting}
+
+To add a new utility, drop a new \code{.dat} into the directory --- no
+\cpp{} change.  When the utility loop carries a non-water fluid (oils,
+salts, brines), the \code{components} list points at a corresponding
+entry under \file{data/standards/components/}; the catalogue ships
+\code{dowthermA}, \code{hitecSalt} and \code{propyleneGlycol30}
+pseudo-components for that purpose.  See the user guide for the
+case-author syntax \code{utility <name>;} and the \code{utilities}
+report that aggregates kg/h, MW, and EUR/h per category.
+
+\subsection{Reactions}
+
+In a case's \file{constant/reactions}:
+
+\begin{lstlisting}[language=dict]
+reactions
+{
+    ethanol_to_water_test
+    {
+        stoichiometry
+        {
+            ethanol      -1.0;
+            water        +1.0;
+        }
+        kinetics
+        {
+            type        powerLaw;
+            A           1.0e6;        // s^-1
+            E           80000.0;      // J/mol
+            orders      { ethanol 1.0; }
+        }
+    }
+}
+\end{lstlisting}
+
+Referenced from a CSTR / PFR by name
+(\code{reaction ethanol\_to\_water\_test;}).
+
+% =====================================================================
+\section{Adding an outer driver / post-processor}
+
+\subsection{Outer driver}
+
+\file{src/outerDriver/MyDriver.\{H,cpp\}} inherits \code{OuterDriver}.
+Override:
+
+\begin{lstlisting}[language=C++]
+class MyDriver : public OuterDriver {
+public:
+    void readFromDict(const DictPtr&) override;
+    int  run() override;       // calls simulator_(flowsheetDict_) N times
+};
+\end{lstlisting}
+
+The simulator functor and dict templates are injected by \file{main.cpp}:
+
+\begin{lstlisting}[language=C++]
+auto driver = OuterDriver::New(outerDict);
+driver->setSimulator     (simulate);          // SimulationResult(DictPtr)
+driver->setFlowsheetDict (flowsheetDict);     // mutable flowsheet template
+driver->setThermoDict    (thermoDict);        // mutable thermoPackage
+driver->run();
+\end{lstlisting}
+
+The simulator closure captures the thermo dict by \code{shared\_ptr},
+so any in-place \code{setScalarAtPath()} the driver makes on
+\code{thermoDict\_} is picked up on the next \code{simulator\_()} call.
+
+Inside \code{run()}, you typically:
+
+\begin{enumerate}[leftmargin=*,nosep]
+  \item Mutate \code{flowsheetDict\_->setScalarAtPath(...)} to change a
+        sweep variable, OR \code{thermoDict\_->setScalarAtPath(...)} to
+        change a model parameter (e.g.\ NRTL \code{a\_ij}).
+  \item Call \code{simulator\_(flowsheetDict\_)} $\to$ get a
+        \code{SimulationResult}.
+  \item Extract KPIs / stream fields, accumulate residuals / responses.
+  \item Decide next step (LM / Nelder-Mead / GA / \dots).
+  \item Eventually report and return $0$ (converged) or $1$ (failed).
+\end{enumerate}
+
+Two concrete examples to read first:
+\begin{itemize}[leftmargin=*,nosep]
+  \item \file{src/outerDriver/SweepDriver.\{H,cpp\}} ($\sim 150$ LOC)
+        --- 1-D sensitivity sweep.
+  \item \file{src/outerDriver/FitBinaryPair.\{H,cpp\}} ($\sim 300$ LOC)
+        --- Marquardt LM with FD Jacobian, mutates both flowsheet
+        (composition) and thermo (pair params).
+\end{itemize}
+
+Register your driver in \code{OuterDriver::registerBuiltins()}.
+
+\subsection{Post-processor}
+
+\file{src/postProcessing/MyPass.\{H,cpp\}} inherits \code{PostProcessor}.
+Single method:
+
+\begin{lstlisting}[language=C++]
+int run(SimulationResult&) override;
+\end{lstlisting}
+
+Append to \code{result.sizings} / \code{result.costs}, write CSVs,
+print to stdout. Register in \code{PostProcessor::registerBuiltins()}.
+
+\code{PostProcessor::buildChain(postDict)} walks \code{postDict}
+top-level keys and instantiates one pass per recognised key. Add yours
+to the chain-builder in \file{PostProcessor.cpp}.
+
+% =====================================================================
+\section{Adding a sizing model}
+
+\code{EquipmentSize} is a sub-factory used by \code{SizingPass}. Add
+\file{src/postProcessing/sizing/MyEquip.\{H,cpp\}} inheriting
+\code{EquipmentSize}:
+
+\begin{lstlisting}[language=C++]
+class MyEquip : public EquipmentSize {
+public:
+    EquipmentSizing size(const std::string& unitName,
+                         const SimulationResult& result,
+                         const Material&  material,
+                         const DictPtr&   designRules) override;
+};
+\end{lstlisting}
+
+Use \code{result.streams.at(...)} and
+\code{result.kpis.at(unitName).at(...)} to get the process data, plus
+\code{designRules} for the design specs (pressure design, $F_M$, joint
+efficiency, \dots). Fill \code{EquipmentSizing}:
+
+\begin{lstlisting}[language=C++]
+EquipmentSizing d;
+d.unitName       = unitName;
+d.equipmentType  = "myEquip";
+d.material       = material.name;
+d.values["V_R"]    =...;       // canonical size
+d.values["t_wall"] =...;       // m
+d.values["weight"] =...;       // kg
+return d;
+\end{lstlisting}
+
+Register in \code{EquipmentSize::registerBuiltins()}.
+
+The \code{Guthrie} costing model reads \code{d.equipmentType} to
+dispatch to the right correlation --- so if your new equipment needs
+new cost coefficients, edit
+\file{src/postProcessing/costing/Guthrie.cpp} accordingly.
+
+% =====================================================================
+\section{Coding conventions}
+
+\subsection{Style}
+
+\begin{itemize}[leftmargin=*]
+  \item \cpp{}~17. \code{std::variant}, \code{std::optional},
+        \code{std::unique\_ptr}, \code{std::filesystem} --- yes.
+        No raw \code{new} / \code{delete}. No \code{goto}.
+  \item \textbf{Brace style:} Allman / open-brace on a new line for
+        function definitions; Egyptian (\code{if (x) \{}) for control flow.
+  \item \textbf{Indent:} 4 spaces. No tabs anywhere.
+  \item \textbf{Naming:} \code{snake\_case} for locals, \code{camelCase}
+        for methods, \code{PascalCase} for types, \code{UPPER\_SNAKE}
+        only for macros (we use exactly one: include guards via
+        \code{\#pragma once}).
+  \item Compile cleanly with \code{-Wall -Wextra -Wpedantic} and fix
+        anything that fires.
+\end{itemize}
+
+\subsection{Includes}
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item Headers compile in isolation --- every \file{.H} includes what
+        it needs.
+  \item Forward-declare aggressively in headers; pull full definitions
+        only in \file{.cpp}.
+  \item The build does not use precompiled headers.
+\end{itemize}
+
+\subsection{Errors}
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item User-facing: throw \code{std::runtime\_error} with a message a
+        student can understand. Don't \code{assert} on user-data
+        invariants.
+  \item Programmer-facing (impossible state): \code{assert(...)} is fine.
+  \item Never silently swallow errors. If a sub-step fails, surface it.
+\end{itemize}
+
+\subsection{Comments}
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item Default to writing \emph{no} comments. Identifiers should be
+        obvious.
+  \item Equations and references \emph{deserve} a comment. Cite the
+        source (Reid-Prausnitz-Poling page, DIPPR ID, Henley-Seader
+        chapter).
+  \item Top-of-file banner is preserved on every source --- do not
+        delete.
+\end{itemize}
+
+\subsection{Header banner}
+
+Every \file{.H} and \file{.cpp} starts with:
+
+\begin{lstlisting}
+/*---------------------------------------------------------------------------*\
+|  Choupo                                                                     |
+|                                                                             |
+|  Open-source chemical process simulator                                     |
+|                                                                             |
+|  Copyright (C) 2026 Vítor Geraldes                                          |
+|  SPDX-License-Identifier: GPL-3.0-or-later |
+-------------------------------------------------------------------------------
+Class
+    Choupo::<ClassName>
+
+Description
+    <one-paragraph description>
+\*---------------------------------------------------------------------------*/
+\end{lstlisting}
+
+Don't omit this on new files --- it doubles as licence notice.
+
+% =====================================================================
+\section{Regression testing}
+
+Regression is run with \code{bin/runTests}.  Run it before every
+change set; all previously-passing tutorials must still pass.
+
+\begin{lstlisting}
+bin/runTests                 # every tutorial (4 binaries + buildCode cases)
+bin/runTests <case>          # one case
+bin/runTests --record <case> # refresh that case's golden-master `expected`
+\end{lstlisting}
+
+\code{runTests} does two checks, both stronger than a plain exit-code
+loop:
+
+\begin{enumerate}[leftmargin=1.6em]
+  \item \textbf{NaN / inf guard --- every case.}  The structured result
+    block is scanned for NaN or inf values; a hit FAILS the case.  This
+    is the check a bare \code{binary > /dev/null \&\& PASS} loop
+    \emph{cannot} do: a solver can return NaN with exit code 0, and the
+    old loop reported it green.  That exact trap once hid a broken
+    \file{membrane01} (NaN KPIs, exit 0) after a pressure-unit refactor.
+  \item \textbf{Reference KPIs --- cases with an \file{expected} file.}
+    Each line pins a KPI or stream value to its golden-master value with
+    a relative tolerance; any deviation FAILS, printing
+    \code{got X expected Y}.
+\end{enumerate}
+
+\begin{keyidea}
+The \file{expected} file lives in the case directory.  Format
+(\code{\#} comments allowed):
+\begin{lstlisting}
+# kind   name      key         expected        reltol
+kpi      flash01   V_over_F    0.30398357314   1e-6
+stream   vapor     F           0.00844398814   1e-6
+\end{lstlisting}
+\code{kind} is \code{kpi} (inside the named unit's KPIs) or
+\code{stream} (inside the named stream).  Pin the numbers worth
+guarding; \code{--record} writes them from the current run once you trust
+it.  A case with no \file{expected} still gets the NaN guard.
+\end{keyidea}
+
+At, four canonical cases ship an \file{expected} (flash01, cstr01,
+column01, membrane01); the rest run under the smoke + NaN guard.  Add an
+\file{expected} whenever a case's numbers are load-bearing.
+
+% =====================================================================
+\section{Debugging}\label{sec:debug}
+
+\subsection{Debug build}
+
+\begin{lstlisting}
+make MODE=debug all
+gdb build/linux64GccDebug/choupoSolve
+(gdb) r tutorials/flash01_benzene_toluene
+\end{lstlisting}
+
+The debug build leaves a separate symlink \file{choupoSolve.debug}
+so the release binary stays usable in parallel.
+
+\subsection{Verbosity}
+
+\file{controlDict \{ verbosity 4; \}} enables debug-level prints ---
+every Newton iteration, every $K$-value evaluation, every Wegstein
+step. For LL flashes that misconverge, watch for stagnation:
+$g(x)$ should shrink monotonically near the root.
+
+\subsection{Sanitizers}
+
+Edit \file{make/compiler.mk} for the debug branch:
+
+\begin{lstlisting}[language=make]
+ifeq ($(MODE),debug)
+    CXXFLAGS += -fsanitize=address,undefined -fno-omit-frame-pointer
+    LDFLAGS  += -fsanitize=address,undefined
+endif
+\end{lstlisting}
+
+Then rebuild. Useful when a unit-op produces NaN out of nowhere or
+when adding a new factory and a dispatch crashes.
+
+\subsection{The most common failure: NaN propagation}
+
+Symptoms: \code{verbosity 3} shows clean inputs, then
+\code{V/F = nan} mid-flash. Almost always a $\log P_i^{\mathrm{sat}}$
+with $P_i \le 0$ (Antoine outside its valid range) or an empty
+composition (\code{F = 0}). Add asserts where you suspect it.
+
+% =====================================================================
+\section{Architecture deep-dive --- the three layers}
+
+\begin{whatyoulllearn}
+The contract between the outer driver, the simulator core, and the
+post-processor. Read this twice before adding cross-layer logic.
+\end{whatyoulllearn}
+
+\begin{lstlisting}
++-----------------------------------------------------------------+
+| Layer 1: OuterDriver  (src/outerDriver/)                        |
+|   Sensitivity sweep, optimisation, parameter estimation, MC.    |
+|   Owns: simulator_ functor, flowsheetDict_ (mutable).           |
+|   Mutates flowsheetDict_ between calls via setScalarAtPath().   |
++-----------------------------------------------------------------+
+                              |  calls
+                              v
++-----------------------------------------------------------------+
+| Layer 2: Simulator core                                         |
+|   runSimulation(flowsheetDict,...)                             |
+|     -> ThermoPackage::readFromDict(thermoDict, db)              |
+|     -> Flowsheet::solve(flowsheetDict, thermo, verbosity)       |
+|     -> SimulationResult { streams, kpis, converged }            |
+|   Pure function: same inputs -> same outputs.                   |
++-----------------------------------------------------------------+
+                              |  result
+                              v
++-----------------------------------------------------------------+
+| Layer 3: PostProcessor (src/postProcessing/)                    |
+|   Sizing  -> equipment dimensions (V_R, A, t_wall, weight,...) |
+|   Costing -> Guthrie/Turton with CEPCI, USD->EUR                |
+|   (future) Reporting -> PDF / HTML / CSV bundles                |
+|   Augments SimulationResult; never re-enters the simulator.     |
++-----------------------------------------------------------------+
+\end{lstlisting}
+
+\paragraph{The contract:}
+
+\begin{itemize}[leftmargin=*]
+  \item Layer 1 \emph{never touches the simulator's internal state} ---
+        it only mutates the dict it owns and calls the functor.
+  \item Layer 2 \emph{is pure} ---
+        \code{runSimulation(d) == runSimulation(d)} for the same dict.
+        This is what lets Layer 1 do finite-difference Jacobians and
+        Levenberg-Marquardt cleanly.
+  \item Layer 3 \emph{never re-runs the simulator} --- it only reads
+        the result. If you need to re-run (e.g. for utility costing), do
+        it via an outer driver.
+\end{itemize}
+
+\begin{keyidea}
+Rule of thumb: if a quantity can be computed from a converged stream
+table plus KPIs, it belongs in a post-processor. If it requires
+re-solving the flowsheet, it belongs in an outer driver.
+\end{keyidea}
+
+% =====================================================================
+\section{Roadmap}
+
+Ordered by impact for the MCFT course and V\'\i tor's research:
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+\toprule
+\textbf{Target} & \textbf{Idea}                                                          & \textbf{Difficulty} \\
+\midrule (shipped) & Levenberg-Marquardt parameter-estimation driver (\code{fitBinaryPair})  & --- \\ & Nelder-Mead optimisation driver (minimise cost / TAC)                   & easy \\ & LL flash via 2nd-order Michelsen TPD with multiple restarts             & hard \\ & Solids: inert phase + filter / cyclone / dryer unit-ops                 & medium \\ & Crystalliser + PSD basics                                               & hard \\ & NRTL distillation robustness (Naphtali-Sandholm)                        & medium-hard \\
+v1.0            & Equation-oriented sparse Newton for the full flowsheet                  & very hard \\
+$> $ v1         & Membrane NF/RO unit op (V\'\i tor's research bridge)                    & research-grade \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Tech-debt items also welcome:}
+\begin{itemize}[leftmargin=*,nosep]
+  \item Reference logs for every tutorial $\to$ in-tree regression diff.
+  \item Reaction-kinetics library (Arrhenius, Langmuir-Hinshelwood,
+        Michaelis-Menten) as a \code{Kinetics} base class.
+\end{itemize}
+
+% =====================================================================
+\section{Things to NOT do}\label{sec:donts}
+
+\begin{whatyoulllearn}
+A short list, each item born from a real incident. Memorise it.
+\end{whatyoulllearn}
+
+\begin{itemize}[leftmargin=*]
+  \item Do \textbf{not} suggest a Python rewrite or wrapper. The course
+        teaches numerical methods in \cpp{}; rewriting in Python would
+        defeat the purpose.
+  \item Do \textbf{not} add macro auto-registration. Explicit
+        \code{registerBuiltins()} is non-negotiable (see \S\ref{sec:factory}).
+  \item Do \textbf{not} add a heavy dependency --- even a ``small'' one.
+        Pedagogical visibility outweighs convenience.
+  \item Do \textbf{not} split a binary by numerical strategy
+        (\code{*Foam}-style proliferation). Strategy is run-time. Splitting
+        by \emph{problem class} --- the four binaries Solve / Batch / Ctrl /
+        Props --- is the deliberate exception, not a precedent for more.
+  \item Do \textbf{not} bypass the dict format. Never use YAML, JSON, or
+        TOML inside the case directory. The dict is the canonical wire
+        format.
+  \item Do \textbf{not} relitigate decisions in \file{CLAUDE.md} \S10
+        without first reading what's already been discussed and why.
+  \item Do \textbf{not} merge code that breaks the regression, even if
+        the failure is ``obviously unrelated''.
+\end{itemize}
+
+% =====================================================================
+\section{Quick reference}
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Task}                           & \textbf{Command / file} \\
+\midrule
+Build release                            & \code{make all} \\
+Build debug                              & \code{make MODE=debug all} \\
+Clean                                    & \code{make clean} / \code{make distclean} \\
+Source env                               & \code{source etc/bashrc} \\
+Run a case                               & \code{runCase tutorials/<name>} \\
+Run from inside case dir                 & \code{runCase} \\
+List tutorials                           & \code{listCases} \\
+List built-in unit-op types (in code)    & \code{UnitOperation::availableTypes()} \\
+Tweak a dict field programmatically      & \code{dict->setScalarAtPath(path, v)} \\
+Add a unit op                            & \S 6 \\
+Add a thermo model                       & \S 7 \\
+Add a component / material / reaction    & \S 8 \\
+Add an outer driver / post-processor     & \S 9 \\
+Add a sizing model                       & \S 10 \\
+Project conventions / AI rules           & \file{CLAUDE.md} \\
+User-facing how-to                       & \file{docs/userGuide.pdf} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{2cm}
+\noindent\rule{\linewidth}{0.3pt}
+\noindent\small\textit{Colophon.}\quad This manual was typeset in Latin
+Modern with the Choupo shared LaTeX preamble. Sources live in
+\file{docs/}; rebuild with \code{cd docs \&\& make}.
+
+\end{document}

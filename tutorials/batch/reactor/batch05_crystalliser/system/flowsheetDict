@@ -1,0 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  batch05_crystalliser / flowsheetDict
+
+  Single closed vessel.  Charge: ~500 kg water + ~1250 kg dissolved sucrose
+  (c0 ~ 2.5 kg/kg, above c_sat(20 C) ~ 2.03 kg/kg, so S0 ~ 1.23).  Unseeded:
+  the moments start at zero and primary nucleation (j=0) bootstraps the
+  population from the initial supersaturation.  Kinetics from
+  constant/crystallisation.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        cryst;
+        type        batchCrystalliser;
+
+        initial
+        {
+            T            293.15 K;          // 20 C, held (isothermal)
+            P            1.013 bar;
+            V            1.3;               // m³ suspension volume
+            totalMoles   31.40;            // kmol  (27.75 water + 3.652 sucrose)
+            molarComposition  { water 0.8838;  sucrose 0.1162; }
+        }
+
+        crystallisation  sugarBatchKinetics;   // -> constant/crystallisation
+    }
+);

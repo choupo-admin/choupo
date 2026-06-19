@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "CREATE a component from its groups: Joback estimate of acetone (2 CH3 + 1 ketone), validated against NIST --- see the estimate built up from groups";
+
+verbosity     2;

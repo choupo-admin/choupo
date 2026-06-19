@@ -1,0 +1,51 @@
+/*---------------------------------------------------------------------------*\
+  Industrial methane steam reforming feed: methane plus excess steam
+  (steam-to-carbon ratio = 3, i.e. 1 mol CH4 + 3 mol H2O per pass).
+  Expected at 1000 K, 1 bar: near-complete CH4 conversion, hydrogen
+  yield ~ 2.7 mol H2 per mol CH4 (reforming + WGS combined).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            4.0 kmol/h;        // kmol/h  (1 CH4 + 3 H2O)
+        T            1000.0 K;     // K
+        P            1.0 bar;        // bar
+        composition
+        {
+            CH4    0.25;
+            water  0.75;
+            CO     0.0;
+            CO2    0.0;
+            H2     0.0;
+        }
+    }
+}
+
+units
+(
+    {
+        name        reformer;
+        type        gibbsReactor;
+        in          feed;
+        outputs     ( syngas );
+
+        operation
+        {
+            T          1000.0 K;       // K
+            P          1.0 bar;          // bar
+
+            elements   ( C  H  O );
+
+            species
+            (
+                { name  CH4;    atoms  ( 1  4  0 ); }
+                { name  water;  atoms  ( 0  2  1 ); }
+                { name  CO;     atoms  ( 1  0  1 ); }
+                { name  CO2;    atoms  ( 1  0  2 ); }
+                { name  H2;     atoms  ( 0  2  0 ); }
+            );
+        }
+    }
+);

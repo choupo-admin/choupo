@@ -1,0 +1,40 @@
+/*---------------------------------------------------------------------------*\
+  Benzene/toluene distillation — classical textbook problem with Raoult,
+  no azeotrope, easy convergence.  Used to validate the column code.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            370.0 K;
+        P            1.01325 bar;
+        molarComposition  { benzene 0.50;  toluene 0.50; }
+    }
+}
+
+units
+(
+    {
+        name        column01;
+        type        distillationColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+        }
+
+        // Looser tol + higher iter cap — the sweep visits R values from
+        // 1.5 to 5 and high-R cases need more outer iterations to converge.
+        compositionTol   1e-6;
+        maxOuterIter     800;
+    }
+);

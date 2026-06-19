@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  condenser01_film_nusselt  --  meta-control
+
+  A horizontal-tube steam condenser whose duty EMERGES from the Nusselt
+  (1916) film-condensation coefficient + the wall + a cooling-water film,
+  via the phaseChanger `model geometry;` resolution.  The duty is a RESULT,
+  not a spec.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Horizontal-tube steam condenser: Nusselt film HTC -> duty (geometry mode)";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

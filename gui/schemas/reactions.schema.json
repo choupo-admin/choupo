@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/reactions.schema.json",
+  "title": "reactions",
+  "description": "Named-reaction library (constant/reactions). Top-level keys are reaction names; units in flowsheetDict refer to them by name.",
+  "type": "object",
+  "additionalProperties": { "$ref": "#/$defs/Reaction" },
+
+  "$defs": {
+    "Reaction": {
+      "type": "object",
+      "required": ["limitingReactant", "stoichiometry", "kinetics"],
+      "properties": {
+        "limitingReactant": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stoichiometry": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/StoichiometryEntry" }
+        },
+        "kinetics": { "$ref": "#/$defs/Kinetics" }
+      },
+      "additionalProperties": true
+    },
+
+    "StoichiometryEntry": {
+      "type": "object",
+      "required": ["component", "nu"],
+      "properties": {
+        "component": { "type": "string", "minLength": 1 },
+        "nu":        { "type": "number", "description": "Signed stoichiometric coefficient (negative for reactants)." },
+        "order":     { "type": "number", "minimum": 0, "description": "Reaction order in this component (defaults to 0 for products)." }
+      },
+      "additionalProperties": false
+    },
+
+    "Kinetics": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": { "type": "string", "enum": ["Arrhenius"] },
+        "A":    { "type": "number", "exclusiveMinimum": 0, "description": "Pre-exponential factor." },
+        "Ea":   { "type": "number", "minimum": 0,         "description": "Activation energy (J/mol)." }
+      },
+      "additionalProperties": true
+    }
+  }
+}

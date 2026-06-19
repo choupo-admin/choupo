@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "DSPM-DE NF: divalent (MgSO4) > mixed (CaCl2) > monovalent (NaCl) rejection at 10 bar";
+
+verbosity     3;

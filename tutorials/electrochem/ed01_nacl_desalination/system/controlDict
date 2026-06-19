@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control --- ED01 NaCl desalination by electrodialysis.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Electrodialysis stack: NaCl diluate desalination, 100 cell pairs";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

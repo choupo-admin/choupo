@@ -1,0 +1,51 @@
+/*---------------------------------------------------------------------------*\
+  Post-processing chain for process02_with_design.
+
+    1.  sizing    — instantiate StirredTank for the CSTR and ShellTubeHX
+                    for the heater, sized from each unit's KPIs.
+    2.  costing   — Guthrie/Turton purchased + bare-module + total-module
+                    cost in 2026 EUR.
+
+  The student inspects the result table and sees CAPEX broken down by
+  equipment, plus the global F_M × F_P factor weights.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        {
+            unitName    reactor;
+            type        stirredTank;
+            material    SS316;
+            designRules
+            {
+                L_over_D        2.5;
+                pressureDesign  3.0;        // bar (operating × 2 safety)
+                corrosionAllow  0.003;      // m
+                jointEfficiency 1.0;
+            }
+        }
+
+        {
+            unitName    heater;
+            type        shellTubeHX;
+            material    SS304;
+            designRules
+            {
+                U               600.0;      // W/(m²·K)  liquid-liquid, no phase change
+                LMTD            10.0;       // K  (small ΔT here — heater of low duty)
+                pressureDesign  2.0;        // bar
+            }
+        }
+    );
+}
+
+costing
+{
+    method      Guthrie;
+    year        2026;
+    cepci       820;
+    cepci2001   397;
+    usdToEur    0.92;
+}

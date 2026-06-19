@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  reactions -- conversion01_hda.  HDA main reaction (stoichiometry only; the
+  conversionReactor needs no kinetics -- conversion is specified, gas-basis).
+\*---------------------------------------------------------------------------*/
+hda
+{
+    limitingReactant  toluene;
+    stoichiometry
+    (
+        { component toluene;  nu -1; }
+        { component H2;       nu -1; }
+        { component benzene;  nu  1; }
+        { component CH4;      nu  1; }
+    );
+    dH_rxn  -42.0e3;   // J/mol  (informational; the reactor computes its own from h_ig)
+}

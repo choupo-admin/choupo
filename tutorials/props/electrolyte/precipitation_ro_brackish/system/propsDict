@@ -1,0 +1,87 @@
+/*---------------------------------------------------------------------------*\
+  precipitation_ro_brackish --- the EQUILIBRIUM-PRECIPITATION ceiling.
+
+  Sibling of scaling_ro_brackish (which is SI-ONLY -- "how supersaturated?").
+  Here the `equilibrate { minerals ( ... ); }` block names the ALLOWED solids,
+  and the engine drives each to its SI = 0 saturation, returning the amount
+  precipitated.  THE FRAMING (printed loudly at run time, non-suppressible):
+
+    EQUILIBRIUM CEILING -- not a deposit prediction.  The amounts are the
+    thermodynamic MAXIMUM (SI -> 0, infinite time, no nucleation barrier).
+    Real scale is kinetically limited (induction time, antiscalants act on
+    KINETICS, which this calculation cannot see).  Actual deposit <= ceiling,
+    often far less.  The safe direction is rigorous: ceiling ~ 0 => no driving
+    force.
+
+  ALGORITHM (visible in the trace): augmented Newton in (ln m_j [, ln a_H])
+  plus one raw-linear n_p per ACTIVE mineral; each master mole balance gains a
+  sink -sum nu_pj n_p; one SI = 0 row per active phase; an OUTER active-set loop
+  ADMITS the most-supersaturated allowed mineral and EVICTS any with n_p < 0,
+  re-solving between, until complementarity holds (SI <= 0 with n = 0, OR
+  SI = 0 with n > 0).  A carbonate mineral's H+ leg lands the released H+ in
+  the electroneutrality row (pH solve) -- so precipitating calcite ACIDIFIES.
+
+  CROSS-CHECK TOOL: PHREEQC EQUILIBRIUM_PHASES (same ceiling framing).
+  Data: case-local constant/electrolyte/ (self-contained USGS PHREEQC snapshot,
+  public domain).
+
+  GOLDEN PINS (locked by the golden master):
+    pin_gypsum_amount  Ca = SO4 = 0.030542 mol/kg (DOUBLE the gypsum-saturation
+                       value 0.015271) + equilibrate gypsum -> SI_gypsum = 0.000
+                       and n_gypsum = 0.015271 (the machine returns EXACTLY the
+                       over-added excess).
+    feed_eq            calcite + gypsum allowed; calcite reaches SI = 0, releases
+                       H+ (pH 7.72 -> ~7.50, solved), gypsum stays dissolved.
+    scan_eq            r 0 -> 0.85 with feedFlow: calcite kg/day ceiling; gypsum
+                       n = 0 throughout while SIeq_gypsum drifts BELOW the raw
+                       SI_gypsum (calcite eats the shared Ca).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- (1) the over-added gypsum returns EXACTLY its excess as solid ----------
+    {
+        name        pin_gypsum_amount;
+        type        speciate;
+        // 0.030542 = 2 * 0.015271, the gypsum-saturated CaSO4 pin of the sibling
+        // case; the excess (0.015271) must come back out as gypsum.
+        totals      { Ca 0.030542 mol/kg; SO4 0.030542 mol/kg; }
+        pH          7.0;
+        equilibrate { minerals ( gypsum ); }
+        output      { file pin_gypsum_amount.csv; }
+    }
+
+    // -- (2a) the brackish feed, raw (SI only) ---------------------------------
+    {
+        name        feed;
+        type        speciate;
+        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+                      Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
+        pH          solve;
+        output      { file feed.csv; }
+    }
+
+    // -- (2b) the same feed, equilibrated: calcite precipitates, gypsum stays ---
+    {
+        name        feed_eq;
+        type        speciate;
+        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+                      Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
+        pH          solve;
+        equilibrate { minerals ( calcite gypsum ); }
+        output      { file feed_eq.csv; }
+    }
+
+    // -- (3) the recovery scan: calcite kg/day ceiling; gypsum coupling ---------
+    {
+        name        scan_eq;
+        type        scalingScan;
+        totals      { Ca 84 mg/L; Mg 27 mg/L; Na 363 mg/L; K 12 mg/L;
+                      Cl 510 mg/L; SO4 250 mg/L; HCO3 183 mg/L; }
+        pH          solve;
+        equilibrate { minerals ( calcite gypsum ); }
+        feedFlow    12.6 m3/h;              // enables the kg/day curve
+        recovery    { from 0; to 0.85; n 18; }
+        output      { file scan_eq.csv; }
+    }
+);

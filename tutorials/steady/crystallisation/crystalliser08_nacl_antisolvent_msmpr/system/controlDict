@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Continuous MSMPR antisolvent crystallisation of NaCl: a saturated brine + ethanol fed to a well-mixed vessel (residence time tau = V/Q). The eNRTL antisolvent supersaturation S = c/c_sat(eNRTL) drives nucleation + growth; the method of moments closes the population balance and returns the CRYSTAL-SIZE DISTRIBUTION n(L) (mean size, CV) -- what the equilibrium model cannot give.";
+verbosity     3;

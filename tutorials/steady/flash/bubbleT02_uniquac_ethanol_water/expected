@@ -1,0 +1,8 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0277777777778    1e-4
+kpi     bubble02               P                101325             1e-4
+kpi     bubble02               T_bubble         353.469206954      1e-4
+kpi     bubble02               converged        1                  1e-4
+kpi     bubble02               y_ethanol        0.582711434226     1e-4
+kpi     bubble02               y_water          0.417288565785     1e-4

@@ -1,0 +1,47 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/compA.dat
+// sha256   04b5f8b03faf5065535adf4f240f3249249547eea2eb6596d82ab21109571f82
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*---------------------------------------------------------------------------*\
+  Component: compA  -- synthetic component for VLLE algorithm audit.
+  Antoine tuned so Psat ≈ 5 bar at 350 K (the "very volatile" component
+  that will preferentially go to vapour in the audit test).
+\*---------------------------------------------------------------------------*/
+
+name        compA;
+formula     A;
+CAS         00-00-0;
+
+MW          30.0;
+Tc          500.0;
+Pc          50.0;
+omega       0.10;
+Tb          320.0;
+HvapTb      28000;
+Vliq        8.0e-5;
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.0   1700.0   -30.0);   // log10 P_bar = A - B/(T + C); Psat(350) ≈ 5 bar
+    Trange        (300  400);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (80.0   0.0   0.0   0.0);
+    Trange        (200  500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (120.0);
+    Trange        (300  400);
+}

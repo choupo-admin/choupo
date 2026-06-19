@@ -1,0 +1,34 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.194444444444     1e-4
+stream  permeate               F                0.10718813189      1e-4
+stream  retentate              F                0.0873934761594    1e-4
+kpi     vessel                 J_w_avg          8.65138060685e-06  1e-4
+kpi     vessel                 R_obs_Ca         0.999474412694     1e-4
+kpi     vessel                 R_obs_Cl         0.994768077106     1e-4
+kpi     vessel                 R_obs_HCO3       0.99607108426      1e-4
+kpi     vessel                 R_obs_K          0.993468365206     1e-4
+kpi     vessel                 R_obs_Mg         0.999605759395     1e-4
+kpi     vessel                 R_obs_Na         0.994768077106     1e-4
+kpi     vessel                 R_obs_SO4        0.999737139505     1e-4
+kpi     vessel                 SI0_module_calcite 3                  1e-4
+kpi     vessel                 SI0_module_gypsum -1                 1e-4
+kpi     vessel                 SI0_recovery_calcite 0.305352106303     1e-4
+kpi     vessel                 SI0_recovery_gypsum -1                 1e-4
+kpi     vessel                 c_ret_elem1      0.00234662372531   1e-4
+kpi     vessel                 c_ret_elem2      0.00264807171169   1e-4
+kpi     vessel                 c_ret_elem3      0.00301139460939   1e-4
+kpi     vessel                 c_ret_elem4      0.0034527380599    1e-4
+kpi     vessel                 c_ret_elem5      0.00399217441632   1e-4
+kpi     vessel                 c_ret_elem6      0.004653362167     1e-4
+kpi     vessel                 dP_feed          230000             1e-4
+kpi     vessel                 elements         6                  1e-4
+kpi     vessel                 maxSI_calcite_wall 0.268718767415     1e-4
+kpi     vessel                 maxSI_gypsum_wall -0.733583113852    1e-4
+kpi     vessel                 recovery_elem1   0.107793243246     1e-4
+kpi     vessel                 recovery_elem2   0.209681159353     1e-4
+kpi     vessel                 recovery_elem3   0.305352106303     1e-4
+kpi     vessel                 recovery_elem4   0.394459440033     1e-4
+kpi     vessel                 recovery_elem5   0.476588227747     1e-4
+kpi     vessel                 recovery_elem6   0.551251524144     1e-4
+kpi     vessel                 water_recovery   0.551251524144     1e-4

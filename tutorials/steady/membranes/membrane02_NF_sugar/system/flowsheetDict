@@ -1,0 +1,66 @@
+/*---------------------------------------------------------------------------*\
+  membrane02_NF_sugar  --  loose-NF separation of glucose from water,
+  the canonical NF test that pedagogically distinguishes NF from RO:
+
+      RO         tight membrane,   high pressure,  near-100 % rejection
+      NF (here)  loose membrane,   low  pressure,  PARTIAL rejection (~50 %)
+
+  Feed: 10 g/L glucose (a typical pharma / food-processing feed).
+        c_glucose = 10 / 180.16 = 0.0555 kmol/m³
+        With pure-water c_water = 1000/18 = 55.56 kmol/m³,
+        z_glucose = 0.0555 / (0.0555 + 55.56) = 9.97e-4,
+        z_water   = 0.999003.
+        Feed F = 200 kmol/h (≈ 3.6 m³/h of dilute solution).
+
+  Module: NF270-style spiral-wound element, 35 m² area, 1 m length.
+        Feed pressure 10 bar (an order of magnitude less than the
+        SW30HR seawater case --- the price of loose rejection is
+        that membrane permeability A_w is 10× higher, so the same
+        operating flux is achieved with 10× less driving pressure).
+        Permeate at atmospheric.  Same k_film = 5e-5 m/s.
+
+  Expected (with the NF270 parameters):
+      water recovery       ≈ 20-25 %
+      observed glucose rej.≈ 50-65 %     (≪ the SW30HR's 99 %+ !)
+      average water flux   ≈ 30-40 LMH
+
+  The partial rejection is the defining NF feature: the membrane is
+  not tight enough to fully reject glucose (MW 180, NF270 nominal
+  MWCO 200 Da), so a fraction of the sugar leaks through with the
+  water --- and that leakage is what makes NF useful for
+  fractionation rather than just total rejection.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            200.0 kmol/h;             // kmol/h
+        T            298.15 K;
+        P            10.0 bar;              // bar (typical NF)
+        molarComposition  { water 0.999003;  glucose 0.000997; }
+    }
+}
+
+units
+(
+    {
+        name        NFunit;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+
+        operation
+        {
+            membrane         NF270;
+            area             5.0;                // m²   (single small element ---
+                                                 //  with this much A_w, even 5 m²
+                                                 //  recovers ~30 % of the feed)
+            length           1.0;
+            P_permeate       1.0 bar;
+            k_film           5.0e-5;
+            dP_feed_total    1.0 bar;               // bar (NF channels are lower-flow)
+            nNodes           100;
+        }
+    }
+);

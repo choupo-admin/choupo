@@ -1,0 +1,155 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  proxy01_gas_loop
+
+  The GUI/credo bench in one case: TWO recycles + a shaft-work energy wire
+  (W) + a utility STREAM (cooling water).  Toggle the stream classes in the
+  canvas: energy (the W wire), recycle (the two tears), utility (the
+  cooling-water edge).
+
+    feed ─┐
+          ▼
+       M1 mixer ◄── recycle1 (hot) ◄────────────────────┐
+          │       ◄── recycle2 (cold, dry) ◄──────────┐ │
+          ▼                                           │ │
+       R1 gibbsReactor (WGS)                          │ │
+          ▼                                           │ │
+       S1 splitter ── recycle1 ─────────────────────────┘  (30 % hot gas back)
+          └─ toFlash                                  │
+                ▼                                      │
+       CW (cooling water, UTILITY) ─► HX1 ─► warmCW    │
+                ▼  (HX1: sensible cooling of the gas)  │
+             F1 flash { }  (no knobs: inherits T,P;    │
+               │            condenses the water out)   │
+               ├─ productWater (liquid) ─► product     │
+               └─ dryGas (vapour)                       │
+                     ▼                                  │
+                  S2 splitter ── recycle2 ──────────────┘  (30 % dry gas back)
+                     └─ productGas
+                          ▼
+                       T1 turbine (power recovery) ─► G1 electricLoad   (W wire)
+                          └─ expandedProduct
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F                1.0 kmol/h;
+        T                800.0 K;
+        P                5.0 bar;
+        state            superheatedVapour;
+        molarComposition { CO 0.50;  water 0.50;  CO2 0.0;  H2 0.0; }
+    }
+
+    // Cooling-water UTILITY stream (category from the catalogue): the HX
+    // rejects the condenser duty into it.  Shows on the canvas as a
+    // utility-class edge (dashed), toggled by the `utility` filter, and
+    // aggregated in the utilities report.
+    CW
+    {
+        utility          coolingWater;          // pulls T_in/T_out/state/cost from the catalogue
+        F                60.0 kmol/h;
+    }
+
+    recycle1
+    {
+        F                0.4 kmol/h;
+        T                800.0 K;
+        P                5.0 bar;
+        state            superheatedVapour;
+        molarComposition { CO 0.25;  water 0.25;  CO2 0.25;  H2 0.25; }
+    }
+
+    recycle2
+    {
+        F                0.3 kmol/h;
+        T                350.0 K;
+        P                5.0 bar;
+        state            superheatedVapour;
+        molarComposition { CO 0.30;  water 0.02;  CO2 0.34;  H2 0.34; }
+    }
+}
+
+tearStreams      ( recycle1  recycle2 );
+recycleSolver    Newton;
+recycleTol       1e-5;
+recycleMaxIter   150;
+
+units
+(
+    {
+        name        M1;
+        type        mixer;
+        inputs      ( feed  recycle1  recycle2 );
+        outputs     ( mixed );
+    }
+    {
+        name        R1;
+        type        gibbsReactor;
+        in          mixed;
+        outputs     ( reacted );
+
+        operation
+        {
+            T          800.0 K;
+            P          5.0 bar;
+            elements   ( C  H  O );
+            species
+            (
+                { name  CO;     atoms  ( 1  0  1 ); }
+                { name  water;  atoms  ( 0  2  1 ); }
+                { name  CO2;    atoms  ( 1  0  2 ); }
+                { name  H2;     atoms  ( 0  2  0 ); }
+            );
+        }
+    }
+    {
+        name        S1;
+        type        splitter;
+        in          reacted;
+        outputs     ( recycle1  toFlash );
+        operation   { fractions ( 0.30  0.70 ); }
+    }
+    {
+        name        HX1;
+        type        heatExchanger;
+        inputs      ( toFlash  CW );          // hot process gas + cold cooling-water utility
+        outputs     ( cooledGas  warmCW );
+        operation   { area 1.2 m2;  U 60 W/m2/K; }   // size to cool ~800 -> ~320 K (condense water)
+    }
+    {
+        name        F1;
+        type        isothermalFlash;
+        in          cooledGas;
+        outputs     ( productWater  dryGas );
+        operation   { }                       // no knobs: inherits the HX-cooled T and P
+    }
+    {
+        name        S2;
+        type        splitter;
+        in          dryGas;
+        outputs     ( recycle2  productGas );
+        operation   { fractions ( 0.30  0.70 ); }
+    }
+    {
+        name        T1;
+        type        turbine;
+        in          productGas;
+        outputs     ( expandedProduct );
+
+        operation   { W_shaft -0.4 kW;  eta 0.80; }
+        energyOutputs
+        (
+            { name shaft;  kind work;  expression "-W_shaft";  unit W; }
+        );
+    }
+    {
+        name        G1;
+        type        electricLoad;
+        operation   { eta 0.97; }
+        energyInputs
+        (
+            { from T1.shaft;  kind work;  target W_shaft; }
+        );
+    }
+);

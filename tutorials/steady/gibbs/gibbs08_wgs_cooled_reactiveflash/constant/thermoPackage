@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  ThermoPackage for the WGS Gibbs reactor.
+  Four gas-phase species, ideal-gas EoS, ideal mixing (γ = 1).
+  The Gibbs reactor reads each component's standard formation enthalpy
+  and absolute entropy at 298.15 K plus its idealGasHeatCapacity
+  polynomial -- nothing in the activity / EoS layers participates.
+\*---------------------------------------------------------------------------*/
+
+components       ( CO  water  CO2  H2 );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

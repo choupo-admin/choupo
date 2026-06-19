@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/propertyPoint.schema.json",
+  "title": "propertyPoint operation",
+  "description": "Single-point property evaluation: pick a (T, P, composition) and the thermo package reports every property the chosen models can compute (Psat, gamma_i, K_i, Cp_ig, H_ig, S_ig, Z, v, H_real, S_real,...).  No CSV output -- results print to the run log; open the Log tab in the output panel to read them.  Useful for JANAF/SRK/PR audit points and as a quick property check.",
+  "type": "object",
+  "properties": {
+    "state": {
+      "type": "object",
+      "title": "Thermodynamic state",
+      "description": "The (T, P, composition) at which the property is evaluated.",
+      "properties": {
+        "T":           { "type": "number", "exclusiveMinimum": 0, "title": "Temperature", "unit": "K" },
+        "P":           { "type": "number", "exclusiveMinimum": 0, "title": "Pressure",    "unit": "Pa" },
+        "composition": { "type": "object", "title": "Mole composition (Sum xi = 1)" }
+      },
+      "required": ["T", "P", "composition"]
+    }
+  },
+  "required": ["state"],
+  "additionalProperties": true
+}

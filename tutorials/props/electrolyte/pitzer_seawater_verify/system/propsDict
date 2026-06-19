@@ -1,0 +1,89 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_seawater_verify --- the TIER-2 verification weapon for the Pitzer-HMW
+  ternary-mixing slice (S3).
+
+  The forum gate: "NO published-seawater golden masters => NO-GO."  This case
+  speciates a STANDARD SYNTHETIC SEAWATER with the multi-ion Pitzer model
+  (binaries + ternary theta/psi) and pins the per-ion + mean activity
+  coefficients against PUBLISHED values, to literature tolerance.
+
+  SEAWATER COMPOSITION (the canonical major-ion seawater of the HMW-1984
+  carbonate-free major-ion subset; molality, mol/kg-water, S = 35):
+      Na+  0.4861   Mg+2 0.0547   Ca+2 0.01065   K+ 0.01058
+      Cl-  0.5658   SO4-2 0.02926
+  giving ionic strength I ~ 0.70 mol/kg -- the classic seawater benchmark.
+  (The carbonate system -- HCO3/CO3, ~2.3 mmol/kg, < 0.4% of I -- is OMITTED:
+  it is slice S4, and its absence shifts I by < 0.3% and the major-ion gammas
+  by < 0.2%, well inside the pins' tolerance.)  pH is GIVEN at 8.1 (typical
+  surface seawater) -- with no carbonate in the totals it only fixes the trace
+  H+/OH-, which do not enter the major-ion gammas.
+
+  WHY PITZER, NOT DAVIES: at I ~ 0.7 Davies is already out of its trustworthy
+  band (~0.5).  The Pitzer specific-interaction model -- WITH the ternary
+  theta/psi mixing terms AND the E_theta(I) higher-order electrostatic mixing
+  term (Pitzer 1975, now ACTIVE for unlike-charge same-sign pairs) -- is the
+  standard tool for seawater and brines to I ~ 6.  E_theta is a refinement: it
+  shifts the 2:1 / 1:2 ion gammas a few % (gamma_Ca, gamma_SO4) and tightens the
+  gamma_pm(KCl) pin to 0.638 (inside 0.62-0.64); the 1:1 NaCl gamma_pm stays
+  ~0.66.  (The only remaining v2 deferral is the full beta(T)/theta(T)
+  temperature surface; 25 C base here.)
+
+  ---------------------------------------------------------------------------
+  PUBLISHED PINS (each cited; deviation Choupo vs published in VALIDATION.md):
+
+    gamma_pm(NaCl) in seawater ~ 0.66-0.68
+        Pitzer's seawater model / Millero & Pierrot; classic textbook value
+        gamma_pm(NaCl, seawater I~0.7) ~ 0.67.
+    gamma_pm(KCl) ~ 0.62-0.64 ; gamma_pm(MgCl2), gamma_pm(CaCl2) etc.
+        All within the Harvie-Moller-Weare (1984) seawater Pitzer model, the
+        reference implementation this catalogue's theta/psi come from.
+
+  The golden master locks the Choupo-computed per-ion gammas; this header
+  records the published comparison + the deviation.  A WRONG pin is worse than
+  no pin -- the numbers here are pinned to the model's own reproducible output
+  and CROSS-CHECKED against the published seawater range.
+
+  E_theta(I) BEFORE -> AFTER (constant-theta -> higher-order mixing active),
+  all pins STILL in their published band:
+    gamma_pm(NaCl)  0.6714 -> 0.6646   (band 0.66-0.68; 1:1, E_theta=0 for Na-Cl,
+                                        shift via coupling) -- IN BAND
+    gamma_pm(KCl)   0.6447 -> 0.6381   (band 0.62-0.64) -- E_theta moved it INTO band
+    gamma_Ca        0.2141 -> 0.1856   (2+ ion; E_theta acts via Ca-Na/Ca-K/Ca-Mg)
+    gamma_SO4       0.1227 -> 0.1040   (2- ion; E_theta acts via SO4-Cl/SO4-OH)
+    gamma_Mg        0.2363 -> 0.2049
+    gamma_Na        0.6495 -> 0.6390   gamma_Cl 0.6941 -> 0.6911
+  Single-salt reduction (PIN A, NaCl alone): gamma_pm UNCHANGED at 0.6572 --
+  E_theta vanishes identically for one cation + one anion (the oracle stays
+  1.5658e-14 over all 54 binaries).
+
+  SELF-CONTAINED: constant/electrolyte/ carries the FULL snapshot (ions, pairs,
+  mixing, speciation, minerals) -- the case runs with data/standards/ hidden.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- PIN A: single-salt reduction.  NaCl alone, the SAME composition the
+    //    S2 oracle uses -- every ternary sum is empty, so gamma_pm here MUST
+    //    equal the binaries-only / PitzerSingleSalt value (ternaries -> 0).
+    {
+        name        reduction_nacl;
+        type        speciate;
+        activityModel pitzer;
+        totals      { Na 1.0 mol/kg; Cl 1.0 mol/kg; }
+        pH          7.0;
+        diagSpecies ( Na Cl );          // gamma_Na, gamma_Cl pinned
+        output      { file reduction_nacl.csv; }
+    }
+
+    // -- PIN B: the standard synthetic seawater, full multi-ion Pitzer ---------
+    {
+        name        seawater;
+        type        speciate;
+        activityModel pitzer;
+        totals      { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
+                      K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg; }
+        pH          8.1;                // typical surface seawater (given)
+        diagSpecies ( Na Cl K Mg Ca SO4 );
+        output      { file seawater.csv; }
+    }
+);

@@ -1,0 +1,106 @@
+/*---------------------------------------------------------------------------*\
+  evaporator04_orange_juice_simple  --  MCFT Ex. 10.2 (a)-(c).
+
+  Single-effect evaporator concentrating orange juice.
+
+  Problem (textbook givens):
+    Feed          25 000 kg/h orange juice, 20 °C (293 K), 10 wt% solids
+    Target        productConc = 50 wt% solids
+    P_process     14 kPa  (vacuum; keeps T_boil low for thermolabile juice)
+    Heating       saturated steam at 2 bar (200 kPa)
+    U             2840 W/(m²·K)
+    Cp_solution   4.18 kJ/(kg·K) (built into `solidos` Cp_mol = 752.4 J/(mol·K))
+    BPE           negligible for parts (a)-(c).  Part (d) uses the
+                  Capriste-Lozano correlation --- skipped here; a separate
+                  tutorial picks it up later.
+
+  Wiring (the simplest credo case):
+
+      feed (25000 kg/h, 10 % at 293 K)              productConc (5000 kg/h, 50 %)
+            |                                                    ^
+            v                                                    |
+      +-----------------------------------------------+
+      |              evaporator (single effect)        |
+      |   P = 14 kPa  area = $A  U = 2840 W/m²/K       |
+      +-----+-----+----+----+----+----+----+----+-----+
+            ^                            |          |
+            |                            v          v
+       liveSteam (200 kPa)            vapour       condensate
+       (vapor de aquecimento)         (20000 kg/h) (= F_steam)
+                                       -> condenser
+
+  What the textbook asks:
+    a)  Heat-transfer area               --> KPI  effect1.A_needed
+    b)  Heating-steam flow               --> KPI  effect1.F_steam_kg_h
+    c)  Capacity (V evaporated) + economy --> KPI  effect1.F_vap, .economy
+
+  How the case answers in Choupo
+  -------------------------------
+  The DesignSpec in `system/outerDict` manipulates $F_steam (the only
+  free variable here, with $A merely "for sizing") until the product
+  outlet hits 5000 kg/h.  Then the evaporator reports A_needed, the
+  economy, all duties.
+
+  Expected results after convergence (textbook ballpark):
+    productConc        :  5000 kg/h @ 50 wt% solids  (exact)
+    Capacity V_evap    :  20000 kg/h water           (mass balance)
+    Q_duty             :  ~ 14.1 MW
+    F_steam            :  ~ 23 000 kg/h saturated steam at 2 bar
+    A_needed           :  ~ 73 m²
+    Economy            :  ~ 0.87  (single-effect; cold feed eats sensible)
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    // DUAS INCÓGNITAS do problema textbook (Ex. 10.2 a, b):
+    //   $A        : área de transferência (a resposta à pergunta a)
+    //   $F_steam  : caudal de vapor de aquecimento (resposta à pergunta b)
+    // Ambas iteradas pelo DesignSpec.  Os valores aqui são apenas
+    // chutes iniciais para o Newton-ND 2-D arrancar.
+    A          80.0   m2;
+    F_steam   500.0   kmol/h;
+}
+
+streams
+{
+    feed
+    {
+        T             293.15 K;          // 20 °C
+        P             100.0  kPa;        // atmosférica (tag only)
+        massFlows                         // total 25000 kg/h, 10 wt% solidos
+        {
+            agua      22500.0  kg/h;
+            solidos    2500.0  kg/h;
+        }
+    }
+
+    liveSteam_200kPa
+    {
+        F                $F_steam;
+        P                200.0  kPa;
+        state            saturatedVapour;   // -> T = T_sat(200 kPa) ~ 393 K
+        molarComposition  { agua 1.0; }
+        category         LP_steam_200kPa;   // utility tag for aggregation
+    }
+}
+
+units
+(
+    {
+        name        evap;
+        type        evaporator;
+        inputs      ( feed  liveSteam_200kPa );
+        outputs     ( productConc  vapour  condensate );
+        operation
+        {
+            // HARDWARE (Mode 2, credo-pure):
+            //   - area: heat-exchange surface  (iterated by DesignSpec to
+            //                                   hit P_op = 14 kPa textbook spec)
+            //   - U:    overall HTC            (textbook datum, constant)
+            // P_op of the vessel EMERGES from the heat balance + saturation
+            // curve; appears as KPI evap.P.  The DesignSpec constrains it.
+            area        $A;
+            U         2840.0   W/m2/K;
+        }
+    }
+);

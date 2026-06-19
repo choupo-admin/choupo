@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for O2 in liquid water.
+
+  Reference: Sander, R. (2015) Atmos. Chem. Phys. 15, 4399-4981.
+
+      H_xp(298)  ≈  4.40e9 Pa  =  44,000 bar      (very low solubility)
+
+  At 1 atm air (0.21 bar O2 partial pressure) the equilibrium
+  dissolved O2 is x_O2 ≈ 0.21 / 44000 = 4.8e-6 (mole fraction in
+  water), which corresponds to ~ 8.5 mg/L --- the textbook
+  oxygen-saturated tap-water value.
+
+      dH_diss(O2-water)  ≈  -14240 J/mol  (mildly exothermic)
+\*---------------------------------------------------------------------------*/
+
+solute      O2;
+solvent     water;
+
+model       vantHoff;
+H_ref       4.40e9 Pa;             // = 44,000 bar at 298.15 K
+T_ref       298.15 K;
+enthalpy    -14240  J/mol;
+Trange      ( 273  373 );

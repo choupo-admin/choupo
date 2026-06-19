@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Propylene Glycol 30 vol % brine  (DOWFROST / GlycoChill class)
+  Pseudo-component for use as a low-temperature secondary-loop refrigerant
+  (chilled glycol / cooling brine for HVAC + sub-ambient process duty).
+
+  Sources:
+    Mokon "Heat Transfer Fluid - Propylene Glycol" Technical & Engineering
+      Data (Buffalo, NY).  Read directly from the datasheet PDF: 30 % by
+      volume concentration table, 5 data points -1 to 110 C.
+
+  Use:
+    Pseudo-fluid for the `refrigerationPG` utility (closed-loop chilled brine
+    in the -10 to +50 C range; freeze point -12.8 C protects sub-zero coils).
+    Choose over `chilledWater` whenever the process T < 7 C (below the safe
+    freezing margin of plain chilled water).  Do NOT put in a reactor.
+
+  Limits:
+    Cp fit good to ~1 %, 272-383 K.
+    A real glycol brine has inhibitor + corrosion package; properties shift
+    by 1-3 % across vendors.  Vendor datasheet wins for engineering design.
+\*---------------------------------------------------------------------------*/
+
+name        propyleneGlycol30;
+formula     "C3H8O2 (30 vol %) + H2O (70 vol %)";
+CAS         "n/a";              // pseudo-mixture
+
+// Pseudo-MW for a 30 vol % (≈ 32 wt %) PG-in-water brine:
+// 0.32 * 76.09 + 0.68 * 18.02 = 36.6 g/mol
+MW          36.6;
+Tb          375.4;               // K  (102.2 C, vendor datasheet)
+Vliq        3.56e-5;             // m^3/mol at 298 K (MW / ρ(298))
+
+role        nonvolatile;         // brine, treated as a single-phase liquid carrier
+
+liquidHeatCapacity
+{
+    // Linear fit of Mokon Cp data at 5 temperatures, 30 vol % PG:
+    //   Cp [J/kg·K] = 3000 + 2.84 * T[K]
+    // Converted to molar (× MW/1000 = 0.0366 kg/mol):
+    //   Cp [J/mol·K] = 109.8 + 0.1040*T
+    model         polynomial;
+    coefficients  (109.8   0.1040);
+    Trange        (260  385);
+}

@@ -1,0 +1,32 @@
+streams
+{
+    feed
+    {
+        F                  100.0 kmol/h;
+        T                  298.15 K;
+        P                    1.0 bar;
+        molarComposition  { water 0.95;  NaCl 0.05; }   // ~ 3 mol/kg brine
+    }
+    saturatedSteam130C
+    {
+        F                   45.0 kmol/h;
+        P                    2.7 bar;
+        state            saturatedVapour;
+        molarComposition  { water 1.0; }
+        category         HP_steam_2.7bar;
+    }
+}
+units
+(
+    {
+        name        evap;
+        type        evaporator;
+        inputs      ( feed  saturatedSteam130C );
+        outputs     ( concentrated  vapour  condensate );
+        operation
+        {
+            area        20.0 m2;
+            U         2000.0 W/m2/K;
+        }
+    }
+);

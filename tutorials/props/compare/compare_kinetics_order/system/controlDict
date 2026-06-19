@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Rate-law order from DATA: 1st- vs 2nd-order fits overlaid on measured c(t) --- the data picks the order";
+verbosity     2;

@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- acetone-methanol
+  Promoted from the ChemSep DECHEMA set (Artistic-2.0). See provenance.
+\*---------------------------------------------------------------------------*/
+
+components  ( acetone methanol );
+model       UNIQUAC;
+
+parameters
+{
+    i           acetone;
+    j           methanol;
+    a_ij        203.226;   // K
+    a_ji        -42.3894;   // K
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_methanol_acetone   -84.2364;   // CAS 67-56-1 -> 67-64-1
+    A_acetone_methanol   403.8524;   // CAS 67-64-1 -> 67-56-1
+}
+
+provenance
+{
+    source        literature;
+    citation      "DECHEMA Chemistry Data Series (UNIQUAC interaction energies, 1 atm), as tabulated in the ChemSep v8.3 database (H. Kooijman & R. Taylor, Artistic-2.0)";
+    fitData       "<not refit>";
+    fitDate       "<literature>";
+    algorithm     "<not reported>";
+    chi2          "<not reported>";
+    nDataPoints   0;
+    validityRange { note "1 atm DECHEMA VLE; explicit T-range not captured on import"; }
+    author        "Imported from ChemSep via chemsep_to_choupo; promoted 2026-06-15";
+    notes         "Standard published DECHEMA values, NOT independently re-fit or per-value verified here. Glass-box caveat (CLAUDE.md): cross-check against your own VLE data before quantitative use. The raw cal/mol energies are kept in the source{} block above for audit.";
+}

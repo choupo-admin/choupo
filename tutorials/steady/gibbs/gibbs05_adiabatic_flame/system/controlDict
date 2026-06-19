@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  Adiabatic flame temperature for lean CH4/air at 298 K (φ = 0.5,
+  i.e. 100 % excess air).  Demonstrates the GibbsReactor adiabatic
+  mode: outer Newton on T satisfying H_out(T, n_eq(T)) = H_in.
+
+  The lean mixture is chosen deliberately: stoichiometric CH4/air
+  would reach ~ 2200 K, which falls outside the Trange of the Reid
+  Cp_ig polynomials (calibrated to 1500 K).  At φ = 0.5 the flame
+  sits around 1700 K, comfortably inside the valid range.
+
+  A note on the v0.16 thermodynamic stack:  the polynomial Cp model
+  extrapolates badly above ~ 1800 K (the cubic fits give negative
+  Cp by 2500 K).  Replacing PolynomialCp with a piecewise Shomate
+  fit (valid to 6000 K) is on the v0.22 roadmap; until then,
+  reactor temperatures must be kept inside the Trange of every
+  species.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Adiabatic flame of lean CH4 in air (φ = 0.5)";
+
+verbosity     3;

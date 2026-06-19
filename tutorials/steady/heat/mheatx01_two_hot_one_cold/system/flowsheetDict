@@ -1,0 +1,82 @@
+/*---------------------------------------------------------------------------*\
+  mheatx01_two_hot_one_cold
+  =========================
+
+  Multi-stream heat exchanger (the Aspen MHeatX analogue): TWO hot water
+  streams are cooled by ONE cold water stream inside a single adiabatic
+  shell --- the canonical multi-stream heat-recovery problem.
+
+  THE SPEC (glass-box, "information follows the streams"):  every inlet
+  carries its OWN outlet target temperature.  The unit does NOT rate
+  hardware; it VERIFIES the first law:
+
+      Q_k       = F_k (h_k,out - h_k,in)        per stream
+      Q_hot     = Σ Q_k over the streams that cool   (< 0, released)
+      Q_cold    = Σ Q_k over the streams that heat   (> 0, absorbed)
+      imbalance = Σ Q_k over ALL streams             (external duty)
+
+  For a truly adiabatic shell the imbalance is ~0; a non-zero value is the
+  external duty the topology would have to supply, REPORTED honestly (never
+  a silently-invented duty).  The unit also builds the hot/cold composite
+  curves and reports the INTERNAL minimum-approach temperature (the in-unit
+  pinch).
+
+  Streams (water, liquid):
+      hot1 : 100 kmol/h, 380 -> 330 K   (gives up ~105 kW)
+      hot2 :  60 kmol/h, 360 -> 330 K   (gives up  ~38 kW)
+      cold : 340 kmol/h, 300 -> 320 K   (takes up ~143 kW)
+
+  The cold flow is sized so the bundle is adiabatic: cold absorbs what the
+  two hot streams release.  Both hot outlets (330 K) stay above the cold
+  outlet (320 K), so the composite curves never cross --- dT_min > 0.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    hot1
+    {
+        F            100.0 kmol/h;
+        T            380.0 K;
+        P            3.0 bar;
+        molarComposition { water 1.0; }
+    }
+
+    hot2
+    {
+        F            60.0 kmol/h;
+        T            360.0 K;
+        P            3.0 bar;
+        molarComposition { water 1.0; }
+    }
+
+    cold
+    {
+        F            340.0 kmol/h;
+        T            300.0 K;
+        P            3.0 bar;
+        molarComposition { water 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        mhx;
+        type        multiStreamHX;
+        inputs      ( hot1  hot2  cold );
+        outputs     ( hot1Out  hot2Out  coldOut );
+
+        operation
+        {
+            // Each inlet's outlet target T (the spec the unit verifies).
+            outlet
+            {
+                hot1 { T 330.0 K; }
+                hot2 { T 330.0 K; }
+                cold { T 320.0 K; }
+            }
+
+            tolerance   0.01;        // first law must close to within 1 % of duty
+        }
+    }
+);

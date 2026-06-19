@@ -1,0 +1,99 @@
+# ------ Build output ---------------------------------------------------
+build/
+# Symlink + Windows binary at the project root.  Anchored with a leading
+# slash so they do NOT match the source directory
+# src/applications/choupoSolve/.
+/choupoSolve
+/choupoSolve.exe
+/choupoBatch
+/choupoBatch.exe
+/choupoCtrl
+/choupoCtrl.exe
+/choupoProps
+/choupoProps.exe
+
+# Packaged release distributions (rebuild via `make windows` + packaging)
+dist/
+
+# ------ Legacy in-source artifacts (no longer produced) ----------------
+src/**/*.o
+src/**/*.d
+
+# ------ User workspace (newCase) ---------------------------------------
+# Your OWN cases (created with `newCase`) default to $CHOUPO_HOME/cases.
+# User scratch, never part of the bundled tutorials -- never commit.
+/cases/
+
+# ------ Run-time artifacts inside cases --------------------------------
+**/log.*
+**/*.log
+# reports/ is generated output (controlDict reports{} block, v0.41+)
+tutorials/*/*/reports/
+# fractal plants nest sectors/units arbitrarily deep -> ignore reports/ at any depth
+tutorials/**/reports/
+# Solver-generated CSVs (sweep / optim / trajectory / propertyScan /
+# fit_history / parity / per-component property output) -- the filename
+# is user-defined in the dict so we match by location.  Recursive **
+# covers fractal plants AND archived tutorials/props/old/.  Experimental
+# datasets that ship with a case (rare) live under constant/experimental/
+# and are whitelisted below.
+tutorials/**/*.csv
+!tutorials/**/constant/experimental/*.csv
+# Generated fit / estimate proposals (any nesting depth -- cases live under a
+# sub-class folder since 2026-06-03, e.g. steady/optimisation/<case>/).
+tutorials/**/constant/binaryPairs/*/*.fit-*.dat
+tutorials/**/constant/components/*.estimate-*.dat
+
+# ------ LaTeX intermediate files (PDFs are tracked) --------------------
+docs/*.aux
+docs/*.log
+docs/*.out
+docs/*.toc
+docs/*.build.log
+
+# ------ Editor / IDE ---------------------------------------------------
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# ------ Per-user tool state --------------------------------------------
+.claude/
+
+# Reference papers (third-party copyrighted material; keep locally,
+# do not distribute via the repo)
+docs/[0-9]*-*.pdf
+# Third-party vendor manuals: copyrighted, kept locally for reference
+# only --- never committed.
+docs/vendor/
+# IST student-project reference (PEQ II ETBE, ~240 MB PDF): kept locally as
+# a format reference; far too large + third-party to commit.
+docs/ProjetoISTProxy/
+
+# Personal screenshots (untracked)
+Screenshot*.png
+
+# Accidental drag-and-drop captures (don't bundle photos in the repo)
+*.jpg
+*.jpeg
+*.png
+!docs/**/*.png
+!gui/public/**/*.png
+tutorials/*/*/code/.build/
+
+# Copyrighted reference papers --- never commit to the public repo
+Literature/
+
+# local site rehearsal (build output)
+site/_dist/
+tutorials/**/code/.build/
+tutorials/**/log.choupo*
+
+# Theory guide -- not part of v1.0 (academic doc, co-author pending)
+docs/theoryGuide.*
+bin/curate/refs/
+
+__pycache__/
+*.pyc
+docs/*.fls
+docs/*.fdb_latexmk

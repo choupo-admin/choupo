@@ -1,0 +1,9 @@
+/* SECTOR B (composite of one flash) */
+children    ( fb );
+boundary    { inlets ( feed );  outlets ( vapor  liquid ); }
+connections
+(
+    { from feed;        to fb/feed;    }
+    { from fb/vapor;    to vapor;      }
+    { from fb/liquid;   to liquid;     }
+);

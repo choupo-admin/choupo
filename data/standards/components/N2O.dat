@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Nitrous oxide  (N2O, CAS 10024-97-2)
+
+  Greenhouse gas; emitted from agriculture (denitrification) and from
+  adipic-acid plants.  Also the "laughing gas" anaesthetic.  Forms
+  thermally from N2 + O2 + O3 at intermediate temperatures.  Useful
+  in flue-gas equilibrium screening.
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+  reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
+  literature value, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        N2O;
+formula     N2O;
+CAS         10024-97-2;
+
+MW          44.013;            // kg/kmol
+Tc          309.57;             // K
+Pc          72.55;              // bar
+omega       0.142;              // [-]
+Tb          184.67;             // K
+HvapTb      16550;              // J/mol
+Vliq        3.62e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    82050.0;         // J/mol  -- ideal-gas reference
+    s_298      219.96;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.92962   657.130   -23.350);
+    Trange        (168  310);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (21.62   7.281e-2   -5.778e-5   1.830e-8);
+    Trange        (250  1500);
+}

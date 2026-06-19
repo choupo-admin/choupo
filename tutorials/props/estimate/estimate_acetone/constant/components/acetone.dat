@@ -1,0 +1,64 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/acetone.dat
+// sha256   dd98ef46d9d7d2bf586316c209058fdd7582d1c491262ed7e52e8aa6b78f56b6
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Acetone  (C3H6O, CAS 67-64-1)
+  Sources:   vaporPressure  -- NIST WebBook (Ambrose & Sprake, 1974)
+             constants + Cp  -- Poling, Prausnitz, O'Connell (5th ed.), App. A
+             gibbsFormation  -- NIST WebBook (ideal-gas, 298 K)
+\*---------------------------------------------------------------------------*/
+
+name        acetone;
+formula     C3H6O;
+CAS         67-64-1;
+
+MW          58.080;        // kg/kmol
+Tc          508.10;        // K
+Pc          47.01;         // bar
+omega       0.3070;        // [-]   acentric factor
+Tb          329.22;        // K     normal boiling point
+HvapTb      29100;         // J/mol latent heat at Tb
+Vliq        7.35e-5;       // m³/mol liquid molar volume at 25 °C (73.5 cm³/mol)
+
+gibbsFormation
+{
+    dHf_298   -217100.0;      // J/mol  -- ideal-gas reference
+    s_298     295.30;         // J/(mol·K) -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference
+}
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- Psat(Tb) = 1.009 bar (check)
+    coefficients  (4.42448   1312.253   -32.445);
+    Trange        (259.16  507.60);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   -- Cp(298) = 73.4
+    coefficients  (6.301   0.2606   -1.253e-4   2.038e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // approximate constant ~125 J/(mol·K) over 250-330 K
+    coefficients  (125.0);
+    Trange        (250  330);
+}
+
+provenance
+{
+    vaporPressure  "NIST WebBook -- Ambrose & Sprake 1974";
+    constants      "Poling/Prausnitz/O'Connell 5th ed., Appendix A";
+    gibbsFormation "NIST WebBook (ideal-gas, 298 K)";
+}

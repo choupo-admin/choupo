@@ -1,0 +1,10 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.111111111111     1e-4
+stream  product                F                0.417464865223     1e-4
+kpi     reactor                F_in_kmol_h      400                1e-4
+kpi     reactor                F_out_kmol_h     1502.8735148       1e-4
+kpi     reactor                M_in_kg_h        9818.9             1e-4
+kpi     reactor                M_out_kg_h       9818.9             1e-4
+kpi     reactor                Q_kW             3759.14055046      1e-4
+kpi     reactor                T                900                1e-4

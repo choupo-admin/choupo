@@ -1,0 +1,350 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+# =============================================================================
+#  runTests  --  numeric regression for Choupo tutorials
+#
+#  Two checks, both stronger than the old `binary > /dev/null && PASS`
+#  (which passes even when the solver returns NaN, exit code 0):
+#
+#    1. NaN / inf guard (EVERY case): if the structured result block
+#       contains a NaN or inf value, the case FAILS --- catches the
+#       silent-NaN trap that a plain exit-code check misses.
+#
+#    2. Reference KPIs (cases that ship an `expected` file): each line
+#       names a KPI or stream value, its golden-master value, and a
+#       relative tolerance; the actual value is compared and the case
+#       FAILS on any deviation beyond tolerance.
+#
+#  The `expected` file lives in the case directory.  Format (one per line,
+#  `#` comments allowed):
+#
+#       # kind   name      key         expected        reltol
+#       kpi      flash01   V_over_F    0.30398357      1e-4
+#       stream   vapor     F           0.0084439881    1e-4
+#
+#  `kind` is `kpi` (look inside the "kpis" of the named unit) or `stream`
+#  (look inside the named stream).  `reltol` is |actual-exp|/|exp| (falls
+#  back to absolute when exp is ~0).
+#
+#  Usage:
+#      runTests                       # every tutorial under tutorials/
+#      runTests tutorials/steady/flash01_benzene_toluene   # one case
+#      runTests --record <case>       # write/refresh that case's expected
+#                                       from the current run (golden master)
+#
+#  Exit code: 0 if all pass, 1 if any fail.
+# =============================================================================
+
+set -uo pipefail
+
+ROOT=$(cd "$(dirname "$0")/.." && pwd)
+cd "$ROOT"
+
+# --- locate the binary for a case (by controlDict application; code/ -> buildCode)
+binary_for() {
+    local case_dir="$1"
+    if [ -d "$case_dir/code" ]; then echo "BUILDCODE"; return; fi
+    local app
+    app=$(grep -oP '^[[:space:]]*application[[:space:]]+\K\w+' \
+            "$case_dir/system/controlDict" 2>/dev/null | head -1)
+    echo "${app:-choupoSolve}"
+}
+
+# --- run a case, echo its full stdout
+run_case_raw() {
+    local case_dir="$1" app="$2"
+    if [ "$app" = BUILDCODE ]; then
+        "$ROOT/bin/buildCode" "$case_dir" >/dev/null 2>&1 || { echo "__BUILDFAIL__"; return; }
+        "$case_dir/code/.build/choupoCase" "$case_dir" 2>&1
+    else
+        "$ROOT/$app" "$case_dir" 2>&1
+    fi
+}
+
+# --- pull "key": value out of the line that defines `name` ({ ... } object)
+get_value() {
+    local out="$1" name="$2" key="$3"
+    printf '%s\n' "$out" \
+        | grep "\"$name\": {" | grep -m1 "\"$key\":" \
+        | grep -oP "\"$key\":\s*\K-?[0-9][0-9.eE+-]*|\"$key\":\s*\K-?(nan|inf)" \
+        | head -1
+}
+
+# --- pull "key": value out of an operationResults diagnostics object (choupoProps
+#     curation ops -- estimateComponent constants, fit stats -- emit per-op
+#     `{ "name": "<op>", ..., "diagnostics": {...} }`, NOT the `"<name>": {}` form
+#     get_value reads, so they need their own extractor).
+get_diag() {
+    local out="$1" opname="$2" key="$3"
+    printf '%s\n' "$out" \
+        | grep "\"name\": \"$opname\"" | grep -m1 "\"diagnostics\":" \
+        | grep -oP "\"$key\":\s*\K-?[0-9][0-9.eE+-]*|\"$key\":\s*\K-?(nan|inf)" \
+        | head -1
+}
+
+# --- dispatch by `kind`: diag -> operation diagnostics, else kpi/stream object
+get_any() {
+    local out="$1" kind="$2" name="$3" key="$4"
+    if [ "$kind" = diag ]; then get_diag "$out" "$name" "$key"
+    else get_value "$out" "$name" "$key"; fi
+}
+
+# --- catalogue identity + CAS audit (curation guard, NOT the hot path) ----
+#  Three checks over data/standards/components/*.dat, all HARD failures:
+#    1. the stored `name` field == the filename stem (the canonical key);
+#    2. filename stems are unique (guaranteed by the filesystem, asserted);
+#    3. no two files share a REAL CAS (sentinels 00-00-0 / n/a excluded) --
+#       the duplicate-CAS twin defect (C3H8/propane, NH3/ammonia) must never
+#       come back.  CAS is an audit key here, never a lookup key.
+audit_catalogue() {
+    local dir="$ROOT/data/standards/components" problems=0
+    declare -A cas_files
+    local f stem nm cas
+    for f in "$dir"/*.dat; do
+        [ -f "$f" ] || continue
+        stem=$(basename "$f" .dat)
+        nm=$(awk '/^[[:space:]]*name[[:space:]]/{v=$2; sub(/;.*/,"",v); gsub(/"/,"",v); print v; exit}' "$f")
+        cas=$(awk '/^[[:space:]]*CAS[[:space:]]/{v=$2; sub(/;.*/,"",v); gsub(/"/,"",v); print v; exit}' "$f")
+        if [ -n "$nm" ] && [ "$nm" != "$stem" ]; then
+            printf "FAIL  %-40s  (name '%s' != filename stem)\n" "catalogue:$stem" "$nm"
+            problems=$((problems+1))
+        fi
+        case "$cas" in
+            ""|00-00-0|n/a|na|NA|none) ;;                     # sentinels: skip
+            *)  if [ -n "${cas_files[$cas]:-}" ]; then
+                    printf "FAIL  %-40s  (duplicate CAS %s -- also %s)\n" \
+                        "catalogue:$stem" "$cas" "${cas_files[$cas]}"
+                    problems=$((problems+1))
+                else
+                    cas_files[$cas]="$stem"
+                fi ;;
+        esac
+    done
+
+    # HARD: an ESTIMATE-status component must NEVER live in the frozen catalogue
+    # (promoted Joback proposals belong in a case's constant/components/, not here).
+    local est
+    est=$(grep -liE '^[[:space:]]*status[[:space:]].*ESTIMATE' "$dir"/*.dat 2>/dev/null || true)
+    if [ -n "$est" ]; then
+        while IFS= read -r e; do
+            [ -n "$e" ] || continue
+            printf "FAIL  %-40s  (ESTIMATE-status in the FROZEN catalogue)\n" "catalogue:$(basename "$e" .dat)"
+            problems=$((problems+1))
+        done <<< "$est"
+    fi
+
+    # SOFT, informational: the per-value provenance split (live count, not a magic
+    # constant) — the honest "N annotated / M unattributed" state.
+    local total ann
+    total=$(ls "$dir"/*.dat 2>/dev/null | wc -l | tr -d ' ')
+    ann=$(grep -lE '^[[:space:]]*provenance' "$dir"/*.dat 2>/dev/null | wc -l | tr -d ' ')
+    [ "$problems" -eq 0 ] && printf "PASS  %-40s  (identity + unique CAS; provenance %s/%s annotated)\n" "catalogue" "$ann" "$total"
+    return "$problems"
+}
+
+# --- numeric compare: |a-e|/|e| <= tol  (absolute fallback when e ~ 0)
+within_tol() {
+    awk -v a="$1" -v e="$2" -v t="$3" 'BEGIN{
+        if (a == "" )            { exit 2 }       # missing
+        ae = (e<0)?-e:e
+        diff = a-e; if (diff<0) diff=-diff
+        rel = (ae > 1e-30) ? diff/ae : diff
+        exit (rel <= t) ? 0 : 1
+    }'
+}
+
+RECORD=
+if [ "${1:-}" = "--record" ]; then RECORD=1; shift; fi
+
+# --- gather cases ---------------------------------------------------------
+CASES=()
+if [ "$#" -gt 0 ]; then
+    CASES=("$@")
+else
+    # A case is any directory holding system/controlDict, at ANY depth -- so the
+    # <category>/<subclass>/<case> layout (steady/batch/props) AND the flat ctrl/
+    # both work, and props/old/ (regression fodder) is swept here too.
+    for cat in steady batch ctrl props electrochem; do
+        [ -d "tutorials/$cat" ] || continue
+        while IFS= read -r cd; do
+            CASES+=("$(dirname "$(dirname "$cd")")")
+        done < <(find "tutorials/$cat" -path '*/system/controlDict' 2>/dev/null | sort)
+    done
+    # plant/ is a run-only showcase EXCEPT a FLAT case that ships an `expected`
+    # file: that is a pinned golden-master (the hda -- a plain single-`units`
+    # choupoSolve flowsheet) and IS checked.  A FRACTAL case (top flowsheetDict
+    # carries `children`: ChemicalPlantTutorial, esterification2sector,
+    # twoSectorDemo) stays run-only -- its curate-vs-simulate sector dispatch is
+    # still an open call, so it is NOT auto-checked even if a stale `expected`
+    # lingers from an earlier --record.
+    if [ -d "tutorials/plant" ]; then
+        while IFS= read -r cd; do
+            pdir="$(dirname "$(dirname "$cd")")"
+            [ -f "$pdir/expected" ] || continue
+            grep -q "children" "$pdir/system/flowsheetDict" 2>/dev/null && continue
+            CASES+=("$pdir")
+        done < <(find "tutorials/plant" -path '*/system/controlDict' 2>/dev/null | sort)
+    fi
+fi
+
+# --- auto-generate an expected from a run (steady cases only) -------------
+#  Pulls every numeric KPI of every unit (skipping the volatile
+#  `iterations`) plus each stream's F, at a default relative tolerance.
+auto_generate() {
+    local case_dir="$1" out="$2" reltol="${3:-1e-4}"
+    local block kpis_sec streams_sec opres_sec
+    block=$(printf '%s\n' "$out" | sed -n '/result-begin/,/result-end/p')
+    [ -z "$block" ] && return 1
+    streams_sec=$(printf '%s\n' "$block" | sed -n '/"streams": {/,/^  },\?$/p')
+    kpis_sec=$(printf '%s\n'    "$block" | sed -n '/"kpis": {/,/^  },\?$/p')
+    opres_sec=$(printf '%s\n'   "$block" | sed -n '/"operationResults": \[/,/^  \],\?$/p')
+    [ -z "$kpis_sec$streams_sec$opres_sec" ] && return 1
+    {
+        echo "# Reference KPIs (golden master, auto-recorded by runTests --record)."
+        echo "# kind   name      key         expected        reltol"
+        # streams: F of each
+        printf '%s\n' "$streams_sec" | grep -P '"\w+": \{.*"F":' | while read -r line; do
+            local s f
+            # head -1: a stream line has TWO ": {" (the name and the
+            # "composition" sub-object) --- take the stream name only.
+            s=$(printf '%s' "$line" | grep -oP '"\K\w+(?=": \{)' | head -1)
+            f=$(printf '%s' "$line" | grep -oP '"F":\s*\K-?[0-9][0-9.eE+-]*' | head -1)
+            [ -n "$s" ] && [ -n "$f" ] && printf 'stream  %-22s %-16s %-18s %s\n' "$s" "F" "$f" "$reltol"
+        done
+        # kpis: every numeric key per unit (skip iterations)
+        printf '%s\n' "$kpis_sec" | grep -P '"\w+": \{' | while read -r line; do
+            local u
+            u=$(printf '%s' "$line" | grep -oP '"\K\w+(?=": \{)')
+            [ -z "$u" ] && continue
+            printf '%s' "$line" | grep -oP '"\w+":\s*-?[0-9][0-9.eE+-]*' | while read -r kv; do
+                local k v
+                k=$(printf '%s' "$kv" | grep -oP '^"\K\w+')
+                v=$(printf '%s' "$kv" | grep -oP ':\s*\K-?[0-9][0-9.eE+-]*')
+                [ "$k" = iterations ] && continue
+                printf 'kpi     %-22s %-16s %-18s %s\n' "$u" "$k" "$v" "$reltol"
+            done
+        done
+        # operation diagnostics: deterministic curation-op KPIs (estimateComponent
+        # constants, fit stats) -- pins the estimation path's physics.
+        printf '%s\n' "$opres_sec" | grep -P '"name": "\w+".*"diagnostics": \{' | while read -r line; do
+            local o diags
+            o=$(printf '%s' "$line" | grep -oP '"name": "\K\w+' | head -1)
+            [ -z "$o" ] && continue
+            diags=$(printf '%s' "$line" | grep -oP '"diagnostics": \{\K[^}]*')
+            printf '%s' "$diags" | grep -oP '"\w+":\s*-?[0-9][0-9.eE+-]*' | while read -r kv; do
+                local k v
+                k=$(printf '%s' "$kv" | grep -oP '^"\K\w+')
+                v=$(printf '%s' "$kv" | grep -oP ':\s*\K-?[0-9][0-9.eE+-]*')
+                printf 'diag    %-22s %-16s %-18s %s\n' "$o" "$k" "$v" "$reltol"
+            done
+        done
+    } > "$case_dir/expected"
+    return 0
+}
+
+# --- record mode: refresh existing expected, or auto-generate new ---------
+if [ -n "$RECORD" ]; then
+    for case_dir in "${CASES[@]}"; do
+        exp="$case_dir/expected"
+        app=$(binary_for "$case_dir"); out=$(run_case_raw "$case_dir" "$app")
+        if [ -f "$exp" ]; then
+            tmp=$(mktemp)
+            while read -r line; do
+                case "$line" in ''|\#*) echo "$line" >> "$tmp"; continue;; esac
+                read -r kind name key exp_v tol _ <<< "$line"
+                act=$(get_any "$out" "$kind" "$name" "$key")
+                printf '%-7s %-22s %-16s %-16s %s\n' "$kind" "$name" "$key" "${act:-$exp_v}" "$tol" >> "$tmp"
+            done < "$exp"
+            mv "$tmp" "$exp"
+            echo "refreshed: $exp"
+        elif auto_generate "$case_dir" "$out"; then
+            echo "generated: $exp  ($(grep -cE '^(kpi|stream|diag)' "$exp") refs)"
+        else
+            echo "skip (no kpis/streams block): $case_dir"
+        fi
+    done
+    exit 0
+fi
+
+# --- check mode -----------------------------------------------------------
+pass=0; fail=0
+
+# Catalogue identity + CAS audit runs once on the FULL sweep (it is a property
+# of the whole standard catalogue, not of any one case).
+if [ "$#" -eq 0 ]; then
+    audit_catalogue; nprob=$?
+    if [ "$nprob" -eq 0 ]; then pass=$((pass+1)); else fail=$((fail+nprob)); fi
+fi
+
+for case_dir in "${CASES[@]}"; do
+    name_short=$(basename "$case_dir")
+    app=$(binary_for "$case_dir")
+    out=$(run_case_raw "$case_dir" "$app")
+
+    if [ "$out" = "__BUILDFAIL__" ]; then
+        printf "FAIL  %-40s  (compile failed)\n" "$name_short"; fail=$((fail+1)); continue
+    fi
+
+    # result block only (avoid false hits in the iteration log)
+    block=$(printf '%s\n' "$out" | sed -n '/result-begin/,/result-end/p')
+    [ -z "$block" ] && block="$out"
+
+    # (1) NaN / inf guard
+    if printf '%s\n' "$block" | grep -qiE ':[[:space:]]*-?(nan|inf)\b'; then
+        printf "FAIL  %-40s  (NaN/inf in result)\n" "$name_short"; fail=$((fail+1)); continue
+    fi
+
+    # (2) reference KPIs
+    if [ -f "$case_dir/expected" ]; then
+        bad=""
+        while read -r line; do
+            case "$line" in ''|\#*) continue;; esac
+            read -r kind name key exp_v tol _ <<< "$line"
+            [ -z "${tol:-}" ] && continue
+            act=$(get_any "$out" "$kind" "$name" "$key")
+            within_tol "$act" "$exp_v" "$tol"
+            case $? in
+              0) ;;
+              2) bad="$bad\n    $kind.$name.$key: MISSING (expected $exp_v)";;
+              *) bad="$bad\n    $kind.$name.$key: got ${act:-?} expected $exp_v (reltol $tol)";;
+            esac
+        done < "$case_dir/expected"
+        if [ -n "$bad" ]; then
+            printf "FAIL  %-40s  (KPI mismatch)" "$name_short"; printf "$bad\n"; fail=$((fail+1)); continue
+        fi
+        printf "PASS  %-40s  (checked vs reference)\n" "$name_short"; pass=$((pass+1))
+    else
+        printf "pass  %-40s  (smoke + NaN guard)\n" "$name_short"; pass=$((pass+1))
+    fi
+done
+
+echo "--------------------------------------------------------------------"
+echo "PASS $pass / FAIL $fail"
+[ "$fail" -eq 0 ]

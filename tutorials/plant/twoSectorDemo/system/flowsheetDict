@@ -1,0 +1,4 @@
+/*--- Two-sector demo plant. UMBRELLA holding two sectors that share the
+      plant-level constant (components, pairs, reactions). Each sector RUNS
+      on its own with its OWN compiled unit op (see each sector code folder). ---*/
+children   ( SECTOR_R  SECTOR_S );

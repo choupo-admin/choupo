@@ -1,0 +1,51 @@
+// ============================================================
+//  PROPOSAL -- review before promoting to data/standards/
+//  name 2butanol   CAS 78-92-2   (2-butanol)
+//  Tc<-IUPAC Pc<-IUPAC omega<-PSRK Tb<-WIKIDATA Hfg<-stripped Psat<-stripped Cp<-stripped
+//  license     scalars + Psat = OPEN (CoolProp-MIT / corr-states); Cp/formation stripped for copyright -- student supplies
+//  status UNVERIFIED PROPOSAL   generated 2026-06-07 chemicals/thermo bulk
+// ============================================================
+
+name        twoButanol;
+MW          74.1216;
+Tc          536.2;
+Pc          42.02;
+omega       0.576;
+Tb          372.594;
+// gibbsFormation
+// {
+//     dHf_298   FILL;   // value removed (excluded source); student supplies, cite primary
+//     s_298     FILL;   // value removed (excluded source); student supplies, cite primary
+//     phase     gas;
+// }
+// (Antoine fit removed for copyright caution; corr-states estimate instead)
+vaporPressure { model AmbroseWalton; }
+
+// --- energy block: ESTIMATED (MIT-panel policy 2026-06-07), review before reaction-critical use ---
+gibbsFormation
+{
+    dHf_298   -283400;      // J/mol  ideal-gas [origin=estimated method=Joback uncertainty=~9kJ/mol]
+    dGf_298   -156460;      // J/mol  ideal-gas [Joback]
+    s_298     353.176;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S; ~25 J/mol/K; biased ~R*ln(sigma) for symmetric species]
+    phase     gas;
+}
+idealGasHeatCapacity   // [origin=estimated method=Joback-Cp uncertainty~3%, valid<=1000K]
+{
+    model         polynomial;
+    coefficients  (2.861   0.42374   -0.0002274   4.57e-08);
+    Trange        (200  1000);
+}
+
+
+// Molecular group decomposition (the curation recipe this estimate was built
+// from).  Joback groups; re-run reproduces the estimate.  Method-keyed.
+groups { joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } ); }
+
+// --- review status (machine-readable; data/proposed UNVERIFIED tier) ----------
+//  This file lives in data/proposed/ (NOT the verified data/standards/ tree).
+//  A student must REVIEW the values and PROMOTE it before they are trusted.
+provenance
+{
+    status  "UNVERIFIED ESTIMATE -- student-review pending (data/proposed tier)";
+    review  { state pending; reviewer student; }
+}

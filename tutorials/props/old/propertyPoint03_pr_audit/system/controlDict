@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Audit the Peng-Robinson EoS (Z, H_R, S_R, v) at 5 reference states; sibling of the SRK audit";
+
+verbosity     3;

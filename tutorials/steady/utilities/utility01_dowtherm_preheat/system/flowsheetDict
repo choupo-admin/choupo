@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  utility01_dowtherm_preheat
+  ==========================
+
+  A hydrocarbon feed (50/50 n-hexane / n-octane) needs to be heated from
+  320 K to ~530 K before downstream conversion.  HP steam can deliver at
+  most ~525 K (T_sat at 40 barg) -- not enough for the temperature drop
+  we want.  Next escalation up the temperature ladder is a hot-oil loop;
+  the textbook choice in the 250-400 C range is Dowtherm A.
+
+  Hardware (the credo): area + U + flow direction.  The duty Q, the
+  outlet temperatures, and the Dowtherm flowrate fall out of the
+  effectiveness-NTU solution.
+
+  Process : 40 kmol/h at 320 K, 5 bar (mixed C6 + C8 hydrocarbon)
+  Utility : Dowtherm A loop, delivery 623 K (350 C), `utility dowthermA;`
+            pulls the rest of the conditions from the catalogue
+  Hardware: A = 25 m^2, U = 600 W/(m^2.K), counter-current
+
+  The `utilities` report aggregates the hot-side mass flow and emits
+  reports/utilities/consumption.csv with MW and EUR/h delivered.  The
+  inspection question for the student: how much Dowtherm A do we
+  actually consume?  At what monetary cost per hour?
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    processFeed
+    {
+        F            40.0 kmol/h;
+        T            320.0 K;
+        P            5.0 bar;
+        molarComposition { nHexane 0.5;  C8H18 0.5; }
+    }
+
+    hotOil
+    {
+        utility      dowthermA;          // pulls components, state, P, T_in
+        F            150 kmol/h;          // the user sizes the loop flow
+    }
+}
+
+units
+(
+    {
+        name        preheater;
+        type        heatExchanger;
+        inputs      ( hotOil  processFeed );
+        outputs     ( oilReturn  processOut );
+
+        operation
+        {
+            area     25.0 m2;
+            U        600.0 W/m2/K;
+            flow     counter;
+        }
+    }
+);

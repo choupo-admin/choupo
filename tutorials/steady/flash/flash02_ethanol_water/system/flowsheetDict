@@ -1,0 +1,35 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  isothermal flash, ethanol/water, NRTL
+
+  NOTE (golden re-recorded): the operation pressure formerly read a BARE
+  `P 1.01325;` (no unit) -> parsed as 1.01325 Pa, not bar.  At ~1 Pa the
+  K-values blow up to O(1e5), so the flash silently reported a fully
+  superheated vapour (V/F = 1, phaseSet = 0) and "Converged: yes" with no
+  warning -- a wrong all-vapour answer for a 50/50 ethanol/water at 355 K,
+  1 atm, which MUST be two-phase.  Adding the `bar` unit restores the
+  physically-correct partial vaporisation; the `expected` golden was
+  re-recorded accordingly (was the wrong all-vapour result).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            355.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.50;  water 0.50; }
+    }
+}
+
+units
+(
+    {
+        name        flash02;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 355.0 K;  P 1.01325 bar; }
+    }
+);

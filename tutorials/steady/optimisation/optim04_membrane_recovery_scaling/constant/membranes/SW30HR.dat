@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Membrane: SW30HR -- CASE-LOCAL copy with PER-ION permeabilities
+
+  Base values verbatim from data/standards/membranes/SW30HR.dat
+  (A_w, ratings: DuPont FilmTec SW30HR-380 archetype).  This case feeds
+  an IONIC water analysis (Ca, Mg, Na, K, Cl, SO4, HCO3), so the
+  per-solute B_s table is extended with per-ion entries.
+
+  PER-ION B_s ARE PEDAGOGICAL ESTIMATES: order-of-magnitude values
+  chosen to reproduce typical brackish-RO observed rejections on a
+  tight seawater membrane (monovalents ~99.5 %, divalents >99.9 %).
+  The transport treats each ion INDEPENDENTLY (uncoupled
+  solution-diffusion, no Donnan/charge coupling) -- the unit op
+  announces this simplification at run time.  For research-grade
+  per-ion transport, regress B_s against your own element test data.
+\*---------------------------------------------------------------------------*/
+
+name           SW30HR;
+kind           RO;
+manufacturer   "DuPont FilmTec";
+
+A_w            1.0e-6  m/s/bar;
+permeabilities
+{
+    // salts / molecules (from the standard entry)
+    NaCl       2.0e-8  m/s;
+    MgSO4      1.0e-9  m/s;
+    glucose    5.0e-10 m/s;
+
+    // per-ion (pedagogical estimates -- see header)
+    Na         2.0e-8  m/s;
+    K          2.5e-8  m/s;
+    Cl         2.0e-8  m/s;
+    HCO3       1.5e-8  m/s;
+    Ca         2.0e-9  m/s;
+    Mg         1.5e-9  m/s;
+    SO4        1.0e-9  m/s;
+}
+
+P_max          82.7;            // bar (1200 psi)
+T_max          318;             // K (45 C)
+pH_min         2;
+pH_max         11;
+MWCO           100;             // Da

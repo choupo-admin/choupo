@@ -1,0 +1,25 @@
+/*---------------------------------------------------------------------------*\
+  leaf01_flash / flowsheetDict   (LEAF NODE -- fractal base case)
+
+  A leaf carries `type` + `operation` (the unit) + `boundary` (its
+  interface) + `streams` (the default feeds, so it runs isolated).  No
+  `units (...)` list.  Compare flash01_benzene_toluene, which writes the
+  SAME flash as a one-element units list -- identical physics, two roupas.
+\*---------------------------------------------------------------------------*/
+
+name        flash;
+type        isothermalFlash;
+operation   { T 370.0 K;  P 1.0 bar; }
+
+boundary    { inlets ( feed );  outlets ( liquid  vapor ); }
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            370.0 K;
+        P              1.0 bar;
+        molarComposition  { benzene 0.40;  toluene 0.60; }
+    }
+}

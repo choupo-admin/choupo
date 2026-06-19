@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  userOp02_component_splitter
+  ===========================
+
+  A USER-DEFINED unit op (`componentSplitter`), written in this case's
+  code/ folder.  Build + run with:
+
+      runCase tutorials/steady/userOp02_component_splitter
+
+  (runCase sees the code/ folder and compiles it first.)
+
+  The op is a SHORTCUT separator: a per-component recovery to the
+  overhead.  Here a benzene/toluene feed is split so 95 % of the benzene
+  and only 8 % of the toluene leave overhead --- an enriched light cut,
+  the kind of stand-in you place before sizing a real column.  Two outlet
+  streams (overhead, bottoms); mass closes to 100 % (every component is
+  conserved across the split).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            360.0 K;
+        P            1.01325 bar;
+        molarComposition  { benzene 0.50;  toluene 0.50; }
+    }
+}
+
+units
+(
+    {
+        name        splitter;
+        type        componentSplitter;     // <-- the user-defined op
+        in          feed;
+        outputs     ( overhead  bottoms );
+
+        operation
+        {
+            recovery               // fraction of each component to overhead
+            {
+                benzene   0.95;    // 95 % of the benzene goes overhead
+                toluene   0.08;    //  8 % of the toluene goes overhead
+            }
+        }
+    }
+);

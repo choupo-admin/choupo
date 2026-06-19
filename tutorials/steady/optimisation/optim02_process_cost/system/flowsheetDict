@@ -1,0 +1,58 @@
+/*---------------------------------------------------------------------------*\
+  Same reactor -> heater -> separator flowsheet as process02_with_design.
+  The optimisation driver varies two design variables:
+
+      reactor V_R     in [0.002, 0.010]  m^3
+      heater  Q       in [   0,  500]    W      (credo-pure: hardware,
+                                                 not outlet T)
+
+  In v0.34 the heater is credo-pure: it specifies Q (the absolute
+  thermal power, hardware), not Tout (which would be a DesignSpec
+  disguised as a unit-op parameter).  The Nelder-Mead simplex therefore
+  varies the heater's Q directly; the heater's T_out becomes a KPI the
+  student can plot, not a control variable.
+
+  Initial guesses are placeholders -- overwritten by Nelder-Mead.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            1.0 kmol/h;
+        T            350.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+    }
+}
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+
+        operation   { V_R 0.005; }
+        reaction    esterification_etac;
+    }
+
+    {
+        name        heater;
+        type        heater;
+        in          reactorOut;
+        outputs     ( hotStream );
+
+        operation   { Q  150.0 W; }     // initial -- Nelder-Mead overwrites
+    }
+
+    {
+        name        separator;
+        type        isothermalFlash;
+        in          hotStream;
+        outputs     ( liqProd  vapProd );
+
+        operation   { P 1.0 bar; }
+    }
+);

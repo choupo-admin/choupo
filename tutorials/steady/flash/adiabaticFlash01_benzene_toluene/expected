@@ -1,0 +1,5 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0277777777778    1e-4
+stream  liquid                 F                0.0262953073608    1e-4
+stream  vapor                  F                0.00148247041701   1e-4

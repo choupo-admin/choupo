@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- ethanol-water
+  Promoted from the ChemSep DECHEMA set (Artistic-2.0). See provenance.
+\*---------------------------------------------------------------------------*/
+
+components  ( ethanol water );
+model       UNIQUAC;
+
+parameters
+{
+    i           ethanol;
+    j           water;
+    a_ij        87.4601;   // K
+    a_ji        55.2881;   // K
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_ethanol_water   173.801;   // CAS 64-17-5 -> 7732-18-5
+    A_water_ethanol   109.8687;   // CAS 7732-18-5 -> 64-17-5
+}
+
+provenance
+{
+    source        literature;
+    citation      "DECHEMA Chemistry Data Series (UNIQUAC interaction energies, 1 atm), as tabulated in the ChemSep v8.3 database (H. Kooijman & R. Taylor, Artistic-2.0)";
+    fitData       "<not refit>";
+    fitDate       "<literature>";
+    algorithm     "<not reported>";
+    chi2          "<not reported>";
+    nDataPoints   0;
+    validityRange { note "1 atm DECHEMA VLE; explicit T-range not captured on import"; }
+    author        "Imported from ChemSep via chemsep_to_choupo; promoted 2026-06-15";
+    notes         "Standard published DECHEMA values, NOT independently re-fit or per-value verified here. Glass-box caveat (CLAUDE.md): cross-check against your own VLE data before quantitative use. The raw cal/mol energies are kept in the source{} block above for audit.";
+}

@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Single-effect evaporator: 35 g/L brine concentrated by 50 % at 1 bar (BPE included)";
+verbosity     3;

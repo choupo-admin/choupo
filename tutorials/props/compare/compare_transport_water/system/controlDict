@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Compare water transport: IAPWS (IF97 R12-08/R15-11) vs generic correlations (Andrade / SatoRiedel), 280-370 K";
+
+verbosity     2;

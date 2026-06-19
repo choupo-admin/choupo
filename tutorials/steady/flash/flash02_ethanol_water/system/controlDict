@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Isothermal flash 50/50 ethanol/water at 355 K (NRTL)";
+
+verbosity     3;

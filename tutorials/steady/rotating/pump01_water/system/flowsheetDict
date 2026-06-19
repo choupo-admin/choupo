@@ -1,0 +1,56 @@
+/*---------------------------------------------------------------------------*\
+  pump01_water
+  ============
+
+  An incompressible-liquid pump.  Liquid water enters at 1 bar, 298 K;
+  the pump shaft delivers 2 kW with efficiency 0.65.
+
+  Hardware (the only OP parameters):
+      W_shaft = 2 kW       motor power delivered to the liquid
+      eta     = 0.65       pump efficiency
+
+  Because the liquid is incompressible (v ~ const), the discharge is
+  closed-form --- no EoS, no Newton:
+      w_real = W_shaft / F_mol_s
+      w_isen = eta * w_real          (the useful v*dP part)
+      dP     = w_isen / v_molar
+      P_out  = P_in + dP                                  (RESULT)
+      dT     = (1 - eta) * w_real / Cp_liq                (dissipation)
+
+  Hand check (water: v ~ 1.8e-5 m3/mol, Cp_liq ~ 75 J/(mol*K)):
+      F = 36 kmol/h = 10 mol/s
+      w_real = 2000 W / 10 mol/s        = 200 J/mol
+      w_isen = 0.65 * 200               = 130 J/mol
+      dP     = 130 / 1.8e-5             ~ 7.2e6 Pa = 72 bar... (so P_out ~ 73 bar)
+      dT     = 0.35 * 200 / 75          ~ 0.9 K  (tiny --- pumps barely heat)
+
+  "Pump to exactly 50 bar" is a DesignSpec on $W_shaft targeting
+  pump.P_out (converges in one step --- the relation is linear).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            36.0 kmol/h;        // = 10 mol/s
+        T           298.15 K;
+        P             1.0  bar;
+        molarComposition  { water 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        pump01;
+        type        pump;
+        in          feed;
+        outputs     ( out );
+
+        operation
+        {
+            W_shaft   2.0  kW;           // hardware: motor power
+            eta       0.65;              // pump efficiency
+        }
+    }
+);

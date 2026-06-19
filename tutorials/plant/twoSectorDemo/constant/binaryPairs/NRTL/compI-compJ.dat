@@ -1,0 +1,14 @@
+/*--- NRTL binary: compI + compJ  (synthetic placeholder, demo case) ---*/
+components  ( compI  compJ );
+model       NRTL;
+parameters
+{
+    i      compI;
+    j      compJ;
+    a_ij   0.0;
+    b_ij   360.0;
+    a_ji   0.0;
+    b_ji   520.0;
+    alpha  0.30;
+}
+provenance { source placeholder; note "demo two-sector case"; }

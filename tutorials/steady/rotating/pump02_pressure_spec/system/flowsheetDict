@@ -1,0 +1,54 @@
+/*---------------------------------------------------------------------------*\
+  pump02_pressure_spec
+  ====================
+
+  The SAME incompressible-liquid pump as pump01, specified the OTHER way:
+  by the discharge pressure it must reach.  In a real plant you rarely
+  know a pump's shaft power up front --- you know the HEADER it feeds
+  (here 30 bar).  So you state P_out and the shaft power is the RESULT.
+
+  This is NOT a DesignSpec.  For an incompressible liquid the pump
+  relation is invertible in CLOSED FORM,
+
+      ΔP = eta · W_shaft / Q_vol     <->     W_shaft = Q_vol · ΔP / eta ,
+
+  with Q_vol = F · v set by the feed.  Give P_out, get W_shaft --- one
+  shot, no Newton, no outer loop.  (pump01 gives W_shaft and gets P_out;
+  the two cases are exact inverses of one another.)
+
+  Specify EXACTLY ONE of { W_shaft | P_out | dP }.  A pressure let-down
+  (P_out < P_in) is not a pump --- use a 'valve'.
+
+  Hand check (water: v ~ 1.8e-5 m3/mol):
+      F      = 36 kmol/h = 10 mol/s
+      Q_vol  = 10 * 1.8e-5            = 1.8e-4 m3/s
+      dP     = 30 - 1 bar             = 2.9e6 Pa
+      W_shaft = Q_vol * dP / eta      = 1.8e-4 * 2.9e6 / 0.65 ~ 803 W ~ 0.80 kW
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            36.0 kmol/h;        // = 10 mol/s
+        T           298.15 K;
+        P             1.0  bar;
+        molarComposition  { water 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        pump02;
+        type        pump;
+        in          feed;
+        outputs     ( out );
+
+        operation
+        {
+            P_out     30.0 bar;          // the header it feeds  (RESULT: W_shaft)
+            eta       0.65;              // pump efficiency
+        }
+    }
+);

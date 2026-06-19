@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "IAPWS-IF97 steam tables (R7-97(2012)) -- the verification case. The six computer-program verification states of the release (Table 5 region 1, Table 15 region 2) evaluated as points, the saturation line 0.01-350 degC, and three isobars whose Tsat crossings pin the release's Table 36 backward values. The published numbers ARE the golden master (reltol 1e-8).";
+verbosity     2;

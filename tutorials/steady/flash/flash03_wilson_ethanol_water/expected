@@ -1,0 +1,12 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0277777777778  1e-4
+stream  liquid                 F                0.0063767199082  1e-4
+stream  vapor                  F                0.0214010578696  1e-4
+kpi     flash03                F_alpha          0.0063767199082  1e-4
+kpi     flash03                F_beta           0.0214010578696  1e-4
+kpi     flash03                F_in             0.0277777777778  1e-4
+kpi     flash03                P                101325           1e-4
+kpi     flash03                T                355              1e-4
+kpi     flash03                V_over_F         0.770438083305   1e-4
+kpi     flash03                phaseSet         0                1e-4

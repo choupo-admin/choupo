@@ -1,0 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser04_size_dependent_growth  --  steady continuous crystalliser
+  solved by the discretised PBE on a size grid, WITH size-dependent growth.
+
+  This is the cut that JUSTIFIES the FVM solver.  The method of moments
+  (model MSMPR) requires G to be independent of L to close --- once
+  G(L) = G0 (1 + sizeFactor * L), the dμ_j/dt equations couple to higher
+  moments and the closed-form n(L) = n0 exp(-L/Gτ) breaks.  The FVM
+  marches the steady PBE forward in L node by node, with G_k evaluated
+  at the local L_k, so size-dependence is taken at face value.
+
+  Same kinetics + vessel + feed as crystalliser02_msmpr / 03 --- the
+  only thing that changes is `sizeFactor 500.0 1/m` (about 50 % growth
+  enhancement at L = 1 mm).  The bigger crystals out-grow the small
+  ones --- the population density shifts visibly toward the right and
+  the mean size climbs.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Crystalliser FVM-PBE with size-dependent growth (sizeFactor > 0)";
+
+verbosity     3;
+
+reports
+{
+    streamTable  {}
+    massBalance  {}
+}

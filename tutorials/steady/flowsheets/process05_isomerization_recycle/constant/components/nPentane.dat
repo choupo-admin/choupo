@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-Pentane  (C5H12, CAS 109-66-0)  -- case-local.
+  Used in the isomerization-with-recycle test case as the LESS volatile
+  isomer (the product, leaves in the column bottoms).
+  Data: Reid-Prausnitz-Poling 4th ed. + NIST WebBook (rounded).
+\*---------------------------------------------------------------------------*/
+
+name        nPentane;
+formula     C5H12;
+CAS         109-66-0;
+
+MW          72.150;
+Tc          469.70;
+Pc          33.70;          // bar
+omega       0.2510;
+Tb          309.20;         // K  (36.0 degC)
+HvapTb      25790;          // J/mol
+Vliq        1.150e-4;       // m^3/mol
+
+gibbsFormation
+{
+    dHf_298   -146760.0;        // J/mol  -- ideal-gas reference
+    s_298     348.940;          // J/(mol*K)  -- third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;     // log10(P/bar) = A - B/(T + C),  T in K
+    coefficients  (3.97786   1064.840   -41.136);
+    Trange        (270  330);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;  // J/(mol*K)
+    coefficients  (-3.626   0.4873   -2.580e-4   5.305e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;  // J/(mol*K)
+    coefficients  (167.0);
+    Trange        (270  330);
+}

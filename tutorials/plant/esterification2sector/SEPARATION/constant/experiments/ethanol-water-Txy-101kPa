@@ -1,0 +1,41 @@
+/*---------------------------------------------------------------------------*\
+  Ethanol(1)/water(2) VLE at 101.325 kPa -- MEASURED x, T AND y (the vapour
+  composition), so a thermodynamic-consistency test (Gibbs-Duhem) can actually
+  run.  Representative literature compilation (textbook 1-atm ethanol-water
+  T-x-y; azeotrope near x1 = 0.894).  Pure endpoints omitted (gamma is 0/0 there;
+  gamma^inf is taken from the dilute points).
+
+  Self-describing format (units MANDATORY):  columns ( {name;unit;role} ) + grid.
+\*---------------------------------------------------------------------------*/
+
+columns
+(
+    { name x[ethanol];  unit frac;  role independent; }
+    { name T;           unit K;     role independent; }
+    { name y[ethanol];  unit frac;  role dependent;   }
+);
+
+data
+(
+    0.019   368.65   0.170
+    0.072   362.15   0.389
+    0.097   359.85   0.438
+    0.124   358.45   0.470
+    0.166   357.25   0.509
+    0.234   355.85   0.545
+    0.261   355.45   0.558
+    0.327   354.65   0.583
+    0.397   353.85   0.612
+    0.508   352.95   0.656
+    0.573   352.45   0.684
+    0.676   351.89   0.739
+    0.747   351.56   0.782
+    0.894   351.30   0.894
+    0.973   351.42   0.974
+);
+
+provenance
+{
+    source        literature;
+    citation      "ethanol-water VLE at 1 atm (textbook/DECHEMA-style compilation)";
+}

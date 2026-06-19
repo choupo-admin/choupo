@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for O3 in liquid water (infinite dilution).
+
+  Source DATA: Sander, R. (2015) "Compilation of Henry's law constants
+  (version 4.0) for water as solvent," Atmos. Chem. Phys. 15, 4399-4981.
+  doi:10.5194/acp-15-4399-2015.   Licensed CC-BY 3.0.
+  Redistributed via the open-source `thermo` library (C. Bell, MIT code);
+  the Sander DATA retains its own CC-BY licence (honoured here).
+
+  CHANGES (indicated per CC-BY): Sander's van't Hoff form for the
+  pressure / mole-fraction Henry constant,  ln H_xp[Pa] = A + B/T,
+  was converted to Choupo's parameterisation
+        H_ref     = exp(A + B/T_ref)      [Pa] at T_ref = 298.15 K
+        enthalpy  = R * B                 [J/mol]  (dH_diss)
+  with A = 28.1663, B = -2412.77  (CAS 10028-15-6).
+
+  NOTE: INFINITE-DILUTION coefficient -- physically appropriate for
+  sparingly-soluble solutes.  For water-miscible species (alcohols,
+  ketones, amines, acids) it is only the dilute limit; prefer an
+  activity-coefficient model for the full composition range.
+
+  Validity: ~273-373 K near 1 atm (linear Henry form).  For strong
+  electrolytes / high loading switch to a Pitzer / eNRTL model.
+\*---------------------------------------------------------------------------*/
+
+solute      O3;
+solvent     water;
+
+model       vantHoff;
+H_ref       5.2233e+08 Pa;
+T_ref       298.15 K;
+enthalpy    -20060  J/mol;
+Trange      ( 273  373 );

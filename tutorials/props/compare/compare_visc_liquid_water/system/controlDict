@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Compare 2 liquid viscosity correlations (Andrade vs Vogel) for water, 280-360 K";
+
+verbosity     2;

@@ -1,0 +1,5 @@
+# Reference KPIs (golden master).  kind  name  key  expected  reltol
+# Newton-1D in extent, first-order Arrhenius.
+kpi     reactor                X_limiting       0.52590711876    1e-6
+kpi     reactor                T                350              1e-9
+kpi     reactor                k                0.00357499942014 1e-5

@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  reboiler_water_copper  --  thermoPackage  (IAPWS-IF97 pure water)
+
+  PURE water on the IF97 fundamental-equation package.  IF97 supplies the
+  saturation temperature Tsat(P), the dome-aware h (latent heat via the
+  H_stream eps-step), the saturated-liquid transport (rho_l, mu_l, lambda_l,
+  cp_l) AND the surface tension sigma (IAPWS R1-76) that the Rohsenow nucleate
+  flux and the Zuber CHF both need.  This case is SELF-CONTAINED: its own
+  water.dat lives in constant/components/.
+\*---------------------------------------------------------------------------*/
+
+components       ( water );
+
+pureFluids
+{
+    water { method IF97; }
+}
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

@@ -1,0 +1,58 @@
+/*---------------------------------------------------------------------------*\
+  propertyScan02_txy_ethanol_water
+  ================================
+
+  The canonical first VLE diagram a student of separations meets.
+  Sweeps the liquid-phase ethanol mole fraction from 0 to 1 at 1 atm,
+  reporting:
+
+      * T_bubble(x_ethanol)   ->  the bubble-T curve
+      * gamma_ethanol(x)      ->  the NRTL activity coefficient
+      * gamma_water(x)
+
+  Open `txy_ethanol_water.csv` and plot T_bubble vs x_ethanol --- you
+  see the dip at x_ethanol ~ 0.89 where Tb crosses below both pure-
+  component boiling points: that's the minimum-boiling AZEOTROPE.
+
+  The azeotrope is why ordinary distillation cannot produce anhydrous
+  ethanol from a fermentation mash: separating x > 0.89 demands either
+  pressure-swing or entrainer-aided distillation.  Seeing the gamma
+  values approach 1 near pure ethanol and balloon up at the dilute
+  end is half the intuition you need for that lesson.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        txy_diagram;
+        type        propertyScan1D;
+
+        vary
+        {
+            variable  x[ethanol];
+            from      0.01;          // avoid x=0 (T_bubble = Tb_water exactly)
+            to        0.99;
+            n         50;
+        }
+
+        state
+        {
+            P            1.01325 bar;
+            // The partner is water (the only other declared species);
+            // the sweep walks x_eth, the parser sets x_water = 1 - x_eth.
+            composition  { ethanol 0.5;  water 0.5; }
+        }
+
+        // T_bubble + y_eq_ethanol is the trio (with the swept x[ethanol])
+        // that the GUI's CsvAutoPlot recognises and renders as a classical
+        // T-x-y diagram (bubble + dew curves on the same axes).  The
+        // gamma columns ride along for the side-curiosity of activity-
+        // coefficient behaviour at the dilute ends.
+        properties  ( T_bubble  y_eq_ethanol  gamma_ethanol  gamma_water );
+
+        output
+        {
+            file    txy_ethanol_water.csv;
+        }
+    }
+);

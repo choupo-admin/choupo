@@ -1,0 +1,6 @@
+/*  Ternary boiling-temperature surface (T_bubble over the composition triangle)
+    via propertyScanTernary mode bubbleT — reuses BubblePoint per simplex node.
+    Works with ideal binaries (only the 3 Psat are needed).  Run-only smoke. */
+application   choupoProps;
+description   "Ternary T_bubble surface (benzene/toluene/water) at 1 bar via propertyScanTernary mode bubbleT";
+verbosity     2;

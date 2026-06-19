@@ -1,0 +1,271 @@
+% preamble.tex --- shared LaTeX preamble for Choupo manuals
+% Style: sober monochrome with subtle dark-blue accent for
+% hyperlinks only.  Pedagogical boxes via tcolorbox.
+
+% ---- Encoding, fonts, language --------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage{microtype}
+\usepackage{textcomp}
+
+% ---- Layout ---------------------------------------------------------
+\usepackage[a4paper, margin=2.4cm, headheight=15pt]{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{needspace}
+\usepackage{graphicx}
+
+% ---- Code listings --------------------------------------------------
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Sober palette --- almost monochrome, one accent reserved for links
+\definecolor{rulegray}{HTML}{888888}
+\definecolor{lightgray}{HTML}{f4f4f4}
+\definecolor{mediumgray}{HTML}{cccccc}
+\definecolor{darkgray}{HTML}{555555}
+\definecolor{accent}{HTML}{1c3a5a}
+
+\lstdefinelanguage{dict}{
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+}
+
+\lstdefinelanguage{shell}{
+  morecomment=[l]{\#},
+}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{lightgray},
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{mediumgray},
+  numbers=none,
+  showstringspaces=false,
+  breaklines=true,
+  breakatwhitespace=true,
+  postbreak=\mbox{\textcolor{darkgray}{$\hookrightarrow$}\space},
+  columns=fullflexible,
+  keepspaces=true,
+  xleftmargin=0.7em,
+  framexleftmargin=0.7em,
+  framextopmargin=0.5em,
+  framexbottommargin=0.5em,
+  commentstyle=\color{darkgray}\itshape,
+  stringstyle=\color{black},
+  language=shell,
+  % No {---}/{--} -> en-dash rules: they mangle ASCII box art (the header
+  % banner) and directory trees (|--...) and CLI --flags in listings.
+  % Hyphens must stay literal in monospace.  Accents below ARE needed
+  % (the listing font renders them via the LaTeX accent commands).
+  literate={ã}{{\~a}}1 {á}{{\'a}}1 {â}{{\^a}}1
+           {é}{{\'e}}1 {ê}{{\^e}}1
+           {í}{{\'i}}1
+           {ó}{{\'o}}1 {ô}{{\^o}}1 {õ}{{\~o}}1
+           {ú}{{\'u}}1
+           {ç}{{\c c}}1
+           {·}{{\textperiodcentered}}1
+}
+
+% ---- PGFPlots (theory-guide figures) -------------------------------
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta, calc}
+
+% ---- Boxes (pedagogical signposts) ----------------------------------
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{breakable,skins}
+
+\newtcolorbox{keyidea}{
+  breakable,
+  colback=lightgray,
+  colframe=black,
+  boxrule=0.4pt,
+  arc=1pt,
+  left=10pt,right=10pt,top=6pt,bottom=6pt,
+  before upper={\noindent\textbf{\sffamily Key idea.}\quad},
+}
+
+\newtcolorbox{pitfall}{
+  breakable,
+  colback=white,
+  colframe=darkgray,
+  boxrule=0.4pt,
+  arc=1pt,
+  left=10pt,right=10pt,top=6pt,bottom=6pt,
+  before upper={\noindent\textbf{\sffamily Common pitfall.}\quad},
+}
+
+\newtcolorbox{tryit}{
+  breakable,
+  colback=lightgray,
+  colframe=darkgray,
+  boxrule=0.4pt,
+  arc=1pt,
+  left=10pt,right=10pt,top=6pt,bottom=6pt,
+  before upper={\noindent\textbf{\sffamily Try it now.}\quad},
+}
+
+\newtcolorbox{whatyoulllearn}{
+  breakable,
+  colback=white,
+  colframe=black,
+  boxrule=0pt,
+  leftrule=2pt,
+  arc=0pt,
+  outer arc=0pt,
+  left=10pt,right=4pt,top=2pt,bottom=2pt,
+  before upper={\noindent\textit{\sffamily\small What you'll learn.}\quad},
+}
+
+% Worked example --- the pedagogical workhorse of the theory manual.
+\newcounter{theoryexample}[section]
+\renewcommand{\thetheoryexample}{\thesection.\arabic{theoryexample}}
+\newtcolorbox{example}[1][]{
+  breakable,
+  colback=lightgray,
+  colframe=black,
+  boxrule=0.4pt,
+  arc=1pt,
+  left=10pt,right=10pt,top=6pt,bottom=6pt,
+  title={\textbf{\sffamily Worked example~\thetheoryexample.}\enspace #1},
+  fonttitle=\sffamily,
+  coltitle=black,
+  attach title to upper,
+  before title={\refstepcounter{theoryexample}},
+}
+
+% Intuition --- a one-paragraph sense-making aside, marked by a left rule.
+\newtcolorbox{intuition}{
+  breakable,
+  colback=white,
+  colframe=black,
+  boxrule=0pt,
+  leftrule=2pt,
+  arc=0pt,
+  outer arc=0pt,
+  left=10pt,right=4pt,top=2pt,bottom=2pt,
+  before upper={\noindent\textit{\sffamily\small Intuition.}\quad},
+}
+
+% Link-back to a tutorial --- visual cue that this maps to a runnable case.
+\newtcolorbox{tutoriallink}{
+  breakable,
+  colback=white,
+  colframe=darkgray,
+  boxrule=0pt,
+  leftrule=2pt,
+  arc=0pt,
+  outer arc=0pt,
+  left=10pt,right=4pt,top=2pt,bottom=2pt,
+  before upper={\noindent\textbf{\sffamily\small Runnable case.}\quad},
+}
+
+% ---- Headers/footers ------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\sectionmark}[1]{\markboth{\thesection\quad #1}{}}
+\fancyhead[L]{\small\sffamily\nouppercase{\leftmark}}
+\fancyhead[R]{\small\sffamily\thepage}
+\fancyfoot[C]{\small\sffamily Choupo-v0.2.0}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\let\choupoSection\section
+\renewcommand{\section}{\clearpage\choupoSection}
+
+% ---- Section titles -------------------------------------------------
+\titleformat{\section}
+  {\Large\bfseries\sffamily}{\thesection}{0.8em}{}[\vspace{-0.4em}\rule{\linewidth}{0.3pt}]
+\titleformat{\subsection}
+  {\large\bfseries\sffamily}{\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\sffamily}{\thesubsubsection}{0.8em}{}
+
+\titlespacing*{\section}{0pt}{2.0ex plus 1ex minus.2ex}{1.0ex plus.2ex}
+\titlespacing*{\subsection}{0pt}{1.6ex plus 1ex minus.2ex}{0.8ex plus.2ex}
+
+% ---- Hyperref last --------------------------------------------------
+\usepackage[colorlinks=true,
+            linkcolor=accent,
+            citecolor=accent,
+            urlcolor=accent,
+            bookmarksnumbered=true,
+            destlabel=true,        % \label{ch:cstr} -> PDF named destination "ch:cstr"
+            pdfborder={0 0 0}]{hyperref}
+
+% ---- Shortcuts ------------------------------------------------------
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\file}[1]{\texttt{#1}}
+\newcommand{\dict}[1]{\texttt{#1}}
+\newcommand{\cpp}{C\texttt{++}}
+
+% Manual authorship: the Developer Guide is V\'itor Geraldes alone (he authored
+% the code it documents); the other manuals are co-authored with Pedro Mendes.
+% A guide opts into the solo credit by defining \soloDevAuthor before the call.
+\newcommand{\manualauthors}{\ifdefined\soloDevAuthor V\'{\i}tor Geraldes\else V\'{\i}tor Geraldes and Pedro Mendes\fi}
+
+% OpenFOAM-style manual front matter: title page, then a copyright/licence
+% notice page.  No source-code banner belongs on manual covers.
+\newcommand{\manualfrontmatter}[2]{%
+  \begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{2.0cm}
+  \begin{center}
+  \includegraphics[height=4.0cm]{../gui/public/logo2-mark.png}\\[0.8cm]
+  {\Huge\bfseries\sffamily Choupo}\\[0.35cm]
+  {\Large\sffamily The Open Source Chemical Process Simulator}\\[1.3cm]
+  {\Huge\bfseries\sffamily #1}\\[0.7cm]
+  {Version v0.2.0}\\[0.1cm]
+  {18 June 2026}
+  \end{center}
+  \end{titlepage}
+
+  \clearpage
+  \thispagestyle{empty}
+  \vspace*{1.2cm}
+  \noindent Copyright \textcopyright{} 2026 \manualauthors.\\[0.3cm]
+  \noindent Authors: \manualauthors.\\[0.3cm]
+  \noindent This work is licensed under a Creative Commons
+  Attribution-ShareAlike 4.0 International License.\\[0.3cm]
+  \noindent Code examples, Choupo case files, and other machine-readable
+  examples are licensed under GPL-3.0-or-later.\\[0.3cm]
+  \noindent Typeset in \LaTeX.
+
+  \vspace{1.0cm}
+  \noindent\rule{\linewidth}{0.3pt}
+  \noindent\footnotesize\textit{Acknowledgment.}\quad Choupo was conceived and
+  architected by V\'{\i}tor Geraldes. Substantial parts of the initial
+  implementation, documentation, and tutorial corpus were produced with
+  assistance from Anthropic Claude Code using Claude Opus/Fable models. This
+  guide is published under human curation, review, and editorial responsibility
+  by \manualauthors.
+
+  \clearpage
+  \markboth{License}{License}
+  \section*{License}
+  \lstinputlisting[
+    basicstyle=\ttfamily\tiny,
+    frame=none,
+    backgroundcolor=\color{white},
+    breaklines=true,
+    columns=fullflexible
+  ]{cc-by-sa-4.0.txt}
+
+  \clearpage
+  \markboth{Trademarks}{Trademarks}
+  \section*{Trademarks}
+  #2
+  \clearpage
+}

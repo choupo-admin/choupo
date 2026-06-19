@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Psat: Ambrose-Walton corresponding-states PREDICTION vs fitted Antoine DATA, for benzene (non-polar, good) and ethanol (associating, degrades) --- see the error, then decide";
+
+verbosity     2;

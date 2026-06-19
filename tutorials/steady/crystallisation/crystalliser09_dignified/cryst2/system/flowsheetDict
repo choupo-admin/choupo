@@ -1,0 +1,10 @@
+/* cryst2 (LEAF) -- ANTISOLVENT crystalliser, targets KCl (eNRTL drowning-out). */
+type        crystalliser;
+operation   { operatingTemperature 278.15 K;  solute KCl;  cakeMoisture 0.10;  dHcryst 0.0; }
+boundary    { inlets ( liquor1  freshEthanol  recoveredEthanol );  outlets ( KCl_cake  finalLiquor ); }
+streams     // defaults so it runs ISOLATED
+{
+    liquor1          { F 100 kmol/h; T 278.15 K; P 1 bar; molarComposition { water 0.948; KCl 0.0513; potassiumBitartrate 0.0003; } }
+    freshEthanol     { F 15 kmol/h;  T 298.15 K; P 1 bar; molarComposition { ethanol 1.0; } }
+    recoveredEthanol { F 85 kmol/h;  T 351 K;    P 1 bar; molarComposition { ethanol 0.81; water 0.19; } }
+}

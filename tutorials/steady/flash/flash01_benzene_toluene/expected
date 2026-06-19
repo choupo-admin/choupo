@@ -1,0 +1,6 @@
+# Reference KPIs (golden master).  kind  name  key  expected  reltol
+# Isothermal flash, benzene/toluene, Raoult --- algebraic, deterministic.
+kpi     flash01                V_over_F         0.30398357314    1e-6
+kpi     flash01                T                370              1e-9
+stream  vapor                  F                0.00844398814279 1e-6
+stream  liquid                 F                0.019333789635   1e-6

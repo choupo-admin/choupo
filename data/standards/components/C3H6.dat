@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Propene / Propylene  (C3H6, CAS 115-07-1)
+
+  Second-largest petrochemical building block (polypropylene,
+  propylene oxide, cumene).  Co-product of steam cracking and
+  catalytic cracking.
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+  reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
+  literature value, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        C3H6;
+formula     C3H6;
+CAS         115-07-1;
+
+MW          42.081;            // kg/kmol
+Tc          365.57;             // K
+Pc          46.65;              // bar
+omega       0.142;              // [-]
+Tb          225.46;             // K
+HvapTb      18420;              // J/mol
+Vliq        6.81e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    20410.0;         // J/mol  -- ideal-gas reference
+    s_298      266.94;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.94560   829.51   -22.658);
+    Trange        (225  366);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (3.710   0.2345   -1.160e-4   2.205e-8);
+    Trange        (250  1500);
+}
+
+groups
+{
+    unifac ( { group CH3; count 1; } { group CH2=CH; count 1; } );
+    joback ( { group CH3; count 1; } { group eCH; count 1; } { group eCH2; count 1; } );
+}

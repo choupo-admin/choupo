@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "Counter-current backward-feed triple-effect evaporator (MCFT 10.38 variant)";
+verbosity     2;
+
+units
+{
+    pressure       kPa;
+    temperature    K;
+    flow           kg/h;
+}

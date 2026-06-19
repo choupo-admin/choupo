@@ -1,0 +1,78 @@
+/*---------------------------------------------------------------------------*\
+  flash05_ternary_massFlows  --  ternary benzene/toluene/n-hexane flash,
+                                 feed declared via per-species MASS flows.
+
+  This is the (e) form of stream input from the v0.27 grammar
+  (see userGuide "Composition basis"): instead of writing F total
+  plus a composition, the student writes the absolute mass flow of
+  each species and the parser sums + converts to molar:
+
+      m_i [kg/s]   →   F_mol,i [kmol/s]   =   m_i / MW_i
+      F_total [kmol/s] = Sigma F_mol,i
+      x_i = F_mol,i / F_total
+
+  Feed composition by mass (5000 kg/h total):
+      benzene    1500 kg/h   (30 wt%)     MW =  78.11 kg/kmol
+      toluene    2500 kg/h   (50 wt%)     MW =  92.14 kg/kmol
+      n-hexane   1000 kg/h   (20 wt%)     MW =  86.18 kg/kmol
+
+  Conversion to molar:
+      F_benzene  = 1500 / 78.11  = 19.203 kmol/h
+      F_toluene  = 2500 / 92.14  = 27.131 kmol/h
+      F_nHexane  = 1000 / 86.18  = 11.604 kmol/h
+      F_total                    = 57.938 kmol/h
+      x_benzene = 0.3315 ; x_toluene = 0.4682 ; x_nHexane = 0.2003
+
+  At T = 365 K, P = 1 bar the n-hexane (Tb = 342 K) is well above
+  its boiling point and goes preferentially to the vapour; toluene
+  (Tb = 384 K) is sub-cooled and stays preferentially in the
+  liquid; benzene (Tb = 353 K) partitions.  Result:
+
+      molar basis    F = 57.94 kmol/h    V/F = 0.494
+                     L = 29.34 kmol/h    V = 28.60 kmol/h
+
+      mass basis     F = 5000.0 kg/h     V/F_mass = 0.487
+                     L = 2567.3 kg/h     V = 2432.7 kg/h
+
+  Mass fractions tell the partition story directly:
+
+      feed:    w_benzene 0.300   w_toluene 0.500   w_nHexane 0.200
+      liquid:  w_benzene 0.244   w_toluene 0.624   w_nHexane 0.133
+      vapor:   w_benzene 0.360   w_toluene 0.369   w_nHexane 0.271
+
+  Mass balance closes per species --- e.g. n-hexane:
+      feed:    5000 * 0.200 = 1000 kg/h
+      liquid:  2567 * 0.133 =  341 kg/h
+      vapor:   2433 * 0.271 =  659 kg/h     -> 341 + 659 = 1000.
+
+  Toggle the units menu in the GUI to Mass-basis to see the F and
+  composition flip back to kg/h + w_i, matching the input statement
+  symmetrically.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        T            365.0 K;
+        P              1.0 bar;
+        massFlows
+        {
+            benzene   1500.0 kg/h;
+            toluene   2500.0 kg/h;
+            nHexane   1000.0 kg/h;
+        }
+    }
+}
+
+units
+(
+    {
+        name        flash05;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 365.0 K;  P 1.0 bar; }
+    }
+);

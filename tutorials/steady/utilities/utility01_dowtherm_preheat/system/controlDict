@@ -1,0 +1,12 @@
+application   choupoSolve;
+description   "Dowtherm A loop preheats a hydrocarbon feed (eps-NTU)";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+    utilities      { }
+}

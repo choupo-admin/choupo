@@ -1,0 +1,11 @@
+operations
+(
+    {
+        name      bt;
+        type      propertyScanTernary;
+        mode      bubbleT;
+        state     { P 1 bar; }
+        grid      { n 16; }
+        output    { file ternary.csv; }
+    }
+);

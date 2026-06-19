@@ -1,0 +1,13 @@
+application   choupoSolve;
+description   "User-defined yieldReactor (case-local code/): neoPentane -> nPentane, X=0.8";
+
+verbosity     3;
+
+// The reports work exactly the same with a user-defined unit op ---
+// the reporting layer reads streams / KPIs / profiles generically.
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    spreadsheet    { }
+}

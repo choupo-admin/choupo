@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/fitParameters.schema.json",
+  "title": "fitParameters operation",
+  "description": "Levenberg-Marquardt regression of thermoPackage parameters against experimental data.  Each parameter is identified by a dot-path into the thermoPackage with `initial` / `min` / `max`; the residual block selects what to fit against (e.g. T_bubble vs x at a given P) and supplies the experimental points.  Outputs two CSVs: a fit log (chi^2 + parameter trajectory per iteration) and a parity CSV (model vs experiment at the optimum).  The PropsView renders the fit log as a chi^2 + parameter-trajectory plot, and the parity CSV as a scatter against the y=x line.",
+  "type": "object",
+  "properties": {
+    "parameters": {
+      "type": "array",
+      "title": "Parameters to fit",
+      "description": "Each entry identifies a scalar in the thermoPackage to vary, with bounds and an initial guess.  `path` is dot-separated (e.g. `activityModel.pairs[0].a_ij`).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path":    { "type": "string", "title": "Dot-path into thermoPackage" },
+          "initial": { "type": "number", "title": "Initial guess" },
+          "min":     { "type": "number", "title": "Lower bound" },
+          "max":     { "type": "number", "title": "Upper bound" }
+        },
+        "required": ["path", "initial", "min", "max"]
+      },
+      "minItems": 1
+    },
+    "residual": {
+      "type": "object",
+      "title": "Residual definition",
+      "description": "What to fit against (e.g. T_bubble at a fixed P) + the experimental data points.",
+      "properties": {
+        "kind": { "type": "string", "title": "Residual kind (e.g. T_bubble)" },
+        "P":    { "type": "number", "title": "Pressure (when applicable)", "unit": "Pa" },
+        "data": {
+          "type": "array",
+          "title": "Experimental data (flat pairs of x, y)",
+          "items": { "type": "number" }
+        }
+      },
+      "required": ["kind", "data"]
+    },
+    "options": {
+      "type": "object",
+      "title": "LM options",
+      "description": "Tuning knobs for the Levenberg-Marquardt loop (lambda, tolerance, maxIter).  Defaults are fine for most cases.",
+      "additionalProperties": true
+    }
+  },
+  "required": ["parameters", "residual"],
+  "additionalProperties": true
+}

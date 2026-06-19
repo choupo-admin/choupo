@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- benzene-toluene (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( benzene toluene );
+model       NRTL;
+
+parameters
+{
+    i           benzene;
+    j           toluene;
+    a_ij        0.0;
+    b_ij        30.2928;   // K
+    a_ji        0.0;
+    b_ji        -25.7077;   // K
+    alpha       0.3019;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_benzene_toluene   60.198;   // CAS 71-43-2 -> 108-88-3
+    A_toluene_benzene   -51.0865;   // CAS 108-88-3 -> 71-43-2
+    alpha               0.3019;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "71-43-2/108-88-3";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

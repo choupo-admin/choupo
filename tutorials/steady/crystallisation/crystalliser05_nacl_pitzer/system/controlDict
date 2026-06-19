@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "NaCl crystalliser: saturation from the PITZER ion activity (Ksp = (gamma_pm*m_sat)^2). Feed is a SUPERSATURATED brine (post-evaporation, ~7.6 mol/kg); the unit drops it to saturation (6.144 mol/kg) and crystallises the excess.";
+verbosity     3;

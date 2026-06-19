@@ -1,0 +1,69 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: CO  (C1O1, CAS 630-08-0)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Lemmon-JCED-2006
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        CO;
+formula     C1O1;
+CAS         630-08-0;
+
+MW          28.0101;        // kg/kmol  [CoolProp]
+Tc          132.8599;        // K        [CoolProp EOS]
+Pc          34.98195;        // bar      [CoolProp EOS]
+omega       0.04970;        // [-]      [CoolProp EOS]
+Tb          81.6382;        // K  normal boiling [CoolProp]
+HvapTb      6013.3;        // J/mol  at Tb     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (3.87258   303.181   -3.2988);
+    Trange        (68.66  130.20);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (30.4224  -0.0108531  2.49507e-05  -1.13563e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (99.4854  -0.996965  0.00578606  6.33422e-06);
+    Trange        (73  82);
+}
+
+sublimation
+{
+    tripleT   68.1600;        // K   [CoolProp]
+    tripleP   15536.8767;        // Pa  [CoolProp]
+    // Hfus / Hsub absent: CoolProp models no solid phase.  The
+    // sublimation curve stays undrawn until measured Hsub lands.
+}
+
+gibbsFormation
+{
+    dHf_298   -110529.4;        // J/mol  ideal-gas [origin=measured method=NASA-TM4513]
+    s_298     197.66;        // J/(mol.K) third-law absolute [NASA-TM4513]
+    phase     gas;
+}
+diffusionVolume  18.0;
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Lemmon-JCED-2006";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.54%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.18%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    gibbsFormation "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";
+}

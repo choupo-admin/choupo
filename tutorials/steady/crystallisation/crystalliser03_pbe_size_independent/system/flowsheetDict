@@ -1,0 +1,40 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser03_pbe_size_independent / flowsheetDict   (LEAF node)
+
+  Same physical setup as crystalliser02_msmpr (hot sugar syrup, 5 m³ vessel
+  at 20 °C, k_g 1e-7, k_b 1e9) -- only the solver method changes:
+  `model FVM` discretises the population balance n(L) on Nbins evenly-spaced
+  size bins, marching the steady PBE forward in L with first-order upwind.
+  With sizeFactor 0 (the default), G(L) is constant and the FVM result
+  must match the analytical MSMPR exponential.
+\*---------------------------------------------------------------------------*/
+
+name        cryst;
+type        crystalliser;
+model       FVM;
+
+crystallisation  sugarKinetics;        // -> constant/crystallisation
+
+operation
+{
+    operatingTemperature  293.15 K;        // 20 C
+    volume                5.0 m3;           // working suspension volume
+    // 256 bins / 1 mm grid -- the first-order upwind scheme is O(dL/Gtau)
+    // accurate, and 64 bins (the default) gives ~20 % tail error.  Bumping
+    // to 256 brings it to ~5 % so the sanity check against MSMPR is tight.
+    bins                  256;
+    Lmax                  1.0e-3 m;         // ~13 Gtau for these kinetics
+}
+
+boundary    { inlets ( feed );  outlets ( magma ); }
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            353.15 K;            // 80 C hot near-saturated syrup
+        P              1.0 bar;
+        molarComposition  { water 0.85;  sucrose 0.15; }
+    }
+}

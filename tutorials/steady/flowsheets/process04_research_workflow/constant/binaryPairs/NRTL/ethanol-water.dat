@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  Case-local NRTL parameters for ethanol(1) + water(2)
+
+  In a real research workflow this file would carry the parameters that
+  result from a fit against THIS case's experimental data.  For now we
+  use the same DECHEMA literature values as the standards file, so the
+  case reproduces the flash02 result identically.
+
+  When a fit runs (see tutorials/fitNRTL01_ethanol_water), the
+  output is written next to this file as
+
+      ethanol-water.fit-<date>.dat
+
+  and the user manually promotes it by
+
+      mv ethanol-water.fit-<date>.dat ethanol-water.dat
+
+  The unsuffixed file is what the simulator loads.
+\*---------------------------------------------------------------------------*/
+
+components  ( ethanol  water );
+model       NRTL;
+
+parameters
+{
+    i           ethanol;
+    j           water;
+    a_ij       -0.8009;
+    b_ij        246.18;             // K
+    a_ji        3.4578;
+    b_ji       -586.0809;            // K
+    alpha       0.30;
+}
+
+provenance
+{
+    source        literature;
+    citation      "Gmehling & Onken, DECHEMA Vol I Part 1";
+    fitData       "<not refit>";
+    fitDate       "<literature>";
+    algorithm     "<n/a>";
+    chi2          "<n/a>";
+    nDataPoints   0;
+    validityRange { Tmin 298.0; Tmax 373.0; }
+    author        "V. Geraldes, 2026";
+    notes         "Case-local copy of the standards file.  Replace with own fit when ready.";
+}

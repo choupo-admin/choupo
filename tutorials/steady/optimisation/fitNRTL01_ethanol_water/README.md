@@ -1,0 +1,145 @@
+# fitNRTL01_ethanol_water
+
+## What this tutorial demonstrates
+
+The **parameter-estimation workflow**: regress the four NRTL binary
+interaction parameters of the ethanol-water pair (a_ij, b_ij, a_ji,
+b_ji; α held fixed) against experimental bubble-temperature data at
+1.01325 bar, using hand-rolled Levenberg-Marquardt inside the
+`fitBinaryPair` outer driver.
+
+Pedagogical goals (read the LM trace in the log):
+
+* See an outer Marquardt loop (3-up/5-down trust region on λ) wrapped
+  around an inner Newton-1D solving Σ K x = 1 for each (xᵢ, T) pair.
+* Watch λ oscillate as the algorithm switches between Gauss-Newton (λ
+  small) and gradient-descent (λ large) regimes.
+* Watch some LM steps get **rejected** — chi² gets worse, the step is
+  reversed, λ is multiplied by 5, retry.  The whole "trust region"
+  idea visible in one column of the log.
+
+## Files
+
+```
+fitNRTL01_ethanol_water/
+├── system/
+│   ├── controlDict                       verbosity 1 (quiet inner Newtons)
+│   ├── flowsheetDict                     1 stream + 1 bubbleT — the forward model
+│   └── outerDict                         type fitBinaryPair; 4 keywords
+└── constant/
+    ├── thermoPackage                     NRTL with the initial pair (DECHEMA)
+    └── experiments/
+        └── ethanol-water-101kPa          11 (x, T) pairs at 1 atm
+```
+
+Note how minimal the forward case is: **one stream, one bubbleT unit**.
+The outer driver is what does the work — iterating over the dataset
+internally and looping LM over the four parameters.
+
+## The outerDict
+
+```
+type      fitBinaryPair;
+
+pair      ethanol-water;                                   // <c1>-<c2>
+data      constant/experiments/ethanol-water-101kPa;       // dataset dict
+unit      bt01;                                             // unit reporting T_bubble
+```
+
+Four keywords (plus optional `maxIter`, `tolerance`, `fdStep`,
+`lambda0`).  The driver:
+
+1. locates the pair in `thermoPackage.activityModel.pairs` by name,
+2. reads the dataset (a two-column flat list of `xᵢ  Tᵢ`),
+3. finds the bubbleT unit's input stream from the flowsheetDict,
+4. for each LM step:
+   - 8 forward evals to build a central-difference Jacobian over 4
+     params × N data points,
+   - solve the 4×4 normal equations with Marquardt damping,
+   - try the step; accept if chi² decreased, otherwise raise λ and retry.
+
+## Running
+
+```bash
+runCase tutorials/fitNRTL01_ethanol_water
+less   tutorials/fitNRTL01_ethanol_water/log.choupoSolve
+```
+
+## Reading the output
+
+After the run header you get:
+
+```
+=========================  fitBinaryPair  =========================
+  pair:        ethanol-water  (ethanol/water)
+  dataset:     constant/experiments/ethanol-water-101kPa  (11 points)
+  unit:        bt01   feed stream: feed
+  max iter:    30   tol: 1e-06   fd step: 0.0001   λ0: 0.001
+  initial:     a_ij=-0.8009  b_ij=246.18  a_ji=3.4578  b_ji=-586.081
+===================================================================
+
+  iter     chi^2          RMS(K)     λ         step
+  ----  ------------  ----------  --------  --------
+  init  6.0195e+01    2.3393e+00  1.0000e-03            ← literature DECHEMA
+  1     54.0505       2.2167      0.0010    523.93     ← step accepted, λ ÷3
+  2     17990.5239    40.4413     0.0003    0.0009     ← REJECTED, λ ×5
+  ...
+  18    1.8006        0.4046      4.4653    6.8971     ← accepted
+  19    6109.9721     23.5680     1.4884    0.0000     ← REJECTED
+  20    1.8006        0.4046      7.4422    0.0000     ← Δχ²/χ² < tol, done
+```
+
+Then a per-point breakdown:
+
+```
+     i      x_1     T_exp      T_pred      ΔT
+  ----  -------  ---------  ---------  --------
+  0     0.0500   361.950    362.186    0.2357
+  ...
+  10    0.9500   351.450    351.930    0.4798
+```
+
+And finally the proposal-file location:
+
+```
+  proposal written to: constant/binaryPairs/NRTL/ethanol-water.fit-2026-05-16.dat
+```
+
+## Promoting a fit (the "human-in-the-loop" step)
+
+The simulator **never** silently overwrites the active parameter set.
+Promote a proposal explicitly:
+
+```bash
+cd tutorials/fitNRTL01_ethanol_water/constant/binaryPairs/NRTL
+diff ethanol-water.fit-2026-05-16.dat ../../../../../data/standards/binaryPairs/NRTL/ethanol-water.dat
+mv ethanol-water.fit-2026-05-16.dat ethanol-water.dat
+```
+
+Once an unsuffixed `ethanol-water.dat` exists in the case-local
+`constant/binaryPairs/NRTL/`, the next run uses it — the case-local
+file wins over the standards file (see
+`tutorials/process04_research_workflow/README.md` for the lookup-order
+pattern).
+
+## Things to try
+
+* Change `lambda0` to `1.0` — see Marquardt start in pure
+  gradient-descent regime; convergence becomes much slower.
+* Halve `fdStep` to `5.0e-5` — Jacobian is more accurate; if `fdStep`
+  is too small, the second-derivative truncation error wins over
+  rounding and the fit degrades.
+* Drop a few data points to see chi² shrink (and the parameter
+  estimates lose statistical meaning).
+* Replace the dataset with synthetic data generated by `bubbleT01` at
+  known parameters → the LM should recover those parameters within
+  rounding.
+
+## What this prepares you for
+
+* **OptimizationDriver** (Nelder-Mead) — same scaffolding, no
+  data, single scalar objective.
+* **LL flash** with Michelsen TPD — uses Marquardt-style trust
+  region but in stability-test coordinates.
+* **Ternary fits** — `fitBinaryPair` only handles binaries; ternary
+  systems will need a new concrete driver, sharing this one's LM core.

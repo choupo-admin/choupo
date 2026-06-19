@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: high-pressure (HP) saturated steam, plant header.
+
+  Sources: Sinnott & Towler 6ed (2022) §6.5.3; Ulrich & Vasudevan 2004.
+
+  When to use:
+    High-T reactors, large reboilers in heavy-bottom columns, drying of
+    high-boiling solids.  Use only when MP cannot reach (process duty
+    > ~180 C).  Most expensive steam level — minimise its consumption
+    first when hunting for energy savings (pinch / heat-integration).
+    For duties above ~250 C, jump to a hot-oil utility (`dowthermA`).
+\*---------------------------------------------------------------------------*/
+
+utility     steamHP;
+tier        heating;
+mechanism   condensation;
+
+components  ( water );
+state       saturatedVapour;
+P           41.0 bar;                  // ≈ 40 barg
+T_in        525.0 K;                   // 251.9 C
+T_out       525.0 K;                   // 251.9 C  (condensate)
+
+// Energy delivered per kg condensed: latent heat of water at T_sat = 252 C
+dutyPerKg   1714000.0;                 // J/kg  (Hvap_water @ 41 bar, steam tables)
+
+cost        18.0;                      // €/GJ delivered
+costYear    2022;
+description "High-pressure saturated steam header (≈ 40 barg, T_sat ≈ 252 C)";

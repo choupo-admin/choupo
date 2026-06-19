@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Brackish RO, 6 x 8-inch modules: per-module scaling audit (SI at wall vs bulk)";
+
+verbosity     3;

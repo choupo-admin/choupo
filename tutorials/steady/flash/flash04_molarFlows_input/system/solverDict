@@ -1,0 +1,12 @@
+/*---------------------------------------------------------------------------*\
+  solverDict  --  per-unit-op-type solver options (defaults, overridable)
+\*---------------------------------------------------------------------------*/
+
+isothermalFlash
+{
+    tolerance           1e-8;
+    maxIter             50;
+    outerAccelerator    wegstein;
+    compositionTol      1e-6;
+    maxOuterIter        50;
+}

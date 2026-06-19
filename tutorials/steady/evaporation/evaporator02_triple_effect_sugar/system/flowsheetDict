@@ -1,0 +1,158 @@
+/*---------------------------------------------------------------------------*\
+  evaporator02_triple_effect_sugar  --  MCFT Ex. 10.4: triple-effect
+  cocurrent evaporator concentrating a 22 500 kg/h sucrose solution
+  from 5 wt% sucrose toward ~ 25 wt%, using 200 kPa saturated steam
+  to drive Effect 1 and a 15 kPa vacuum on Effect 3.
+
+  Cascade (cocurrent: liquid 1->2->3, generated vapour drives the
+  next effect's heating side):
+
+      F=22 500 kg/h   L1        L2        L3
+      x=0.05  ->[1] -------> [2] -------> [3] ----->
+                  ^          ^             ^
+                  |          |             |
+                Steam        V1            V2        V3 -> condenser
+                200 kPa     (Effect 1's   (Effect 2's
+                T_sat~393K  vapour drives  vapour drives
+                            Effect 2)     Effect 3)
+                P1 = 80 kPa P2 = 45 kPa   P3 = 15 kPa
+
+  PHYSICAL-EQUIPMENT model (v0.29+).  Each effect is its own physical
+  evaporator with an `area` and a `U`; the simulator computes V/F,
+  Q, T_boil and steam demand from the energy balance.  Effect 1
+  consumes utility steam; the vapour V1 that Effect 1 produces is
+  declared as the heating-side input to Effect 2, and similarly
+  V2 -> Effect 3.  The flowsheet runs SEQUENTIALLY left-to-right:
+  no outer iteration is needed because the inputs of each effect
+  are produced by the preceding one (or by the utility stream).
+
+  Equipment we picked (the "spec"):
+      A_1 = A_2 = A_3 = 100 m²
+      U_1 = 2319 W/(m²·K)   (Effect 1, clean steam)
+      U_2 = 2194 W/(m²·K)   (Effect 2)
+      U_3 = 1296 W/(m²·K)   (Effect 3, lowest pressure -> lowest k)
+
+  The textbook target L_3 ~ 4500 kg/h at x = 0.25 corresponds to
+  evaporating ~ 18 000 kg/h total water; that target is NOT enforced
+  here ---  the equipment dimensions ARE the spec, the outlet
+  concentration is the RESULT.  A later tutorial wraps this case in
+  a DesignSpec block that manipulates A_i (or, more commonly, U_i
+  at fixed A_i = A) to drive L_3 to the design target.
+
+  Pedagogical points:
+
+    1.  Cocurrent multi-effect literally just chains single-effect
+        evaporators.  Choupo's flowsheet engine handles the
+        cascading naturally --- the V_i stream of Effect i appears
+        as the heating-side input of Effect i+1, and the V_i mass
+        flow is computed by Effect i's energy balance.
+
+    2.  Economy:  in single-effect (evaporator01_brine) the economy
+        was ~ 0.83 kg evap / kg steam.  Running this cascade gives
+        total V_evap / utility steam ~ 1.7 (= 17 519 / 10 338) ---
+        a doubling, simply by chaining the heat through three
+        effects.  Industrial design targets ~ 2.5 with optimised
+        area allocation and pressure cascade.
+
+    3.  BPE matters more in Effect 3 (most concentrated solute,
+        lowest U); the student SEES T_boil deviate further from
+        T_sat(water, P_3) in the per-effect run header.
+
+  Honest simplification for v0.29:
+
+    The Evaporator unit op reads only T from its heating-steam input
+    (and ignores the F).  This means the F of V_1 that effect 2
+    actually CONSUMES on its heating chest is computed from effect
+    2's own energy balance and is NOT constrained to equal the F of
+    V_1 that effect 1 PRODUCED.  In a real plant those two flows
+    must close (all of V_1 condenses in effect 2's chest, with no
+    other path).  Here the v0.29 model treats the three energy
+    balances independently --- there is a residual mismatch in the
+    V_i mass that the cascade quietly absorbs.
+
+    Closing the inter-effect mass balance turns the cascade into a
+    coupled system (one constraint per link) that wants an outer
+    DesignSpec wrap: manipulate (T_boil_i) or (A_i) to enforce
+    "V_i produced  ==  V_i consumed at effect i+1's chest".  That
+    is the v0.30 multi-effect tutorial.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        T            295.0 K;           // ~ 22 °C, the textbook feed
+        P            200.0 kPa;
+        massFlows                       // 22500 kg/h * 5 wt% sucrose
+        {
+            water    21375 kg/h;
+            sucrose   1125 kg/h;
+        }
+    }
+
+    utilitySteam_200kPa
+    {
+        // F-spec mode (v0.32+):  F is the live-steam flow driving the
+        // whole cascade.  Q_1 = F · ΔHvap; the unit reports A_needed.
+        // The student varies F (initial guess) to see how V/F shifts
+        // across the three effects.  An outer DesignSpec (see
+        // designSpec01_triple_equal_areas) finds the F that hits a
+        // target outlet concentration.
+        F                540.0  kmol/h;
+        P                200.0  kPa;
+        state            saturatedVapour;
+        molarComposition  { water 1.0; }
+        category         LP_steam_200kPa;    // utility tag for aggregation
+    }
+}
+
+// Computed post-processing variables (v0.64).  Each `compute` expression is
+// evaluated AFTER the solve, against the unit KPIs / stream fields, by the
+// `computed` report.  Identifiers are <unit>.<kpi> or <stream>.<field>.
+//   * Q_total    : the cascade's total heat duty (sum of the three effects)
+//   * water_evap : total solvent evaporated across the train
+//   * economy    : kg water evaporated per kg of LIVE steam (only effect1 is
+//                  fed external steam; effects 2/3 reuse the prior vapour)
+variables
+{
+    Q_total    { compute "effect1.duty + effect2.duty + effect3.duty";  unit kW; }
+    water_evap { compute "effect1.F_vap_mass + effect2.F_vap_mass + effect3.F_vap_mass";  unit kg/h; }
+    economy    { compute "water_evap / effect1.F_steam"; }
+}
+
+units
+(
+    {
+        name        effect1;
+        type        evaporator;
+        inputs      ( feed  utilitySteam_200kPa );
+        outputs     ( L1  V1  cond1 );
+        operation
+        {
+            area          100.0 m2;
+            U            2319.0 W/m2/K;
+        }
+    }
+    {
+        name        effect2;
+        type        evaporator;
+        inputs      ( L1  V1 );
+        outputs     ( L2  V2  cond2 );
+        operation
+        {
+            area          100.0 m2;
+            U            2194.0 W/m2/K;
+        }
+    }
+    {
+        name        effect3;
+        type        evaporator;
+        inputs      ( L2  V2 );
+        outputs     ( L3  V3  cond3 );
+        operation
+        {
+            area          100.0 m2;
+            U            1296.0 W/m2/K;
+        }
+    }
+);

@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control --- ED02 over-limiting-current electrodialysis.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Electrodialysis stack driven ABOVE its limiting current (loud warning)";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+}

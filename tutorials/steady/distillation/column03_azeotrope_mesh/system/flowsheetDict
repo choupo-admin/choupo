@@ -1,0 +1,54 @@
+/*---------------------------------------------------------------------------*\
+  column03_azeotrope_mesh
+  =======================
+
+  Ethanol/water (NRTL) distillation by the rigorous SIMULTANEOUS (MESH
+  Newton) method.  This is the payoff of the v0.48 solver: ethanol/water
+  forms an azeotrope at x_eth ~ 0.894 (1 atm), and the sequential
+  bubble-point (Wang-Henke) is unstable here -- on this very case it does
+  NOT converge (200 outer iters).  The MESH Newton converges in ~5
+  iterations to a PHYSICAL distillate (x_eth ~ 0.80, below the azeotrope).
+
+  Feed: 100 kmol/h, 30/70 ethanol/water, saturated liquid, 1 atm.
+  Column: 16 stages, feed at 8, R = 2.5, D = 25 kmol/h, method simultaneous.
+
+  Expected: converged; x_D(ethanol) ~ 0.80 (< 0.894 azeotrope -- physical);
+  T_top ~ 351.4 K (the azeotropic temperature); mass closes 100%.
+
+  NOTE: asking for a distillate ABOVE the azeotrope (x_eth > 0.894) is
+  physically impossible -- no method converges, and that is correct.  The
+  MESH method does not invent a non-physical "past the azeotrope" answer
+  (which the bubble-point used to do).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            363.0 K;
+        P            1.01325 bar;
+        molarComposition { ethanol 0.3;  water 0.7; }
+    }
+}
+
+units
+(
+    {
+        name        column;
+        type        distillationColumn;
+        model       simultaneous;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        16;
+            feedStage      8;
+            refluxRatio    2.5;
+            distillateRate 25.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+        }
+    }
+);

@@ -1,0 +1,18 @@
+/*---------------------------------------------------------------------------*\
+  Forward heat-link: a column's CONDENSER rejects heat; instead of dumping
+  it to cooling water, we reuse it to preheat a downstream process stream.
+  Wired the SAME way as any energy link --- on the CONSUMER:
+      energyInputs ( { from column01.condenser; kind heat; target Q; } )
+  The condenser is then "carried" by the link (not allocated to CW); the
+  reboiler still draws steam (utilityAllocation report).
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Forward heat-link: column condenser preheats a downstream stream";
+
+verbosity     3;
+
+reports
+{
+    utilityAllocation { }
+}

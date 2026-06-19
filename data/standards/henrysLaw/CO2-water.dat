@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for CO2 in liquid water.
+
+  Reference: Sander, R. (2015) Atmos. Chem. Phys. 15, 4399-4981
+  "Compilation of Henry's law constants for water as solvent."
+  Sander's recommended value for CO2-water at T_ref = 298.15 K:
+
+      H_cp(298)  =  3.4e-4  mol/(m^3 * Pa)        (concentration / pressure form)
+
+  Equivalent in the pressure / mole-fraction form  H_xp = P / x_i:
+
+      H_xp(298)  =  P_w / (M_w * H_cp / rho_w)  ≈  1.640e8 Pa   (= 1640 bar)
+
+  Temperature dependence (van't Hoff form):
+
+      H(T) = H_ref * exp [ -dH_diss / R * (1/T - 1/T_ref) ]
+      dH_diss(CO2-water)  ≈  -19400 J/mol   (exothermic dissolution; H grows with T)
+
+  Validity: 273-373 K (around 1 atm).  Above 100 °C and high CO2
+  loadings the linear Henry form fails; switch to a Pitzer / eNRTL
+  electrolyte model (planned for v0.30+).
+\*---------------------------------------------------------------------------*/
+
+solute      CO2;
+solvent     water;
+
+model       vantHoff;
+H_ref       1.64e8 Pa;          // = 1640 bar at 298.15 K
+T_ref       298.15 K;
+enthalpy    -19400  J/mol;       // (negative = exothermic dissolution)
+Trange      ( 273  373 );

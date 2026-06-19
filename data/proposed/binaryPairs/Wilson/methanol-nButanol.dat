@@ -1,0 +1,35 @@
+// ChemSep DECHEMA Wilson pair -- methanol-nButanol (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( methanol nButanol );
+model       Wilson;
+
+parameters
+{
+    i           methanol;
+    j           nButanol;
+    A_ij        831.342;   // J/mol
+    A_ji        414.274;   // J/mol
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_methanol_nButanol   198.6954;   // CAS 67-56-1 -> 71-36-3
+    A_nButanol_methanol   99.0138;   // CAS 71-36-3 -> 67-56-1
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "wilson.ipd";
+    sourceRecord  "67-56-1/71-36-3";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "Wilson";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

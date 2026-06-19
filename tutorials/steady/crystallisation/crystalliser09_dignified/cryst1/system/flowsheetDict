@@ -1,0 +1,5 @@
+/* cryst1 (LEAF) -- COOLING crystalliser, targets KHT (its solubility curve). */
+type        crystalliser;
+operation   { operatingTemperature 278.15 K;  solute potassiumBitartrate;  cakeMoisture 0.10; }
+boundary    { inlets ( feed );  outlets ( KHT_cake  liquor1 ); }
+streams     { feed { F 100 kmol/h; T 323.15 K; P 1 bar; molarComposition { water 0.9475; KCl 0.0512; potassiumBitartrate 0.00133; } } }

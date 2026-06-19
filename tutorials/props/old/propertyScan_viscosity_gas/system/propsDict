@@ -1,0 +1,43 @@
+/*---------------------------------------------------------------------------*\
+  propertyScan_viscosity_gas
+  ==========================
+
+  Low-pressure gas viscosity vs temperature for three gases (N2, CO2,
+  CH4), by the Chung correlation (the v0.46 transport layer).  One scan
+  per gas, 250-600 K.
+
+  The pedagogical point: a GAS gets MORE viscous as it heats up
+  (mu ~ T^0.6-0.7) --- the opposite of a liquid.  Validate: nitrogen at
+  300 K comes out ~1.78e-5 Pa·s, the textbook value.
+
+  Open the three CSVs in the GUI plot (or gnuplot) to see the curves
+  side by side.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        visc_N2;
+        type        propertyScan1D;
+        vary        { variable T;  from 250.0 K;  to 600.0 K;  n 36; }
+        state       { P 1.0 bar;  composition { N2 1.0; } }
+        properties  ( viscosity );
+        output      { file viscosity_N2.csv; }
+    }
+    {
+        name        visc_CO2;
+        type        propertyScan1D;
+        vary        { variable T;  from 250.0 K;  to 600.0 K;  n 36; }
+        state       { P 1.0 bar;  composition { CO2 1.0; } }
+        properties  ( viscosity );
+        output      { file viscosity_CO2.csv; }
+    }
+    {
+        name        visc_CH4;
+        type        propertyScan1D;
+        vary        { variable T;  from 250.0 K;  to 600.0 K;  n 36; }
+        state       { P 1.0 bar;  composition { CH4 1.0; } }
+        properties  ( viscosity );
+        output      { file viscosity_CH4.csv; }
+    }
+);

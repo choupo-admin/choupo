@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Multi-element membrane train: 3 SW30HR elements in series (seawater RO)";
+
+verbosity     3;

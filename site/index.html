@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choupo — the glass-box process simulator</title>
+<link rel="icon" type="image/png" href="logo2.png">
+<style>
+  :root{
+    --bg:#0b1220; --bg2:#0f1830; --panel:#111c34; --line:#1e2d4d;
+    --ink:#e6edf6; --muted:#94a8c4; --teal:#22d3c5; --teal2:#0d9488;
+    --accent:#00bcd4;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.6;
+       font-family:Inter,'Segoe UI',system-ui,-apple-system,sans-serif;}
+  a{color:var(--teal);text-decoration:none}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px}
+  /* top bar */
+  nav{position:sticky;top:0;z-index:10;background:rgba(11,18,32,.85);
+      backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+  nav img{height:30px;display:block}
+  nav .links a{color:var(--muted);margin-left:22px;font-size:14px}
+  nav .links a:hover{color:var(--ink)}
+  .btn{display:inline-block;background:linear-gradient(180deg,var(--teal),var(--teal2));
+       color:#04222b;font-weight:700;border:0;border-radius:10px;
+       padding:12px 22px;font-size:15px;cursor:pointer}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.sm{padding:8px 16px;font-size:14px}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink);font-weight:600}
+  /* hero */
+  header.hero{padding:84px 0 64px;text-align:center;
+       background:radial-gradient(1100px 460px at 50% -10%, #14223f 0%, var(--bg) 70%)}
+  .hero img.lockup{height:88px;margin-bottom:26px}
+  .hero h1{font-size:40px;line-height:1.15;margin:0 0 14px;font-weight:800;letter-spacing:-.5px}
+  .hero h1 .g{background:linear-gradient(90deg,var(--teal),var(--accent));
+       -webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p.lead{font-size:19px;color:var(--muted);max-width:640px;margin:0 auto 30px}
+  .cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .pillrow{margin-top:26px;color:var(--muted);font-size:13px}
+  .pillrow b{color:var(--ink)}
+  /* sections */
+  section{padding:62px 0;border-top:1px solid var(--line)}
+  h2{font-size:28px;margin:0 0 8px;font-weight:800;letter-spacing:-.3px}
+  .sub{color:var(--muted);margin:0 0 30px;font-size:16px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+  @media(max-width:760px){.two{grid-template-columns:1fr}.hero h1{font-size:32px}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .card h3{margin:0 0 6px;font-size:17px;color:var(--ink)}
+  .card p{margin:0;color:var(--muted);font-size:14.5px}
+  .card .k{color:var(--teal);font-weight:700}
+  /* glass demo strip */
+  pre.term{background:#060b16;border:1px solid var(--line);
+       border-radius:12px;padding:18px 20px;overflow:auto;font-size:12.5px;
+       color:#bfe9e4;font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;line-height:1.5}
+  pre.term .c{color:#5f7596}
+  pre.term .t{color:var(--teal)}
+  /* feature grid */
+  .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:760px){.feat{grid-template-columns:1fr}}
+  /* run band */
+  .run{text-align:center;background:linear-gradient(180deg,#102038,var(--bg));}
+  .run h2{font-size:30px}
+  footer{border-top:1px solid var(--line);padding:36px 0 60px;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px}
+  footer a{color:var(--muted)}
+  .closer{font-size:21px;color:var(--ink);font-weight:600;max-width:760px;margin:8px auto 0;text-align:center}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none">
+    <img src="logo2-mark.png" alt="" style="height:32px;width:auto;display:block">
+    <span style="font-weight:800;letter-spacing:.3px;color:var(--ink);font-size:18px">CHOUPO</span>
+  </a>
+  <div class="links">
+    <a href="#why">Why</a>
+    <a href="#glass">Glass-box</a>
+    <a href="#do">What it does</a>
+    <a href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Code</a>
+    <a class="btn sm" href="#run">Run Choupo</a>
+  </div>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+  <span style="display:inline-block;background:#fff;padding:16px 20px;border-radius:18px;box-shadow:0 12px 44px rgba(0,0,0,.35);margin-bottom:26px;">
+    <img src="logo2.png" alt="Choupo" style="height:168px;display:block;">
+  </span>
+  <h1>The <span class="g">glass-box</span> process simulator</h1>
+  <p class="lead">Every equation, every Newton iteration, every K-value — visible,
+     in the source and as it runs. Free and open. And it runs in your browser,
+     with nothing to install.</p>
+  <p style="font-size:16px;color:var(--teal);font-weight:700;letter-spacing:.3px;margin:0 0 24px">
+     Open code · Visible equations · Cleaner industry.</p>
+  <div class="cta">
+    <a class="btn" href="/app/?workspace=explore" target="choupo-app" rel="noopener">🔬 Explore properties — in your browser</a>
+    <a class="btn ghost" href="#run">▶ Run the simulator</a>
+    <a class="btn ghost" href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">⌨ View the source</a>
+  </div>
+  <div class="pillrow">GPL-3.0-or-later · C++17, zero heavy dependencies · <b>no install, no licence key</b></div>
+  <p style="font-size:13px;color:var(--muted);margin:16px 0 0">Created by
+     <a href="https://www.linkedin.com/in/vítor-geraldes-4625b8a" target="_blank" rel="noopener"
+        style="color:var(--teal);text-decoration:none">Vítor Geraldes</a>
+     — chemical engineer, process-modelling researcher, and open-source builder.</p>
+</div></header>
+
+<section id="why"><div class="wrap">
+  <h2>The black box is the problem</h2>
+  <p class="sub">A student opens the big commercial simulator, picks a thermodynamic
+     method from a list, clicks <em>Run</em>, and gets a number. Which equation?
+     Which assumption? Why that K-value? Hidden. You are taught to trust the box.</p>
+  <div class="two">
+    <div class="card">
+      <h3>The black box: trust the number</h3>
+      <p>A method is a name in a dropdown. The maths is sealed. When the answer is
+         wrong you cannot see <span class="k">where</span> — only that it differs from
+         the lab.</p>
+    </div>
+    <div class="card">
+      <h3>Choupo: see the maths</h3>
+      <p>The model is open in the source <span class="k">and</span> it narrates itself
+         as it solves. You choose a model because you <span class="k">saw</span> it fit
+         the data — not because a badge said "recommended".</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="glass"><div class="wrap">
+  <h2>Glass, not black</h2>
+  <p class="sub">A flash converging, live. The same output in the source, the terminal,
+     and the browser — there is no hidden layer.</p>
+  <pre class="term"><span class="c">// Isothermal flash · benzene/toluene · 370 K, 1 bar · Raoult</span>
+  iter      residual        T(K)      V/F
+   0      1.84e-01        370.00    0.500
+   1      2.07e-02        370.00    0.486     <span class="c">&lt;- Newton on the tear</span>
+   2      3.1e-04         370.00    0.4912
+   3      5.6e-08         370.00    0.49118   <span class="t">converged</span>
+  K_benzene = 1.71   K_toluene = 0.68   <span class="c">(Psat/P, you can read it)</span></pre>
+</div></section>
+
+<section id="do"><div class="wrap">
+  <h2>What it does</h2>
+  <p class="sub">A real simulator — steady-state, dynamic, batch — and a property bench
+     that lets you build and trust the thermodynamics before you wire a flowsheet.</p>
+  <div class="feat">
+    <div class="card"><h3>Flowsheets</h3><p>Flash, distillation, reactors (CSTR/PFR/Gibbs),
+      heat exchange, rotating equipment, recycle with Newton-on-tears. Four solvers,
+      one per problem class.</p></div>
+    <div class="card"><h3>Property Explorer</h3><p>Navigate any component or mixture and
+      plot its properties <span class="k">interactively</span> — vapour pressure, density,
+      compressibility — and <span class="k">see</span> the curves before you commit. Runs in
+      the browser; nothing to install.</p></div>
+    <div class="card"><h3>The property bench</h3><p>Create a component from its groups,
+      overlay models on your <span class="k">measured</span> data, test the data's
+      consistency, fit parameters — then carry a curated file into the run.</p></div>
+    <div class="card"><h3>Membranes (NF/RO)</h3><p>A spiral-wound module with
+      solution-diffusion + film model — the research edge a general simulator does not
+      reach.</p></div>
+    <div class="card"><h3>File-first cases</h3><p>Plain-text dictionaries on disk are
+      the source of truth. Edit them in any editor — increasingly with an AI agent at your side.</p></div>
+    <div class="card"><h3>Sensitivity &amp; optimisation</h3><p>Sweep a parameter, minimise a
+      cost, fit to data — the outer-driver layer wraps every run.</p></div>
+    <div class="card"><h3>Sizing &amp; costing</h3><p>Guthrie module costs, utility
+      allocation by temperature level — the report a project actually needs.</p></div>
+  </div>
+</div></section>
+
+<section id="run" class="run"><div class="wrap">
+  <h2>Run it now — in your browser</h2>
+  <p class="sub" style="margin-bottom:26px">No download. No install. No licence. Open a
+     page, pick a tutorial, watch it solve. Works on any laptop, even a Chromebook.</p>
+  <!-- Same-origin: the app lives at /app . target opens a NEW window/tab
+       named "choupo-app" (re-clicks reuse the same one). -->
+  <a class="btn" style="font-size:17px;padding:15px 30px" id="runbtn"
+     href="/app/" target="choupo-app" rel="noopener">▶ Launch the simulator</a>
+  <p class="pillrow" style="margin-top:22px">Want to author your own case? Download it and
+     point your own assistant at it on your PC — the dicts are just files.</p>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Built for students, researchers, and engineers</h2>
+  <p class="sub" style="max-width:780px">Choupo is open-source and free — no licence fees.
+     A student can <em>read</em> it, a researcher can <em>extend</em> it, and anyone can
+     <em>run</em> it for free.</p>
+  <p class="closer">If you cannot see the equation, you are not learning the process — you are
+     trusting the box. Choupo has no box.</p>
+</div></section>
+
+<section id="contribute"><div class="wrap">
+  <h2>Help build the glass-box simulator chemical engineers deserve</h2>
+  <p class="sub" style="max-width:780px">Contribute models, tutorials, tests, documentation, validation
+     data, or new unit operations. Choupo is made for students, researchers, and engineers who want
+     process simulation to be open, inspectable, and useful.</p>
+  <p class="pillrow">The full source is on
+     <a href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener"><b>GitHub</b></a>
+     under GPL-3.0 ·
+     <a href="https://github.com/choupo-admin/choupo/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">contribution guide</a>
+     · a community forum is <b>coming soon</b>.</p>
+</div></section>
+
+<section id="about"><div class="wrap">
+  <h2>About the creator</h2>
+  <p class="sub" style="max-width:780px">CHOUPO was created by
+     <a href="https://www.linkedin.com/in/vítor-geraldes-4625b8a" target="_blank" rel="noopener"
+        style="color:var(--teal);text-decoration:none">Vítor Geraldes</a>,
+     a chemical engineer and process-modelling researcher.</p>
+  <p class="sub" style="max-width:780px;font-size:14px">Vítor Geraldes is also an Associate Professor of
+     Chemical Engineering at Instituto Superior Técnico, University of Lisbon. This affiliation is provided
+     for identification only. CHOUPO is an independent open-source project and is not an official product of
+     Instituto Superior Técnico or Universidade de Lisboa.</p>
+</div></section>
+
+<footer><div class="wrap">
+  <div>Created and maintained by
+     <a href="https://www.linkedin.com/in/vítor-geraldes-4625b8a" target="_blank" rel="noopener"
+        style="color:var(--teal);text-decoration:none">Vítor Geraldes</a>
+     · <a href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Source on GitHub</a>
+     · <a href="/docs/userGuide.pdf" target="_blank" rel="noopener">User Guide</a>
+     · GPL-3.0-or-later · Independent open-source project</div>
+  <div><b>CHOUPO™</b> is a trademark of TalentGround Lda. — an independent open-source project.</div>
+</div></footer>
+
+</body>
+</html>

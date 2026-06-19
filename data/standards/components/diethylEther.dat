@@ -1,0 +1,77 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: diethylEther  (C4H10O1, CAS 60-29-7)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Thol-IJT-2014
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        diethylEther;
+formula     C4H10O1;
+CAS         60-29-7;
+
+MW          74.1216;        // kg/kmol  [CoolProp]
+Tc          467.8996;        // K        [CoolProp EOS]
+Pc          37.17321;        // bar      [CoolProp EOS]
+omega       0.28164;        // [-]      [CoolProp EOS]
+Tb          307.6044;        // K  normal boiling [CoolProp]
+HvapTb      26547.8;        // J/mol  at Tb     [CoolProp]
+Vliq        1.0472e-04;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.20699   1147.95   -34.509);
+    Trange        (270.50  458.54);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (36.2745  0.318676  -0.000125104  1.62973e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (167.17  -0.224496  0.000848035  -9.83713e-08);
+    Trange        (275  308);
+}
+
+sublimation
+{
+    tripleT   270.0000;        // K   [CoolProp]
+    tripleP   21283.8110;        // Pa  [CoolProp]
+    // Hfus / Hsub absent: CoolProp models no solid phase.  The
+    // sublimation curve stays undrawn until measured Hsub lands.
+}
+
+gibbsFormation
+{
+    dHf_298   -258110;      // J/mol  ideal-gas [origin=estimated method=Joback uncertainty=~9kJ/mol]
+    dGf_298   -122200;      // J/mol  ideal-gas [Joback]
+    s_298     323.091;      // J/(mol*K) third-law [DERIVED: (dHf-dGf)/T + CODATA element S; ~25 J/mol/K; biased ~R*ln(sigma) for symmetric species]
+    phase     gas;
+}
+
+groups { joback ( { group CH3; count 2; } { group CH2; count 2; } { group ether; count 1; } ); }
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Thol-IJT-2014";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.45%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 0.00%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    preserved      "from prior proposal (NOT CoolProp): gibbsFormation, groups";
+}
+
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2O; count 1; } );
+}

@@ -1,0 +1,123 @@
+/*---------------------------------------------------------------------------*\
+  evaporator03_co_current  --  triple-effect evaporator, forward-feed,
+                                user-defined components, MCFT Ex. 10.38 (a).
+
+  Problem (textbook givens):
+    Feed         1.25 kg/s, 10 wt% solids, 294 K
+    Live steam   170 kPa  (saturated vapour)
+    P_3          such that effect 3 boils at 325 K       => P_3 = 13.5 kPa
+    U_1          3100 W/(m²·K)
+    U_2          2500 W/(m²·K)
+    U_3          1700 W/(m²·K)
+    Spec         productConc = 40 wt% solids
+    Equal areas  A_1 = A_2 = A_3 = A
+
+  Question (in system/outerDict):  find  A,  P_1,  P_2  and the live-
+  steam consumption.
+
+  Wiring  (liquid + vapour BOTH flow 1 -> 2 -> 3):
+
+      feed (294 K, 10 %)                               productConc (40 %)
+            |                                                    ^
+            v                                                    |
+      +---------+   L1to2   +---------+   L2to3   +---------+
+      | effect1 |---------->| effect2 |---------->| effect3 |
+      |  P_1    |           |  P_2    |           |  P_3    |
+      +----+----+           +----+----+           +----+----+
+           ^                     ^                     ^
+       liveSteam              V1 (from 1)           V2 (from 2)
+       (170 kPa)              chest of 2            chest of 3
+
+      V_3 -> condenser (outside the dict)
+      cond1, cond2, cond3 -> condensate terminals
+
+  Notes for the student:
+    *  Thermo properties (MW, Cp, Antoine, ...) of `agua` and `solidos`
+       live in constant/components/<name>.dat --- these are USER-DEFINED
+       components, NOT from the standard catalogue.  Open them to see the
+       textbook's Cp = 4.18 kJ/(K·kg) assumption baked in, and to confirm
+       BPE is set to zero (no K_b on `agua`).
+    *  Forward-feed with COLD feed (294 K) penalises effect 1: most of
+       its duty goes into sensible heating, not evaporation.  Case (b)
+       of the textbook pre-heats the feed to 355 K --- swap T_feed below
+       to compare economies.
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    // INCÓGNITAS DE DESIGN (manipuladas pelo DesignSpec em outerDict):
+    //   $A        : área partilhada pelos 3 efeitos
+    //   $F_steam  : caudal de vapor vivo
+    // Pressões internas P_1, P_2, P_3 já não são $variables --- emergem
+    // do balanço termo-mecânico de cada efeito (Mode 2 evaporator).
+    A          17.0   m2;
+    F_steam   100.0   kmol/h;
+}
+
+streams
+{
+    feed
+    {
+        T             294.0  K;          // textbook case (a); change to 355
+                                          //   K to run case (b).
+        P             200.0  kPa;        // arbitrary > P_1; the simulator
+                                          //   stores it for tagging only,
+                                          //   does not enforce a flash drop.
+        massFlows                         // total feed = 1.25 kg/s
+        {                                 //  -> 0.125 kg/s solids = 10 wt%
+            agua      1.125   kg/s;
+            solidos   0.125   kg/s;
+        }
+    }
+
+    liveSteam
+    {
+        F                 $F_steam;        // initial estimate (incógnita);
+                                            //   driven by outerDict.
+        P                170.0  kPa;
+        state            saturatedVapour;   // -> T = T_sat(170 kPa) = 388 K
+                                            //   auto-computed.  See userGuide
+                                            //   §3.2 for `state` options.
+        molarComposition  { agua 1.0; }    // pure water; species not listed
+                                            //   default to 0.
+        category         LP_steam_170kPa;   // utility tag: aggregated in the
+                                            //   Utility Consumption summary.
+    }
+}
+
+units
+(
+    {
+        name        effect1;
+        type        evaporator;
+        inputs      ( feed       liveSteam );
+        outputs     ( L1to2  V1  cond1 );
+        operation
+        {
+            area       $A;
+            U        3100.0   W/m2/K;     // textbook datum (hardware)
+        }
+    }
+    {
+        name        effect2;
+        type        evaporator;
+        inputs      ( L1to2      V1 );    // chest fed by effect 1's V1
+        outputs     ( L2to3  V2  cond2 );
+        operation
+        {
+            area       $A;
+            U        2500.0   W/m2/K;
+        }
+    }
+    {
+        name        effect3;
+        type        evaporator;
+        inputs      ( L2to3      V2 );    // chest fed by effect 2's V2
+        outputs     ( productConc  V3  cond3 );
+        operation
+        {
+            area       $A;
+            U        1700.0   W/m2/K;
+        }
+    }
+);

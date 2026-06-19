@@ -1,0 +1,25 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for HCl in liquid water.
+
+  Reference: Sander, R. (2015) Atmos. Chem. Phys. 15, 4399-4981.
+
+      H_xp(298)  ≈  2.0e3 Pa  =  0.02 bar         (extremely soluble)
+
+  Note: at any practical loading HCl dissociates completely into
+  H+ + Cl- in water, so the linear Henry form here describes only
+  the *physical* dissolution step.  For acid-gas scrubber design
+  beyond the dilute limit, the bulk thermodynamics is governed by
+  the (full) ionic dissociation and a Pitzer / eNRTL model is
+  required (planned v0.30+).
+
+      dH_diss(HCl-water)  ≈  -75000 J/mol  (very exothermic)
+\*---------------------------------------------------------------------------*/
+
+solute      HCl;
+solvent     water;
+
+model       vantHoff;
+H_ref       2.0e3 Pa;             // = 0.02 bar at 298.15 K
+T_ref       298.15 K;
+enthalpy    -75000  J/mol;
+Trange      ( 273  373 );

@@ -1,0 +1,69 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: nOctane  (C8H18, CAS 111-65-9)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Beckmueller-IJT-2019-octane
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        nOctane;
+formula     C8H18;
+CAS         111-65-9;
+
+MW          114.2290;        // kg/kmol  [CoolProp]
+Tc          568.7400;        // K        [CoolProp EOS]
+Pc          24.83591;        // bar      [CoolProp EOS]
+omega       0.39753;        // [-]      [CoolProp EOS]
+Tb          398.7938;        // K  normal boiling [CoolProp]
+HvapTb      34437.8;        // J/mol  at Tb     [CoolProp]
+Vliq        1.6354e-04;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.1404   1410.77   -57.6613);
+    Trange        (255.93  557.37);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (33.6437  0.553584  -4.88832e-05  -1.04522e-07);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (228.148  -0.335658  0.00175808  -1.12702e-06);
+    Trange        (284  399);
+}
+
+sublimation
+{
+    tripleT   216.3700;        // K   [CoolProp]
+    tripleP   2.0746;        // Pa  [CoolProp]
+    // Hfus / Hsub absent: CoolProp models no solid phase.  The
+    // sublimation curve stays undrawn until measured Hsub lands.
+}
+
+gibbsFormation
+{
+    dHf_298   -208748.8;        // J/mol  ideal-gas [origin=measured method=NASA-TM4513]
+    s_298     467.35;        // J/(mol.K) third-law absolute [NASA-TM4513]
+    phase     gas;
+}
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Beckmueller-IJT-2019-octane";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.49%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 2.64%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.01%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+    gibbsFormation "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";
+}

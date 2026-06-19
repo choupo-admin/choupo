@@ -1,0 +1,5 @@
+/* Case-local Pitzer pair (overlay). PRIMARY: Appelo, Appl. Geochem. 55 (2015) 62. */
+pairs
+(
+    { cation Na; anion Cl; beta0 0.07534; beta1 0.2769; beta2 0.0; Cphi 0.00148; alpha1 2.0; alpha2 12.0; source "Appelo, Appl. Geochem. 55 (2015) 62"; }
+);

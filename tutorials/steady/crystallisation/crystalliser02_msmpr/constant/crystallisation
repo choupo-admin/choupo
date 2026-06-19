@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser02_msmpr / constant/crystallisation
+
+  Crystallisation KINETICS library (equipment/sample-dependent), referenced by
+  `crystallisation <name>;` at unit level --- the same split as a reactor's
+  constant/reactions or a dryer's constant/dryingKinetics.  Kept SEPARATE from
+  the solute's equilibrium solubility curve, which lives on the .dat.
+
+      growth      G  = k_g (S-1)^g            [m/s]
+      nucleation  B0 = k_b (S-1)^b M_T^j      [#/(m^3 s)]
+
+  with S = c/c_sat the supersaturation and M_T the magma density.  The
+  exponents/constants are the FitParameters calibration targets.  Values here
+  are illustrative power-law kinetics that give a realistic ~230 um sugar
+  crystal at a few-percent supersaturation.
+\*---------------------------------------------------------------------------*/
+
+sucroseKinetics
+{
+    growth
+    {
+        k_g   1.0e-7;     // m/s
+        g     1.0;
+    }
+    nucleation
+    {
+        k_b   1.0e9;      // #/(m^3 s)
+        b     2.0;
+        j     0.0;        // magma-independent (primary-style) for this first cut
+    }
+}

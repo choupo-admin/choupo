@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Spiral-wound RO of 35 g/L NaCl feed at 55 bar (canonical seawater desalination)";
+
+verbosity     3;

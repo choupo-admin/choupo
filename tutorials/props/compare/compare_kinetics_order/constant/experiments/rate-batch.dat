@@ -1,0 +1,29 @@
+/*---------------------------------------------------------------------------*\
+  Batch reaction kinetics at 353 K (single isotherm): reactant concentration
+  c(t) vs time -- pedagogical lab data with mild scatter.  The data follow a
+  SECOND-order rate law; a first-order model will miss the tail.  Overlay both
+  fits and SEE which order the data picks.
+\*---------------------------------------------------------------------------*/
+columns
+(
+    { name time;    unit s;      role independent; }
+    { name c_AcOH;  unit mol/L;  role dependent;   }
+);
+
+data
+(
+       0   1.00
+     120   0.90
+     300   0.77
+     600   0.63
+     900   0.52
+    1200   0.45
+    1500   0.41
+    1800   0.36
+);
+
+provenance
+{
+    source   "illustrative batch-kinetics data (mild scatter), 353 K single isotherm";
+    citation "Pedagogical second-order set; a first-order fit visibly misses the tail.";
+}

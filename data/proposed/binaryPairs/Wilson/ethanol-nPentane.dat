@@ -1,0 +1,35 @@
+// ChemSep DECHEMA Wilson pair -- ethanol-nPentane (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( ethanol nPentane );
+model       Wilson;
+
+parameters
+{
+    i           ethanol;
+    j           nPentane;
+    A_ij        7813.11;   // J/mol
+    A_ji        1120.22;   // J/mol
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_nPentane_ethanol   267.74;   // CAS 109-66-0 -> 64-17-5
+    A_ethanol_nPentane   1867.3772;   // CAS 64-17-5 -> 109-66-0
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "wilson.ipd";
+    sourceRecord  "109-66-0/64-17-5";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "Wilson";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

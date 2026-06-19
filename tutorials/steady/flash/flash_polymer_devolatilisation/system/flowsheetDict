@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  polymer melt + residual solvent -> flash (devolatiliser).
+
+  The flash boils off the residual toluene (vapour) and leaves the polymer in
+  the liquid.  polystyrene is `role nonvolatile;`, so its K = 0: it stays 100 %
+  in the liquid by construction (no Psat needed for a nonvolatile lump).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    meltFeed
+    {
+        F            10.0 kmol/h;     // a "mole" of polymer is 50 kg -- molar
+                                      // flow is small, mass flow is large
+        T            450.0 K;
+        P              0.2 bar;       // vacuum devolatilisation
+        molarComposition  { toluene 0.15;  polystyrene 0.85; }
+    }
+}
+
+units
+(
+    {
+        name        devol01;
+        type        isothermalFlash;
+        in          meltFeed;
+        outputs     ( liquid  vapor );   // flash produced-stream order: liquid first
+        operation   { T 450.0 K;  P 0.2 bar; }
+    }
+);

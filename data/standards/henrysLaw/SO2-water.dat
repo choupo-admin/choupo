@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for SO2 in liquid water.
+
+  Reference: Sander, R. (2015) Atmos. Chem. Phys. 15, 4399-4981.
+
+      H_xp(298)  ≈  8.1e5 Pa  =  8.1 bar          (very soluble)
+
+  Linear Henry breaks down for SO2 above ~ 1 mol % loading because
+  the SO2 hydrolyses to bisulfite (HSO3-) shifting the equilibrium;
+  for industrial FGD design switch to a Pitzer / eNRTL reactive
+  absorption model.
+
+      dH_diss(SO2-water)  ≈  -26100 J/mol
+\*---------------------------------------------------------------------------*/
+
+solute      SO2;
+solvent     water;
+
+model       vantHoff;
+H_ref       8.1e5 Pa;             // = 8.1 bar at 298.15 K
+T_ref       298.15 K;
+enthalpy    -26100  J/mol;
+Trange      ( 273  373 );

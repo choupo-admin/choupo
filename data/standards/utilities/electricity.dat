@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: grid electricity (the plant's electrical service).
+
+  Sources:
+    Turton et al., "Analysis, Synthesis and Design of Chemical Processes"
+      5th ed., 2018, Table 8.3 (utility costs) -- electricity ~0.06-0.12
+      USD/kWh industrial.
+    Sinnott & Towler, "Chemical Engineering Design" 6th ed., 2022, §6.5
+      (purchased electricity as the priciest utility per GJ).
+
+  When to use:
+    The electrical service that drives ROTATING equipment: pump and
+    compressor MOTORS draw it; turbine GENERATORS (an electricLoad)
+    feed it back.  The third utility tier alongside heating and
+    cooling -- usually the most expensive per GJ delivered, which is
+    why shaft work is not "free" and a plant's power bill belongs in
+    the utilities report next to the steam and cooling-water bills.
+
+  How it is tallied (utilityAllocation report, tier "power"):
+    consumers  pump / compressor   grid draw = W_shaft / driveEfficiency
+    producers  electricLoad        grid feed = W_electric (already net of
+                                               the generator efficiency)
+    A shaft work supplied by an energy WIRE (turbine -> compressor) is
+    mechanical, NOT grid electricity, and is not counted.
+\*---------------------------------------------------------------------------*/
+
+utility     electricity;
+tier        power;
+mechanism   electrical;
+
+// 0.10 EUR/kWh industrial tariff = 0.10 / 3.6e-3 GJ = 27.8 EUR/GJ.
+cost        27.8;                      // €/GJ delivered (drawn) / credited (fed)
+costYear    2022;                      // reference price year
+
+driveEfficiency 0.95;                  // electric motor / generator electromechanical eff.
+
+description "Grid electricity for motors / generators (~0.10 EUR/kWh)";

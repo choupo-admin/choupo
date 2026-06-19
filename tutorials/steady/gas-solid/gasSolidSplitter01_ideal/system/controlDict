@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Ideal gas-solid splitter: specified 90% solids recovery (no efficiency physics)";
+verbosity     2;

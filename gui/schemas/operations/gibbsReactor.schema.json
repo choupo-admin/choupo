@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/gibbsReactor.schema.json",
+  "title": "gibbsReactor operation",
+  "description": "Gibbs reactor: equilibrium composition by minimising the total Gibbs free energy of the species mixture, subject to atom-balance constraints (element conservation).  Lagrangian formulation, least-squares-seeded NewtonND, three selectable `model` paths: elementPotential (gas / 1 ideal condensable), reactiveFlash (multi-condensable + NRTL), directMin (multi-start Nelder-Mead).  The user lists the atomic elements considered + the candidate species with their atom counts; the simulator finds the equilibrium mixture.",
+  "type": "object",
+  "properties": {
+    "T": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating temperature",
+      "description": "Temperature at which the equilibrium is evaluated.  For an adiabatic Gibbs reactor (energy balance), wrap the unit in a DesignSpec that varies $T to enforce H_out = H_in.",
+      "unit": "K"
+    },
+    "P": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Operating pressure",
+      "description": "Pressure at which the equilibrium is evaluated.  Enters via the ideal-gas chemical-potential term mu = mu_pure(T) + R T ln(y_i P / 1 bar).",
+      "unit": "Pa"
+    },
+    "elements": {
+      "type": "array",
+      "title": "Atomic elements",
+      "description": "Chemical elements considered in the atom-balance constraints (one constraint per element).  Each species declares its atom counts in this same order.",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "species": {
+      "type": "array",
+      "title": "Candidate species",
+      "description": "Species present in the equilibrium mixture, each with its atom counts (one number per element listed above).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name":  { "type": "string", "title": "Component name (must be in the thermoPackage)" },
+          "atoms": {
+            "type": "array",
+            "title": "Atom counts (one per element)",
+            "items": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "required": ["name", "atoms"],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": ["T", "P", "elements", "species"],
+  "additionalProperties": false
+}

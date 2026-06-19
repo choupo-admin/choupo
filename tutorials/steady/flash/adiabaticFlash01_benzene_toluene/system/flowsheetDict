@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  Adiabatic flash: sub-cooled 40/60 benzene/toluene liquid at 380 K, 3 bar
+  expanded to 1 atm.  ΔT and V/F come from the energy balance.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            380.0 K;        // T_feed
+        P            3.0 bar;          // P_feed
+        molarComposition  { benzene 0.40;  toluene 0.60; }
+    }
+}
+
+units
+(
+    {
+        name        flashAdiab;
+        type        adiabaticFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation
+        {
+            // Hardware-only: just the outlet pressure.  An adiabatic flash
+            // has Q == 0 by definition; if you want heat addition, chain a
+            // `heater` upstream (the credo-pure way --- one physical piece
+            // per unit op).  No Tref --- the enthalpy reference cancels in
+            // H_out - H_in for a non-reacting unit, so the simulator picks
+            // it internally.
+            P        1.01325 bar;       // outlet pressure
+        }
+    }
+);

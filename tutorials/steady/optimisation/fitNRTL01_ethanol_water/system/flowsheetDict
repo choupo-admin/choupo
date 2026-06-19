@@ -1,0 +1,28 @@
+/*---------------------------------------------------------------------------*\
+  Single bubble-T unit -- the outer driver (fitBinaryPair) iterates the
+  composition over the experimental dataset and the NRTL parameters via
+  Levenberg-Marquardt.  This file is just the forward model template.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            350.0 K;             // initial T guess for the inner Newton
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.50;  water 0.50; }   // mutated per data row
+    }
+}
+
+units
+(
+    {
+        name        bt01;
+        type        bubbleT;
+        in          feed;
+        outputs     ( );
+
+        operation   { P 1.01325 bar; }
+    }
+);

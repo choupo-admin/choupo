@@ -1,0 +1,43 @@
+/*---------------------------------------------------------------------------*\
+  Reversible water-gas-shift kinetics
+      CO + H2O  <-->  CO2 + H2
+
+  Forward rate constant from Singh & Saraf (1977) for a Fe/Cr HT-WGS
+  catalyst, fitted in pseudo-homogeneous form for the empty-volume
+  rate definition the CSTR uses.  Mass-action orders (1 each).
+
+  The `reversible true;` flag tells the CSTR to derive k_rev from
+  k_fwd / K_eq, with
+       K_eq(T) = exp(-dG_rxn(T) / RT)
+       dG_rxn(T) = g_CO2 + g_H2 - g_CO - g_H2O  (all g_pure_ig)
+
+  At T = 600 K, K_eq ~ 26.5; equilibrium conversion of an equimolar
+  CO + H2O feed (1 + 1, V_R = 1e-3 m^3) ~ 84 % (matches the textbook
+  Smith-Van Ness Le Chatelier value).
+\*---------------------------------------------------------------------------*/
+
+wgs_reversible
+{
+    limitingReactant   CO;
+    reversible         true;
+
+    stoichiometry
+    (
+        { component CO;    nu -1;  order 1; }
+        { component water; nu -1;  order 1; }
+        { component CO2;   nu  1;  order 0; }   // reverse-side order = nu (mass action)
+        { component H2;    nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      5.0e5;          // ILLUSTRATIVE rate.  NOTE the batch state is in
+                       // kmol and concentration in kmol/m^3 (vs mol/m^3 in
+                       // the steady CSTR/PFR), so the SAME reaction needs a
+                       // different A here for a comparable timescale.  Only
+                       // the approach SPEED depends on A; K_eq -- hence
+                       // X_eq ~ 0.841, identical to the CSTR/PFR -- does not.
+        Ea     8.0e4;          // J/mol
+    }
+}

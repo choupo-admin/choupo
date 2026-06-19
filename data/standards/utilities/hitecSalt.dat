@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: HITEC molten salt heat transfer fluid (closed-loop sensible carrier).
+
+  Sources: Sinnott & Towler 6ed (2022) §6.5.3; INL/EXT-10-18297 (Sohal 2013).
+
+  When to use:
+    For process duties needing a hot side above Dowtherm A's ceiling
+    (~370 C) up to ~530 C.  Typical applications: concentrated solar
+    power thermal storage, steam reformer auxiliary heat, glass anneal.
+
+    Closed loop with a nitrogen blanket to suppress nitrite/nitrate
+    decomposition by air contact.  Must be kept liquid at all times
+    (no cold legs below 200 C — the salt freezes at 142 C).
+\*---------------------------------------------------------------------------*/
+
+utility     hitecSalt;
+tier        heating;
+mechanism   sensible;                  // 100 K loop drop; no phase change
+
+components  ( hitecSalt );             // pseudo-component
+state       subcooledLiquid;
+P           1.5 bar;                   // near atmospheric; nitrogen-blanketed
+T_in        773.15 K;                  // 500 C delivery
+T_out       673.15 K;                  // 400 C return (typical 100 K drop)
+
+// Energy delivered per kg: Cp_avg × ΔT for the 100 K loop drop.
+// Cp_avg at T_avg = 723 K (450 C) from the polynomial fit: 1760 J/kg·K.
+dutyPerKg   176000.0;                  // J/kg  (1760 × 100)
+
+cost        15.0;                      // €/GJ delivered
+costYear    2022;
+description "HITEC molten-salt heat transfer loop (500 -> 400 C)";

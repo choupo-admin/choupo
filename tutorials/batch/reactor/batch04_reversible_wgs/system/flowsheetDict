@@ -1,0 +1,40 @@
+/*---------------------------------------------------------------------------*\
+  batch04_reversible_wgs  --  the reversible water-gas shift in a closed
+                              BATCH reactor (choupoBatch), the time-domain
+                              sibling of cstr02 / pfr02.
+
+  Equimolar CO + H2O charged at 600 K.  The forward Arrhenius rate drives
+  conversion up; the reverse term (k_rev = k_fwd / K_eq, K_eq from the four
+  species' g_pure_ig, re-evaluated each step) brakes it.  The batch
+  trajectory relaxes onto the SAME thermodynamic ceiling the CSTR and PFR
+  reached --- X -> X_eq ~ 0.84 --- then sits there (net rate -> 0), instead
+  of running to X = 1.
+
+  The forward A is the illustrative value tuned for stable RK4 (see
+  constant/reactions); the equilibrium X_eq is A-independent.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        initial
+        {
+            T            600.0 K;
+            P              10.0 bar;
+            V            0.001;              // m³ (1 litre)
+            totalMoles   0.001;             // kmol  (0.5 CO + 0.5 H2O)
+            molarComposition  { CO 0.5;  water 0.5;  CO2 0.0;  H2 0.0; }
+        }
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   600.0 K;
+        }
+
+        reaction    wgs_reversible;
+    }
+);

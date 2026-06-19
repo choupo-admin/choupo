@@ -1,0 +1,35 @@
+// ChemSep DECHEMA UNIQUAC pair -- aceticAcid-methanol (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( aceticAcid methanol );
+model       UNIQUAC;
+
+parameters
+{
+    i           aceticAcid;
+    j           methanol;
+    a_ij        -25.6889;   // K
+    a_ji        -20.4938;   // K
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_methanol_aceticAcid   -40.7254;   // CAS 67-56-1 -> 64-19-7
+    A_aceticAcid_methanol   -51.0491;   // CAS 64-19-7 -> 67-56-1
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "uniquac.ipd";
+    sourceRecord  "67-56-1/64-19-7";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "UNIQUAC";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

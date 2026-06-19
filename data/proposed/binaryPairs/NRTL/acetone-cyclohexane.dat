@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- acetone-cyclohexane (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( acetone cyclohexane );
+model       NRTL;
+
+parameters
+{
+    i           acetone;
+    j           cyclohexane;
+    a_ij        0.0;
+    b_ij        216.319;   // K
+    a_ji        0.0;
+    b_ji        366.167;   // K
+    alpha       0.2925;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_acetone_cyclohexane   429.8705;   // CAS 67-64-1 -> 110-82-7
+    A_cyclohexane_acetone   727.649;   // CAS 110-82-7 -> 67-64-1
+    alpha               0.2925;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "67-64-1/110-82-7";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

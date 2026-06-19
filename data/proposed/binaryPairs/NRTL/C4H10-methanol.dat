@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- C4H10-methanol (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( C4H10 methanol );
+model       NRTL;
+
+parameters
+{
+    i           C4H10;
+    j           methanol;
+    a_ij        0.0;
+    b_ij        724.712;   // K
+    a_ji        0.0;
+    b_ji        530.278;   // K
+    alpha       0.4647;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_C4H10_methanol   1440.1498;   // CAS 106-97-8 -> 67-56-1
+    A_methanol_C4H10   1053.7716;   // CAS 67-56-1 -> 106-97-8
+    alpha               0.4647;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "106-97-8/67-56-1";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

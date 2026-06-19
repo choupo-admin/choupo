@@ -1,0 +1,49 @@
+/*---------------------------------------------------------------------------*\
+  pfr02_reversible_wgs  --  the reversible water-gas shift in a PLUG-FLOW
+                            reactor, the PFR sibling of cstr02_reversible_wgs.
+
+  Same reaction, same feed (equimolar CO + H2O at 600 K, 10 bar), same
+  reverse term auto-derived from g_pure_ig.  The pedagogical point: a
+  reversible reaction relaxes toward the THERMODYNAMIC equilibrium
+  conversion regardless of reactor type --- with enough volume the PFR
+  approaches the very same ceiling the CSTR hit,
+
+      K_eq(600 K) ~ 26.5   ->   X_eq ~ 0.84   (equimolar feed),
+
+  not the X = 1 a forward-only PFR would chase.  V_R is taken large
+  enough that the axial profile flattens onto X_eq well before the exit.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        T            600.0 K;
+        P              10.0 bar;
+        molarFlows
+        {
+            CO       0.5 kmol/h;
+            water    0.5 kmol/h;
+            CO2      0.0 kmol/h;
+            H2       0.0 kmol/h;
+        }
+    }
+}
+
+units
+(
+    {
+        name        wgs;
+        type        pfr;
+        in          feed;
+        outputs     ( products );
+
+        operation
+        {
+            V_R           2.0e-3;   // m³ --- large enough to reach X_eq
+            nSteps        200;
+            writeInterval 20;       // axial profile every 20 steps
+        }
+        reaction    wgs_reversible;
+    }
+);

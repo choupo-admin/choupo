@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- ethanol-water (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( ethanol water );
+model       NRTL;
+
+parameters
+{
+    i           ethanol;
+    j           water;
+    a_ij        0.0;
+    b_ij        -29.1667;   // K
+    a_ji        0.0;
+    b_ji        624.868;   // K
+    alpha       0.2937;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_ethanol_water   -57.9601;   // CAS 64-17-5 -> 7732-18-5
+    A_water_ethanol   1241.7396;   // CAS 7732-18-5 -> 64-17-5
+    alpha               0.2937;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "64-17-5/7732-18-5";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+# =============================================================================
+#  listCases  --  list available tutorial cases
+#
+#  Tutorials live under tutorials/<category>/<name>/ (v0.24+) where
+#  category ∈ {steady, batch, ctrl}.  Each category corresponds to the
+#  binary the case runs on:
+#
+#      steady -> choupoSolve   (F(x) = 0, steady root finding)
+#      batch  -> choupoBatch   (dY/dt = f, closed vessels + recipes)
+#      ctrl   -> choupoCtrl    (dY/dt = f(Y,u,t), continuous + control)
+#
+#  Each entry shows the first comment line from system/flowsheetDict
+#  as a short description.
+# =============================================================================
+
+set -euo pipefail
+
+ROOT=${CHOUPO_HOME:-}
+if [ -z "$ROOT" ]; then
+    echo "listCases: CHOUPO_HOME is not set." >&2
+    echo "           source <projectRoot>/etc/bashrc to set it." >&2
+    exit 1
+fi
+
+if [ ! -d "$ROOT/tutorials" ]; then
+    echo "listCases: '$ROOT/tutorials' not found" >&2
+    exit 1
+fi
+
+cd "$ROOT/tutorials"
+
+echo "Tutorial cases in $ROOT/tutorials:"
+echo
+
+for cat in steady batch ctrl; do
+    if [ ! -d "$cat" ]; then continue; fi
+    case "$cat" in
+        steady) bin="choupoSolve" ;;
+        batch)  bin="choupoBatch" ;;
+        ctrl)   bin="choupoCtrl"  ;;
+    esac
+    echo "  ── $cat/   (run with $bin) ────────────────────────────────────"
+    printf "    %-50s %s\n" "CASE" "DESCRIPTION"
+    # A case is any directory holding system/controlDict, at ANY depth, so the
+    # <category>/<subclass>/<case> layout shows the sub-class as a path prefix
+    # (e.g. membranes/membrane01_...) and the flat ctrl/ still lists plainly.
+    while IFS= read -r cd; do
+        d="$(dirname "$(dirname "$cd")")"
+        name="${d#"$cat"/}"
+        desc=""
+        fd="$d/system/flowsheetDict"
+        if [ -f "$fd" ]; then
+            desc=$(awk '
+                /^\/\*/   {inblk=1; next}
+                inblk && /^\*\\/  {inblk=0; next}
+                inblk && /^\*\// {inblk=0; next}
+                inblk && /^[ \t]*[A-Za-z]/ {
+                    gsub(/^[ \t]+|[ \t]+$/,"")
+                    sub(/[ \t]+\\\\.*$/,"")
+                    print
+                    exit
+                }
+            ' "$fd")
+        fi
+        printf "    %-50s %s\n" "$name" "${desc:--}"
+    done < <(find "$cat" -path '*/system/controlDict' 2>/dev/null | sort)
+    echo
+done

@@ -1,0 +1,13 @@
+/*--- A student's OWN property-estimation op (linearTbEstimate), defined in
+      code/ and linked into choupoProps by bin/buildCode. Tb = base + sum(count*incr).
+      Here: 198.2 + 2*23.58 + 1*76.75 = 322.11 K (the Joback CH3,CH3,ketone sum). ---*/
+operations
+(
+    {
+        name       tb_acetone;
+        type       linearTbEstimate;     // <-- the user-defined property op
+        component  acetone;
+        base       198.2;
+        groups     ( { incr 23.58; count 2; } { incr 76.75; count 1; } );
+    }
+);

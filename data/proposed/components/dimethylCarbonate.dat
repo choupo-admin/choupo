@@ -1,0 +1,61 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: dimethylCarbonate  (C3H6O3, CAS 616-38-6)
+  PROPOSAL TIER -- UNVERIFIED.  Imported from CoolProp 7.2.0 (MIT);
+  pure-fluid properties from the published reference EOS below.
+  Reference EOS: Zhou-JPCRD-2011
+  NOTE: formation properties (dHf, s_298) and group decompositions
+  are NOT provided by CoolProp -> omitted here (a gap, not fabricated).
+\*---------------------------------------------------------------------------*/
+
+name        dimethylCarbonate;
+formula     C3H6O3;
+CAS         616-38-6;
+
+MW          90.0779;        // kg/kmol  [CoolProp]
+Tc          557.0000;        // K        [CoolProp EOS]
+Pc          49.08755;        // bar      [CoolProp EOS]
+omega       0.34600;        // [-]      [CoolProp EOS]
+Tb          363.2561;        // K  normal boiling [CoolProp]
+HvapTb      33837.6;        // J/mol  at Tb     [CoolProp]
+Vliq        8.4724e-05;        // m3/mol @298K     [CoolProp]
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- fitted to CoolProp EOS
+    coefficients  (4.37803   1377.92   -48.3524);
+    Trange        (277.56  545.86);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol.K)] = a0 + a1 T + a2 T^2 + a3 T^3   -- fitted to CoolProp cp0
+    coefficients  (43.1336  0.223015  2.24364e-05  -8.72193e-08);
+    Trange        (200  1000);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // Cp_liq [J/(mol.K)]   -- fitted to CoolProp saturated-liquid cp
+    coefficients  (248.999  -0.802948  0.00215613  -1.36547e-06);
+    Trange        (282  363);
+}
+
+sublimation
+{
+    tripleT   277.0600;        // K   [CoolProp]
+    tripleP   2226.5237;        // Pa  [CoolProp]
+    // Hfus / Hsub absent: CoolProp models no solid phase.  The
+    // sublimation curve stays undrawn until measured Hsub lands.
+}
+
+provenance
+{
+    constants      "CoolProp 7.2.0 -- Zhou-JPCRD-2011";
+    vaporPressure  "Antoine fitted to CoolProp EOS saturation, AAD 0.78%";
+    idealGasCp     "polynomial fitted to CoolProp cp0, maxerr 4.54%";
+    liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.00%";
+    triplePoint    "CoolProp reference EOS triple-point T,P";
+}

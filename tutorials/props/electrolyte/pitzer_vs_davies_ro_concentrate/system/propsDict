@@ -1,0 +1,103 @@
+/*---------------------------------------------------------------------------*\
+  pitzer_vs_davies_ro_concentrate --- THE FLAGSHIP of the Pitzer x speciation
+  feature (slice S6): the payoff that makes the whole multi-ion Pitzer-HMW build
+  worth it.  ONE feed, TWO activity models, the engineering answer FORKS.
+
+  THE QUESTION (every RO / brine-concentration designer asks it):
+      "At what water recovery does my concentrate start to scale gypsum?"
+  The answer DEPENDS ON THE ACTIVITY MODEL -- and that is the whole point.
+
+  THE FEED: standard surface seawater (S = 35), the major-ion subset:
+      Na+ 0.4861  Mg+2 0.0547  Ca+2 0.01065  K+ 0.01058   (cations)
+      Cl- 0.5658  SO4-2 0.02926  HCO3- 0.0024            (anions, DIC carrier)
+  I ~ 0.7 mol/kg at the feed.  Recovery r scales every total as feed/(1 - r);
+  scanning r = 0 -> 0.80 drives I from ~0.7 up to ~3.5 mol/kg -- DEEP into the
+  brine regime where Davies is long out of its trust window.
+
+  THE TWO RUNS (identical feed, identical recovery grid, ONLY the gamma model
+  differs -- the controlled experiment):
+      scan_davies   activityModel davies;   (the textbook extended-DH model)
+      scan_pitzer   activityModel pitzer;   (Pitzer-HMW, the brine-grade model)
+
+  THE PAYOFF ARTEFACTS (read straight off the two CSVs + the KPIs):
+    1. SI_gypsum vs recovery / I, BOTH models -- the HEADLINE.  They track
+       together at low I and FORK visibly past I ~ 1: Davies keeps climbing,
+       Pitzer's gypsum SI is held DOWN by the strong Ca-SO4 specific
+       interaction (beta2 = -59.3, the 2:2 ion-pairing virial Davies cannot
+       see).  The gypsum-onset recovery is LATER under Pitzer.
+    2. SI_calcite vs recovery / I, both models -- same fork, carbonate flavour.
+       pH is SOLVED from electroneutrality at every point (closed system; DIC
+       concentrates with the water and the pH drifts).
+    3. gamma_Ca2+ and gamma_SO4-2 vs I, both models -- the MECHANISM plot.
+       Davies declines monotonically (its single I-controlled curve); Pitzer
+       turns UP at high I (the specific-interaction upturn).  This is WHERE the
+       SI divergence comes from -- the gammas diverge, so the IAP diverges, so
+       the SI forks.  (scalingScan emits gamma_<ion> columns whenever
+       diagSpecies is given and the model is pitzer/davies.)
+
+  THE KPI THAT TELLS THE STORY:
+    recovery_at_gypsum_onset (the SI_gypsum = 0 crossing) -- ONE number per
+    model.  Davies predicts gypsum scaling at one recovery; Pitzer at another.
+    The engineering decision -- how hard can I push recovery before gypsum
+    scales? -- flips on the activity model.  Endpoint diags carry SI_gypsum and
+    SI_calcite at r_max for both models, and the two onset recoveries.
+
+  WHY PITZER IS THE ANSWER (cite the credentials, do not assert):
+    Davies is ANNOUNCED-untrustworthy past I ~ 0.5 mol/kg (the run says so).
+    Pitzer-HMW is built for exactly this regime -- valid to I ~ 6 mol/kg for the
+    seawater system, with the E_theta(I) higher-order electrostatic mixing term
+    ACTIVE (Pitzer 1975) -- and is CREDENTIALED in this repo by two pinned cases:
+      * pitzer_seawater_verify -- single-salt oracle 1.57e-14 + HMW seawater
+        mean activity coefficients inside the published bands;
+      * pitzer_calcite_brine   -- SI_calcite / SI_gypsum on surface seawater
+        inside the published oceanographic saturation band.
+    So here we TRUST the Pitzer fork and read Davies as the cautionary curve.
+
+  E_theta(I) BEFORE -> AFTER (the scan_pitzer fork only; scan_davies is BYTE-
+    IDENTICAL -- E_theta is Pitzer-only).  At r_max (I ~ 3.3 mol/kg, deep brine
+    where higher-order mixing bites hardest):
+      SI_gypsum_rmax   -0.144 -> -0.305   SI_calcite_rmax  2.026 -> 1.945
+      SI_gypsum_r0     -0.877 -> -0.966   SI_calcite_r0    1.240 -> 1.185
+      I_rmax            3.271 ->  3.323    gypsum stays undersaturated end-to-end
+    The engineering verdict (gypsum the limiting scale) is UNCHANGED in direction;
+    E_theta refines the SI magnitude in the high-I tail.
+
+  SELF-CONTAINED: constant/electrolyte/ carries the FULL snapshot (ions, pairs,
+  mixing with the carbonate theta/psi/lambda, speciation, minerals) -- the case
+  runs with data/standards/ hidden.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- RUN A: Davies activity model.  Untrustworthy past I ~ 0.5 (announced);
+    //    kept as the cautionary curve the Pitzer fork is read against.
+    {
+        name          scan_davies;
+        type          scalingScan;
+        activityModel davies;
+        totals        { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
+                        K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg;
+                        HCO3 0.0024 mol/kg; }
+        pH            solve;                 // electroneutrality per point (closed)
+        equilibrate   { minerals ( gypsum calcite ); }
+        diagSpecies   ( Ca SO4 );            // the gamma_Ca / gamma_SO4 fork columns
+        recovery      { from 0; to 0.80; n 17; }
+        output        { file scan_davies.csv; }
+    }
+
+    // -- RUN B: Pitzer-HMW activity model.  The quantitative answer in brine.
+    //    SAME feed, SAME grid -- only the gamma model differs.
+    {
+        name          scan_pitzer;
+        type          scalingScan;
+        activityModel pitzer;
+        totals        { Na 0.4861 mol/kg; Mg 0.0547 mol/kg; Ca 0.01065 mol/kg;
+                        K 0.01058 mol/kg; Cl 0.5658 mol/kg; SO4 0.02926 mol/kg;
+                        HCO3 0.0024 mol/kg; }
+        pH            solve;
+        equilibrate   { minerals ( gypsum calcite ); }
+        diagSpecies   ( Ca SO4 );
+        recovery      { from 0; to 0.80; n 17; }
+        output        { file scan_pitzer.csv; }
+    }
+);

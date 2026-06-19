@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------*\
+  FERMENTATION/Fermentor / system/flowsheetDict   (LEAF -- continuous fermenter)
+
+  CSTR running the combined sucrose-to-ethanol reaction declared in
+  the sector's constant/reactions (cascades down via the v0.0.29
+  parent-folder cascade).  V_R sized so per-pass conversion is moderate
+  (~30 %) -- the recycle loop is what pushes overall conversion
+  towards completion.
+\*---------------------------------------------------------------------------*/
+
+type        cstr;
+
+operation
+{
+    V_R    5.0 m3;       // working volume
+    T      310 K;        // isothermal (mild fermentation temperature)
+}
+
+reaction    sucroseToEthanol;   // -> constant/reactions library
+
+boundary    { inlets ( Feed );  outlets ( Out ); }
+
+streams     // default for isolated unit run; the sector cables Mixer/Mixed -> Feed
+{
+    Feed
+    {
+        F                200 kmol/h;
+        T                310 K;
+        P                  1 bar;
+        molarComposition { water 0.88;  sucrose 0.04;  ethanol 0.06;  CO2 0.02; }
+    }
+}

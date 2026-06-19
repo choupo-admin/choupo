@@ -1,0 +1,64 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  credo01_valve_heater_drum
+
+  "Information follows the streams" --- every change of state is a VISIBLE
+  box on the stream, and the separator has no operating knobs.  Read the
+  chain top-to-bottom, the way the plant is built:
+
+    feed (10 bar liquid)
+      -> [H1 heater : Q]   the heat box.  Its only knob is the duty; T_out
+      |                    is a result.  Stays liquid at 10 bar (well below
+      |                    the bubble point).
+      -> [V1 valve  : P]   the pressure box.  Its only knob is the
+      |                    downstream pressure; the let-down to 1 bar is
+      |                    isenthalpic, so the hot liquid flashes and T and
+      |                    vf come out as RESULTS.
+      -> [D1 flash  : {} ] the separator.  NO knobs --- `operation {}` is
+      |                    empty.  It inherits T and P from the stream V1
+      |                    hands it and just splits the phases.
+      -> liquid + vapour
+
+  Compare with flash01_benzene_toluene, where the same separation is asked
+  as `isothermalFlash; operation { T 370; P 1 bar; }`.  Those two numbers on
+  the flash were, physically, a hidden heater (T) and a hidden valve (P).
+  Here they are visible boxes, and the drum is honestly knob-less.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            350.0 K;
+        P             10.0 bar;
+        molarComposition  { benzene 0.40;  toluene 0.60; }
+    }
+}
+
+units
+(
+    {
+        name        H1;
+        type        heater;
+        in          feed;
+        outputs     ( heated );
+
+        operation   { Q 260 kW; }     // only knob: heat duty.  T_out is a result.
+    }
+    {
+        name        V1;
+        type        valve;
+        in          heated;
+        outputs     ( throttled );
+
+        operation   { P 1.0 bar; }    // only knob: downstream pressure.  T_out, vf are results.
+    }
+    {
+        name        D1;
+        type        isothermalFlash;
+        in          throttled;
+        outputs     ( liquid  vapour );
+
+        operation   { }               // NO knobs: T and P inherited from `throttled`.
+    }
+);

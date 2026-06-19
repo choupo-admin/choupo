@@ -1,0 +1,16 @@
+// Pure water flagged for the IAPWS pure-fluid route.  `pureFluids { water {
+// method IF97; } }` attaches the IF97 thermodynamic kernel to water; when a
+// phase is effectively pure (x_water >= 0.999) the transport accessors route
+// to the matching IAPWS transport releases (R12-08 mu, R15-11 lambda, R1-76
+// sigma) instead of the generic correlations.  No generic transport block is
+// needed -- the pure-fluid route supplies all three.
+components       ( water );
+
+phase            { type vle; }
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }
+
+pureFluids
+{
+    water { method IF97; }
+}

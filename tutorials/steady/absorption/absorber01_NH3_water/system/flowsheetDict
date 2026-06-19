@@ -1,0 +1,73 @@
+/*---------------------------------------------------------------------------*\
+  absorber01_NH3_water
+  ====================
+
+  The textbook gas-absorption case: scrubbing ammonia out of an air
+  stream with water, in a counter-current packed/plate column, solved by
+  the Kremser group method (the built-in `absorber`).
+
+  Ammonia is very soluble in water (Henry's constant H ≈ 0.99 bar at
+  298 K → K ≈ 1 at atmospheric pressure), so a modest water rate and a
+  handful of stages recover most of it --- unlike CO2/water (H ≈ 1640
+  bar), where water is a poor solvent.
+
+  Feed gas:   100 kmol/h, 10 % NH3 / 90 % N2 (N2 = inert carrier)
+  Solvent:    150 kmol/h pure water  (L/V = 1.5)
+  Column:     6 theoretical stages, 298.15 K, 1 atm
+
+  The model is NON-ISOTHERMAL: ammonia dissolution is strongly
+  exothermic (ΔH ≈ −34 kJ/mol), so the heat of absorption heats the
+  column.  The energy balance is solved coupled with the mass balance.
+
+  Expected:
+      liquid heats up ≈ +17 K (top 309 K, internal bulge ~318 K,
+                               bottom 315 K --- the classic absorber
+                               "temperature bulge")
+      recovery_NH3 ≈ 0.675   (only ~68 %, NOT the 97 % an isothermal
+                              Kremser would predict --- because T rises,
+                              H rises, K rises, A falls: the exotherm
+                              self-limits the absorption.  Real NH3 /
+                              amine absorbers are cooled for this reason.)
+      N2 stays in the gas (K_N2 >> 1 → no absorption)
+      NH3 mass balance closes (in = clean-gas NH3 + rich-liquid NH3)
+
+  Design question ("how many stages for 90 %?") is a DesignSpec on
+  `$stages`, NOT a mode of this unit --- the column has the stages it
+  has; the recovery is what comes out.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    gasFeed
+    {
+        T            298.15 K;
+        P            1.01325 bar;
+        molarFlows
+        {
+            NH3      10.0 kmol/h;     // 10 % ammonia
+            N2       90.0 kmol/h;     // inert carrier (air ~ N2)
+        }
+    }
+
+    solvent
+    {
+        T            298.15 K;
+        P            1.01325 bar;
+        molarFlows   { water  150.0 kmol/h; }   // lean wash water, L/V = 1.5
+    }
+}
+
+units
+(
+    {
+        name        scrubber;
+        type        absorber;
+        inputs      ( gasFeed  solvent );    // gas (bottom) + solvent (top)
+        outputs     ( cleanGas  richLiquid );
+
+        operation
+        {
+            stages   6;          // theoretical stages (HARDWARE)
+        }
+    }
+);

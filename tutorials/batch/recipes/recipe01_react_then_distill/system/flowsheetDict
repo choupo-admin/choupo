@@ -1,0 +1,91 @@
+/*---------------------------------------------------------------------------*\
+  recipe01_react_then_distill  --  the canonical 2-stage batch recipe.
+
+  Stage 1 (t = 0 → 400 s):
+      A batch reactor at 350 K esterifies ethanol + acetic acid ->
+      ethyl acetate + water (the same first-order Arrhenius reaction as
+      batch01).  k ≈ 3.58e-3 s⁻¹ at 350 K, tau ≈ 280 s.  Over 400 s the
+      ethanol conversion reaches ~76 %.
+
+  Stage 2 (t = 400 → 1200 s):
+      The recipe TRANSFERs the reactor contents to an initially empty
+      batch still.  The still then runs a Rayleigh distillation at
+      F_vap = 1.5e-6 kmol/s for 800 s, vaporising 1.2e-3 kmol of
+      liquid.  Starting from the converted mix (ethyl acetate + water +
+      unreacted ethanol/acid), the still progressively strips the more
+      volatile ethyl acetate + ethanol; pot composition follows the
+      Raoult y-x curve.  (The thermoPackage here uses ideal Raoult for
+      pedagogical simplicity.)
+
+  This case demonstrates the recipe layer (v0.23): a list of
+  time-triggered events acting on named units.  Each event in the
+  `recipe` block below has a `time`, an `action`, and action-specific
+  keys.  Actions implemented in v0.23:
+
+      transfer       move all contents of `from` into `to`
+      setParameter   change a named operating parameter on a unit
+
+  Events fire at the next time-loop step boundary after t_trigger;
+  the trajectory CSV thus shows a single-step discontinuity in the
+  transferred quantities.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        initial
+        {
+            T            350.0 K;
+            P            1.013 bar;
+            V            0.001;            // m³
+            totalMoles   0.0185;           // kmol  (1 L of liquid ethanol)
+            molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+        }
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        reaction    esterification_etac;
+    }
+
+    {
+        name        still;
+        type        batchStill;
+
+        initial
+        {
+            T            350.0 K;            // K   --- placeholder; overwritten on charge
+            P            1.013 bar;
+            V            0.001;
+            totalMoles   0.0;               // empty until the recipe charges it
+        }
+
+        operation
+        {
+            P            1.013 bar;
+            F_vap        2.0e-5;            // kmol/s   (already set; the still just
+                                            //  waits with zero contents until the
+                                            //  recipe charges it at t = 400 s.
+                                            //  Over the subsequent 800 s this rate
+                                            //  vaporises ~16 mmol --- ~85 % of the
+                                            //  charge, leaving an ethanol-depleted
+                                            //  water-rich residue.)
+        }
+    }
+);
+
+recipe
+(
+    {
+        time      400;          // s
+        action    transfer;
+        from      reactor;
+        to        still;
+    }
+);

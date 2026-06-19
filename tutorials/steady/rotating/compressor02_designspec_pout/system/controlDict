@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Air compressor sized to hit P_out = 8 bar exactly, via DesignSpec on $W_shaft";
+
+verbosity     3;

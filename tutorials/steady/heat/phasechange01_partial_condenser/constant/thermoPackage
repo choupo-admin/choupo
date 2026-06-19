@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  thermoPackage for phasechange01_partial_condenser
+
+  A generic two-component condensable mixture (benzene + toluene) on the
+  ideal (Raoult) backend.  This proves the dome-crossing phaseChanger on
+  the GENERIC VLE route -- saturation comes from the components' Antoine
+  curves and the (vf, x, y) split from the same IsothermalFlash kernel a
+  flash unit uses.  Contrast with rankine02_water, which crosses the dome
+  on the pure-fluid IF97 route: the SAME outlet keys, two backends.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

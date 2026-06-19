@@ -1,0 +1,38 @@
+/*---------------------------------------------------------------------------*\
+  sprayDryer02_residence_sweep
+  ============================
+
+  The DRYING CURVE of the sprayDryer01 sugar dryer, obtained by sweeping
+  the chamber HEIGHT --- the design question "how tall must the chamber
+  be to dry the powder?".  This is the credo at work: chamberHeight is a
+  HARDWARE parameter (streams IN -> unit OP with parameters -> streams
+  OUT); the RESIDENCE TIME (= height / particle fall velocity) and the
+  final moisture X_final are both RESULTS read off the powder.  Nothing
+  here is a spec.
+
+  The ~58 µm droplets (d32 = 58.1 µm here, vs 60.4 µm in sprayDryer01
+  --- this case uses a case-local sucrose.dat) dry sub-second, and they
+  fall slowly, so the window that shows all three regimes is a SHORT
+  chamber (~0.01-0.1 m, i.e. residence ~0.01-0.15 s):
+
+      * constant-rate period   X falls linearly from X_in (1.5) to the
+                               critical Xc (0.15);
+      * falling-rate period    (Lewis) X decays exponentially from Xc
+                               toward the GAB equilibrium Xe (0.014);
+      * equilibrium plateau    X_final = Xe once residence >> drying time.
+
+  X_critical and X_equilibrium are emitted as flat reference lines so the
+  knee (at Xc) and the floor (at Xe) are visible on the plot.
+
+  PEDAGOGICAL POINT: a real spray dryer runs with seconds of residence,
+  i.e. far to the RIGHT on this curve --- on the equilibrium plateau.  So
+  the residual moisture of fine-droplet drying is set by the sorption
+  isotherm and the air humidity, NOT by the residence time.  The
+  residence time only matters for coarse droplets or very short chambers
+  (the left part of this curve).
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Spray dryer: chamber-height sweep -> the drying curve (residence = L/v; constant + falling rate -> equilibrium)";
+
+verbosity     2;

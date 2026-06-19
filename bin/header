@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+# =============================================================================
+#  header  --  stamp the Choupo source-file header onto a file, or --check it.
+#
+#  The canonical header template lives in etc/header.txt (the CHOUPO banner +
+#  GPL-3.0-or-later notice + AUTHORS/NOTICE pointers + a one-line
+#  Description).  This tool
+#  fills in YEAR (now) and YOUR NAME (git user.name), leaves a <description>
+#  placeholder for you to edit, and prepends it with the right comment style:
+#
+#      C / C++ / TypeScript / JS  ->  the /* ... */ block form (template as-is)
+#      shell / python / make      ->  a '# '-prefixed form
+#
+#  Each author keeps their own copyright (inbound via the lightweight CONTRIBUTING.md):
+#  a NEW file you write carries YOUR copyright line; do not overwrite an
+#  existing author's line -- add yours beneath it if you make a major change.
+#
+#  Usage:
+#      bin/header <file> ["one-line description"]   # stamp (skips if present)
+#      bin/header --check <file...>                 # verify the SPDX line
+# =============================================================================
+
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+TEMPLATE="$ROOT/etc/header.txt"
+SPDX="SPDX-License-Identifier: GPL-3.0-or-later"
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ] || [ "$#" -eq 0 ]; then
+    sed -n '3,24p' "$0" | sed 's/^# \{0,1\}//'
+    exit 0
+fi
+
+# ---- --check: every listed file must carry the SPDX identifier --------------
+if [ "${1:-}" = "--check" ]; then
+    shift
+    rc=0
+    for f in "$@"; do
+        if ! grep -q "$SPDX" "$f" 2>/dev/null; then
+            echo "header MISSING: $f" >&2; rc=1
+        fi
+    done
+    [ "$rc" = 0 ] && echo "header OK (${#} file(s))"
+    exit "$rc"
+fi
+
+[ -f "$TEMPLATE" ] || { echo "header: template not found ($TEMPLATE)" >&2; exit 1; }
+
+file="$1"
+desc="${2:-<one-line summary of what this file does>}"
+[ -f "$file" ] || { echo "header: no such file '$file'" >&2; exit 1; }
+
+if grep -q "$SPDX" "$file"; then
+    echo "header: already present in $file (skipped)"
+    exit 0
+fi
+
+YEAR="$(date +%Y)"
+NAME="$(git config user.name 2>/dev/null || true)"
+[ -n "$NAME" ] || NAME="The Choupo Authors"
+
+# Fill the template placeholders.
+filled="$(sed \
+    -e "s/<YEAR>/$YEAR/" \
+    -e "s/<YOUR NAME>/$NAME/" \
+    -e "s|<one-line summary of what this file does>|$desc|" \
+    "$TEMPLATE")"
+
+# Choose comment style by extension; default to '#'.
+case "$file" in
+    *.H|*.h|*.hpp|*.hh|*.cpp|*.cc|*.cxx|*.c|*.ts|*.tsx|*.js|*.mjs|*.jsx)
+        header="$filled" ;;                    # C/JS block comment (template form)
+    *)
+        # '#'-prefixed form: drop the /* and */ delimiter lines, prefix the rest.
+        header="$(printf '%s\n' "$filled" | awk '
+            NR==1 { print "# ============================================================================="; next }
+            /^\\\*-+\*\/$/ { print "# ============================================================================="; next }
+            { if ($0 == "") print "#"; else print "# " $0 }')" ;;
+esac
+
+# Prepend, preserving a leading shebang if present.
+tmp="$(mktemp)"
+first="$(head -n1 "$file")"
+if printf '%s' "$first" | grep -q '^#!'; then
+    { printf '%s\n' "$first"; printf '%s\n\n' "$header"; tail -n +2 "$file"; } > "$tmp"
+else
+    { printf '%s\n\n' "$header"; cat "$file"; } > "$tmp"
+fi
+mv "$tmp" "$file"
+echo "header: stamped $file  (edit the Description line)"

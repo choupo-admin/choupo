@@ -1,0 +1,3 @@
+components       ( water NaOH ethanol );
+activityModel    { model eNRTL; }
+equationOfState  { model idealGas; }

@@ -1,0 +1,98 @@
+/*---------------------------------------------------------------------------*\
+  optim04_membrane_recovery_scaling  --  HOW HARD can we push recovery before
+                                          the membrane scales?
+
+  The flagship CONSTRAINED-OPTIMISATION case.  Same brackish-RO vessel and
+  scaling physics as tutorials/steady/membranes/membrane07_scaling_si (6 x
+  8-inch elements, the ~1500 mg/L groundwater analysis, the bulk-vs-wall
+  saturation-index audit), but now we ASK the engine the design question the
+  audit only diagnosed:
+
+      maximise   water_recovery
+      varying    feed pressure  and  the (continuous) module count
+      subject to NO mineral scaling at the membrane wall:
+                     maxSI_gypsum_wall  <= 0
+                     maxSI_calcite_wall <= 0   (rigorous Davies saturation
+                                                index -- smoother than the
+                                                Stiff-Davis/Langelier chart fit)
+
+  Recovery and wall saturation pull AGAINST each other: every extra %
+  recovery concentrates the retentate and drives the WALL composition
+  (bulk x polarisation) further into supersaturation.  The optimum
+  therefore sits ON the scaling limit -- at least one of the two
+  constraints is ACTIVE, with a strictly positive Lagrange multiplier
+  (the shadow price: how much more recovery one unit of scaling head-room
+  would buy).  That is exactly what the SQP trace prints.
+
+  GOLDEN-CHECKED regression: the SQP now converges to a CERTIFIED KKT
+  optimum (||grad L||inf ~ 3e-8, all feasibility 0, complementarity ~1e-8,
+  calcite-wall constraint ACTIVE with lambda ~ 1.14 > 0).  Because this is a
+  certified stationary point -- not a guessed answer -- its KPIs are pinned
+  in `expected`, which ALSO guards against a regression to the singular-QP
+  failure a readiness review caught earlier (a "QP subproblem failed: KKT
+  system singular -- LICQ failure" at iteration 1 that left the design
+  infeasible).  The KPIs still inherit the polarisation + Davies model
+  assumptions; the golden locks the answer THIS model gives at the certified
+  optimum, not an independent ground truth.  (If the engine ever fails to
+  converge again, the optimum block prints an explicit "NO KKT certificate
+  ... NOT a certified optimum" block -- never the misleading all-zeros
+  certificate it used to forge on the failure path.)
+
+  Two design variables, written through $references so the SQP can drive
+  them and the trace shows their canonical-SI values.
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    P_feed     14.0 bar;     // manipulated: feed pressure
+    nMods      5.0;          // manipulated: continuous module count (recovery knob)
+}
+
+streams
+{
+    feed
+    {
+        F            700.0 kmol/h;        // ~12.6 m3/h of brackish water
+        T            298.15 K;
+        P            $P_feed;             // <-- design variable
+        molarComposition
+        {
+            water    0.99929269;
+            Ca       3.773117e-5;
+            Mg       1.999839e-5;
+            Na       2.842462e-4;
+            K        5.525272e-6;
+            Cl       2.589668e-4;
+            SO4      4.685160e-5;
+            HCO3     5.398907e-5;
+        }
+    }
+}
+
+units
+(
+    {
+        name        vessel;
+        type        spiralWoundModule;
+        in          feed;
+        outputs     ( retentate  permeate );
+
+        operation
+        {
+            membrane         SW30HR;
+            moduleDiameter   8 in;
+            nModules         $nMods;       // <-- design variable (continuous)
+            P_permeate       1.0 bar;
+            k_film           2.0e-5;
+            dP_feed_total    0.3 bar;
+            interElementDP   0.1 bar;
+            nNodes           40;
+        }
+
+        scaling
+        {
+            minerals    ( calcite  gypsum );
+            pH          7.0;
+        }
+    }
+);

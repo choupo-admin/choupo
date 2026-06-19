@@ -1,0 +1,10 @@
+/*---------------------------------------------------------------------------*\
+  Sugar-water binary for the triple-effect cocurrent evaporator.
+  sucrose carries role=nonvolatile, dissociation=1, and a liquid Cp
+  that recovers the Honig correlation Cp(x) = 4.19 - 2.35x kJ/(kg·K).
+\*---------------------------------------------------------------------------*/
+
+components       ( water sucrose );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

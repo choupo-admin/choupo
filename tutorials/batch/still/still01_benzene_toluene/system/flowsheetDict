@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  still01_benzene_toluene  --  Rayleigh batch distillation, ideal Raoult.
+
+  Pot starts with 1 mol of equimolar benzene/toluene at 1 atm.  A
+  constant vapour offtake F_vap = 1.5e-6 kmol/s strips the pot over
+  600 s --- by linear mass balance the pot should hold
+
+      L(t)  =  L_0  -  F_vap  ·  t
+
+  i.e.  L(600 s) = 1 mmol - 0.9 mmol = 0.1 mmol  (90 % distilled).
+
+  Benzene is the more volatile component (alpha ~ 2.4 at 1 atm), so
+  the still pot progressively concentrates in toluene as benzene
+  flashes off preferentially.  Classical Rayleigh integration with
+  constant alpha gives the closed form
+
+      ln(L / L_0)  =  (1 / (alpha - 1))
+                     * [ ln(x / x_0)
+                       + alpha * ln((1 - x_0) / (1 - x)) ]
+
+  where x = x_benzene in the still pot.  Plotting (L/L_0) vs x_pot
+  from trajectory.csv should track this analytical curve to RK4
+  precision.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        still;
+        type        batchStill;
+
+        initial
+        {
+            T            365.0 K;            // K   --- close to T_bub at x=0.5
+            P            1.013 bar;            // bar (atmospheric)
+            V            1.0e-4;           // m³  (decorative; not used in mass balance)
+            totalMoles   1.0e-3;           // kmol   (1 mol of liquid)
+            molarComposition  { benzene 0.5;  toluene 0.5; }
+        }
+
+        operation
+        {
+            P            1.013 bar;            // bar
+            F_vap        1.5e-6;           // kmol/s    (≈ 90 mmol over 600 s)
+        }
+    }
+);

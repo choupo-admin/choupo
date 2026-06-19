@@ -1,0 +1,41 @@
+Choupo was conceived and architected by Vítor Geraldes.
+
+Substantial parts of the initial implementation, guides, and tutorial corpus
+were produced with assistance from Anthropic Claude Code using Claude
+Opus/Fable models.
+
+This is an AI-assisted work, not an autonomous AI work. The scientific and
+engineering choices, architecture, prompts, acceptance/rejection, corrections,
+licensing, trademark strategy, and release responsibility are human decisions.
+The acknowledgement is deliberately explicit because pretending either "a
+human typed every line" or "an AI authored the project" would be false.
+
+This is the human-readable roll of everyone who has contributed code, cases,
+tests, models, executable examples, or project maintenance to Choupo. The
+authoritative, fine-grained record of contribution authorship is the git
+history.
+
+Project lead and architect
+  Vítor Geraldes
+
+Scientific curation, review, and editorial responsibility
+  Vítor Geraldes
+  Pedro Mendes
+
+AI-assisted implementation
+  Anthropic Claude Code / Claude Opus and Fable models
+  Used as software-generation tools; not treated as human authors or
+  copyright holders.
+
+Code, case, test, and model contributors
+  (add yourself here in your first pull request)
+
+Contributor authorship policy
+  Choupo records contributors by name in this file, by copyright lines in
+  source files they create or substantially extend, by DCO Signed-off-by
+  trailers, and by the git commit author history. Contributions are not
+  assigned to Vítor Geraldes or TalentGround Lda.; contributors keep their
+  copyright and license their work under GPL-3.0-or-later. The guides/manuals
+  are authored and curated by Vítor Geraldes and Pedro Mendes -- except the
+  Developer Guide, authored by Vítor Geraldes alone; external contributions do
+  not create guide authorship.

@@ -1,0 +1,24 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  reactions -- HDA plant.  Main reaction (stoichiometry only; the
+  conversionReactor needs no kinetics -- the per-pass conversion is specified,
+  gas-basis).  toluene is the limiting reactant (H2 fed in excess, ~3:1).
+
+      toluene + H2  ->  benzene + CH4
+
+  The diphenyl side reaction (2 benzene <-> biphenyl + H2) is a documented
+  follow-on (PHASE 5): it needs the biphenyl component created via the props
+  bench (Joback) AND a Psat + gibbsFormation before it can touch a VLE unit.
+\*---------------------------------------------------------------------------*/
+
+hda
+{
+    limitingReactant  toluene;
+    stoichiometry
+    (
+        { component toluene;  nu -1; }
+        { component H2;       nu -1; }
+        { component benzene;  nu  1; }
+        { component CH4;      nu  1; }
+    );
+    dH_rxn  -42.0e3;   // J/mol (informational; the reactor computes its own from h_ig)
+}

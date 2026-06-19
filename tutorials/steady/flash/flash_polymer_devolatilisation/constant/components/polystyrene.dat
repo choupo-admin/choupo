@@ -1,0 +1,67 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  PSEUDO-COMPONENT: polystyrene   (a polymer as a SINGLE fixed-average-MW lump)
+
+  A polymer is modelled here as a pseudo-component with ONE fixed average
+  molar mass -- the SAME data-model as a petroleum cut, zero new code.  It
+  carries only what a non-volatile lump can own:
+
+    identity { MW }    -- a FIXED number-average molar mass Mn (NO formula /
+                          CAS: a polymer is a distribution of chain lengths)
+    role nonvolatile;  -- a polymer never enters the vapour (K = 0 always),
+                          so it needs NO critical{} / Psat to flash
+    solid { rho_p }    -- bulk density, for the solid/melt handling
+    Cp                 -- a melt/solid heat capacity, for energy balances
+
+  ====================================================================
+  LOUD LIMITATION -- READ THIS:
+  Choupo models the polymer as ONE pseudo-component at a FIXED average MW.
+  It does NOT model the molecular-weight DISTRIBUTION (MWD): no Mn/Mw/PDI
+  tracking, no chain-length population balance, no end-group chemistry, no
+  copolymer composition.  A true polymer-property method (the Polymers-Plus
+  / segment-based PC-SAFT class of tools) is NOT supported and is OUT of
+  Choupo's scope.  Use this lump ONLY where a single average MW is an
+  acceptable engineering approximation (solvent devolatilisation, a heat /
+  mass balance on a polymer solution) -- NEVER for MWD-dependent design.
+  ====================================================================
+
+  PROVENANCE SCREAMS it: status ESTIMATE, lumped true, fixedMW true.
+\*---------------------------------------------------------------------------*/
+
+identity
+{
+    name        polystyrene;
+    // formula / CAS OMITTED -- a polymer is a DISTRIBUTION, not a molecule.
+    MW          50000.0;          // g/mol  FIXED number-average Mn (Mn ~ 50 kg/mol)
+}
+
+role        nonvolatile;          // never enters the vapour (K = 0); no Psat needed
+
+solid
+{
+    rho_p   1050.0;               // kg/m3  bulk amorphous polystyrene (~1.05 g/cm3)
+}
+
+liquidPure  // melt/solution reference -- carries the (large, per-mole) Cp
+{
+    Cp
+    {
+        model         polynomial;
+        // Cp_melt [J/(mol K)] = a0 + a1 T.  Specific Cp of molten polystyrene
+        // ~ 1.9 kJ/(kg K) near 450 K; per mole = 1.9 * Mn(kg) = 1.9 * 50 ~ 95
+        // kJ/(mol K) -- enormous because a "mole" of polymer is 50 kg.  This is
+        // the FIXED-MW lump talking: a per-mass basis is the natural one for a
+        // polymer.  (Linearised about the processing range.)
+        coefficients  (60000.0  77.0);
+        Trange        (350  550);
+    }
+}
+
+provenance
+{
+    status        "ESTIMATE";
+    origin        estimated;
+    lumped        true;
+    fixedMW       true;
+    method        "polymer as a single fixed-average-MW (Mn) pseudo-component; Cp from a per-mass melt specific heat x Mn";
+    note          "FIXED-MW LUMP: no molecular-weight distribution (Mn/Mw/PDI), no chain population balance -- true polymer-property methods (Polymers-Plus / segment PC-SAFT) are NOT supported in Choupo.  Use only where a single average MW is an acceptable approximation.";
+}

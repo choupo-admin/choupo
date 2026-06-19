@@ -1,0 +1,51 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/NO.dat
+// sha256   e26363b18acf82b8a87df398997944093a6baa239bc7c658b5ec65434e34104c
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Nitric oxide  (NO, CAS 10102-43-9)
+  The principal thermal-NOx pollutant from high-temperature combustion.
+  Formed via the Zeldovich mechanism (N2 + O <-> NO + N, then
+  N + O2 <-> NO + O), reaching equilibrium populations ~ 100-1000 ppm
+  at typical adiabatic flame temperatures.
+  Sources: Reid-Prausnitz-Poling 4th ed., Appendix A; NIST WebBook.
+\*---------------------------------------------------------------------------*/
+
+name        NO;
+formula     NO;
+CAS         10102-43-9;
+
+MW          30.006;       // kg/kmol
+Tc          180.00;       // K
+Pc          64.85;        // bar
+omega       0.583;        // [-]   (NO is polar -- high omega)
+Tb          121.40;       // K
+HvapTb      13830;        // J/mol
+Vliq        2.30e-5;      // m^3/mol  (23 cm^3/mol at Tb)
+
+gibbsFormation
+{
+    dHf_298   +90250.0;           // J/mol  -- positive: endothermic formation
+    s_298     210.760;            // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (NIST/JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.0   400.0   -30.0);
+    Trange        (90  180);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   (Reid 4th ed. Table A.1)
+    coefficients  (29.35   -9.378e-4   9.747e-6   -4.187e-9);
+    Trange        (250  1500);
+}

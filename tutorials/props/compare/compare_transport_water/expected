@@ -1,0 +1,10 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    mu_iapws               n_failures       0                  1e-4
+diag    mu_iapws               n_points         46                 1e-4
+diag    mu_generic             n_failures       0                  1e-4
+diag    mu_generic             n_points         46                 1e-4
+diag    k_iapws                n_failures       0                  1e-4
+diag    k_iapws                n_points         46                 1e-4
+diag    k_generic              n_failures       0                  1e-4
+diag    k_generic              n_points         46                 1e-4

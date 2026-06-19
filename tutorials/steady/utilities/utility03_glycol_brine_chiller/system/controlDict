@@ -1,0 +1,12 @@
+application   choupoSolve;
+description   "PG-30 brine sensibly cools an ethanol vapour stream from 330 K to ~273 K (eps-NTU, no phase change), ~20.8 kW duty";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+    utilities      { }
+}

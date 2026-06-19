@@ -1,0 +1,27 @@
+# Reference KPIs (golden master) for the IAPWS water transport route.
+#
+# Water flagged `pureFluids { water { method IF97; } }` routes the transport
+# accessors to the matching IAPWS releases (R12-08 viscosity, R15-11 thermal
+# conductivity, R1-76 surface tension).  The (rho,T) kernels take their density
+# from the IF97 thermodynamic kernel at the SATURATION state (p = p_sat(T)).
+#
+# Two-tier defence (mirrors steam01): IAPWSTransport::verify() runs inside the
+# IF97WaterFluid::verify() self-check and HARD-REFUSES the run (rc != 0) if any
+# release's published verification value deviates > 1e-8 (mu, lambda) or its
+# table precision (sigma).  The pins below sit at coarser reltol only because
+# the result-JSON diagnostics channel prints 4 decimal places.
+#
+# Physical values are the SATURATED-LIQUID state of water:
+#   sigma in N/m, thermal_conductivity in W/(m.K), viscosity in Pa.s.
+# kind   name      key                    expected      reltol
+diag    pin_25C    surface_tension        0.0720        1e-3
+diag    pin_25C    thermal_conductivity   0.6065        1e-3
+diag    pin_25C    viscosity              0.0009        6e-2
+diag    pin_50C    surface_tension        0.0679        1e-3
+diag    pin_50C    thermal_conductivity   0.6406        1e-3
+diag    pin_75C    surface_tension        0.0636        1e-3
+diag    pin_75C    thermal_conductivity   0.6635        1e-3
+diag    pin_100C   surface_tension        0.0589        1e-3
+diag    pin_100C   thermal_conductivity   0.6772        1e-3
+diag    transport_scan  n_points          46            1e-9
+diag    transport_scan  n_failures        0             1e-9

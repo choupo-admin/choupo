@@ -1,0 +1,13 @@
+/*  Binary liquid-liquid teaching map — water / 1-butanol at 25 C.
+
+    The molar Gibbs energy of mixing g_mix(x1) swept across composition PLUS
+    the two coexisting liquid compositions from ONE liquid-liquid IsothermalFlash
+    (PhaseSet::LL).  The two binodal points lie on the g_mix curve and share its
+    common tangent -- the student reads the split straight off the diagram.
+    UNIFAC supplies gamma (predictive, from the components' groups); water-butanol
+    is the classic partial-miscibility binary.  Run-only smoke (the CSV is a
+    teaching curve, not pinned KPIs).  NOTE: the water-rich branch sits near the
+    flash's 1e-4 simplex floor -- the op says so aloud (no silent crutch). */
+application   choupoProps;
+description   "Binary LLE g_mix + common-tangent (water/1-butanol) at 298.15 K via propertyScanBinary";
+verbosity     2;

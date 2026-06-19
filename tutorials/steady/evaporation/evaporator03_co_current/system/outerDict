@@ -1,0 +1,53 @@
+/*---------------------------------------------------------------------------*\
+  evaporator03_co_current --- outer driver (MCFT 10.38 case a).
+
+  v0.33 Mode-2 formulation.  Pressures inside the effects EMERGE
+  from each effect's heat balance (T_boil = T_steam − Q/(U·A);
+  P_op = P_sat(T_boil − BPE)).  So there are only TWO design
+  unknowns left:
+
+    Unknowns:
+      $A          common heat-exchange area (m²)
+      $F_steam    live-steam flow entering effect 1 (kmol/s)
+
+    Constraints (2):
+      (1) productConc.F_mass = 0.3125 kg/s          (textbook 40 wt%)
+      (2) effect3.P = 13.5 kPa                       (textbook T_3 = 325 K
+                                                      <=> P_sat(water) at
+                                                      the cold-end vacuum)
+
+  The cascade is then fully self-consistent: V_i produced by effect i
+  is the chest of effect i+1 (mass closure automatic via wiring); all
+  P_i are computed; Newton-ND on ($A, $F_steam) drives the two design
+  constraints to zero.
+\*---------------------------------------------------------------------------*/
+
+type         designSpec;
+
+manipulate
+(
+    { variable A;        initial 17.0   m2;     min 5.0   m2;       max 60.0   m2;     }
+    { variable F_steam;  initial 100.0  kmol/h; min 30.0  kmol/h;   max 800.0  kmol/h; }
+);
+
+targets
+(
+    // (1) The product spec: 40 wt% solids on 0.125 kg/s of solidos in.
+    { path  productConc.F_mass;   value 0.3125 kg/s;   tol 1.0e-4 kg/s; }
+
+    // (2) Textbook terminal-vacuum spec:  T_3 = 325 K
+    //     <=>  P_sat(water, 325 K) = 13.5 kPa.
+    { path  effect3.P;            value 13500 Pa;       tol 50 Pa; }
+);
+
+options
+{
+    maxIter      40;
+    tolF         1.0;
+    fdStep       1.0e-4;
+}
+
+report
+{
+    file         designspec_history.csv;
+}

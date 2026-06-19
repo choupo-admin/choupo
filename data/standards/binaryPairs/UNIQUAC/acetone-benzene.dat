@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- acetone-benzene
+  Promoted from the ChemSep DECHEMA set (Artistic-2.0). See provenance.
+\*---------------------------------------------------------------------------*/
+
+components  ( acetone benzene );
+model       UNIQUAC;
+
+parameters
+{
+    i           acetone;
+    j           benzene;
+    a_ij        -180.617;   // K
+    a_ji        304.085;   // K
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_acetone_benzene   -358.9226;   // CAS 67-64-1 -> 71-43-2
+    A_benzene_acetone   604.28;   // CAS 71-43-2 -> 67-64-1
+}
+
+provenance
+{
+    source        literature;
+    citation      "DECHEMA Chemistry Data Series (UNIQUAC interaction energies, 1 atm), as tabulated in the ChemSep v8.3 database (H. Kooijman & R. Taylor, Artistic-2.0)";
+    fitData       "<not refit>";
+    fitDate       "<literature>";
+    algorithm     "<not reported>";
+    chi2          "<not reported>";
+    nDataPoints   0;
+    validityRange { note "1 atm DECHEMA VLE; explicit T-range not captured on import"; }
+    author        "Imported from ChemSep via chemsep_to_choupo; promoted 2026-06-15";
+    notes         "Standard published DECHEMA values, NOT independently re-fit or per-value verified here. Glass-box caveat (CLAUDE.md): cross-check against your own VLE data before quantitative use. The raw cal/mol energies are kept in the source{} block above for audit.";
+}

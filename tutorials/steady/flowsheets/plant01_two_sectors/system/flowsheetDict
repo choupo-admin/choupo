@@ -1,0 +1,15 @@
+/* PLANT (composite of composite sectors) */
+children    ( secA  secB );
+boundary    { inlets ( feed );  outlets ( vaporA  vaporB  bottoms ); }
+streams
+{
+    feed { F 100.0 kmol/h;  T 365.0 K;  P 1.0 bar;  molarComposition { benzene 0.50; toluene 0.50; } }
+}
+connections
+(
+    { from feed;          to secA/feed;    }
+    { from secA/liquid;   to secB/feed;    }
+    { from secA/vapor;    to vaporA;       }
+    { from secB/vapor;    to vaporB;       }
+    { from secB/liquid;   to bottoms;      }
+);

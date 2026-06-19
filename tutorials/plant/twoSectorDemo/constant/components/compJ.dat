@@ -1,0 +1,13 @@
+/*--- Component: compJ  (synthetic, case-local; demo case) ---*/
+name        compJ;
+MW          90.000;
+Tc          590.00;
+Pc          49.00;
+omega       0.2900;
+Tb          367.00;
+HvapTb      31800;
+Vliq        8.5e-5;
+gibbsFormation { dHf_298 -5000.0;  s_298 268.0;  phase gas; }
+vaporPressure { model Antoine; coefficients (4.05 1250.0 -50.0); Trange (250 500); }
+idealGasHeatCapacity { model polynomial; coefficients (50.0 0.12 -6.0e-5 9.0e-9); Trange (200 1500); }
+provenance { source synthetic; note "demo two-sector case"; }

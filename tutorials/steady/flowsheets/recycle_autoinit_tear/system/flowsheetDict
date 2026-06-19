@@ -1,0 +1,96 @@
+/*---------------------------------------------------------------------------*\
+  recycle_autoinit_tear  --  same Reactor-Separator-Recycle as
+  process03_recycle, but the tear stream `recycle` is deliberately NOT given
+  an initial guess in the `streams {}` block.  The solver then AUTO-SEEDS it
+  from the feed aggregate (a physically-defensible guess derived from the
+  actual feeds, never a magic constant), ANNOUNCES it on the log
+
+      [init] tear 'recycle': no guess supplied -- seeded from the feed
+             aggregate (F=... kmol/h, T=... K).  An explicit guess ...
+
+  and converges to the SAME fixed point as process03_recycle (the solution is
+  unique).  Demonstrates the "no silent crutch" auto-init: the crutch exists,
+  but it is honest (feed-propagation) and loud (announced + nudges the student
+  to write an explicit guess).  See CLAUDE.md "No silent crutch".
+
+         freshFeed ──┐                                       ┌──► vapProd (product)
+                     │                                       │
+                  [mixer] ──► [reactor] ──► [separator]──────┤
+                     ▲                          (flash)      │
+                     │                                       └──► liqProd
+                     │                                                │
+                     │            [splitter]                          │
+                     └────── recycle ◄─ ┤                             │
+                                        └─────────► purge             │
+                                                                      │
+                                          (the splitter is fed by liqProd)
+
+  Tear stream: `recycle` — declared explicitly; the Flowsheet runs
+  Wegstein on (F, z..., T) until the post-pass value matches the input
+  guess to a tolerance.
+
+  The CSTR converts ~25% per pass (small volume); without recycle most
+  ethanol would simply leave in liqProd.  With ~80% recycle, the overall
+  ethanol conversion approaches 100% at steady state.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    freshFeed
+    {
+        F            1.0 kmol/h;           // equimolar ethanol + acetic acid (esterification feed)
+        T            350.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+    }
+
+}
+
+tearStreams           ( recycle );
+recycleSolver          Newton;        // Newton on the tear variables (default);
+                                      //   `Wegstein` for the fixed-point accelerator
+recycleTol             1e-5;
+recycleMaxIter         120;
+// Recycle problems with flash regime switching are best solved with
+// gentle / no acceleration.  Start with direct substitution (q ≡ 0)
+// and add Wegstein later if convergence is too slow.
+recycleWegsteinQmin    0.0;
+recycleWegsteinQmax    0.0;
+
+units
+(
+    {
+        name        mixer01;
+        type        mixer;
+        inputs      ( freshFeed  recycle );
+        outputs     ( mixed );
+    }
+
+    {
+        name        reactor;
+        type        cstr;
+        in          mixed;
+        outputs     ( reactorOut );
+
+        operation   { V_R 0.020; }        // kτ ≈ 4.4, ~80% per pass
+        reaction    esterification_etac;
+    }
+
+    {
+        name        separator;
+        type        isothermalFlash;
+        in          reactorOut;
+        outputs     ( liqOut  vapProd );
+
+        operation   { T 360.0 K;  P 1.0 bar; }    // hot enough to vaporise some of this water-rich mix
+    }
+
+    {
+        name        split01;
+        type        splitter;
+        in          liqOut;
+        outputs     ( recycle  liqProd );    // recycle FEEDS BACK into mixer
+
+        operation   { fractions ( 0.6  0.4 ); }    // 60% recycled, 40% to product
+    }
+);

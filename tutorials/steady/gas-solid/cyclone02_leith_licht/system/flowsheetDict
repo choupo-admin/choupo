@@ -1,0 +1,47 @@
+/*---------------------------------------------------------------------------*\
+  cyclone02_leith_licht
+  =====================
+
+  The same dusty gas as cyclone01, but the grade efficiency uses the
+  Leith-Licht back-mixing model instead of Lapple.  Accounting for
+  turbulent re-entrainment in the vortex, Leith-Licht predicts a SMALLER
+  cut diameter (finer collection) for the same geometry/flow.
+
+  Leith-Licht cut diameter d50 ~ 1.11 um here.  The grade efficiency is
+  ~48 % at 1 um, ~94 % at 10 um.  Overall collection ~ 88 % of the dust
+  mass --- higher than Lapple's 82 % because more of the sub-micron tail
+  is captured.
+
+  Gas:    150 kmol/h N2, 300 K, 1 atm
+  Dust:   50 kg/h silica, ρ_p = 2650 kg/m^3, PSD 1..50 um
+  Cyclone: body diameter 0.5 m, 5 effective turns
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            150.0 kmol/h;
+        T            300.0 K;
+        P            1.01325 bar;
+        molarComposition { N2 1.0; }
+        solids
+        {
+            solidFlows   { silica 50.0 kg/h; }
+            diameters    ( 1e-6  2e-6  5e-6  10e-6  20e-6  50e-6 );   // m
+            massFractions( 0.05  0.10  0.20  0.30   0.25   0.10  );
+        }
+    }
+}
+
+units
+(
+    {
+        name        cyclone;
+        type        cyclone;
+        model       LeithLicht;
+        in          feed;
+        outputs     ( cleanGas  capturedSolids );
+        operation   { bodyDiameter 0.5 m;  numberOfTurns 5; }
+    }
+);

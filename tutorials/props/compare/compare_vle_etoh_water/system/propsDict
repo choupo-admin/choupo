@@ -1,0 +1,115 @@
+/*---------------------------------------------------------------------------*\
+  compare_vle_etoh_water
+  ======================
+
+  The canonical "SEE, then DECIDE" props case: ethanol/water T-x-y at 1 atm,
+  with two MODEL curves and the MEASURED data on ONE plot.
+
+  Piece 1 -- two scan operations, identical but for the activity model:
+      txy_ideal   Raoult (gamma = 1)  -> a smooth lens, NO azeotrope
+      txy_nrtl    NRTL                -> the real minimum-boiling azeotrope
+  Each emits the (x, T_bubble, y_eq) trio -> the T-x-y / x-y / T-x / T-y toggle
+  (x-y is the McCabe-Thiele diagram).
+
+  Piece 2 -- the `experimental {}` overlay: lists the two ops as `models`, and
+  points `dataset` at REAL measured points (constant/experiments/...).  The GUI
+  draws both model curves + the lab points together; the student SEES that the
+  ideal model misses the azeotrope and NRTL captures it, and picks NRTL from
+  evidence -- not from a recommended-by badge.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        txy_ideal;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
+        state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo      { activityModel { model ideal; } }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_ideal.csv; }
+    }
+    {
+        name        txy_nrtl;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
+        state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            activityModel
+            {
+                model NRTL;
+                pairs
+                (
+                    {
+                        i      ethanol;  j      water;
+                        a_ij  -0.8009;   b_ij   246.18;
+                        a_ji   3.4578;   b_ji  -586.0809;
+                        alpha  0.30;
+                    }
+                );
+            }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_nrtl.csv; }
+    }
+    {
+        // PREDICT (not fit): UNIFAC builds gamma from the molecular groups with
+        // NO regressed binary parameters.  ethanol = CH3 + CH2 + OH, water = H2O;
+        // the CH2/OH/H2O group interactions alone produce an azeotrope.  The
+        // validation AAD shows how close a zero-data PREDICTION lands: T_bubble
+        // AAD ~2.6 K, BETWEEN ideal (~5.4 K) and the fitted NRTL (~0.35 K).
+        // HONEST CAVEAT: this is ORIGINAL UNIFAC, known to be weak for alcohol-
+        // water -- it predicts the azeotrope EXISTS but misplaces it to x_eth
+        // ~0.77 (real 0.894).  That mislocation is the method's documented
+        // limitation (the motivation for modified UNIFAC/Dortmund), NOT a bug:
+        // the a_mn table here matches Poling 5th ed. Table 8-24.  Lesson: group
+        // prediction gets you into the ballpark for free; for an associating
+        // system you still fit NRTL (or use modified UNIFAC).
+        name        txy_unifac;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0.0;  to 1.0;  n 51; }
+        state       { P 1.01325 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            activityModel
+            {
+                model  UNIFAC;
+                groups
+                {
+                    ethanol ( { group CH3; count 1; } { group CH2; count 1; } { group OH; count 1; } );
+                    water   ( { group H2O; count 1; } );
+                }
+            }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+        output      { file txy_unifac.csv; }
+    }
+    {
+        // TEST the data, don't just look at it: the van Ness / area
+        // thermodynamic consistency check on the SAME measured (x, T, y) set.
+        // gamma_i comes straight from the data (modified Raoult, Antoine Psat);
+        // a consistent set satisfies the Gibbs-Duhem area + point tests.
+        // Reuses the dataset below (the engine accepts its model-scan column
+        // aliases T_bubble / y_eq_ethanol).
+        name        consistency_etoh_water;
+        type        vleConsistency;
+        component   ethanol;
+        partner     water;
+        state       { P 1.01325 bar; }
+        dataset     "constant/experiments/etoh_water_vle_1atm.dat";
+        output      { file consistency.csv; }
+    }
+);
+
+experimental
+(
+    {
+        name      etoh_water_1atm;
+        component ethanol;
+        kind      txy;
+        models    ( txy_ideal  txy_nrtl  txy_unifac );
+        dataset   "constant/experiments/etoh_water_vle_1atm.dat";
+        source    "Carey & Lewis 1932 (ethanol-water VLE, 101.3 kPa)";
+    }
+);

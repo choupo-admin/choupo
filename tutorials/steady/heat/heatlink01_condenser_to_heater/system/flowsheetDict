@@ -1,0 +1,65 @@
+/*---------------------------------------------------------------------------*\
+  feed ─► column01 ─┬─► distillate
+                    └─► bottoms
+                    (condenser heat) ─────────► preheater ─► warmedProcess
+  coldProcess ──────────────────────────────────►
+
+  The preheater is heated by the column's rejected condenser duty
+  (~1.28 MW), warming a 1500 kmol/h benzene stream from 320 K by ~23 K.
+  column01 is listed FIRST so it solves before the preheater reads its
+  condenser KPI (forward heat-link).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            370.0 K;
+        P            1.01325 bar;
+        molarComposition  { benzene 0.50;  toluene 0.50; }
+    }
+    coldProcess
+    {
+        F            1500.0 kmol/h;
+        T            320.0 K;
+        P            1.01325 bar;
+        molarComposition  { benzene 1.0;  toluene 0.0; }
+    }
+}
+
+units
+(
+    {
+        name        column01;
+        type        distillationColumn;
+        in          feed;
+        outputs     ( distillate  bottoms );
+
+        operation
+        {
+            nStages        15;
+            feedStage      8;
+            refluxRatio    2.0;
+            distillateRate 50.0 kmol/h;
+            feedQuality    1.0;
+            P              1.01325 bar;
+        }
+
+        compositionTol   1e-7;
+        maxOuterIter     200;
+    }
+
+    {
+        name        preheater;
+        type        heater;
+        in          coldProcess;
+        outputs     ( warmedProcess );
+
+        operation   { }                 // Q is supplied by the heat-link below
+        energyInputs
+        (
+            { from column01.condenser;  kind heat;  target Q; }
+        );
+    }
+);

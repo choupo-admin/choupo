@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  Liquid-water heat capacity vs temperature (literature, 283-373 K).  Cp_L is
+  famously ~75.3 J/(mol·K) with a shallow minimum near 308 K, rising slightly
+  toward the boiling point.  Lets Cp(T) be FITTED (heatCapacityFit) and the
+  Kirchhoff relation d(dHvap)/dT = Cp_ig - Cp_L checked against the catalogue
+  ideal-gas Cp.  Self-describing format, units MANDATORY.
+\*---------------------------------------------------------------------------*/
+
+columns
+(
+    { name T;   unit K;        role independent; }
+    { name Cp;  unit "J/mol/K"; role dependent;   }
+);
+
+data
+(
+    283.15   75.65
+    293.15   75.38
+    303.15   75.28
+    313.15   75.28
+    323.15   75.34
+    333.15   75.45
+    343.15   75.61
+    353.15   75.81
+    363.15   76.06
+    373.15   76.37
+);
+
+provenance
+{
+    source        literature;
+    citation       "liquid water Cp, standard tables";
+}

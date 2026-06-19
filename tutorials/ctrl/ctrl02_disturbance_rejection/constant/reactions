@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------*\
+  Same mild-exotherm Arrhenius as ctrl01.
+\*---------------------------------------------------------------------------*/
+
+compA_to_compB
+{
+    limitingReactant   compA;
+
+    stoichiometry
+    (
+        { component compA;  nu -1;  order 1; }
+        { component compB;  nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;
+        A      1.0e4;
+        Ea     5.0e4;
+    }
+
+    dH_rxn  -5.0e4;
+}

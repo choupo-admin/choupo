@@ -1,0 +1,140 @@
+/*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+License
+    This file is part of Choupo.
+
+    Choupo is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Choupo is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+    License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+
+    SPDX-License-Identifier: GPL-3.0-or-later
+
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+#include "PropertyOperation.H"
+#include "EstimateComponent.H"
+#include "Exchange.H"
+#include "FitParameters.H"
+#include "HeatCapacityFit.H"
+#include "HeatTransferBench.H"
+#include "Kinetics1D.H"
+#include "PropertyPoint.H"
+#include "PropertyScan1D.H"
+#include "PropertyScan2D.H"
+#include "PropertyScanTernary.H"
+#include "PropertyScanBinary.H"
+#include "PurePhaseDiagram.H"
+#include "PsychrometricChart.H"
+#include "PitzerActivity.H"
+#include "ScalingScan.H"
+#include "Speciate.H"
+#include "SteamTables.H"
+#include "VaporPressureFit.H"
+#include "VleConsistency.H"
+#include "thermo/Database.H"
+#include "thermo/ThermoPackage.H"
+
+#include <stdexcept>
+
+namespace Choupo {
+
+std::map<std::string, PropertyOperation::Factory>&
+PropertyOperation::registry()
+{
+    static std::map<std::string, Factory> r;
+    return r;
+}
+
+void PropertyOperation::registerType(const std::string& name, Factory f)
+{
+    registry()[name] = std::move(f);
+}
+
+std::unique_ptr<PropertyOperation>
+PropertyOperation::New(const std::string& name)
+{
+    auto it = registry().find(name);
+    if (it == registry().end())
+    {
+        std::string msg = "PropertyOperation: unknown type '" + name
+                        + "'.  Available types:";
+        for (const auto& kv : registry()) msg += "  " + kv.first;
+        throw std::runtime_error(msg);
+    }
+    return it->second();
+}
+
+std::vector<std::string> PropertyOperation::availableTypes()
+{
+    std::vector<std::string> out;
+    for (const auto& kv : registry()) out.push_back(kv.first);
+    return out;
+}
+
+std::unique_ptr<ThermoPackage>
+PropertyOperation::thermoForOp(const DictPtr& opDict) const
+{
+    if (!opDict->found("thermo") || !database_ || !thermoDict_)
+        return nullptr;
+
+    // Merge: start from the global thermoPackage; the op's `thermo {}`
+    // block REPLACES the model sub-dicts it names (activityModel,
+    // equationOfState, vaporPressure, transport, etc.).  Components
+    // stay global — comparing 2 models for the same components is the
+    // whole point.
+    auto merged = std::make_shared<Dictionary>("thermoPackage");
+    for (const auto& k : thermoDict_->keys())
+        merged->insert(k, thermoDict_->entryValue(k));
+    auto over = opDict->subDict("thermo");
+    for (const auto& k : over->keys())
+        merged->insert(k, over->entryValue(k));
+
+    auto tp = std::make_unique<ThermoPackage>();
+    tp->readFromDict(merged, *database_);
+    return tp;
+}
+
+void PropertyOperation::registerBuiltins()
+{
+    auto reg = [](const std::string& n, Factory f)
+    {
+        registerType(n, std::move(f));
+    };
+
+    reg("propertyPoint",  []{ return std::make_unique<PropertyPoint>();  });
+    reg("propertyScan1D", []{ return std::make_unique<PropertyScan1D>(); });
+    reg("propertyScan2D", []{ return std::make_unique<PropertyScan2D>(); });
+    reg("propertyScanTernary", []{ return std::make_unique<PropertyScanTernary>(); });
+    reg("propertyScanBinary",  []{ return std::make_unique<PropertyScanBinary>(); });
+    reg("purePhaseDiagram", []{ return std::make_unique<PurePhaseDiagram>(); });
+    reg("psychrometricChart", []{ return std::make_unique<PsychrometricChart>(); });
+    reg("pitzerActivity", []{ return std::make_unique<PitzerActivity>(); });
+    reg("speciate",       []{ return std::make_unique<Speciate>();       });
+    reg("exchange",       []{ return std::make_unique<Exchange>();       });
+    reg("steamTables",    []{ return std::make_unique<SteamTables>();    });
+    reg("scalingScan",    []{ return std::make_unique<ScalingScan>();    });
+    reg("fitParameters",  []{ return std::make_unique<FitParameters>();  });
+    reg("kinetics1D",     []{ return std::make_unique<Kinetics1D>();     });
+    reg("vleConsistency", []{ return std::make_unique<VleConsistency>(); });
+    reg("vaporPressureFit", []{ return std::make_unique<VaporPressureFit>(); });
+    reg("heatCapacityFit", []{ return std::make_unique<HeatCapacityFit>(); });
+    reg("heatTransferBench", []{ return std::make_unique<HeatTransferBench>(); });
+    reg("estimateComponent", []{ return std::make_unique<EstimateComponent>(); });
+}
+
+} // namespace Choupo

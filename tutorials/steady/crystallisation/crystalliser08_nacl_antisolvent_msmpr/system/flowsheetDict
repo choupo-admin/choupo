@@ -1,0 +1,59 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser08_nacl_antisolvent_msmpr  --  CONTINUOUS MSMPR + ANTISOLVENT
+
+      brine  ──┐
+            [cryst MSMPR] ──► magma   (crystals WITH a size distribution n(L)
+      ethanol─┘                        + saturated mother liquor)
+
+  Same drowning-out feed as crystalliser06 (saturated brine + ethanol), but the
+  vessel is a CONTINUOUS, well-mixed MSMPR crystalliser of working volume V; the
+  magma leaves at the same volumetric rate, so the residence time is tau = V/Q.
+
+  Where the equilibrium model stops at the YIELD, the population balance goes on
+  to the CRYSTAL-SIZE DISTRIBUTION: the antisolvent supersaturation
+  S = c / c_sat(eNRTL, T, x_ethanol) drives growth G = k_g (S-1)^g and nucleation
+  B0 = k_b (S-1)^b; the method of moments gives n(L) = n0 exp(-L/Gtau), the mean
+  sizes (L43 = 4 Gtau), the CV, and the magma PSD -- plotted in the GUI.
+
+  The supersaturation here comes from the eNRTL ion-activity Ksp (the antisolvent
+  lowers m_sat), NOT a solubility curve -- the MSMPR now reads the electrolyte
+  saturation, the same helper the equilibrium model uses.
+  Self-contained: components + ion/tau catalogue + kinetics all under constant/.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    brine
+    {
+        F            100.0 kmol/h;
+        T            298.15 K;
+        P              1.0 bar;
+        molarComposition  { water 0.9003;  NaCl 0.0997; }   // saturated aqueous NaCl
+    }
+
+    ethanol
+    {
+        F             60.0 kmol/h;
+        T            298.15 K;
+        P              1.0 bar;
+        molarComposition  { ethanol 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        cryst;
+        type        crystalliser;
+        model       MSMPR;                       // population balance (method of moments)
+        inputs      ( brine  ethanol );
+        outputs     ( magma );                   // slurry carries the crystal-size distribution
+
+        operation
+        {
+            operatingTemperature 298.15 K;       // isothermal -- the antisolvent makes the supersaturation
+            volume               5.0 m3;         // working suspension volume (hardware) -> tau = V/Q
+        }
+        crystallisation  naclKinetics;           // -> constant/crystallisation
+    }
+);

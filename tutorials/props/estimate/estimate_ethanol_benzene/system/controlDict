@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Joback estimates: ethanol (H-bonding -> Tb weak, the honest limit) and benzene (aromatic groups -> good) --- see where group contribution wins and loses";
+verbosity     2;

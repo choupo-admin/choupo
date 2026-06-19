@@ -1,0 +1,25 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  extract                F                0.0359293973028  1e-4
+stream  feed                   F                0.0277777777778  1e-4
+stream  raffinate              F                0.0251772962492  1e-4
+stream  solvent                F                0.0333333333333  1e-4
+kpi     extractor01            F_extract        0.0359293973028  1e-4
+kpi     extractor01            F_feed           0.0277777777778  1e-4
+kpi     extractor01            F_raffinate      0.0251772962492  1e-4
+kpi     extractor01            F_solvent        0.0333333333333  1e-4
+kpi     extractor01            P                101325           1e-4
+kpi     extractor01            T                298.15           1e-4
+kpi     extractor01            converged        1                1e-4
+kpi     extractor01            distribution_benzene 295.27509389     1e-4
+kpi     extractor01            distribution_ethanol 0.555106921422   1e-4
+kpi     extractor01            distribution_water 0.00706545462823 1e-4
+kpi     extractor01            massClosure      7.22873301891e-05 1e-4
+kpi     extractor01            recovery_benzene 0.997600676297   1e-4
+kpi     extractor01            recovery_ethanol 0.441759080105   1e-4
+kpi     extractor01            recovery_water   0.00998209415577 1e-4
+kpi     extractor01            soluteDistribution 0.555106921422   1e-4
+kpi     extractor01            soluteRecovery   0.441759080105   1e-4
+kpi     extractor01            solventToFeed    1.2              1e-4
+kpi     extractor01            splitStages      5                1e-4
+kpi     extractor01            stages           5                1e-4

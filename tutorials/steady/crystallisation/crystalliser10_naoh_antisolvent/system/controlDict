@@ -1,0 +1,3 @@
+application choupoSolve;
+description "NaOH antisolvent crystallisation (water + ethanol, eNRTL drowning-out) -- the acceptance-case core";
+verbosity 3;

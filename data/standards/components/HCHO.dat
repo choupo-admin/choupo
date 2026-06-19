@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Formaldehyde  (HCHO / methanal, CAS 50-00-0)
+
+  Largest-volume C1 oxygenate after methanol; intermediate in partial
+  oxidation of CH3OH and in the cool-flame chemistry of CH4 combustion.
+  Polymerises readily in the condensed phase; sold commercially as the
+  37 wt% aqueous "formalin" solution.
+  Sources: individual literature values -- primary re-citation pending
+  (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        HCHO;
+formula     CH2O;
+CAS         50-00-0;
+
+MW          30.026;            // kg/kmol
+Tc          408.00;             // K
+Pc          65.90;              // bar
+omega       0.282;              // [-]
+Tb          254.05;             // K
+HvapTb      23300;              // J/mol
+Vliq        3.50e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    -108700.0;       // J/mol  -- ideal-gas reference
+    s_298      218.95;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.06430   1502.000   -16.500);
+    Trange        (254  280);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (23.48   3.157e-2   2.985e-5   -2.300e-8);
+    Trange        (250  1500);
+}

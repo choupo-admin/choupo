@@ -1,0 +1,68 @@
+/*---------------------------------------------------------------------------*\
+  absorption01_CO2_water  --  single-stage CO2 absorption in water,
+                              modelled via the v0.28 Henry's-law
+                              infrastructure.
+
+  Feed: a 5100 kmol/h mixed stream of CO2 / N2 / water already at
+  298.15 K and 5 bar, with mole fractions matching what you'd
+  obtain by mixing 100 kmol/h of a 10/90 CO2/N2 sour-gas with
+  5000 kmol/h of liquid water (L/G ~ 50:1 mole).  An IsothermalFlash
+  then partitions the species between vapour and liquid.
+
+  Why a pre-mixed feed and not Mixer + Flash?  The Mixer carries a
+  liquid-enthalpy balance that needs Cp_liq for every component, and
+  CO2 is a permanent gas at 298 K with no liquid-Cp data (Tc = 304 K).
+  Pre-mixing externally keeps the tutorial focused on the Henry's-law
+  K-value selector --- the point of the case.
+
+  Physics:
+      H_CO2(298 K)  =  1.64e8 Pa  =  1640 bar      (Henry's law)
+      K_CO2 = H / P = 1.64e8 / 5e5 = 328
+      K_N2  >> 1 (no Henry entry, no Antoine close to 298 K either ---
+                  falls back to Raoult and Psat extrapolation)
+      K_water << 1 (most water stays in liquid; Psat(298) ~ 3 kPa)
+
+  Observed result:
+      cleanGas     F = 66.0 kmol/h   y_CO2 = 0.123  y_N2 = 0.871  y_water = 0.0063
+      richLiquid   F = 5034  kmol/h   x_CO2 = 3.75e-4  x_N2 = 6.5e-3  x_water = 0.993
+      V/F          = 0.013
+      K_CO2 (y/x)  = 328      ← exactly  H_CO2(298)/P = 1.64e8 / 5e5
+      K_water      = 0.0063   ← Psat_water(298)/P = 3.17 kPa / 500 kPa
+      mass balance CO2:  10 in  =  8.11 vapour  +  1.89 liquid
+  ~ 19 % of feed CO2 absorbed (a single-stage scrubber is far from
+  perfect; an industrial column with 5-10 theoretical stages would
+  recover > 95 %).
+
+  Toggling the GUI Units menu to Mass-basis shows the absorption as
+  CO2 mass transfer between the two streams in kg/h, useful for
+  scale-up arithmetic.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        T            298.15 K;
+        P              5.0 bar;
+        // Per-species molar flows: same as the conceptual
+        // "100 kmol/h sour-gas + 5000 kmol/h water" mix
+        molarFlows
+        {
+            CO2     10.0 kmol/h;     //  10 % of  100 kmol/h sour-gas
+            N2      90.0 kmol/h;     //  90 % of  100 kmol/h sour-gas
+            water 5000.0 kmol/h;     // pure water solvent
+        }
+    }
+}
+
+units
+(
+    {
+        name        scrubber;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( richLiquid  cleanGas );
+
+        operation   { T 298.15 K;  P 5.0 bar; }
+    }
+);

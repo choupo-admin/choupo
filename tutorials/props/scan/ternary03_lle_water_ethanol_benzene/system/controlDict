@@ -1,0 +1,9 @@
+/*  Ternary LIQUID-LIQUID solubility map (water / ethanol / benzene) — the
+    classic extraction triangle.  Activity from UNIFAC (group contribution):
+    NO fitted binary pairs needed — gamma is predicted from molecular groups,
+    so a real system shows a real miscibility gap with no curated pair data.
+    mode lle uses the liquid-liquid flash (PhaseSet::LL): clean binodal +
+    tie-lines, no spurious vapour.  Run-only smoke (a phase map, not KPIs). */
+application   choupoProps;
+description   "Ternary LLE solubility (water/ethanol/benzene) at 298 K via UNIFAC + propertyScanTernary mode lle";
+verbosity     2;

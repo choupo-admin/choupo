@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "Co-current forward-feed triple-effect evaporator, user-defined components (MCFT 10.38, case a)";
+verbosity     2;
+
+units
+{
+    pressure       kPa;
+    temperature    K;
+    flow           kg/s;
+}

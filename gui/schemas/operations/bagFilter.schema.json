@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/bagFilter.schema.json",
+  "title": "bagFilter operation",
+  "description": "Fabric (bag-house) filter -- the fine, high-efficiency complement to the cyclone.  Hardware: the cloth area.  Collection is near-total and only mildly size-dependent (the dust cake is the filter); the pressure drop is cake-dominated and a RESULT, ΔP = μ·V·(K1 + K2·W) with V = Q/area the air-to-cloth ratio.  Needs a particle-size distribution on the feed (solids block) and a transport model for the gas viscosity.",
+  "type": "object",
+  "properties": {
+    "filterArea": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Filter (cloth) area A",
+      "description": "Total fabric area [m²].  Sets the face velocity V = Q_gas/A (the air-to-cloth ratio, typically 1-3 m/min).",
+      "unit": "m2"
+    },
+    "K1": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Clean-fabric resistance K1",
+      "description": "Darcy resistance of the bare cloth [1/m] (default 1e9, calibratable).",
+      "unit": "1/m"
+    },
+    "K2": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Specific cake resistance K2",
+      "description": "Darcy resistance per unit areal dust load [m/kg] (default 1e10, calibratable).",
+      "unit": "m/kg"
+    },
+    "arealDustLoad": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Areal dust load W",
+      "description": "Cake mass per unit cloth area [kg/m²] at the chosen point in the cleaning cycle (default 0.5).  Drives the cake pressure drop.",
+      "unit": "kg/m2"
+    },
+    "penetration0": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Finest-particle penetration P0",
+      "description": "Penetration of the finest particles in η(d)=1-P0·exp(-d/d_c) (default 0.02, calibratable).",
+      "unit": "-"
+    },
+    "dCharacteristic": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Characteristic size d_c",
+      "description": "Size scale of the grade-efficiency rise [m] (default 1e-6).",
+      "unit": "m"
+    }
+  },
+  "required": ["filterArea"],
+  "additionalProperties": false
+}

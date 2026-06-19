@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/mixer.schema.json",
+  "title": "mixer operation",
+  "description": "Adiabatic stream mixer: sums the component molar flows of all inlets and closes an adiabatic energy balance (Newton-1D in T_out on Sum H_in = H_out) to find the outlet temperature.  Hardware-free -- the mixer has no operating parameters; its behaviour is entirely fixed by the inlet streams.",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}

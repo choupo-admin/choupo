@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Ternary hydrocarbon mixture --- ideal Raoult is a good approximation
+  for benzene / toluene / n-hexane at moderate temperatures.
+\*---------------------------------------------------------------------------*/
+
+components       ( benzene  toluene  nHexane );
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

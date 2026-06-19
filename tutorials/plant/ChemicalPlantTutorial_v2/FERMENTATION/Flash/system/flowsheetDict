@@ -1,0 +1,29 @@
+/*---------------------------------------------------------------------------*\
+  FERMENTATION/Flash / system/flowsheetDict   (LEAF -- isothermal flash)
+
+  Separates the fermentation broth into a CO2-rich vapour (with some
+  ethanol) and a sugar/water bottoms.  T picked just hot enough to
+  vaporise the CO2 + bring a workable fraction of ethanol overhead;
+  P kept atmospheric.
+\*---------------------------------------------------------------------------*/
+
+type        isothermalFlash;
+
+operation
+{
+    T    320 K;
+    P      1 bar;
+}
+
+boundary    { inlets ( Feed );  outlets ( Liquid  Vapour ); }    // IsothermalFlash convention: liquid first, vapour second
+
+streams     // default for isolated unit run; the sector cables Fermentor/Out -> Feed
+{
+    Feed
+    {
+        F                200 kmol/h;
+        T                310 K;
+        P                  1 bar;
+        molarComposition { water 0.90;  sucrose 0.02;  ethanol 0.06;  CO2 0.02; }
+    }
+}

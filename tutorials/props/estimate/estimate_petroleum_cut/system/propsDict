@@ -1,0 +1,61 @@
+/*---------------------------------------------------------------------------*\
+  estimate_petroleum_cut
+  ======================
+
+  CREATE a PETROLEUM PSEUDO-COMPONENT from the two bulk measurements every
+  crude assay reports: the normal boiling point Tb and the specific gravity
+  SG.  The Riazi-Daubert (1987) correlations turn (Tb, SG) into the
+  corresponding-states constants (MW, Tc, Pc, Vc); omega follows by
+  Lee-Kesler, and the ideal-gas Cp by Kesler-Lee (1976).
+
+  This is the SCALAR-input sibling of the Joback group path: a petroleum cut
+  is a LUMP of hundreds of species with NO single molecular structure, so it
+  has NO group decomposition -- it is anchored on bulk (Tb, SG), not groups.
+  The estimator is a registered ConstantEstimator (`model RiaziDaubert;`),
+  chosen exactly like Joback -- the SAME explicit factory.
+
+  SEE in the console:
+    * the (Tb, SG) anchors and the Watson K factor;
+    * the constants built from them, validated against n-decane (a real
+      species at this Tb/SG: Tc ~ exact, omega within ~2 %, Pc/MW within the
+      correlation's stated ~5-7 %);
+    * the proposal .dat whose provenance SCREAMS  status ESTIMATE / lumped
+      true / "NOT a real species".
+
+  Promote with the printed `mv`, then it FLASHES (see the sibling tutorial
+  steady/flash/flash_pseudoComponent_petCut, which ships this very lump and
+  closes an energy balance with it).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        estimate_petroleum_cut;
+        type        estimateComponent;
+        model       RiaziDaubert;            // SCALAR-input estimator (Tb, SG)
+        component   petCut_C7plus;
+
+        anchors
+        {
+            Tb   447.3 K;                    // normal boiling point of the cut
+            SG   0.730;                      // specific gravity 60/60 (dimensionless)
+        }
+
+        // Validate the lump's constants against n-decane, the real species
+        // closest to this (Tb, SG) -- "see, then trust": estimation has error,
+        // and a LUMP has more.  (Compare-only; never fed back.)
+        reference
+        {
+            source  "n-decane reference (NIST / Poling) -- nearest real species";
+            MW      142.28;
+            Tc      617.7 K;
+            Pc      21.1  bar;
+            omega   0.490;
+        }
+
+        // Opt-in PROMOTE: write a pseudo-component proposal .dat.  `auto` =>
+        // constant/components/<component>.estimate-<date>.dat -- a glass-box
+        // file whose provenance SCREAMS it is a lumped estimate.
+        output  { proposal auto; }
+    }
+);

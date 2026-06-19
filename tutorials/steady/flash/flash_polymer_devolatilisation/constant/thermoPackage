@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------*\
+  thermoPackage -- residual solvent (toluene) + a polymer pseudo-component.
+
+  toluene loads from data/standards/components/toluene.dat (catalogue).
+  polystyrene loads from THIS case's constant/components/polystyrene.dat -- a
+  single fixed-average-MW lump, `role nonvolatile;` so it never flashes.
+\*---------------------------------------------------------------------------*/
+
+components       ( toluene  polystyrene );
+
+activityModel
+{
+    model        ideal;             // pedagogical baseline (a real polymer
+                                     // solution wants Flory-Huggins; out of
+                                     // scope for the fixed-MW lump demo)
+}
+
+equationOfState
+{
+    model        idealGas;
+}

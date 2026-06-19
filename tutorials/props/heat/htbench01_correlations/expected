@@ -1,0 +1,12 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    bench                  Nu_choupo_DittusBoelter 200.475            1e-4
+diag    bench                  Nu_choupo_Gnielinski 223.734            1e-4
+diag    bench                  Nu_choupo_Kern   97.5647            1e-4
+diag    bench                  Nu_published_DittusBoelter 205                1e-4
+diag    bench                  Nu_published_Gnielinski 224                1e-4
+diag    bench                  Nu_published_Kern 97.5647            1e-4
+diag    bench                  allPass          1                  1e-4
+diag    bench                  dev_DittusBoelter 0.0220718          1e-4
+diag    bench                  dev_Gnielinski   0.00118956         1e-4
+diag    bench                  dev_Kern         0                  1e-4

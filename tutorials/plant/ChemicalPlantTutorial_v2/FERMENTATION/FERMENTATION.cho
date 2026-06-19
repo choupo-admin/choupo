@@ -1,0 +1,44 @@
+{
+  "choupoLayout": 1,
+  "nodes": {
+    "stream:Must": {
+      "x": -41.81818181818183,
+      "y": 278.1818181818182
+    },
+    "unit:Mixer": {
+      "x": 320,
+      "y": 300
+    },
+    "unit:Fermentor": {
+      "x": 560,
+      "y": 300
+    },
+    "unit:Flash": {
+      "x": 800,
+      "y": 300
+    },
+    "unit:Splitter": {
+      "x": 1040,
+      "y": 300
+    },
+    "stream:EthanolVapour": {
+      "x": 1280,
+      "y": 235
+    },
+    "stream:Purge": {
+      "x": 1345.4545454545455,
+      "y": 382.2727272727273
+    },
+    "duty:Flash:Q": {
+      "x": 835,
+      "y": 450
+    }
+  },
+  "viewport": {
+    "x": -123.5,
+    "y": -20.350000000000023,
+    "zoom": 1.1
+  },
+  "edges": {},
+  "handles": {}
+}

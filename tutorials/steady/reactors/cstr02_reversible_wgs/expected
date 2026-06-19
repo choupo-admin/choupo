@@ -1,0 +1,13 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.000277777777778  1e-4
+stream  products               F                0.000277777777778  1e-4
+kpi     wgs                    Da_kTau          145.857299066      1e-4
+kpi     wgs                    F_in_kmol_h      1                  1e-4
+kpi     wgs                    F_out_kmol_h     1                  1e-4
+kpi     wgs                    T                600                1e-4
+kpi     wgs                    V_R              0.001              1e-4
+kpi     wgs                    X_limiting       0.841431955275     1e-4
+kpi     wgs                    k                1.08521882096      1e-4
+kpi     wgs                    tau_s            134.403584096      1e-4
+kpi     wgs                    xi_mol_per_s     0.116865549344     1e-4

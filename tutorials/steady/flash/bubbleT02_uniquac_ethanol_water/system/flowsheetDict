@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  Bubble-T of a 30/70 ethanol/water liquid at 1 atm  (UNIQUAC).
+
+  Same conditions as bubbleT01 (NRTL): a strongly non-ideal binary whose bubble
+  temperature and vapour composition are set by the activity coefficients.  The
+  UNIQUAC result should land close to the NRTL/Wilson twins (T_bubble ~ 354 K,
+  the vapour enriched in ethanol towards the azeotrope, y_ethanol ~ 0.58).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;            // not actually used by bubbleT
+        T            350.0 K;                 // initial T guess
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.30;  water 0.70; }
+    }
+}
+
+units
+(
+    {
+        name        bubble02;
+        type        bubbleT;
+        in          feed;
+        outputs     ( );               // saturation calc -- no stream output
+
+        operation   { P 1.01325 bar; }
+    }
+);

@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------*\
+  batch05_crystalliser / constant/crystallisation
+
+  Crystallisation KINETICS (same library + split as the steady crystalliser):
+      growth      G  = k_g (S-1)^g            [m/s]
+      nucleation  B0 = k_b (S-1)^b M_T^j      [#/(m^3 s)]
+  j=0 (primary) so an UNSEEDED batch can bootstrap from S>1.
+\*---------------------------------------------------------------------------*/
+
+sugarBatchKinetics
+{
+    growth
+    {
+        k_g   1.0e-7;     // m/s
+        g     1.0;
+    }
+    nucleation
+    {
+        k_b   1.0e9;      // #/(m^3 s)
+        b     2.0;
+        j     0.0;        // primary nucleation (unseeded bootstrap)
+    }
+}

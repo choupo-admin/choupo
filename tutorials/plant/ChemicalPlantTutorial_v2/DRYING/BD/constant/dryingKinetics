@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  BD / constant/dryingKinetics   (KINETICS of THIS solid dryer)
+
+  Same material as SD (sugar -> same isotherm, shared at the sector), but a
+  DIFFERENT machine -> a different curve: a slower contact dryer reaches a
+  lower critical moisture.  This is exactly why kinetics are per-instance and
+  the isotherm is per-material.
+\*---------------------------------------------------------------------------*/
+
+beltCurve
+{
+    model   Lewis;
+    Xc      0.05;      // lower critical moisture than the spray dryer
+}

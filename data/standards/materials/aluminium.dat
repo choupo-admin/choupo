@@ -1,0 +1,7 @@
+name      aluminium;
+density   2700;
+F_M       1.50;
+sigma_y   80;
+maxT      500;
+maxP      50;
+thermalConductivity 205;  // W/(m·K)  (typical, for HX wall conduction)

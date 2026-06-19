@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  enthalpy_naoh_water -- the calorimetric home of the electrolyte-enthalpy
+  build (docs/electrolyte-enthalpy-spec.md).
+
+  constant/experiments/phiL_25C_parker1965.dat carries the MEASURED Phi_L
+  (Parker NSRDS-NBS 2, 1965) used by the curation refit
+  (bin/curate/fit_lphi_pitzer.py) that fitted the Na-OH dbeta/dT T-slots in
+  the standard catalogue (rel-AAD 4.97%, gate <5%).  The op below sweeps the
+  ACTIVITY surface whose T-derivative is L_phi; the in-engine L_phi scan +
+  AAD overlay land with slices 4-5 (the 3-curve chart).
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      gamma_naoh;
+        type      pitzerActivity;
+        cation    Na;
+        anion     OH;
+        molality  { from 0.1; to 22.0; n 60; }     // the FULL Parker range:
+                                                   //   the fit window ends at 6;
+                                                   //   beyond it watch L_phi_fit
+                                                   //   and L_phi_anchored diverge
+        output    { file pitzer_naoh.csv; }
+        validation
+        {
+            dataset "constant/experiments/phiL_25C_parker1965.dat";
+            series  naoh;                          // measured Phi_L, 25 C
+            window  (0.1 6.0);                     // the calorimetric-fit contract
+        }
+    }
+);

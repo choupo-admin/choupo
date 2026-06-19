@@ -1,0 +1,67 @@
+/*---------------------------------------------------------------------------*\
+  Minimise the total module cost (sum of Guthrie totalModuleCost across
+  every costed unit) for a small reactor -> heater -> separator process,
+  by tuning two design variables:
+
+      * reactor.V_R       reactor volume       [0.002, 0.010]  m^3
+      * heater.Q          heater duty          [   0,    500]  W
+                          (credo-pure: hardware, not outlet T)
+
+  Pedagogical note: this case uses only CAPEX (purchased + bare-module
+  + total-module cost via Guthrie correlations).  Without OPEX (energy
+  cost, raw-material throughput, by-product disposal), the optimum is
+  expected to drive both variables to their *lower* bounds — smaller
+  reactor cheaper, smaller temperature step cheaper.  The point of the
+  exercise is to verify:
+
+      1. the OptimizationDriver wires correctly to the post-processing
+         chain (sizing + costing) so that result.costs is populated
+         before extracting the objective;
+      2. the Nelder-Mead simplex contracts cleanly against the active
+         box-constraint;
+      3. the student observes that CAPEX-only optimisation is degenerate
+         and that *interesting* trade-offs require operational cost
+         (utility + raw-material) terms — motivating the future
+         CostingModel extension to include OPEX.
+
+  The case takes ~25 evaluations to converge with simplexInit 0.15.
+\*---------------------------------------------------------------------------*/
+
+type    optimization;
+method  nelderMead;
+
+variables
+(
+    {
+        path     units[0].operation.V_R;
+        min      0.002;
+        max      0.010;
+        initial  0.005;
+    }
+    {
+        path     units[1].operation.Q;
+        min        0.0;
+        max      500.0;
+        initial  150.0;
+    }
+);
+
+objective
+{
+    kind     costTotal;
+    path     totalModuleCost;
+    sense    minimise;
+}
+
+options
+{
+    maxIter     80;
+    tolX        1e-4;
+    tolF        1e-4;
+    simplexInit 0.15;
+}
+
+report
+{
+    file        optimization_history.csv;
+}

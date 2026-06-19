@@ -1,0 +1,8 @@
+application   choupoSolve;
+description   "Per-unit thermo: turbine SRK (real gas) -> flash NRTL (non-ideal liquid)";
+verbosity     3;
+reports
+{
+    streamTable { }
+    massBalance { }
+}

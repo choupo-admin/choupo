@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Concentration polarization study: sweep k_film over a SW30HR seawater RO case";
+
+verbosity     2;

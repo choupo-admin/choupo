@@ -1,0 +1,422 @@
+#!/usr/bin/env python3
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+"""
+bin/regen-llm-docs --- regenerate the machine-derivable LLM-facing docs
+from the canonical sources, to prevent drift.
+
+Two outputs:
+
+  docs/ai/components.md          REGENERATED in place from
+                                 data/standards/components/*.dat
+                                 (the file is mostly a table -- safe to
+                                 overwrite wholesale; the hand-curated
+                                 prose at the top is preserved between
+                                 BEGIN-PROSE / END-PROSE markers).
+
+  docs/ai/schemas-reference.md   NEW, fully regenerated from
+                                 gui/schemas/operations/*.schema.json.
+                                 Complementary to the hand-curated
+                                 unit-ops.md (which has groupings +
+                                 worked examples); this one is the
+                                 alphabetical schema dump.
+
+Modes:
+  bin/regen-llm-docs               regenerate both files in place
+  bin/regen-llm-docs --check       regenerate to a temp dir + diff against
+                                   what's checked in; exit 1 on drift
+                                   (suitable for CI).
+"""
+import argparse
+import json
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+COMP_DIR = REPO / "data" / "standards" / "components"
+SCHEMA_DIR = REPO / "gui" / "schemas" / "operations"
+OUT_COMP = REPO / "docs" / "ai" / "components.md"
+OUT_SCHEMA = REPO / "docs" / "ai" / "schemas-reference.md"
+
+# ============================================================ Components
+
+# Crude .dat parser.  The .dat files are plain-text dicts (the same
+# tokenizer as the C++ Dictionary); for the small set of fields we need
+# (top-level scalars + presence of named sub-blocks) a regex pass is
+# enough.  We don't try to handle every edge case -- the C++ side does.
+
+_STRIP_COMMENTS = re.compile(r"//[^\n]*|/\*.*?\*/", re.DOTALL)
+
+
+def _strip(text: str) -> str:
+    """Drop // and /* */ comments, keeping line breaks for line counting."""
+    return _STRIP_COMMENTS.sub(lambda m: " " * (len(m.group(0))), text)
+
+
+def _scalar(text: str, key: str):
+    """Return the scalar value of a top-level `key value;` line, or None."""
+    m = re.search(rf"^\s*{re.escape(key)}\s+([^;]+?)\s*;", text, re.MULTILINE)
+    if not m:
+        return None
+    return m.group(1).strip()
+
+
+def _has_block(text: str, key: str) -> bool:
+    """True iff `key { ... }` appears at top level."""
+    return bool(re.search(rf"^\s*{re.escape(key)}\s*\{{", text, re.MULTILINE))
+
+
+def parse_component(path: Path) -> dict:
+    raw = path.read_text(encoding="utf-8", errors="replace")
+    text = _strip(raw)
+    info = {
+        "name": path.stem,
+        "MW": _scalar(text, "MW"),
+        "Tc": _scalar(text, "Tc"),
+        "Pc": _scalar(text, "Pc"),
+        "omega": _scalar(text, "omega"),
+        "Tb": _scalar(text, "Tb"),
+        "role": _scalar(text, "role"),
+        "dissociation": _scalar(text, "dissociation"),
+        "Vliq": _scalar(text, "Vliq"),
+        "associationFactor": _scalar(text, "associationFactor"),
+        "diffusionVolume": _scalar(text, "diffusionVolume"),
+        "nonvolatile": _scalar(text, "nonvolatile"),
+        # Sub-blocks (presence flags only).  The VLE block is named
+        # `vaporPressure { model Antoine; ... }` in the .dat files
+        # (NOT `Antoine { ... }`).
+        "vaporPressure": _has_block(text, "vaporPressure"),
+        "cpIg": _has_block(text, "idealGasHeatCapacity"),
+        "cpLiq": _has_block(text, "liquidHeatCapacity"),
+        "gibbs": _has_block(text, "gibbsFormation"),
+        "solid": _has_block(text, "solid"),
+        "solubility": _has_block(text, "solubility"),
+        "sorption": _has_block(text, "sorption"),
+        "liquidViscosity": _has_block(text, "liquidViscosity"),
+    }
+    return info
+
+
+def _classify(c: dict) -> str:
+    """A coarse category for grouping the components table."""
+    role = (c.get("role") or "").strip()
+    name = c["name"]
+    if c["solubility"] and c["solid"]:
+        return "Crystallising solute"
+    if role == "nonvolatile" and c["solid"]:
+        return "Solids-only / pseudo-component"
+    if role == "nonvolatile":
+        return "Non-volatile solute"
+    if role == "solute":
+        return "Soluble gas (Henry)"
+    if role == "radical":
+        return "Radical / Gibbs-only"
+    if c["vaporPressure"] and (c["Tc"] or c["omega"]):
+        return "Volatile (curated for VLE)"
+    if c["gibbs"]:
+        return "Permanent gas / combustion species"
+    if name in {"compA", "compB", "compC"}:
+        return "Synthetic VLLE audit"
+    return "Other"
+
+
+def render_components_md() -> str:
+    comps = sorted(
+        (parse_component(p) for p in COMP_DIR.glob("*.dat")),
+        key=lambda c: c["name"].lower(),
+    )
+
+    # Group by category for the human-readable table.
+    by_cat: dict[str, list[dict]] = {}
+    for c in comps:
+        by_cat.setdefault(_classify(c), []).append(c)
+
+    # Header with the hand-curated PROSE (kept between markers in the
+    # existing file).  If the file is missing or has no markers, fall back
+    # to a default header.
+    prose = _default_prose(len(comps))
+    if OUT_COMP.exists():
+        existing = OUT_COMP.read_text(encoding="utf-8")
+        m = re.search(
+            r"<!-- BEGIN-PROSE -->(.*?)<!-- END-PROSE -->",
+            existing, re.DOTALL,
+        )
+        if m:
+            prose = m.group(1).strip()
+
+    out: list[str] = [
+        "# Standard catalogue — what ships in `data/standards/`",
+        "",
+        "<!-- BEGIN-PROSE -->",
+        prose,
+        "<!-- END-PROSE -->",
+        "",
+        "<!-- AUTO-GENERATED below this line by bin/regen-llm-docs. -->",
+        "<!-- Edit the .dat files in data/standards/components/, then re-run. -->",
+        "",
+        f"## Components ({len(comps)} entries)",
+        "",
+    ]
+
+    category_order = [
+        "Volatile (curated for VLE)",
+        "Permanent gas / combustion species",
+        "Soluble gas (Henry)",
+        "Non-volatile solute",
+        "Crystallising solute",
+        "Solids-only / pseudo-component",
+        "Radical / Gibbs-only",
+        "Synthetic VLLE audit",
+        "Other",
+    ]
+    for cat in category_order:
+        if cat not in by_cat:
+            continue
+        out.append(f"### {cat}")
+        out.append("")
+        out.append(
+            "| Name | MW | role | Psat | Cp_ig | Cp_liq | gibbsFormation"
+            " | solid | solubility | sorption | Vliq | Notes |"
+        )
+        out.append("|---|---:|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|")
+        for c in by_cat[cat]:
+            mw = c["MW"] or "—"
+            # When the .dat omits `role`, the K-value machinery defaults
+            # to "volatile" -- show it that way instead of an empty cell.
+            role = (c["role"] or "").strip() or "(volatile)"
+            notes_bits = []
+            if c["dissociation"] and c["dissociation"] != "1":
+                notes_bits.append(f"ν={c['dissociation']}")
+            if c["associationFactor"]:
+                notes_bits.append("φ_WC")
+            if c["diffusionVolume"]:
+                notes_bits.append("Σv_F")
+            if c["liquidViscosity"]:
+                notes_bits.append("μ_L")
+            notes = ", ".join(notes_bits) or " "
+            row = (
+                f"| `{c['name']}` | {mw} | {role} | "
+                f"{'✓' if c['vaporPressure'] else '—'} | "
+                f"{'✓' if c['cpIg']       else '—'} | "
+                f"{'✓' if c['cpLiq']      else '—'} | "
+                f"{'✓' if c['gibbs']      else '—'} | "
+                f"{'✓' if c['solid']      else '—'} | "
+                f"{'✓' if c['solubility'] else '—'} | "
+                f"{'✓' if c['sorption']   else '—'} | "
+                f"{'✓' if c['Vliq']       else '—'} | "
+                f"{notes} |"
+            )
+            out.append(row)
+        out.append("")
+
+    out.append(_components_footer())
+    return "\n".join(out) + "\n"
+
+
+def _default_prose(n_comps: int) -> str:
+    return (
+        "Inventory snapshot, regenerated from `data/standards/components/`.\n"
+        "When composing a `thermoPackage`, pick component names from this list\n"
+        "(case-sensitive).  Adding a new component is a project-level act, not\n"
+        "a per-case one --- case-local overlays (axiom 4) can refine\n"
+        "sample-specific fields but NOT MW / Tc / Pc.\n"
+        f"\n*{n_comps} components currently shipped.*"
+    )
+
+
+def _components_footer() -> str:
+    # Re-uses the static reference content from the original components.md
+    # (Henry pairs / membranes / materials / binary pairs / field-glossary).
+    # These read directly from data/standards/ too, so they're easy to keep
+    # alongside the auto-gen table.
+    return _list_section(
+        "## Henry's-law pairs",
+        REPO / "data" / "standards" / "henrysLaw",
+        "Each ships van't Hoff temperature dependence.",
+    ) + "\n" + _list_section(
+        "## Membranes",
+        REPO / "data" / "standards" / "membranes",
+        "Each carries A_w + per-solute B_s + ratings (P_max, T_max, pH, MWCO).",
+    ) + "\n" + _list_section(
+        "## Materials",
+        REPO / "data" / "standards" / "materials",
+        "Each carries ρ, F_M (Guthrie), σ_y, max T, max P.",
+    ) + "\n\n" + _glossary()
+
+
+def _list_section(title: str, dirpath: Path, blurb: str) -> str:
+    out = [title, "", blurb, ""]
+    if dirpath.is_dir():
+        items = sorted(p.stem for p in dirpath.glob("*.dat"))
+        if items:
+            out.append("| Name |")
+            out.append("|---|")
+            for it in items:
+                out.append(f"| `{it}` |")
+        else:
+            out.append("*(none shipped)*")
+    else:
+        out.append("*(directory not present)*")
+    return "\n".join(out)
+
+
+def _glossary() -> str:
+    return """## Field glossary (what each block on a component means)
+
+- `MW`, `Tc`, `Pc`, `omega`, `Tb`, `Hvap_Tb` — universal pure-compound (axiom 1).
+- `Vliq` — liquid molar volume (apparent for solutes).
+- `Antoine { ... }` — `ln P = A − B/(T + C)` for VLE.
+- `idealGasHeatCapacity { coefficients (a1 a2 ... ); }` — for H_ig, S_ig.
+- `liquidHeatCapacity { coefficients ( ... ); }` — for sensible H_liq.
+- `gibbsFormation { dHf_298; s_298; }` — for K_eq + adiabatic flames.
+- `diffusionVolume <Sigma_v>;` — for Fuller diffusivity.
+- `liquidViscosity { andrade { ... } vogel { ... } }` — model-specific.
+- `associationFactor <phi>;` — for Wilke-Chang liquid diffusivity.
+- `solubility { coefficients ( a b c ); dHcryst; }` — c_sat(T), for crystalliser.
+- `solid { rho_p; k_v; }` — for solids (cyclone / crystalliser / sprayDryer).
+- `sorption { Xm; C; K; }` — GAB isotherm  **(typically case-local, axiom 4)**.
+- `role <volatile|solute|nonvolatile|radical>;` — drives K-value choice.
+- `dissociation <nu>;` — ions per formula (for osmotic pressure).
+"""
+
+
+# ============================================================ Schemas
+
+def render_schemas_md() -> str:
+    out: list[str] = [
+        "# Schemas reference — every shipped operation, by JSON schema",
+        "",
+        "<!-- AUTO-GENERATED by bin/regen-llm-docs from gui/schemas/operations/.",
+        "     Edit the .schema.json files and re-run.  This file is complementary",
+        "     to the hand-curated unit-ops.md (which has groupings, prose and",
+        "     worked examples); this file is the alphabetical schema dump. -->",
+        "",
+    ]
+    files = sorted(SCHEMA_DIR.glob("*.schema.json"))
+    out.append(f"*{len(files)} schemas shipped.*")
+    out.append("")
+    for f in files:
+        out.extend(render_one_schema(f))
+        out.append("")
+    return "\n".join(out) + "\n"
+
+
+def render_one_schema(path: Path) -> list[str]:
+    s = json.loads(path.read_text(encoding="utf-8"))
+    title = s.get("title", path.stem)
+    desc = s.get("description", "").strip()
+    props = s.get("properties", {})
+    required = set(s.get("required", []))
+    out = [f"## `{path.stem.replace('.schema', '')}`  ({title})", ""]
+    if desc:
+        out.append(desc)
+        out.append("")
+    if not props:
+        out.append("*(no operation-block fields)*")
+        return out
+    out.append("| Field | Required | Type | Unit | Description |")
+    out.append("|---|:-:|---|---|---|")
+    for k, p in props.items():
+        is_req = "✓" if k in required else " "
+        typ = p.get("type", "?")
+        if typ == "array":
+            items = p.get("items", {})
+            t_item = items.get("type", "?")
+            typ = f"array[{t_item}]"
+        unit = p.get("unit", "—")
+        d = p.get("description", "").strip().replace("\n", " ").replace("|", "\\|")
+        if len(d) > 140:
+            d = d[:137] + "…"
+        out.append(f"| `{k}` | {is_req} | {typ} | {unit} | {d} |")
+    return out
+
+
+# ============================================================ Driver
+
+def regenerate() -> tuple[str, str]:
+    return render_components_md(), render_schemas_md()
+
+
+def check_drift() -> int:
+    new_comp, new_schema = regenerate()
+    old_comp = OUT_COMP.read_text(encoding="utf-8") if OUT_COMP.exists() else ""
+    old_schema = OUT_SCHEMA.read_text(encoding="utf-8") if OUT_SCHEMA.exists() else ""
+    drift = []
+    if new_comp.strip() != old_comp.strip():
+        drift.append(("components.md", old_comp, new_comp))
+    if new_schema.strip() != old_schema.strip():
+        drift.append(("schemas-reference.md", old_schema, new_schema))
+    if not drift:
+        print("regen-llm-docs: no drift.")
+        return 0
+    for name, old, new in drift:
+        print(f"\nregen-llm-docs: DRIFT in docs/ai/{name}", file=sys.stderr)
+        # Show a unified diff if available.
+        try:
+            import difflib
+            diff = "".join(difflib.unified_diff(
+                old.splitlines(keepends=True),
+                new.splitlines(keepends=True),
+                fromfile=f"a/docs/ai/{name}",
+                tofile=f"b/docs/ai/{name}",
+                n=2,
+            ))
+            sys.stderr.write(diff[:4000])
+            if len(diff) > 4000:
+                sys.stderr.write("\n[diff truncated]\n")
+        except Exception:
+            pass
+    print(
+        "\nrerun without --check to update; commit the result.",
+        file=sys.stderr,
+    )
+    return 1
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--check", action="store_true",
+        help="exit 1 if regenerated content differs from checked-in files",
+    )
+    args = ap.parse_args()
+    if args.check:
+        return check_drift()
+    new_comp, new_schema = regenerate()
+    OUT_COMP.write_text(new_comp, encoding="utf-8")
+    OUT_SCHEMA.write_text(new_schema, encoding="utf-8")
+    print(f"regen-llm-docs: wrote {OUT_COMP.relative_to(REPO)}")
+    print(f"regen-llm-docs: wrote {OUT_SCHEMA.relative_to(REPO)}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

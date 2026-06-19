@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Argon  (Ar, CAS 7440-37-1)
+
+  Monatomic noble gas; ~0.93 % of air by mole.  Inert dilutent in
+  high-T combustion experiments (replacing N2 when one wants to remove
+  NOx formation) and a common shielding gas in welding / metallurgy.
+  Cp_p = 5/2 R is exact for any T (no internal degrees of freedom).
+  Sources: constants (Tc/Pc/omega/MW/Tb) cross-checked vs CoolProp 7.2.0
+  reference EOS; gibbsFormation cross-checked vs NASA TM-4513
+  (McBride-Gordon-Reno 1993); idealGasHeatCapacity -- individual
+  literature value, primary re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        Ar;
+formula     Ar;
+CAS         7440-37-1;
+
+MW          39.948;            // kg/kmol
+Tc          150.86;             // K
+Pc          48.98;              // bar
+omega       -0.002;             // [-]  (essentially zero by IUPAC convention)
+Tb          87.30;              // K
+HvapTb      6447;               // J/mol
+Vliq        2.86e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    0.0;             // J/mol  -- element in its standard state
+    s_298      154.84;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.92474   304.227   -8.250);
+    Trange        (84  150);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Monatomic: Cp = 5/2 R = 20.79 J/(mol·K) independent of T.
+    coefficients  (20.79   0.0   0.0   0.0);
+    Trange        (250  6000);
+}

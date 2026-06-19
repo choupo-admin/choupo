@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Calcium carbonate (CaCO3), CALCITE polymorph.  CAS 471-34-1.
+
+  A NON-VOLATILE crystalline mineral solid: it never enters the vapour
+  (K = 0) and carries no Antoine / liquid-Cp blocks.  The canonical solid
+  for limestone / precipitated-CaCO3 (PCC) exercises -- a scaling / anti-
+  scaling species in membrane and evaporator cases, and a feed solid for
+  calcination (CaCO3 -> CaO + CO2) Gibbs-reactor exercises.
+
+  Carries a REAL solid heat capacity (solidHeatCapacity{}) and the solid-
+  phase formation datum, so its sensible heat and its reaction heat both
+  emerge from the elements reference like any other species.
+
+  rho_p for calcite ~ 2710 kg/m^3.
+\*---------------------------------------------------------------------------*/
+
+name        CaCO3;
+formula     CaCO3;
+CAS         471-34-1;
+
+MW          100.0869;          // kg/kmol  (calcite)
+
+role        nonvolatile;       // never goes to the vapour (K = 0)
+
+solid
+{
+    rho_p   2710.0;            // calcite particle density [kg/m^3]
+}
+
+// Solid-phase formation datum (calcite).  PRIMARY: CODATA Key Values for
+// Thermodynamics (Cox, Wagman & Medvedev 1989); cross-checked vs Robie &
+// Hemingway, USGS Bull. 2131 (1995).  Both are open / public-domain sources.
+gibbsFormation
+{
+    dHf_298   -1207600;        // J/mol  calcite [CODATA Key Values 1989; xcheck Robie-Hemingway 1995]
+    s_298     91.7;            // J/(mol*K) third-law absolute [CODATA Key Values 1989]
+    phase     solid;
+}
+
+// REAL solid heat capacity of calcite.  Cp(298.15) ~ 83.5 J/(mol*K), rising
+// to ~110.9 at 600 K.  PRIMARY: Robie & Hemingway, "Thermodynamic Properties
+// of Minerals and Related Substances ...", U.S. Geological Survey Bulletin
+// 2131 (1995) -- a U.S. Government work, PUBLIC DOMAIN.  Quadratic least-
+// squares fit to their tabulated Cp at 298.15/400/500/600 K (AAD < 0.3 %).
+solidHeatCapacity
+{
+    model         polynomial;          // Cp = a0 + a1*T + a2*T^2  [J/(mol*K)]
+    coefficients  ( 29.8993   0.224617   -1.49637e-04 );
+    Trange        ( 298  600 );        // [Robie-Hemingway 1995, USGS Bull. 2131]
+}

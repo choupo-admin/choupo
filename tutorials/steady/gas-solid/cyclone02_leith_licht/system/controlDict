@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "Cyclone dust removal -- Leith-Licht back-mixing model";
+verbosity     3;
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    profiles       { }
+    spreadsheet    { }
+}

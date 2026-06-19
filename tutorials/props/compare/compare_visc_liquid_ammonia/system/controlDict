@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "Liquid-viscosity Andrade for ammonia, 235-300 K (cross-check mu@239.85K ~ 0.255 mPa.s)";
+
+verbosity     2;

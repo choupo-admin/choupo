@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Sulfur dioxide  (SO2, CAS 7446-09-5)
+
+  Primary product of combusting S-bearing fuels; feedstock for
+  sulfuric-acid manufacture (contact process: SO2 + 1/2 O2 -> SO3,
+  then SO3 + H2O -> H2SO4).  The SO2 / SO3 equilibrium at 600-800 K
+  with V2O5 catalyst is the canonical exothermic-equilibrium teaching
+  example.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        SO2;
+formula     SO2;
+CAS         7446-09-5;
+
+// role solute (v0.28+): in a water solvent the K-value comes from
+// HenrysLaw/SO2-water.dat instead of Antoine/Raoult.
+role        solute;
+
+MW          64.065;            // kg/kmol
+Tc          430.75;             // K
+Pc          78.84;              // bar
+omega       0.245;              // [-]
+Tb          263.13;             // K
+HvapTb      24940;              // J/mol
+Vliq        4.39e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    -296830.0;       // J/mol  -- ideal-gas reference
+    s_298      248.22;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.40718   999.900   -35.960);
+    Trange        (199  263);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (23.85   6.699e-2   -4.961e-5   1.328e-8);
+    Trange        (250  1500);
+}

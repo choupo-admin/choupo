@@ -1,0 +1,6 @@
+/*--- Shared thermo for the two-sector demo: 10 case-local components,
+      NRTL activity (10 case-local pairs under constant/binaryPairs/NRTL),
+      ideal gas.  Cascades DOWN to both sectors (fractal constant/). ---*/
+components       ( compA compB compC compD compE compF compG compH compI compJ );
+activityModel    { model NRTL; }
+equationOfState  { model idealGas; }

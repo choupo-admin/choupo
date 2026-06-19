@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  esterification2sector  --  a TWO-SECTOR fractal plant, the vehicle to
+  exercise the unified props/thermo architecture:
+
+      Feed (AcOH + EtOH)
+            │
+        [ REACTION ]  ── esterification CSTR, its OWN kinetics in
+            │             REACTION/constant/reactions
+        reactorOut
+            │
+        [ SEPARATION ]── isothermal flash; the ethylAcetate-water NRTL
+            │  ╲          pair is PARTICULAR to this sector
+         Liquid Vapour    (SEPARATION/constant/binaryPairs/NRTL/...);
+                          ethanol-water is INHERITED from the standard library.
+
+  Shared components across both sectors; per-sector PARTICULAR data
+  (kinetics in REACTION, a fitted pair in SEPARATION); part of the thermo
+  reused from the standard library.  Demonstrates the fractal constant/.
+\*---------------------------------------------------------------------------*/
+
+// CURATION PHASE: the two sectors exist as THERMO REGIONS; their streams are
+// NOT wired yet.  You curate the thermo-physical properties per sector first;
+// the plant boundary + connections (commented below) are added AFTER curation
+// (the WIRING phase).  Running the flowsheet now is incomplete -- still curating.
+children    ( REACTION  SEPARATION );
+
+// --- WIRING (uncomment after curation, then the plant simulates) ------------
+// boundary
+// {
+//     inlets   ( Feed );
+//     outlets  ( Vapour  Liquid );
+// }
+// streams
+// {
+//     Feed { F 100 kmol/h;  T 360 K;  P 1.01325 bar;
+//            molarComposition { aceticAcid 0.5;  ethanol 0.5; } }
+// }
+// connections
+// (
+//     { from Feed;               to REACTION/In;     }
+//     { from REACTION/Out;       to SEPARATION/In;   }
+//     { from SEPARATION/Vapour;  to Vapour;          }
+//     { from SEPARATION/Liquid;  to Liquid;          }
+// );

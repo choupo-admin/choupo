@@ -1,0 +1,12 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  cleanGas               F                0.0183200303715    1e-4
+stream  feed                   F                1.41666666667      1e-4
+stream  richLiquid             F                1.3983466363       1e-4
+kpi     scrubber               F_alpha          1.3983466363       1e-4
+kpi     scrubber               F_beta           0.0183200303715    1e-4
+kpi     scrubber               F_in             1.41666666667      1e-4
+kpi     scrubber               P                500000             1e-4
+kpi     scrubber               T                298.15             1e-4
+kpi     scrubber               V_over_F         0.0129317861446    1e-4
+kpi     scrubber               phaseSet         0                  1e-4

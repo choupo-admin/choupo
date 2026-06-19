@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  REACTION sector kinetics (PARTICULAR to this sector).
+  Esterification (Fischer):  AcOH + EtOH -> EtOAc + H2O, pseudo-first-order.
+\*---------------------------------------------------------------------------*/
+
+esterification_etac
+{
+    limitingReactant   ethanol;
+    stoichiometry
+    (
+        { component aceticAcid;    nu -1;  order 0; }
+        { component ethanol;       nu -1;  order 1; }
+        { component ethylAcetate;  nu  1;  order 0; }
+        { component water;         nu  1;  order 0; }
+    );
+    kinetics { type Arrhenius;  A 1.0e8;  Ea 7.0e4; }
+}

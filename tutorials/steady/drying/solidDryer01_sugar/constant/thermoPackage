@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  solidDryer01_sugar / thermoPackage  --  water (moisture) + sucrose (solid).
+  The case-local sucrose.dat carries the GAB sorption isotherm the dryer uses
+  for the equilibrium moisture.
+\*---------------------------------------------------------------------------*/
+components       ( water  sucrose );
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

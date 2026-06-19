@@ -1,0 +1,22 @@
+/*---------------------------------------------------------------------------*\
+  Choupo  --  thermoPackage for tutorial pipe01_water_line
+
+  Single component (water).  The pipe model needs:
+    * liquid DENSITY  -> the Rackett liquid branch of density() (Tc, Pc,
+      omega, Vc on water.dat);
+    * liquid VISCOSITY -> the `transport { liquidViscosity }` model below,
+      required for the Reynolds number.
+
+  Self-contained: water.dat is vendored under constant/components/, so the
+  case runs without the standard catalogue.
+\*---------------------------------------------------------------------------*/
+
+components       ( water );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }
+
+transport
+{
+    liquidViscosity  { model Vogel; }   // ln mu = A + B/(T - C)   [Pa.s]
+}

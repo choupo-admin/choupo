@@ -1,0 +1,84 @@
+Choupo — copyright (C) 2026 Vítor Geraldes and contributors.
+Source code, cases, tests, and machine-readable examples are licensed under
+GNU GPL-3.0-or-later (LICENSE). See LICENSES/README.md for the licence map.
+The Choupo name and marks are a
+trademark of TalentGround Lda. (TRADEMARKS.md).  Data files under data/ are
+multi-licensed per component with primary citations.
+
+Choupo
+Copyright (C) 2026 Vítor Geraldes and contributors
+
+The Choupo guides/manuals under docs/ are copyright (C) 2026 Vítor Geraldes
+and Pedro Mendes. Their prose, figures, and explanatory text are licensed
+under Creative Commons Attribution-ShareAlike 4.0 International
+(CC BY-SA 4.0; https://creativecommons.org/licenses/by-sa/4.0/), except where
+noted. Code excerpts, Choupo case files, and other machine-readable examples
+included in the guides are licensed under GPL-3.0-or-later, the same licence
+as the Choupo source code. The guides/manuals are authored, curated, and
+editorially maintained by Vítor Geraldes and Pedro Mendes -- except the
+Developer Guide, authored by Vítor Geraldes alone; project
+contributors are credited for code, cases, tests, models, and executable
+examples, not as guide authors.
+
+This product was conceived and architected by Vítor Geraldes. Substantial
+parts of the initial implementation, documentation, and tutorial corpus were
+produced with assistance from Anthropic Claude Code using Claude Opus/Fable
+models. The published project is human-curated, reviewed, corrected, and
+maintained by Vítor Geraldes and Pedro Mendes (see AUTHORS).
+
+This program is free software: you may redistribute it and/or modify the
+GPL-covered parts
+under the terms of the GNU General Public License, version 3 or (at your
+option) any later version (see LICENSE).
+
+It is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details (https://www.gnu.org/licenses/gpl-3.0.html).
+
+-------------------------------------------------------------------------------
+Bundled reference data — third-party attributions
+-------------------------------------------------------------------------------
+
+The Choupo SOURCE CODE is GPL-3.0-or-later (above).  The curated
+reference data under `data/standards/` is an AGGREGATION of independently-licensed
+datasets; each data file carries its own provenance header (primary source,
+method, licence).  The third-party datasets bundled here, and their licences, are:
+
+* UNIFAC group-contribution parameters (`data/standards/unifac/`) and selected
+  pure-component constants / binary interaction parameters
+  Compiled in the ChemSep database, (c) Harry Kooijman & Ross Taylor, under the
+  Artistic License 2.0 (FSF-listed, GPL-compatible).  PRIMARY sources cited per
+  table: original/VLE UNIFAC of Hansen, Rasmussen, Fredenslund, Schiller &
+  Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352; DECHEMA VLE Data Collection.
+  Imported by bin/curate/ into Choupo dict form (values unchanged; names
+  tokenizer-sanitised).  The ChemSep simulator code is NOT used or bundled.
+
+* Henry's-law constants (`data/standards/henrysLaw/`)
+  Sander, R. (2015), "Compilation of Henry's law constants (version 4.0) for
+  water as solvent," Atmospheric Chemistry and Physics 15, 4399-4981,
+  doi:10.5194/acp-15-4399-2015.  Licensed CC-BY 3.0.
+  Redistributed via the open-source `thermo` library (Caleb Bell, MIT-licensed
+  code; the Sander data retains its CC-BY licence).  CHANGES: Sander's van't
+  Hoff coefficients (ln H_xp[Pa] = A + B/T) were converted to Choupo's
+  H_ref / enthalpy parameterisation; see each `*-water.dat` header.
+
+* Pure-component reference-fluid data (part of `data/standards/components/`)
+  Derived from CoolProp (Bell, Wronski, Quoilin & Lemort, 2014; MIT licence)
+  high-accuracy Helmholtz equations of state.  Antoine and ideal-gas-Cp
+  correlations were FITTED to the CoolProp reference curves; critical
+  constants and acentric factors are reported facts.  See each file header
+  for which fields are CoolProp-derived.
+
+* Ingestion / provenance tooling
+  The `chemicals` and `thermo` libraries (Caleb Bell, MIT licence) were used
+  as the deterministic ingestion and provenance index.  Property ESTIMATES in
+  some component files (formation, ideal-gas Cp) are computed by the Joback
+  group-contribution method (Joback & Reid, 1987 — a published method, facts);
+  such fields are tagged `[origin=estimated method=Joback]` and are intended
+  for student review before reaction-critical use.
+
+This product also bundles, with their respective licences honoured:
+PubChem identifiers (U.S. public domain) and Wikidata facts (CC0).
+Excluded by policy (not bundled): NIST SRD/WebBook, DIPPR, Yaws, CRC, DECHEMA/
+DDBST, and any NonCommercial (e.g. CC-BY-NC) source.

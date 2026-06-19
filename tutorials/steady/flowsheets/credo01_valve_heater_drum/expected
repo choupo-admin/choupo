@@ -1,0 +1,9 @@
+# Reference KPIs (golden master).  kind  name  key  expected  reltol
+# Credo chain: heater (Q) -> valve (P drop, isenthalpic flash) -> drum (no
+# knobs, inherits T,P).  Deterministic; benzene/toluene Raoult.
+kpi     H1       T_out    413.08978161      1e-6
+kpi     V1       T_out    369.30464285      1e-6
+kpi     V1       vf       0.20555173        1e-5
+kpi     V1       dP       900000            1e-9
+stream  liquid   F        0.0220680075      1e-6
+stream  vapour   F        0.0057097703      1e-6

@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Seawater RO with the Pitzer osmotic model (vs membrane01 van't Hoff)";
+
+verbosity     3;

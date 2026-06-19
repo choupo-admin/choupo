@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  Solver defaults for every unit-op type used in this case.  Each unit
+  may still override any of these by setting the same key in its own
+  block inside flowsheetDict.
+\*---------------------------------------------------------------------------*/
+
+isothermalFlash
+{
+    tolerance           1e-8;
+    maxIter             50;
+    outerAccelerator    wegstein;
+    compositionTol      1e-6;
+    maxOuterIter        50;
+}

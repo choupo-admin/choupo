@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  Predefined MIXTURE: humid (moist) atmospheric air.
+
+  Dry-air members (N2/O2/Ar) PLUS water vapour at a stated mole fraction.
+  Like air.dat this is an expansion table, not a component.
+
+  Humidity assumption (documented, not hidden):
+    x_H2O = 0.0230  corresponds to ~saturated air at 20 degC, 1 atm
+    (P_sat,water(293.15 K) ~ 2.34 kPa ; x ~ P_sat / P_total ~ 2.34/101.3).
+    The dry-air members are scaled by (1 - x_H2O) so the full set still
+    sums to 1.0 after the loader's renormalisation.
+
+  Member component for water is `water` (data/standards/components/water.dat).
+\*---------------------------------------------------------------------------*/
+
+mixture     airHumid;
+
+members
+(
+    { component N2;     x 0.76284; }   // 0.7808 * (1 - 0.0230)
+    { component O2;     x 0.20468; }   // 0.2095 * (1 - 0.0230)
+    { component Ar;     x 0.00908; }   // 0.0093 * (1 - 0.0230)
+    { component water;  x 0.02300; }   // ~saturated at 20 degC, 1 atm
+);
+
+provenance
+{
+    origin   standard;
+    note     "moist air: US Std Atmosphere dry-air ratio scaled by (1-x_H2O), x_H2O=0.023 (~sat. at 20 degC, 1 atm)";
+}

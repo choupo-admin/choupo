@@ -1,0 +1,4 @@
+components       ( benzene  toluene );
+
+activityModel    { model  ideal; }
+equationOfState  { model  idealGas; }

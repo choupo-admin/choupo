@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "SECTOR_R -- the reactor sector. Runs its OWN compiled unit op (stoichReactor) on the plant-level thermo (cascaded from ../constant).";
+verbosity     3;

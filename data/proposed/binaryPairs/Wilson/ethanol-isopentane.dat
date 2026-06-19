@@ -1,0 +1,35 @@
+// ChemSep DECHEMA Wilson pair -- ethanol-isopentane (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( ethanol isopentane );
+model       Wilson;
+
+parameters
+{
+    i           ethanol;
+    j           isopentane;
+    A_ij        8426.37;   // J/mol
+    A_ji        1377.95;   // J/mol
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_isopentane_ethanol   329.338;   // CAS 78-78-4 -> 64-17-5
+    A_ethanol_isopentane   2013.9507;   // CAS 64-17-5 -> 78-78-4
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "wilson.ipd";
+    sourceRecord  "78-78-4/64-17-5";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "Wilson";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}

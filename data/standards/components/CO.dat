@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Carbon monoxide  (CO, CAS 630-08-0)
+  Permanent gas at any process-relevant temperature.  Antoine and Vliq
+  carried for schema compliance only; Tc=132.85 K means we never see
+  a liquid in v0.15 process conditions.
+  Sources: constants (Tc, Pc, omega, MW, Tb) cross-checked against the
+  CoolProp 7.2.0 reference equation of state (MIT-licensed); ideal-gas
+  formation properties (dHf_298, s_298) from NASA TM-4513 (McBride-
+  Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        CO;
+formula     CO;
+CAS         630-08-0;
+
+MW          28.010;       // kg/kmol
+Tc          132.85;       // K
+Pc          34.94;        // bar
+omega       0.045;        // [-]
+Tb          81.65;        // K
+HvapTb      6042;         // J/mol
+Vliq        3.55e-5;      // m^3/mol  (35.5 cm^3/mol at Tb)
+diffusionVolume  18.0;          // Fuller diffusion volume [-]
+
+gibbsFormation
+{
+    dHf_298   -110530.0;          // J/mol  -- ideal-gas reference
+    s_298     197.660;            // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.81912   291.743   -5.151);
+    Trange        (68  132);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3  (ideal-gas Cp
+    // polynomial -- individual literature value, primary re-citation pending)
+    coefficients  (30.87   -1.285e-2   2.789e-5   -1.272e-8);
+    Trange        (250  1500);
+}

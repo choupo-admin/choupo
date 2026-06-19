@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  PFR with the same kinetics and conditions as cstr01.  For a first-order
+  reaction the PFR gives X = 1 - exp(-kτ).  With kτ = 1.10:
+        X_PFR  = 1 - exp(-1.10) = 0.667    (vs CSTR X = 0.524)
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            1.0 kmol/h;          // kmol/h
+        T            350.0 K;        // K
+        P            1.01325 bar;      // bar
+        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+    }
+}
+
+units
+(
+    {
+        name        reactor;
+        type        pfr;
+        in          feed;
+        outputs     ( reactorOut );
+
+        operation
+        {
+            V_R          0.005;    // m³  (same volume as cstr01)
+            nSteps       100;
+            writeInterval 10;      // print axial profile every 10 steps
+        }
+        reaction    esterification_etac;
+    }
+);

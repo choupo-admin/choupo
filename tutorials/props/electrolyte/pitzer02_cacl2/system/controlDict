@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Pitzer gamma_pm(m) for CaCl2 (a 2:1 salt) in water at 25 C --- the SAME general formula as NaCl, only the charges/stoichiometry differ. Validated vs Robinson & Stokes (AAD 0.49%, 0.1-2 m).";
+verbosity     2;

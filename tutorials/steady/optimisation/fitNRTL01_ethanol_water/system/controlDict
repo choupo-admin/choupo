@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Fit NRTL ethanol/water pair against 1 atm bubble-T data (Levenberg-Marquardt)";
+
+verbosity     1;

@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  Predefined MIXTURE: typical combustion flue gas.
+
+  CO2 / H2O / N2 / O2 at a representative wet flue-gas composition for
+  natural-gas (methane) combustion with modest excess air.  Like air.dat
+  this is an expansion table, not a component.
+
+  Composition assumption (documented):
+    A natural-gas boiler running ~10-15 % excess air produces, on a WET
+    basis, roughly:
+       CO2  ~ 0.085      N2  ~ 0.71
+       H2O  ~ 0.18       O2  ~ 0.025
+    Values below are rounded to a clean, renormalisable set; the loader
+    renormalises to exactly 1.0.  Argon (~0.9 % of the air) is folded into
+    N2 here for a 4-species teaching mixture.
+
+  Member component for water is `water` (data/standards/components/water.dat).
+\*---------------------------------------------------------------------------*/
+
+mixture     flueGas;
+
+members
+(
+    { component CO2;    x 0.085; }      // combustion product
+    { component water;  x 0.180; }      // combustion product (wet basis)
+    { component N2;     x 0.710; }      // diluent from the air
+    { component O2;     x 0.025; }      // residual excess-air oxygen
+);
+
+provenance
+{
+    origin   standard;
+    note     "typical wet flue gas, natural-gas combustion ~10-15% excess air (CO2/H2O/N2/O2; Ar folded into N2)";
+}

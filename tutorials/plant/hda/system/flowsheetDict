@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  flowsheetDict -- HDA plant (single FLAT flowsheet).
+
+  toluene + H2 -> benzene + CH4, with TWO coupled recycles:
+    * an H2 gas loop          (GasSplit 95 % -> back to the Mixer)
+    * an unreacted-toluene loop (Column bottoms -> back to the Mixer)
+
+  WHY FLAT, not the two-sector fractal we first attempted: a recycle closes only
+  when its `tearStreams` declaration AND both endpoints live in the SAME flowsheet
+  node.  The engine's tear-closing override (Flowsheet.cpp) is leaf-only and
+  same-level-only -- it does NOT support CROSS-SECTOR (composite-to-composite)
+  tears.  Both HDA loops run from the separation train back to the reactor feed,
+  so no single sector owns both ends; they are inherently plant-level and must be
+  flat (the proven process03_recycle pattern: each tear name is BOTH a Mixer
+  input AND a producer output, listed after the Mixer).  The fractal sector
+  showcase lives elsewhere (the sector-internal recycle in the two-sector demo).
+
+  Everything is at 35 bar so the recycles return at reactor pressure (the Mixer
+  takes min-P).  The furnace is lumped into the isothermal reactor (operation.T
+  900 K) -- the engine's heater is duty-specified, not T-target.  The benzene
+  product carries a few % light ends: the trace H2/CH4 in the flash liquid are
+  non-keys lighter than benzene, so the FUG shortcut sends them to the distillate
+  (quantitatively approximate; the shortcut needs no rigorous liquid enthalpy, so
+  unlike a Wang-Henke column it does not choke on a gas in the liquid).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    { name Mixer;    type mixer;
+      inputs ( TolueneFeed  H2Makeup  H2Recycle  TolueneRecycle );
+      outputs ( mixed );
+      // Isothermal: a genuine gas (H2/CH4 recycle) + liquid (toluene) mix whose
+      // liquid species carry a large formation+latent gap on the gas basis ->
+      // the adiabatic single-phase T-solve is ill-posed.  We declare the cold
+      // mix T; the furnace (lumped into Reactor.operation.T 900 K) sets the real
+      // reaction temperature downstream, so this value only labels the feed.
+      operation { T 330 K; } }
+
+    { name Reactor;  type conversionReactor;
+      in mixed;  outputs ( Effluent );
+      reaction hda;
+      operation { conversion 0.75;  T 900 K; } }
+
+    { name HPFlash;  type isothermalFlash;
+      in Effluent;  outputs ( hpLiquid  hpVapor );        // VL: [liquid, vapor]
+      operation { T 320 K;  P 35 bar;  phaseSet VL; } }
+
+    { name GasSplit; type splitter;
+      in hpVapor;  outputs ( H2Recycle  Purge );          // 95 % recycled, 5 % purged (bleeds CH4)
+      operation { fractions ( 0.95  0.05 ); } }
+
+    { name Column;   type shortcutColumn;
+      in hpLiquid;  outputs ( Benzene  TolueneRecycle );  // FUG: [distillate, bottoms]
+      operation { lightKey benzene;  heavyKey toluene;  recoveryLK 0.99;  recoveryHK 0.01;  refluxFactor 1.3; } }
+);
+
+boundary
+{
+    inlets   ( TolueneFeed  H2Makeup );
+    outlets  ( Benzene  Purge );
+}
+
+streams
+{
+    // Declare the PHASE of each inlet via `vf` (0 = liquid, 1 = vapour): the
+    // Mixer picks its energy-balance basis from the flow-weighted inlet vf
+    // (gas-dominant -> solves a gas enthalpy balance; liquid-dominant ->
+    // liquid).  Without a declared phase every inlet defaults to liquid (vf 0)
+    // and the Mixer tries a LIQUID balance on this gas-dominant mix -> the 1-D
+    // Newton in T finds no root and the mixer "fails to converge".
+    TolueneFeed    { F 100 kmol/h; T 300 K; P 35 bar; vf 0; molarComposition { toluene 1.0; } }
+    H2Makeup       { F 110 kmol/h; T 300 K; P 35 bar; vf 1; molarComposition { H2 0.97; CH4 0.03; } }
+
+    // tear SEEDS (initial guesses; the outer loop iterates each to its fixed point)
+    H2Recycle      { F 370 kmol/h; T 320 K; P 35 bar; vf 1; molarComposition { H2 0.56; CH4 0.43; benzene 0.01; } }
+    TolueneRecycle { F 33  kmol/h; T 380 K; P 35 bar; vf 0; molarComposition { toluene 0.97; benzene 0.03; } }
+}
+
+tearStreams    ( H2Recycle  TolueneRecycle );
+recycleSolver  Newton;        // one Jacobian over both tears -> captures the gas<->liquid coupling
+recycleTol     1e-6;
+recycleMaxIter 120;

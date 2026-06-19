@@ -1,0 +1,81 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict --- ED01 NaCl desalination by electrodialysis
+  ===========================================================================
+
+  An electrodialysis stack of 100 cell pairs desalinates a dilute NaCl
+  diluate stream (0.1 mol/kg) against a more-concentrated concentrate
+  (0.5 mol/kg).  A specified stack current (BELOW the limiting current)
+  drives Na+ through the CMX (cation-exchange) membranes and Cl- through
+  the AMX (anion-exchange) membranes, OUT of the diluate and INTO the
+  concentrate.
+
+      diluateFeed     ->  +-----------------+ -> diluate    (desalinated)
+                          |   ED stack      |
+      concentrateFeed ->  | (CMX/AMX, N=100)| -> concentrate (enriched)
+                          +-----------------+
+                                   | (power, energy wire)
+                                   v
+                              rectifier (electricLoad)
+
+  The stack PRINTS (verbosity 3) the Faraday transfer, the Nernst membrane
+  potential from REAL Davies activities, the Cowan-Brown limiting current
+  i_lim (and i/i_lim), the ohmic drop and the stack voltage/power.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    diluateFeed
+    {
+        F            5.0 mol/s;
+        T            298.15 K;
+        P            1.5 bar;
+        molarComposition { water 0.996409;  Na 0.001795;  Cl 0.001795; }
+    }
+    concentrateFeed
+    {
+        F            5.0 mol/s;
+        T            298.15 K;
+        P            1.5 bar;
+        molarComposition { water 0.982301;  Na 0.008850;  Cl 0.008850; }
+    }
+}
+
+units
+(
+    {
+        name        edStack;
+        type        electrodialysisStack;
+        inputs      ( diluateFeed  concentrateFeed );
+        outputs     ( diluate  concentrate );
+
+        operation
+        {
+            N_cellpairs       100;
+            current           8.0;        // A (raw SI) -- applied current (below i_lim, see log)
+            xi                0.9;         // current efficiency (announced default)
+            membraneArea      0.2 m2;     // per membrane
+            channelThickness  0.5 mm;     // spacer gap
+            channelLength     0.4 m;      // flow path (for the Leveque k)
+            linearVelocity    0.05 m/s;   // cross-flow velocity
+            E_electrodes      1.5;        // V (raw SI) -- lumped electrode overpotential (announced)
+            membrane          CMX_AMX;    // IEM pair (data/standards or constant/membranes)
+        }
+
+        // The DC power drawn by the stack is published on an energy wire as
+        // W_electric (P = U*I), mirroring the turbine/compressor shaft-wire
+        // convention; the rectifier (electricLoad) absorbs it.
+        energyOutputs
+        (
+            { name power;  kind work;  expression "W_electric";  unit W; }
+        );
+    }
+    {
+        name        rectifier;
+        type        electricLoad;
+        operation   { eta 1.0; }
+        energyInputs
+        (
+            { from edStack.power;  kind work;  target W_shaft; }
+        );
+    }
+);

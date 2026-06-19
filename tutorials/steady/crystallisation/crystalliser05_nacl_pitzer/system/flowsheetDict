@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser05_nacl_pitzer  (LEAF node)
+
+  NaCl crystalliser whose SATURATION comes from the Pitzer ion activity
+  (Ksp = (gamma_pm * m_sat)^2), via the `electrolyte {}` block -- NaCl carries
+  no solubility{} curve, so the electrolyte model is what makes this possible.
+  The feed is a SUPERSATURATED brine (~7.6 mol/kg, as it would leave an
+  evaporator); the unit drops it to saturation (6.144 mol/kg) and crystallises
+  the excess.  Self-contained: components live in constant/components/.
+\*---------------------------------------------------------------------------*/
+
+name        cryst;
+type        crystalliser;
+operation
+{
+    operatingTemperature 298.15 K;
+}
+
+boundary    { inlets ( feed );  outlets ( magma ); }
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            298.15 K;
+        P              1.0 bar;
+        molarComposition  { water 0.88;  NaCl 0.12; }   // ~7.6 mol/kg, supersaturated
+    }
+}

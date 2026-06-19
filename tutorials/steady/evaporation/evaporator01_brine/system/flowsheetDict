@@ -1,0 +1,84 @@
+/*---------------------------------------------------------------------------*\
+  evaporator01_brine  --  single-effect brine concentrator (NaCl-water),
+                          PHYSICAL-EQUIPMENT model (v0.29+).
+
+  We say WHAT THE HARDWARE IS (heat-exchange area, overall HTC,
+  operating pressure on the process side, heating-steam temperature)
+  and the simulator tells us WHAT IT DOES (V/F, duty Q, T_boil with
+  BPE, steam demand, economy).  There is no "vaporFraction" or
+  "duty" spec to choose --- the equipment shape itself IS the spec.
+
+  Feed: seawater-equivalent 35 g/L NaCl in water, 100 kmol/h
+  (~ 1.8 kg/s of seawater, the volume of a small medium-capacity
+  desalination unit), 25 °C.  At MW_NaCl = 58.44 g/mol and rho_water
+  ~ 1 g/cm³:
+
+      35 g/L  /  58.44 g/mol  =  0.599 mol NaCl per litre water
+                              =  0.599 mol/kg water  (dilute approx)
+      x_NaCl_feed ≈ 0.599 / (0.599 + 55.5)  =  0.01067
+
+  Heating side: saturated steam at 130 °C (= 403.15 K, P ≈ 2.7 bar).
+
+  Equipment:
+      heat-exchange area  =  20 m²
+      overall U           =  2000 W/(m²·K)
+      operating pressure  =  1 bar  (process side)
+
+  Expected order-of-magnitude (computed by the solver, not specified):
+      T_sat(water, 1 bar)        ≈ 373 K  (~ 100 °C)
+      ΔT_drive (steam - process) ≈ 30 K
+      Q = U · A · ΔT             ≈ 2000 · 20 · 30      ≈ 1200 kW
+      V evaporated               ≈ Q / ΔHvap           ≈ 110 kmol/h
+                                                       ≈ 1980 kg/h water
+      V/F (mol-basis)            ≈ 0.55
+      Steam consumption          ≈ Q / ΔHvap_at_steam  ≈ 2000 kg/h
+      Economy                    ≈ V_evap / F_steam     ≈ 0.99
+      x_NaCl_outlet              ≈ 0.0237   (~ doubled from feed)
+
+  Industrial relevance: this is the building block of multi-effect
+  evaporators in seawater desalination (MED, MSF), brine
+  crystallisers, and the sugar industry.  Real plants run under
+  vacuum (T_boil ~ 60 °C at 0.2 bar) to minimise scaling and use
+  BPE-loaded multi-effect cascades to recover the latent heat ---
+  see evaporator02_triple_effect_sugar.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F                  100.0 kmol/h;
+        T                  298.15 K;        // 25 °C
+        P                    1.0 bar;
+        molarComposition  { water 0.98933;  NaCl 0.01067; }
+    }
+
+    saturatedSteam130C
+    {
+        // F-spec mode (v0.32+): F is a REAL input.  The evaporator
+        // uses Q = F · ΔHvap_solvent(T) as its duty source, then
+        // reports A_needed = Q / (U·ΔT) so you can compare with the
+        // 20 m² you specified.  Try varying F to see the V/F response.
+        F                  100.0 kmol/h;    // ~ 0.5 kg/s of saturated steam
+        P                    2.7 bar;
+        state            saturatedVapour;   // -> T_sat(2.7 bar) ~ 403 K auto
+        molarComposition  { water 1.0; }
+        category         HP_steam_2.7bar;   // utility tag for aggregation
+    }
+}
+
+units
+(
+    {
+        name        evap;
+        type        evaporator;
+        inputs      ( feed  saturatedSteam130C );
+        outputs     ( concentrated  vapour  condensate );
+
+        operation
+        {
+            area        20.0 m2;
+            U         2000.0 W/m2/K;
+        }
+    }
+);

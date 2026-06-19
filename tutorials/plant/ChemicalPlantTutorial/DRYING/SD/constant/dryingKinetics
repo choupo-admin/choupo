@@ -1,0 +1,13 @@
+/*---------------------------------------------------------------------------*\
+  SD / constant/dryingKinetics   (KINETICS of THIS spray-dryer chamber)
+
+  The falling-rate curve + critical moisture of THIS machine.  Per-instance
+  (the chamber's residence/atomisation set it), so it lives in the unit, not
+  the material.  The equilibrium isotherm is shared at the sector level.
+\*---------------------------------------------------------------------------*/
+
+sprayCurve
+{
+    model   Lewis;
+    Xc      0.15;      // critical moisture (constant -> falling-rate switch)
+}

@@ -1,0 +1,9 @@
+/*---------------------------------------------------------------------------*\
+  Binary brine: NaCl in water.  NaCl is `nonvolatile true;` so it never
+  enters the vapour; water carries an ebulioscopic K_b = 0.512 K·kg/mol
+  for the BPE term in the evaporator energy balance.
+\*---------------------------------------------------------------------------*/
+
+components       ( water NaCl );
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }

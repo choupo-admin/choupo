@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Minimise total module Guthrie cost of reactor + heater by varying reactor V_R and heater Q";
+
+verbosity     3;

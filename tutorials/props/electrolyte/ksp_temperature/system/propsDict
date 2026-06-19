@@ -1,0 +1,94 @@
+/*---------------------------------------------------------------------------*\
+  ksp_temperature --- why hot surfaces scale with calcite (K(T) MATTERS).
+
+  ONE fixed water, speciated at five temperatures.  A hard, carbonate-bearing
+  groundwater (gypsum- and calcite-relevant) at a GIVEN pH 7.6 -- holding pH
+  and the totals fixed isolates the lesson: the only thing that changes from
+  point to point is the equilibrium constant K(T).
+
+      ion      mol/kg w         ion      mol/kg w
+      Ca         0.010          Cl         0.050
+      Na         0.030          SO4        0.012
+                                HCO3       0.005      pH 7.6 (given)
+
+  THE LESSON -- the SIGN of dK/dT:
+
+    calcite   dissolution is EXOTHERMIC (dH = -28.1 kJ/mol), so log K FALLS as
+              T rises.  SI_calcite = log(IAP) - log K(T) therefore RISES with
+              temperature -- RETROGRADE SOLUBILITY.  Calcite is LESS soluble
+              hot, which is exactly why heat-exchanger tubes and warm RO
+              concentrate scale with CaCO3 although the cold feed looks safe.
+              K(T) here is the PHREEQC ANALYTIC expression (-analytical_
+              expression A1..A5), anchored on logK25 so logK(25 C) = logK25
+              EXACTLY.
+
+    gypsum    analytic too, but only mildly retrograde (its solubility peaks
+              near 40 C) -- a gentler curve for contrast.
+
+    halite    NaCl carries NO analytic K(T) in phreeqc.dat (the db's -analytic
+              line is commented out), so it falls back to constant-dH van't
+              Hoff.  dH = +1.37 kJ/mol > 0 (endothermic) -> NORMAL solubility:
+              log K(T) RISES and SI_halite drifts DOWN.  The honest contrast
+              with calcite: the scaling verdict flips with temperature for the
+              retrograde salt, not for the normal one.
+
+  At 25 C the K(T) machinery returns logK25 for EVERY entry (byte-stable);
+  off 25 C the run announces the form in use per entry (analytic / van't Hoff
+  / flat) and warns loudly if an analytic is used beyond its fitted validity
+  range.  (Calcite's analytic is valid 0 - 300 C, so the whole 10 - 80 C scan
+  is in range.)
+
+  Speciation/mineral data: case-local constant/electrolyte/ -- a self-
+  contained SNAPSHOT of the standards catalogue (USGS PHREEQC, public domain;
+  see the .dat headers).  The case files ECLIPSE data/standards/electrolyte/.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- the SAME water at five temperatures (pH and totals held fixed) ----------
+    {
+        name        T10;
+        type        speciate;
+        temperature 283.15;                 // 10 C
+        totals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
+                      SO4 0.012 mol/kg; HCO3 0.005 mol/kg; }
+        pH          7.6;
+        output      { file ksp_T10.csv; }
+    }
+    {
+        name        T25;
+        type        speciate;
+        temperature 298.15;                 // 25 C -- the anchor (byte-stable)
+        totals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
+                      SO4 0.012 mol/kg; HCO3 0.005 mol/kg; }
+        pH          7.6;
+        output      { file ksp_T25.csv; }
+    }
+    {
+        name        T40;
+        type        speciate;
+        temperature 313.15;                 // 40 C
+        totals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
+                      SO4 0.012 mol/kg; HCO3 0.005 mol/kg; }
+        pH          7.6;
+        output      { file ksp_T40.csv; }
+    }
+    {
+        name        T60;
+        type        speciate;
+        temperature 333.15;                 // 60 C
+        totals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
+                      SO4 0.012 mol/kg; HCO3 0.005 mol/kg; }
+        pH          7.6;
+        output      { file ksp_T60.csv; }
+    }
+    {
+        name        T80;
+        type        speciate;
+        temperature 353.15;                 // 80 C -- calcite SI well above the cold value
+        totals      { Ca 0.010 mol/kg; Na 0.030 mol/kg; Cl 0.050 mol/kg;
+                      SO4 0.012 mol/kg; HCO3 0.005 mol/kg; }
+        pH          7.6;
+        output      { file ksp_T80.csv; }
+    }
+);

@@ -1,0 +1,21 @@
+type        sweep;
+
+parameter
+{
+    target    units[0].operation.k_film;
+    range     ( 1.0e-5  2.0e-4 );          // 10 µm/s up to 200 µm/s
+    nPoints   10;
+}
+
+responses
+(
+    ROunit.water_recovery
+    ROunit.R_obs_NaCl
+    ROunit.J_w_avg
+);
+
+report
+{
+    format    csv;
+    file      sweep_kfilm.csv;
+}

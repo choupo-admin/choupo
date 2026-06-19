@@ -1,0 +1,17 @@
+# Reference KPIs (golden master) -- closed IF97 Rankine cycle.
+#   pump -> boiler (outletT 773.15 K) -> turbine (W_shaft -9 kW) ->
+#   condenser (saturatedLiquid) -> recycle.  First law closes to ~4e-12 of
+#   the boiler duty.  Steam-table cross-checks: Tsat(80 bar) = 568.16 K
+#   (295.0 degC) and Tsat(turbine back-pressure ~8.59 bar) = 446.52 K.
+# kind   name           key        expected           reltol
+kpi      boiler         T_out      773.15             1e-9
+kpi      boiler         vf_out     1.0                1e-6
+kpi      boiler         Tsat       568.159121229      1e-5
+kpi      boiler         Q_kW       47.8559413747      1e-5
+kpi      condenser      vf_out     0.0                1e-6
+kpi      condenser      Tsat       446.515894355      1e-5
+kpi      condenser      Q_kW      -39.017165456       1e-4
+kpi      steamTurbine   P_out      858590.397228      1e-4
+kpi      steamTurbine   W_gen_kW   9.0                1e-6
+stream   superheatedSteam  vf      1.0                1e-6
+stream   condensate        vf      0.0                1e-6

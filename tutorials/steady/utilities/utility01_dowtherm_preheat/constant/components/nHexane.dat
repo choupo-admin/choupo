@@ -1,0 +1,52 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/nHexane.dat
+// sha256   45559ded2f6a68d750141619fc2428a8a14189a83f0835e74dc559b19f70eb81
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: n-Hexane  (C6H14, CAS 110-54-3)
+\*---------------------------------------------------------------------------*/
+
+name        nHexane;
+formula     C6H14;
+CAS         110-54-3;
+
+MW          86.178;
+Tc          507.60;
+Pc          30.25;
+omega       0.3013;
+Tb          341.88;
+HvapTb      28850;
+Vliq        1.316e-4;
+
+
+gibbsFormation
+{
+    dHf_298   -167200.0;        // J/mol  -- ideal-gas reference
+    s_298     388.510;         // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (NIST/JANAF convention)
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.00266   1171.530   -48.784);
+    Trange        (286  343);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (-4.413   0.582   -3.119e-4   6.494e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (196.0);
+    Trange        (280  340);
+}

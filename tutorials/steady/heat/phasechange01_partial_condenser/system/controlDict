@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  phasechange01_partial_condenser  --  meta-control
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Partial condenser: benzene/toluene vapour cooled to quality 0.4";
+
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

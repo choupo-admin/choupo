@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------*\
+  controlDict  --  proxy01_gas_loop
+
+  STEP 1 of the GUI/credo proxy: a minimal CONVERGING gas recycle.
+  feed -> mixer(feed + recycle) -> Gibbs reactor (WGS) -> splitter
+  (recycle + product).  Later steps add a 2nd recycle, shaft-work energy
+  wires (compressor/turbine/electricLoad) and Q utilities.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "Proxy step 1: gas WGS loop with one recycle (mixer + Gibbs reactor + splitter)";
+
+verbosity     3;
+
+reports
+{
+    streamTable        { }
+    massBalance        { }
+    energyBalance      { }
+    utilityAllocation  { }     // size steam / cooling water from the unit duties
+}

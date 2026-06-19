@@ -1,0 +1,103 @@
+/*---------------------------------------------------------------------------*\
+  turbo-booster: turbine drives compressor through an ENERGY WIRE (v0.80)
+
+  Two physically independent gas streams, one shared shaft:
+
+      hotExhaust  ->  turbine  ----shaft----+
+                                            |
+      ambientAir  ->  compressor  <---------+
+
+  Hardware specs (the only knobs):
+      turbine    W_shaft = -5 kW       (NEGATIVE: work extracted)
+                 eta     =  0.80
+      compressor W_shaft is OMITTED    (the wire provides it)
+                 eta     =  0.75
+
+  The wire injects +W_turb into the compressor before its solve(),
+  so the compressor's W_shaft is whatever the turbine produces ---
+  here, 5 kW (sign flipped: -W_shaft on the producer's expression
+  -> the consumer reads +W_shaft, the usual sign convention).
+
+  Hand check (ideal gas, Cp ~ 29 J/(mol*K), gamma ~ 1.40):
+      Turbine: 1 mol/s, 800 K, 5 bar -> extract 5 kW (= 5000 J/mol)
+        w_isen = w_real / eta = 5000 / 0.80 = 6250 J/mol
+        T_isen = 800 - 6250/29 ~ 585 K  ->  ratio = (585/800)^3.5 ~ 0.35
+        P_out ~ 5 * 0.35 ~ 1.74 bar
+        T_out (real) = 800 - 5000/29 ~ 627 K  (warmer than T_isen: the
+          losses stay as heat in the gas)
+
+      Compressor: 0.5 mol/s, 298 K, 1 bar, receiving 5 kW
+        w_real = 5000 / 0.5 = 10000 J/mol
+        w_isen = 0.75 * 10000 = 7500 J/mol
+        T_isen = 298 + 7500/29 ~ 557 K  ->  ratio = (557/298)^3.5 ~ 8.7
+        P_out ~ 8.7 bar
+        T_out (real) = 298 + 10000/29 ~ 643 K
+
+  The wire makes the energy flow visible at the case level --- a single
+  edge in the flowsheet that the GUI can render dashed.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    // Hot exhaust gas (e.g. post-combustion at 5 bar) feeding the turbine.
+    hotExhaust
+    {
+        F             3.6 kmol/h;        // = 1 mol/s
+        T           800.0 K;
+        P             5.0 bar;
+        molarComposition  { N2 0.79;  O2 0.21; }
+    }
+
+    // Ambient air feeding the compressor (a SEPARATE physical stream).
+    ambientAir
+    {
+        F             1.8 kmol/h;        // = 0.5 mol/s
+        T           298.15 K;
+        P             1.0 bar;
+        molarComposition  { N2 0.79;  O2 0.21; }
+    }
+}
+
+units
+(
+    // PRODUCER --- the turbine.  Hardware-only operation block.
+    // The energyOutputs declaration tells the Flowsheet that this unit
+    // can publish a `shaft` port carrying the scalar -W_shaft (sign flip:
+    // turbine convention W_shaft < 0 -> consumer-convention positive).
+    {
+        name        turbine;
+        type        turbine;
+        in          hotExhaust;
+        outputs     ( turbExhaust );
+
+        operation
+        {
+            W_shaft  -5.0 kW;           // hardware: extracted shaft power
+            eta       0.80;             // isentropic efficiency
+        }
+
+        energyOutputs
+        (
+            { name shaft;  kind work;  expression "-W_shaft";  unit W; }
+        );
+    }
+
+    // CONSUMER --- the compressor.  Notice `operation` does NOT declare
+    // W_shaft: it comes through the wire below.  Only `eta` is hardware.
+    {
+        name        compressor;
+        type        compressor;
+        in          ambientAir;
+        outputs     ( boostedAir );
+
+        operation
+        {
+            eta       0.75;             // isentropic efficiency
+        }
+
+        energyInputs
+        (
+            { from turbine.shaft;  kind work;  target W_shaft; }
+        );
+    }
+);

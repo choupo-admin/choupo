@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  utility02_hitec_csp_heater
+  ==========================
+
+  When the duty needs a hot side above Dowtherm A's ceiling (~370 C),
+  the next escalation up the ladder is a molten salt loop -- HITEC is the
+  textbook ternary (NaNO3-NaNO2-KNO3) used for solar-thermal storage
+  and high-T process heat down to its 142 C melting point.
+
+  Process here: pressurised water at 40 bar pre-heated towards its
+  T_sat (~250 C) for a downstream HP steam generation step.  Hot side:
+  HITEC at 773 K (500 C) delivery, `utility hitecSalt;` pulls the loop
+  conditions from data/standards/utilities/hitecSalt.dat.
+
+  Hardware: A = 15 m^2, U = 800 W/(m^2.K), counter-current.  The Q and
+  T_out fall out of eps-NTU.
+
+  Inspection: how much HITEC do we circulate to deliver the duty?  At
+  what hourly cost?  Compare to the equivalent steam-generated route
+  via fired heater -- the salt loop trades higher Capex for cleaner
+  T-control and the absence of decomposition byproducts in the process
+  side.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    boilerFeed
+    {
+        F            80.0 kmol/h;
+        T            393.15 K;             // 120 C feedwater after deaerator
+        P            40.0 bar;
+        molarComposition { water 1.0; }
+    }
+
+    saltSupply
+    {
+        utility      hitecSalt;            // pulls components, state, P, T_in
+        F            300 kmol/h;            // loop circulation flow
+    }
+}
+
+units
+(
+    {
+        name        boilerHX;
+        type        heatExchanger;
+        inputs      ( saltSupply  boilerFeed );
+        outputs     ( saltReturn  boilerOut );
+
+        operation
+        {
+            area     15.0 m2;
+            U        800.0 W/m2/K;
+            flow     counter;
+        }
+    }
+);

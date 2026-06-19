@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------*\
+  Initial NRTL parameters for ethanol-water (DECHEMA literature values).
+  The fitBinaryPair driver mutates these in place during the LM iteration
+  and writes a refined proposal at
+      constant/binaryPairs.ethanol-water.fit-<YYYY-MM-DD>.dat
+  in the case directory after a successful fit.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water );
+
+activityModel
+{
+    model        NRTL;
+
+    pairs
+    (
+        {
+            i          ethanol;
+            j          water;
+            a_ij      -0.8009;
+            b_ij       246.18;
+            a_ji       3.4578;
+            b_ji      -586.0809;
+            alpha      0.30;
+        }
+    );
+}
+
+equationOfState
+{
+    model        idealGas;
+}

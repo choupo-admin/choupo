@@ -1,0 +1,45 @@
+/*---------------------------------------------------------------------------*\
+  batch01_first_order  --  isothermal pseudo-first-order batch reactor.
+
+  Single vessel, pseudo-first-order esterification (AcOH + EtOH ->
+  EtOAc + H2O, rate = k.[ethanol]).  Initial charge is an equimolar
+  ethanol + acetic acid mix; kinetics from the reactions library
+  (Arrhenius A=1e8 1/s, Ea=70 kJ/mol).  At T = 350 K:
+
+      k(T) = 1e8 · exp(-70000 / (8.314 · 350))  ≈  3.57e-3  s^-1
+      τ    = 1/k                                ≈  280     s
+
+  Analytical solution for first-order in a constant-volume batch:
+
+      n_A(t) = n_A(0) · exp(-k t)
+
+  The simulator integrates dn_A/dt = -k · (n_A / V) · V = -k n_A
+  with RK4 at dt = 1 s; final t = 600 s gives X_A ≈ 1 - exp(-k·600)
+                                                  ≈ 1 - exp(-2.14)
+                                                  ≈ 0.882
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        initial
+        {
+            T            350.0 K;
+            P            1.013 bar;
+            V            0.001;              // m³ (1 litre)
+            totalMoles   0.0185;             // kmol  (≈ 1 litre of liquid ethanol at ρ = 789 kg/m³, MW = 46)
+            molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+        }
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        reaction    esterification_etac;
+    }
+);

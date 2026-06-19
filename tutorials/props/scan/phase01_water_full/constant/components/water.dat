@@ -1,0 +1,4 @@
+/*  Case-local overlay: use AmbroseWalton (corresponding states, valid to Tc)
+    for the saturation curve; Tc/Pc/omega come from the standard water entry. */
+name water;
+vaporPressure { model AmbroseWalton; }

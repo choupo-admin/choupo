@@ -1,0 +1,6 @@
+/*---------------------------------------------------------------------------*\
+  controlDict -- ryield01_pyrolysis
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Yield reactor (Aspen RYield analogue): toluene hydro-dealkylation as a LUMPED mass-yield slate -- no stoichiometry, no kinetics, overall mass closes";
+verbosity     3;

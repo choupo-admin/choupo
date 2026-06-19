@@ -1,0 +1,13 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0277777777778    1e-4
+stream  magma                  F                0.0261287129062    1e-4
+kpi     cryst                  Q_removed        264458.333333      1e-4
+kpi     cryst                  T_op             293.15             1e-4
+kpi     cryst                  c_sat            2.026              1e-4
+kpi     cryst                  crystal_flow     0.564469958333     1e-4
+kpi     cryst                  crystal_mol      0.00164906487154   1e-4
+kpi     cryst                  liquorFlow       0.0261287129062    1e-4
+kpi     cryst                  solute_dissolved 0.861767541667     1e-4
+kpi     cryst                  solute_in        1.4262375          1e-4
+kpi     cryst                  yield            0.395775569169     1e-4

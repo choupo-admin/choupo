@@ -1,0 +1,32 @@
+/*---------------------------------------------------------------------------*\
+  Liquid transport layer (v0.62) --- ethanol / water / benzene / toluene.
+
+  The `transport` block now carries the LIQUID property families alongside
+  the gas ones, each a SELECTABLE sub-model:
+
+      liquidViscosity   { model Andrade;    }   // ln μ = A + B/T        (Pa·s)
+                        { model Vogel;      }   // ln μ = A + B/(T-C)    (better for water)
+      liquidConductivity{ model SatoRiedel; }   // parameter-free        (W/(m·K))
+                        { model Latini;     }   // family-tuned alternative
+      liquidDiffusivity { model WilkeChang; }   // association factor φ  (m²/s)
+                        { model Scheibel;   }   // association-free alternative
+
+  Switch any `model` word to compare --- e.g. Andrade vs Vogel on water:
+  the 2-parameter Andrade carries ~3.5 % RMS over 10-100 °C, Vogel ~0.2 %.
+
+  COMPONENT ORDER matters for the binary liquid diffusivity: D_L evaluates
+  the infinite-dilution diffusivity of component 0 (solute) in component 1
+  (solvent) --- here ETHANOL in WATER.
+\*---------------------------------------------------------------------------*/
+
+components       ( ethanol  water  benzene  toluene );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }
+
+transport
+{
+    liquidViscosity    { model Vogel;      }
+    liquidConductivity { model SatoRiedel; }
+    liquidDiffusivity  { model WilkeChang; }
+}

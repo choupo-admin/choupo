@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser04_size_dependent_growth / constant/crystallisation
+
+  Same k_g, k_b, g, b as crystalliser03 (and crystalliser02_msmpr) ---
+  the LAW changes, not the magnitudes.  `sizeFactor > 0` enables
+
+      G(L) = G0 (1 + sizeFactor * L)
+
+  with G0 = k_g (S-1)^g.  At L = 1 mm and sizeFactor = 500 1/m the
+  enhancement is +50 % --- a modest but clearly visible effect on the
+  population density and the mean size.  The method of moments cannot
+  close this law (each dμ_j/dt picks up an extra +sizeFactor * μ_{j+1}
+  term), but the FVM consumes G_k = G(L_k) directly at every node.
+\*---------------------------------------------------------------------------*/
+
+sugarKineticsSizeDep
+{
+    growth
+    {
+        k_g          1.0e-7;     // m/s   --- same as MSMPR/FVM v0.77/0.79
+        g            1.0;
+        sizeFactor   500.0;      // 1/m   --- +50 % growth at L = 1 mm
+    }
+    nucleation
+    {
+        k_b   1.0e9;             // #/(m^3 s)
+        b     2.0;
+        j     0.0;               // primary nucleation (FVM v0.79 restriction)
+    }
+}

@@ -1,0 +1,81 @@
+/*---------------------------------------------------------------------------*\
+  compare_activity_etoh_water
+  ===========================
+
+  COMPARE 3 activity-coefficient models for γ_ethanol in an equimolar
+  ethanol/water mixture, T = 280 K to 360 K, P = 1 atm.
+
+    * ideal  : γ = 1 always (Raoult's law assumption).
+    * NRTL   : strong non-ideality, γ_ethanol > 1 (azeotrope behaviour).
+    * Wilson : similar to NRTL for this binary, slightly different curve.
+
+  Pedagogical point: a student studying ethanol/water VLE will see that
+  "ideal" is a bad approximation here (γ_ethanol grows to ~2-3 at low T),
+  and that NRTL/Wilson give similar non-ideal corrections.  The choice
+  between the two is then decided by which fits the project's
+  experimental data better (workflow Mode B, see tutorials/props/README.md).
+
+  Each op overrides the global activityModel block via `thermo {}`.  The
+  three CSVs (gamma_ideal.csv, gamma_nrtl.csv, gamma_wilson.csv) are
+  auto-overlaid by the GUI.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        g_ideal;
+        type        propertyScan1D;
+        vary        { variable T;  from 280 K;  to 360 K;  n 41; }
+        state       { P 1 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo      { activityModel { model ideal; } }
+        properties  ( gamma_ethanol );
+        output      { file gamma_ideal.csv; }
+    }
+    {
+        name        g_nrtl;
+        type        propertyScan1D;
+        vary        { variable T;  from 280 K;  to 360 K;  n 41; }
+        state       { P 1 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            activityModel
+            {
+                model NRTL;
+                pairs
+                (
+                    {
+                        i      ethanol;  j      water;
+                        a_ij  -0.8009;   b_ij   246.18;
+                        a_ji   3.4578;   b_ji  -586.0809;
+                        alpha  0.30;
+                    }
+                );
+            }
+        }
+        properties  ( gamma_ethanol );
+        output      { file gamma_nrtl.csv; }
+    }
+    {
+        name        g_wilson;
+        type        propertyScan1D;
+        vary        { variable T;  from 280 K;  to 360 K;  n 41; }
+        state       { P 1 bar;  composition { ethanol 0.5;  water 0.5; } }
+        thermo
+        {
+            activityModel
+            {
+                model Wilson;
+                pairs
+                (
+                    {
+                        i      ethanol;  j      water;
+                        A_ij   1157.95;  // J/mol  (DECHEMA)
+                        A_ji   4081.65;  // J/mol
+                    }
+                );
+            }
+        }
+        properties  ( gamma_ethanol );
+        output      { file gamma_wilson.csv; }
+    }
+);

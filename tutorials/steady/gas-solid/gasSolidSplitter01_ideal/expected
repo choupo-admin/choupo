@@ -1,0 +1,12 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  capturedSolids         F                0                  1e-4
+stream  cleanGas               F                0.0416666666667    1e-4
+stream  feed                   F                0.0416666666667    1e-4
+kpi     separator              gasCarryover     0                  1e-4
+kpi     separator              gasToCleanGas    0.0416666666667    1e-4
+kpi     separator              gasToSolids      0                  1e-4
+kpi     separator              solidsCaptured_mass 0.0125             1e-4
+kpi     separator              solidsEscaped_mass 0.00138888888889   1e-4
+kpi     separator              solidsIn_mass    0.0138888888889    1e-4
+kpi     separator              solidsRecovery   0.9                1e-4

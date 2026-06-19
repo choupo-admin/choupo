@@ -1,0 +1,81 @@
+/*---------------------------------------------------------------------------*\
+  steam01_if97_verification --- the IAPWS-IF97 weapon case.
+
+  The release (IAPWS R7-97(2012)) publishes computer-program verification
+  tables; this case evaluates EVERY one of them this slice covers and locks
+  the published numbers as golden KPIs at reltol 1e-8 -- a single wrong digit
+  in a transcribed coefficient fails the regression:
+
+    * Table 5  -- region 1 at (300 K, 3 MPa), (300 K, 80 MPa), (500 K, 3 MPa)
+    * Table 15 -- region 2 at (300 K, 3.5 kPa), (700 K, 3.5 kPa), (700 K, 30 MPa)
+    * Table 35 -- psat at 300 / 500 K (the psat_MPa diag of the point ops)
+    * Table 36 -- Tsat at 0.1 / 1 / 10 MPa (the Tsat_K diag of the isobars)
+
+  Plus the working artefacts: the saturated-steam table 0.01-350 degC
+  (saturation.csv) and three isobars (h, s, v, cp vs T) crossing the
+  saturation line -- the crossing is ANNOUNCED in the log.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    // --- release Table 5: region 1 (compressed liquid) ---------------------
+    {
+        name   r1_T300_p3MPa;
+        type   steamTables;
+        point  { P 3 MPa; T 300 K; }
+    }
+    {
+        name   r1_T300_p80MPa;
+        type   steamTables;
+        point  { P 80 MPa; T 300 K; }
+    }
+    {
+        name   r1_T500_p3MPa;
+        type   steamTables;
+        point  { P 3 MPa; T 500 K; }
+    }
+
+    // --- release Table 15: region 2 (superheated vapour) -------------------
+    {
+        name   r2_T300_p3p5kPa;
+        type   steamTables;
+        point  { P 3.5 kPa; T 300 K; }
+    }
+    {
+        name   r2_T700_p3p5kPa;
+        type   steamTables;
+        point  { P 3.5 kPa; T 700 K; }
+    }
+    {
+        name   r2_T700_p30MPa;
+        type   steamTables;
+        point  { P 30 MPa; T 700 K; }
+    }
+
+    // --- the saturated-steam table (region 4 + regions 1/2 on the line) ----
+    {
+        name   satline;
+        type   steamTables;
+        saturation { from 0.01 degC; to 350 degC; n 50; }
+        output { file saturation.csv; }
+    }
+
+    // --- isobars; each Tsat crossing pins a release Table 36 value ---------
+    {
+        name   isobar_1bar;
+        type   steamTables;
+        isobar { P 1 bar; from 20 degC; to 300 degC; n 57; }
+        output { file isobar_1bar.csv; }
+    }
+    {
+        name   isobar_1MPa;
+        type   steamTables;
+        isobar { P 1 MPa; from 20 degC; to 250 degC; n 47; }
+        output { file isobar_1MPa.csv; }
+    }
+    {
+        name   isobar_10MPa;
+        type   steamTables;
+        isobar { P 10 MPa; from 20 degC; to 350 degC; n 67; }
+        output { file isobar_10MPa.csv; }
+    }
+);

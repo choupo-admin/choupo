@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: D-Glucose (C6H12O6, CAS 50-99-7)
+
+  A non-volatile non-electrolyte solute --- a canonical NF tutorial
+  case (sugar separation from water).  Glucose does not dissociate
+  in water; the van't Hoff factor is 1.
+
+  Typical industrial concentrations: <100 g/L for food / pharma
+  separations.  NF membranes partially reject glucose
+  (MW 180 ≈ NF270 cutoff of 200 Da), giving the partial-rejection
+  curve that pedagogically distinguishes NF from RO.
+\*---------------------------------------------------------------------------*/
+
+name           glucose;
+formula        C6H12O6;
+CAS            50-99-7;
+
+MW             180.16;         // g/mol
+nonvolatile    true;
+dissociation   1;              // non-electrolyte

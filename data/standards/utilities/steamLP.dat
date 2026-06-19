@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: low-pressure (LP) saturated steam, plant header.
+
+  Sources:
+    Sinnott & Towler, "Chemical Engineering Design" 6th ed., 2022, §6.5.3
+      (utility cost estimation, modern EU values).
+    Ulrich & Vasudevan, "Chemical Engineering Process Design and Economics"
+      2nd ed., 2004 (cost-coefficient methodology).
+
+  When to use:
+    The first-choice heating utility on any chemical plant.  Cheapest
+    steam level per GJ delivered.  Use whenever your duty fits below
+    ~120 C — reboilers of low-volatility columns, evaporators, jacket
+    heating of mild reactors, vessel pre-heat, tracing.
+\*---------------------------------------------------------------------------*/
+
+utility     steamLP;
+tier        heating;
+mechanism   condensation;             // releases Hvap on condensing in the consumer
+
+components  ( water );
+state       saturatedVapour;
+P           2.5 bar;                   // ≈ 1.5 barg, T_sat from Antoine
+T_in        400.3 K;                   // 127.1 C  (steam in)
+T_out       400.3 K;                   // 127.1 C  (condensate out, same T)
+
+// Energy delivered per kg condensed: latent heat of water at T_sat = 127 C
+dutyPerKg   2186000.0;                 // J/kg  (Hvap_water @ 2.5 bar, steam tables)
+
+cost        12.0;                      // €/GJ delivered
+costYear    2022;                      // reference price year
+description "Low-pressure saturated steam header (≈ 1.5 barg, T_sat ≈ 127 C)";

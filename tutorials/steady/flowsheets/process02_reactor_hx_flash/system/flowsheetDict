@@ -1,0 +1,60 @@
+/*---------------------------------------------------------------------------*\
+  Three-unit flowsheet — physically realistic operation:
+
+       feed (350 K)                       hotStream (~362 K)
+           │              reactorOut          │
+           ▼     CSTR     350 K, X=52%        ▼      flash
+       [reactor] ────► [heater] ────► [separator] ──┬─► vapProd
+                                                    └─► liqProd
+
+  The flash inherits T from its input stream (no explicit operation.T)
+  — propagation through the flowsheet.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            1.0 kmol/h;
+        T            350.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+    }
+}
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+
+        operation   { V_R 0.005; }
+        reaction    esterification_etac;
+    }
+
+    {
+        name        heater;
+        type        heater;
+        in          reactorOut;
+        outputs     ( hotStream );
+
+        // Credo-pure: hardware = Q.  T_out is a RESULT.  With reactorOut
+        // at ~350 K, F ~ 1 kmol/h, Cp_mix ~ 110 J/(mol*K), Q = 0.40 kW
+        // delivers ~ 12 K of heating (hotStream ~ 362 K), landing the
+        // stream mid-envelope for the downstream flash (~64 % liquid /
+        // 36 % vapour).  If the design required a specific T_out, a
+        // DesignSpec on $Q with target hotStream.T would replace this.
+        operation   { Q  0.40 kW; }
+    }
+
+    {
+        name        separator;
+        type        isothermalFlash;
+        in          hotStream;
+        outputs     ( liqProd  vapProd );
+
+        operation   { P 1.0 bar; }           // no T → inherits ~362 K from hotStream
+    }
+);

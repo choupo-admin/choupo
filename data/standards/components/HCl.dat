@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Hydrogen chloride  (HCl, CAS 7647-01-0)
+
+  Combustion product of Cl-bearing fuels (PVC, etc.); waste-incinerator
+  flue gas.  Strong acid in aqueous absorption.  The HCl + 1/2 O2 ->
+  1/2 Cl2 + H2O Deacon process is a Gibbs-equilibrium pedagogical case
+  (mildly exothermic, equilibrium-limited at high T).
+  Sources: constants cross-checked vs CoolProp 7.2.0 reference EOS (MIT);
+           gibbsFormation vs NASA TM-4513 (McBride-Gordon-Reno 1993).
+\*---------------------------------------------------------------------------*/
+
+name        HCl;
+formula     HCl;
+CAS         7647-01-0;
+
+// role solute (v0.28+): in a water solvent the K-value comes from
+// HenrysLaw/HCl-water.dat instead of Antoine/Raoult.
+role        solute;
+
+MW          36.461;            // kg/kmol
+Tc          324.55;             // K
+Pc          83.10;              // bar
+omega       0.133;              // [-]
+Tb          188.00;             // K
+HvapTb      16100;              // J/mol
+Vliq        3.05e-5;            // m^3/mol
+
+gibbsFormation
+{
+    dHf_298    -92310.0;        // J/mol  -- ideal-gas reference
+    s_298      186.90;          // J/(mol·K)
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.55090   905.530   -8.380);
+    Trange        (137  189);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (30.67   -7.201e-3   1.246e-5   -3.898e-9);
+    Trange        (250  1500);
+}

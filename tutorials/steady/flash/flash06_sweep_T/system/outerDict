@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  Sweep the flash TEMPERATURE (the spec the operator owns) and read the
+  vapour split + duty (results).  Credo-compliant: ONE knob moves, the
+  physics answers.
+
+      below ~368 K   subcooled feed   -> V/F = 0, Q < 0 territory
+      368..374 K     two-phase window -> V/F climbs the S-curve
+      above ~374 K   superheated      -> V/F = 1
+
+  `target` is a plain dict path into flowsheetDict --- ANY scalar a unit's
+  operation block carries can be swept the same way (that generality is
+  the point: the dict is the schema).
+\*---------------------------------------------------------------------------*/
+
+type        sweep;
+
+parameter
+{
+    target    units[0].operation.T;
+    range     ( 360.0  385.0 );            // K -- straddles bubble (~368) and dew (~374)
+    nPoints   26;                          // 1 K steps
+}
+
+responses
+(
+    flash01.V_over_F       // the S-curve: 0 below bubble, 1 above dew
+    flash01.Q_kW           // duty that holds each T (crosses 0 near the feed T)
+    flash01.F_alpha        // liquid product, kmol/h
+    flash01.F_beta         // vapour product, kmol/h
+);
+
+report
+{
+    format    csv;
+    file      sweep_flashT.csv;
+}

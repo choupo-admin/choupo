@@ -1,0 +1,23 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for Cl2 in liquid water.
+
+  Reference: Sander, R. (2015) Atmos. Chem. Phys. 15, 4399-4981.
+
+      H_xp(298)  ≈  9.3e6 Pa  =  93 bar           (moderately soluble)
+
+  Industrial relevance: water chlorination (Cl2 + H2O -> HClO + HCl),
+  chlor-alkali waste-gas scrubbing.  The reactive hydrolysis dominates
+  above ppm-level loadings; this pure-physical-solubility entry is
+  the dilute-limit baseline.
+
+      dH_diss(Cl2-water)  ≈  -23000 J/mol
+\*---------------------------------------------------------------------------*/
+
+solute      Cl2;
+solvent     water;
+
+model       vantHoff;
+H_ref       9.3e6 Pa;             // = 93 bar at 298.15 K
+T_ref       298.15 K;
+enthalpy    -23000  J/mol;
+Trange      ( 273  373 );

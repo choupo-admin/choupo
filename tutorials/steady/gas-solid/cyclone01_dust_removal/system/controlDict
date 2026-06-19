@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "Cyclone dust removal: silica from N2 (Lapple, D_c = 0.5 m)";
+verbosity     3;
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    profiles       { }
+    spreadsheet    { }
+}

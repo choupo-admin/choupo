@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Two-sector demo plant -- self-contained: 10 components, 10 NRTL pairs, 5 reactions, and TWO custom compiled unit ops (a reactor in SECTOR_R, a column in SECTOR_S). Zip the folder and send it.";
+verbosity     3;

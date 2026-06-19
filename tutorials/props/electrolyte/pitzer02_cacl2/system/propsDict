@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------*\
+  pitzer02_cacl2 --- the same Pitzer engine on a 2:1 electrolyte (Ca2+, 2 Cl-).
+  Parameters curated in data/standards/electrolyte/CaCl2.dat (Pitzer & Mayorga
+  1973).  gamma_pm dips below 0.45 then climbs steeply --- the divalent-cation
+  signature.  Valid to ~2 mol/kg with the 2-parameter set.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      gamma_cacl2;
+        type      pitzerActivity;
+        cation    Ca;
+        anion     Cl;
+        molality  { from 0.1; to 2.0; n 20; }
+        output    { file pitzer_cacl2.csv; }
+    }
+);

@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Methanol  (CH4O, CAS 67-56-1)
+\*---------------------------------------------------------------------------*/
+
+name        methanol;
+formula     CH4O;
+CAS         67-56-1;
+
+MW          32.042;
+Tc          512.64;
+Pc          80.97;
+omega       0.5650;
+Tb          337.85;
+HvapTb      35210;
+Vliq        4.070e-5;
+
+
+gibbsFormation
+{
+    dHf_298   -200940.0;        // J/mol  -- ideal-gas reference
+    s_298     239.880;         // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.20409   1581.341   -33.50);
+    Trange        (288  356);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (21.152   0.07092   2.587e-5   -2.852e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (81.0);
+    Trange        (280  340);
+}
+
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
+associationFactor  1.9;
+liquidViscosity
+{
+    andrade { A -11.5712; B 1207.4; }
+    vogel   { A -11.5712; B 1207.4; C 0.0; }
+}
+
+groups
+{
+    unifac ( { group CH3OH; count 1; } );
+    joback ( { group CH3; count 1; } { group OH; count 1; } );
+}

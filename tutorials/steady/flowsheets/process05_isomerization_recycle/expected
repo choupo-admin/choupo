@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  bottoms                F                0.000277777777778 1e-4
+stream  freshFeed              F                0.000277777777778 1e-4
+stream  mixed                  F                0.000363888888889 1e-4
+stream  reactorOut             F                0.000363888888889 1e-4
+stream  recycle                F                8.61111111111e-05 1e-4
+kpi     column                 B                0.000277777777778 1e-4
+kpi     column                 D                8.61111111111e-05 1e-4
+kpi     column                 L_rect           0.000172222222222 1e-4
+kpi     column                 L_strip          0.000536111111111 1e-4
+kpi     column                 R                2                1e-4
+kpi     column                 T_bottom         364.627086889    1e-4
+kpi     column                 T_top            350.366212451    1e-4
+kpi     column                 V_rect           0.000258333333333 1e-4
+kpi     column                 V_strip          0.000258333333333 1e-4
+kpi     column                 feedStage        6                1e-4
+kpi     column                 nStages          12               1e-4
+kpi     column                 x_B_HK           0.979802916209   1e-4
+kpi     column                 x_D_LK           0.510950420754   1e-4
+kpi     reactor                Da_kTau          5.4862730682     1e-4
+kpi     reactor                F_in_kmol_h      1.31             1e-4
+kpi     reactor                F_out_kmol_h     1.31             1e-4
+kpi     reactor                T                327.218368918    1e-4
+kpi     reactor                V_R              0.004            1e-4
+kpi     reactor                X_limiting       0.845828260779   1e-4
+kpi     reactor                k                0.0604856890672  1e-4
+kpi     reactor                tau_s            90.7036549109    1e-4
+kpi     reactor                xi_mol_per_s     0.272167476547   1e-4

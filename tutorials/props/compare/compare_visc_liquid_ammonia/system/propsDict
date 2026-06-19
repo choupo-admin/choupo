@@ -1,0 +1,27 @@
+/*---------------------------------------------------------------------------*\
+  compare_visc_liquid_ammonia
+  ===========================
+
+  Liquid-viscosity Andrade correlation for pure ammonia (NH3), 235-300 K.
+  Coefficients live in data/standards/components/NH3.dat (PROVISIONAL — a
+  2-point Andrade fit; see that file's provenance block).
+
+  Validation anchor: mu_NH3(liquid) @ 239.85 K (normal b.p., -33.3 degC)
+  is approx 0.255 mPa.s.  The Andrade curve here should pass through that
+  point (the cross-check in NH3.dat).  Ammonia is liquid only under pressure
+  in this T window; viscosity_liquid is a pure-T correlation, so the state P
+  is immaterial to the value.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        mu_andrade;
+        type        propertyScan1D;
+        vary        { variable T;  from 235 K;  to 300 K;  n 27; }
+        state       { P 1 bar;  composition { NH3 1.0; } }
+        thermo      { transport { liquidViscosity { model Andrade; } } }
+        properties  ( viscosity_liquid );
+        output      { file mu_andrade.csv; }
+    }
+);

@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  crystalliser03_pbe_size_independent / constant/crystallisation
+
+  Same kinetics as crystalliser02_msmpr -- the SOLVER changes (FVM vs MoM),
+  the physical kinetics do not.  With sizeFactor absent (= 0), G is size-
+  independent and the FVM result must reproduce the MSMPR exponential.
+
+      growth      G  = k_g (S-1)^g            [m/s]
+      nucleation  B0 = k_b (S-1)^b            [#/(m^3 s)]   (j = 0)
+\*---------------------------------------------------------------------------*/
+
+sugarKinetics
+{
+    growth
+    {
+        k_g          1.0e-7;     // m/s
+        g            1.0;
+        sizeFactor   0.0;        // m^-1; 0 -> G is constant in L
+    }
+    nucleation
+    {
+        k_b   1.0e9;             // #/(m^3 s)
+        b     2.0;
+        j     0.0;               // primary nucleation (FVM v0.79 restriction)
+    }
+}

@@ -1,0 +1,203 @@
+#!/bin/bash
+# =============================================================================
+#        \|/       C hemicals     | Open-source, glass-box chemical process simulator
+#       \\|//      H eat-transfer | https://choupo.org
+#      \\\|///     O perations    |
+#       \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+#        \|/       P roperties    | Licence: GPL-3.0-or-later
+#         |        O ptimization  |
+#        /|\                      |
+# -------------------------------------------------------------------------------
+# License
+#     This file is part of Choupo.
+#
+#     Choupo is free software: you can redistribute it and/or modify it
+#     under the terms of the GNU General Public License as published
+#     by the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+#
+#     Choupo is distributed in the hope that it will be useful, but WITHOUT
+#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+#     License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+#
+#     SPDX-License-Identifier: GPL-3.0-or-later
+#
+#     Credit and attribution: see AUTHORS
+#     Required legal notices:  see NOTICE
+# =============================================================================
+
+#---------------------------------------------------------------------------#
+#  runGui  --  one-shot launcher: start the Choupo Vite dev server and
+#              open it in a fresh Firefox window.
+#
+#  Sibling of runCase / runApplication / listCases / cleanCase.
+#
+#  Usage:
+#      bin/runGui                # default: 1400x900 windowed
+#      bin/runGui --fullscreen   # open in fullscreen (F11-style; Esc
+#                                # reverts to a normal window)
+#      bin/runGui --no-browser   # only start the dev server
+#      bin/runGui --kill         # stop the dev server (and any orphans)
+#
+#  Cleanup contract:
+#      * Re-running `bin/runGui` is idempotent: any previous dev server
+#        is killed before a new one starts (delegated to `bin/devGui`).
+#      * Firefox is launched with `--no-remote` against a dedicated
+#        Choupo profile (~/.cache/choupo-firefox/), so it opens as a
+#        genuinely separate Firefox window/process -- independent of
+#        the user's daily-browsing Firefox session.  Closing the
+#        window does NOT stop the dev server (it is meant to survive
+#        across edit/reload cycles).  Use `bin/runGui --kill` to stop
+#        the server.
+#---------------------------------------------------------------------------#
+
+set -e
+
+script_dir=$(dirname "$(readlink -f "$0")")
+URL="http://127.0.0.1:5173/"
+
+kill_prior() {
+    local prior
+    prior=$(pgrep -f 'node .*\.bin/vite' 2>/dev/null || true)
+    if [ -n "$prior" ]; then
+        echo "[runGui] stopping prior vite processes: $prior"
+        kill $prior 2>/dev/null || true
+        sleep 0.5
+        # Anyone stubborn after SIGTERM -- be emphatic, then wait again
+        # so the listening sockets are fully released before we restart.
+        local still
+        still=$(pgrep -f 'node .*\.bin/vite' 2>/dev/null || true)
+        if [ -n "$still" ]; then
+            kill -KILL $still 2>/dev/null || true
+            sleep 0.5
+        fi
+    fi
+}
+
+case "${1:-}" in
+    --kill|--stop)
+        pkill -f 'claudeBridge.mjs' 2>/dev/null && echo "[runGui] stopped agent bridge" || true
+        if pgrep -f 'node .*\.bin/vite' > /dev/null 2>&1; then
+            kill_prior
+            echo "[runGui] stopped"
+        else
+            echo "[runGui] nothing running"
+        fi
+        exit 0
+        ;;
+esac
+
+# 1. Kill any prior Vite synchronously BEFORE waiting on the new one.
+#    Doing this here (rather than letting devGui do it from inside its own
+#    background process) avoids a race where the readiness probe sees the
+#    OLD vite responding just before devGui kills it -- making the script
+#    falsely report "ready" then "ERROR" half a second apart.
+kill_prior
+
+# 2. Start fresh vite in the background.  devGui still does its own
+#    safety-net cleanup, but at this point there is nothing to clean up.
+LOG=/tmp/choupo-dev.log
+echo "[runGui] starting Vite dev server -> log $LOG"
+nohup "$script_dir/devGui" > "$LOG" 2>&1 &
+disown
+
+# 3. Wait up to 30 seconds for the server to come up.
+echo -n "[runGui] waiting for $URL "
+ready=0
+for i in $(seq 1 60); do
+    if curl -fs "$URL" -o /dev/null 2>&1; then
+        ready=1
+        echo ""
+        echo "[runGui] dev server ready"
+        break
+    fi
+    echo -n "."
+    sleep 0.5
+done
+
+if [ "$ready" = "0" ]; then
+    echo ""
+    echo "[runGui] ERROR: dev server failed to start; check $LOG"
+    tail -n 20 "$LOG" 2>/dev/null || true
+    exit 1
+fi
+
+# 2b. Start the Assistant bridge (the GUI's console runs `claude -c` through it).
+#     Best-effort: if `claude` is missing the console just shows how to start it.
+pkill -f 'claudeBridge.mjs' 2>/dev/null || true
+if command -v claude > /dev/null; then
+    BLOG=/tmp/choupo-agent-bridge.log
+    echo "[runGui] starting Assistant bridge -> log $BLOG"
+    nohup "$script_dir/agentBridge" > "$BLOG" 2>&1 &
+    disown
+fi
+
+# 3. Open the GUI in Firefox unless the user asked us not to.
+if [ "${1:-}" = "--no-browser" ]; then
+    echo "[runGui] dev server is at $URL  (Firefox not launched)"
+    exit 0
+fi
+
+# Dedicated Firefox profile under ~/.cache/choupo-firefox/ -- isolated
+# from the user's daily Firefox: own session, own cache, own (lack of)
+# bookmarks.  Combined with `--no-remote` this guarantees a genuinely
+# separate Firefox window/process, not a new tab in the running browser.
+PROFILE_DIR="${HOME}/.cache/choupo-firefox"
+FIRST_RUN=0
+if [ ! -d "$PROFILE_DIR" ]; then
+    mkdir -p "$PROFILE_DIR"
+    FIRST_RUN=1
+fi
+
+# First-run profile setup: skip welcome/onboarding noise and ensure
+# Esc exits fullscreen.
+if [ "$FIRST_RUN" = "1" ]; then
+    cat > "$PROFILE_DIR/user.js" <<'EOF'
+user_pref("browser.aboutwelcome.enabled", false);
+user_pref("browser.shell.checkDefaultBrowser", false);
+user_pref("browser.sessionstore.resume_from_crash", false);
+user_pref("browser.fullscreen.exit_on_esc", true);
+user_pref("datareporting.policy.firstRunURL", "");
+user_pref("browser.startup.homepage_override.mstone", "ignore");
+EOF
+fi
+
+# Window sizemode persistence lives in xulstore.json.
+#   default       -> "normal"     1400 x 900 windowed (only set on
+#                                  first run, so the user's later
+#                                  resize sticks)
+#   --fullscreen  -> "fullscreen" F11-style: chrome hidden but Esc
+#                                  reverts to a normal window
+#                                  (NOT --kiosk, which traps input)
+WANT_SIZEMODE='"normal"'
+if [ "${1:-}" = "--fullscreen" ]; then
+    WANT_SIZEMODE='"fullscreen"'
+fi
+
+if [ "$FIRST_RUN" = "1" ] || [ "${1:-}" = "--fullscreen" ]; then
+    cat > "$PROFILE_DIR/xulstore.json" <<EOF
+{
+  "chrome://browser/content/browser.xhtml": {
+    "main-window": {
+      "screenX": "100",
+      "screenY": "100",
+      "width": "1400",
+      "height": "900",
+      "sizemode": $WANT_SIZEMODE
+    }
+  }
+}
+EOF
+fi
+
+if command -v firefox > /dev/null; then
+    echo "[runGui] opening Firefox at $URL (profile $PROFILE_DIR)"
+    firefox --no-remote --profile "$PROFILE_DIR" --new-window "$URL" \
+        > /dev/null 2>&1 &
+    disown
+else
+    echo "[runGui] Firefox not on PATH -- open $URL in your browser of choice"
+fi
+
+echo "[runGui] dev server running in background; run \`bin/runGui --kill\` to stop"

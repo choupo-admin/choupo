@@ -1,0 +1,138 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  combined02_brayton_rankine_shaft  --  combined cycle, FULL Brayton with a
+  SHAFT-SPLIT node.
+  =================================================================
+
+  Upgrades combined01: a real COMPRESSOR now sits on the gas-turbine shaft.
+  The gas turbine's gross work drives the compressor AND the net goes to the
+  generator -- a SHAFT NODE that SUMS work inputs:
+
+      gasGenerator.W = gasTurbine.shaft (+gross)  +  compressor.shaft (-load)
+
+  (Both rotating units publish a `shaft` port with expression "-W_shaft";
+   the turbine's W_shaft<0 -> +, the compressor's W_shaft>0 -> -, so the
+   generator nets to the delivered power.)
+
+      airFuelFeed (1 bar) -> compressor (-> ~8 bar) -> gibbsCombustor (1300 K)
+        -> gasTurbine -> exhaust -> HRSG hot side -> flue
+                 |  \                                   |
+              (shaft) (shaft)                       (counter)
+                 |     \                                |
+            compressor  gasGenerator(net)          steamFeed -> heatedSteam
+                                                    -> steamTurbine -> steamGenerator
+                                                    -> steamCooler -> condensate
+
+  Bottom Rankine stays gas-only (phase-change boiler is the next step).
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    airFuelFeed
+    {
+        F            102.5 mol/s;
+        T            300.0 K;
+        P            1.0 bar;
+        state        superheatedVapour;
+        molarComposition { N2 0.771;  O2 0.205;  CH4 0.024; }
+    }
+    steamFeed
+    {
+        F            10.0 mol/s;
+        T            400.0 K;
+        P            5.0 bar;
+        state        superheatedVapour;
+        molarComposition { water 1.0; }
+    }
+}
+
+units
+(
+    {
+        name        compressor;
+        type        compressor;
+        in          airFuelFeed;
+        outputs     ( compressedFeed );
+        operation   { W_shaft 900.0 kW;  eta 0.82; }
+        energyOutputs
+        (
+            { name shaft;  kind work;  expression "-W_shaft";  unit W; }
+        );
+    }
+    {
+        name        gibbsCombustor;
+        type        gibbsReactor;
+        in          compressedFeed;
+        outputs     ( flueGasHot );
+        operation
+        {
+            T          1300.0 K;
+            P          8.0 bar;
+            elements   ( C  H  O  N );
+            species
+            (
+                { name  CH4;    atoms  ( 1  4  0  0 ); }
+                { name  O2;     atoms  ( 0  0  2  0 ); }
+                { name  N2;     atoms  ( 0  0  0  2 ); }
+                { name  CO2;    atoms  ( 1  0  2  0 ); }
+                { name  water;  atoms  ( 0  2  1  0 ); }
+            );
+        }
+    }
+    {
+        name        gasTurbine;
+        type        turbine;
+        in          flueGasHot;
+        outputs     ( gasTurbExhaust );
+        operation   { W_shaft -1500.0 kW;  eta 0.85; }
+        energyOutputs
+        (
+            { name shaft;  kind work;  expression "-W_shaft";  unit W; }
+        );
+    }
+    {
+        name        hrsg;
+        type        heatExchanger;
+        inputs      ( gasTurbExhaust  steamFeed );
+        outputs     ( gasFlueWarm     heatedSteam );
+        operation   { area 50.0 m2;  U 120.0 W/m2/K;  flow counter; }
+    }
+    {
+        name        steamTurbine;
+        type        turbine;
+        in          heatedSteam;
+        outputs     ( steamExhaust );
+        operation   { W_shaft -50.0 kW;  eta 0.85; }
+        energyOutputs
+        (
+            { name shaft;  kind work;  expression "-W_shaft";  unit W; }
+        );
+    }
+    {
+        name        steamCooler;
+        type        heater;
+        in          steamExhaust;
+        outputs     ( steamCondensate );
+        operation   { Q -45.0 kW; }
+    }
+
+    // --- SHAFT-SPLIT: the gas generator nets turbine(+) minus compressor(-) -
+    {
+        name        gasGenerator;
+        type        electricLoad;
+        operation   { eta 0.97; }
+        energyInputs
+        (
+            { from gasTurbine.shaft;   kind work;  target W_shaft; }   // +gross
+            { from compressor.shaft;   kind work;  target W_shaft; }   // -load (sum)
+        );
+    }
+    {
+        name        steamGenerator;
+        type        electricLoad;
+        operation   { eta 0.97; }
+        energyInputs
+        (
+            { from steamTurbine.shaft;  kind work;  target W_shaft; }
+        );
+    }
+);

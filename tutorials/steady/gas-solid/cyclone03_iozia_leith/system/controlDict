@@ -1,0 +1,10 @@
+application   choupoSolve;
+description   "Cyclone dust removal -- Iozia-Leith data-fitted logistic (beta)";
+verbosity     3;
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    profiles       { }
+    spreadsheet    { }
+}

@@ -1,0 +1,39 @@
+// ChemSep DECHEMA NRTL pair -- acetone-water (STAGED, review before promoting)
+// parameters{} = Choupo convention, converted from the cal/mol source{} below
+// (exact unit conversions, no fit). REVIEW the VALUES, then promote.
+components  ( acetone water );
+model       NRTL;
+
+parameters
+{
+    i           acetone;
+    j           water;
+    a_ij        0.0;
+    b_ij        409.693;   // K
+    a_ji        0.0;
+    b_ji        666.754;   // K
+    alpha       0.5663;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_water_acetone   1324.9767;   // CAS 7732-18-5 -> 67-64-1
+    A_acetone_water   814.1435;   // CAS 67-64-1 -> 7732-18-5
+    alpha               0.5663;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    origin        "ChemSep Database";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "nrtl.ipd";
+    sourceRecord  "7732-18-5/67-64-1";
+    importedBy    "chemsep_to_choupo";
+    importedOn    "2026-06-15";
+    reviewed      false;
+    model        "NRTL";
+    units        "cal/mol";
+    basis        "1 atm DECHEMA";
+}
