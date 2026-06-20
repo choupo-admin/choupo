@@ -116,18 +116,26 @@ export function normaliseStreamSpec(v: JsonDict): StreamSpec {
     (v["composition"]      as { [k: string]: number } | undefined);
   const molarFlows = v["molarFlows"] as { [k: string]: number } | undefined;
   const massFlows  = v["massFlows"]  as { [k: string]: number } | undefined;
+  // A stream scalar can arrive as a number OR a unit-bearing string ("900 K",
+  // "35 bar", "9800 kg/h"); scalarToSI handles both. Earlier this zeroed any
+  // string value (`: 0`), so the panel showed feed T/P = 0 (the bug Vitor hit).
+  const si0 = (x: unknown): number => {
+    const s = scalarToSI(x);
+    return Number.isFinite(s) ? s : 0;
+  };
   let comp: { [k: string]: number } = explicit ?? {};
-  let F = typeof v["F"] === "number" ? (v["F"] as number) : 0;
-  if (typeof v["F"] !== "number" && (molarFlows || massFlows)) {
+  let F = scalarToSI(v["F"]);            // finite if F was given (number or unit-string)
+  if (!Number.isFinite(F) && (molarFlows || massFlows)) {
     const flows = (molarFlows ?? massFlows)!;
     F = Object.values(flows).reduce((s, x) => s + x, 0);
     if (F > 0 && Object.keys(comp).length === 0)
       comp = Object.fromEntries(Object.entries(flows).map(([k, x]) => [k, x / F]));
   }
+  if (!Number.isFinite(F)) F = 0;
   return {
     F,
-    T: typeof v["T"] === "number" ? (v["T"] as number) : 0,
-    P: typeof v["P"] === "number" ? (v["P"] as number) : 0,
+    T: si0(v["T"]),
+    P: si0(v["P"]),
     composition: comp,
   } as StreamSpec;
 }
