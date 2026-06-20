@@ -76,6 +76,24 @@ import {
 } from "../case/operationSchemas.js";
 import type { StreamSpec, UnitSpec } from "../case/types.js";
 import type { JsonDict, JsonValue } from "../dict/index.js";
+import { parseScalarString } from "../dict/json.js";
+import { lookupUnit, affineToK } from "../dict/units.js";
+
+/** A flowsheetDict scalar can cross to JSON as a unit-bearing STRING
+ *  ("380 K", "3 bar") rather than a canonical-SI number -- json.ts keeps the
+ *  unit so the engine's units-mandatory readers are satisfied.  The panel
+ *  assumes SI when it formats, so convert here; plain numbers pass through.
+ *  (Without this, the feed's T/P render as 0 -- the bug Vitor spotted.) */
+function scalarToSI(v: unknown): number {
+  if (typeof v === "number") return v;
+  if (typeof v !== "string") return NaN;
+  const p = parseScalarString(v);
+  if (!p) { const n = Number(v); return Number.isFinite(n) ? n : NaN; }
+  if (!p.unit) return p.value;
+  const u = lookupUnit(p.unit);
+  if (!u) return p.value;
+  return u.affine ? affineToK(p.value, p.unit) : p.value * u.factor;
+}
 import {
   flowBasis,
   formatFlow,
@@ -418,8 +436,8 @@ function StreamDetails({
   const flowStr = massBasis
     ? (runStream?.F_mass !== undefined
         ? `${formatFlow(runStream.F_mass, prefs.flow)} ${prefs.flow}`
-      : `${formatFlow(stream.F, "kmol/h")} kmol/h`)
-  : `${formatFlow(stream.F, prefs.flow)} ${prefs.flow}`;
+      : `${formatFlow(scalarToSI(stream.F), "kmol/h")} kmol/h`)
+  : `${formatFlow(scalarToSI(stream.F), prefs.flow)} ${prefs.flow}`;
   // Phase: the feed's vapour fraction is a COMPUTED result (Duhem: T,P,z
   // fix it).  Show it post-run so the panel backs the node's TWO-PHASE
   // tag with the number, instead of being less informative than the tag.
@@ -466,11 +484,11 @@ function StreamDetails({
           { k: "F", v: flowStr },
           {
             k: "T",
-            v: `${formatTemperature(stream.T, prefs.temperature)} ${temperatureLabel(prefs.temperature)}`,
+            v: `${formatTemperature(scalarToSI(stream.T), prefs.temperature)} ${temperatureLabel(prefs.temperature)}`,
           },
           {
             k: "P",
-            v: `${formatPressure(stream.P, prefs.pressure)} ${prefs.pressure}`,
+            v: `${formatPressure(scalarToSI(stream.P), prefs.pressure)} ${prefs.pressure}`,
           },
           ...(runStream && vf !== undefined
             ? [{ k: "vf", v: `${formatSig(vf)}  (${PHASE_LABEL[classifyPhase(runStream)]})` }]
