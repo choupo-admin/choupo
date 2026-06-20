@@ -40,6 +40,7 @@ export {
   fromJson,
   valueToJson,
   valueFromJson,
+  parseScalarString,
   type JsonDict,
   type JsonValue,
 } from "./json.js";

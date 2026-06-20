@@ -58,6 +58,37 @@ export type JsonValue =
 
 export type JsonDict = { [k: string]: JsonValue };
 
+/**
+ * Parse a scalar string into its written value + optional unit.
+ *
+ *   "1.0 bar"  -> { value: 1.0, unit: "bar" }   (unit must be in the catalogue)
+ *   "1.5"      -> { value: 1.5 }                 (bare number, no unit)
+ *   "$press"   -> null                           (a reference, not a scalar)
+ *   "loose"    -> null                           (not numeric)
+ *
+ * The `value` is the number AS WRITTEN (not SI) -- callers that need SI apply
+ * the unit factor themselves (fromJson does this below).  This is the single
+ * shared reader for "<number> [unit]" strings, used by both the dict bridge and
+ * the variable/operation knob collectors, so a unit-bearing scalar is never
+ * silently dropped by a `typeof === "number"` test.
+ */
+export function parseScalarString(
+  s: string,
+): { value: number; unit?: string } | null {
+  const t = s.trim();
+  const withUnit = /^(-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)\s+(\S+)$/.exec(t);
+  if (withUnit) {
+    if (!lookupUnit(withUnit[2]!)) return null; // unknown unit -> not a scalar
+    const value = Number(withUnit[1]);
+    return Number.isFinite(value) ? { value, unit: withUnit[2]! } : null;
+  }
+  if (/^-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?$/.test(t)) {
+    const value = Number(t);
+    return Number.isFinite(value) ? { value } : null;
+  }
+  return null;
+}
+
 export function toJson(dict: Dict): JsonDict {
   const out: JsonDict = {};
   for (const { key, value } of dict.entries) {
@@ -111,18 +142,19 @@ export function valueFromJson(j: JsonValue, hint = ""): DictValue {
     // JSON bridge (e.g. exploreSynth's `totals { Ca 0.0021 mol/kg; }`):
     // build the scalar-with-unit exactly as the dict parser would, so
     // the serializer emits `Ca 0.0021 mol/kg;` instead of a quoted word.
-    const m = /^(-?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)\s+(\S+)$/.exec(j);
-    if (m) {
-      const spec = lookupUnit(m[2]!);
-      if (spec) {
-        const original = Number(m[1]);
-        return {
-          kind: "scalar",
-          value: spec.affine ? affineToK(original, m[2]!) : original * spec.factor,
-          unit: m[2]!,
-          originalValue: original,
-        };
-      }
+    // (Bare-number strings stay words, as before -- only the with-unit
+    // case becomes a scalar, so round-trip behaviour is unchanged.)
+    const parsed = parseScalarString(j);
+    if (parsed && parsed.unit !== undefined) {
+      const spec = lookupUnit(parsed.unit)!; // parseScalarString validated it
+      return {
+        kind: "scalar",
+        value: spec.affine
+          ? affineToK(parsed.value, parsed.unit)
+          : parsed.value * spec.factor,
+        unit: parsed.unit,
+        originalValue: parsed.value,
+      };
     }
     return { kind: "word", value: j };
   }

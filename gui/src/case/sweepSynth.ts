@@ -48,7 +48,7 @@ License
       response, written to report.file (default sweep_results.csv).
 \*---------------------------------------------------------------------------*/
 
-import { fromJson, serialize } from "../dict/index.js";
+import { fromJson, parseScalarString, serialize } from "../dict/index.js";
 import type { JsonDict, JsonValue } from "../dict/index.js";
 
 export interface SweepSpec {
@@ -62,12 +62,23 @@ export interface SweepSpec {
   responses: string[];
 }
 
-/** Numeric scalar keys of an operation block -- the sweepable knobs. */
+/** Numeric scalar keys of an operation block -- the sweepable knobs.
+ *  A knob is a finite number OR a "<number> <unit>" string (e.g. "1.01325 bar"):
+ *  unit-bearing scalars cross the JSON bridge as strings, so without the second
+ *  case they would be silently dropped (T, P, flows, areas all carry units). */
 export function numericOperationKeys(operation: JsonDict | undefined): string[] {
   if (!operation) return [];
   return Object.entries(operation)
-    .filter(([, v]) => typeof v === "number" && Number.isFinite(v))
+    .filter(([, v]) => isNumericKnob(v))
     .map(([k]) => k);
+}
+
+/** True if a JSON value is a usable numeric knob (bare number, or a parseable
+ *  "<number> [unit]" string). Shared by the operation- and variable-knob paths. */
+export function isNumericKnob(v: JsonValue): boolean {
+  if (typeof v === "number") return Number.isFinite(v);
+  if (typeof v === "string") return parseScalarString(v) !== null;
+  return false;
 }
 
 /**

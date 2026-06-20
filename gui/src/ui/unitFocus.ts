@@ -92,9 +92,14 @@ export function synthesizeUnitClone(
   const fs = caseFiles.flowsheet as {
     units?: Array<Record<string, unknown>>;
     streams?: Record<string, unknown>;
+    variables?: Record<string, unknown>;
   } | undefined;
   const u = fs?.units?.find((x) => x["name"] === name);
   if (!u) return null;
+
+  // The case's declared `variables {}` ride along so the clone can resolve a
+  // `$ref` standalone -- and so the What-if can surface them as named knobs.
+  const caseVars = fs?.variables;
 
   const inNames = asList(u["in"] ?? u["inputs"]);
   const outNames = asList(u["outputs"]);
@@ -113,12 +118,17 @@ export function synthesizeUnitClone(
   }
 
   // Resolve `$variable` operation values to their CONVERGED values from the
-  // run (e.g. a heater's `Q $Q_meoh`, set by the full case's DesignSpec).
+  // run (e.g. a heater's `Q $Q_meoh`, set by the full case's DesignSpec) --
+  // EXCEPT a `$ref` to a DECLARED variable, which we keep as a reference so the
+  // carried `variables {}` resolves it live (that is the What-if knob).
   const kpis = runResult?.kpis?.[name];
   const rawOp = (u["operation"] ?? {}) as Record<string, unknown>;
   const operation: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(rawOp)) {
-    operation[k] = typeof v === "string" && v.startsWith("$") && kpis && typeof kpis[k] === "number"
+    const ref = typeof v === "string" && v.startsWith("$") ? v.slice(1) : null;
+    const declared = ref !== null && caseVars
+      && Object.prototype.hasOwnProperty.call(caseVars, ref);
+    operation[k] = ref !== null && !declared && kpis && typeof kpis[k] === "number"
       ? kpis[k] : v;
   }
   const unit = { ...u, operation };
@@ -126,7 +136,11 @@ export function synthesizeUnitClone(
   const files: CaseFiles = {
     controlDict: caseFiles.controlDict,
     thermoPackage: caseFiles.thermoPackage,
-    flowsheet: { streams, units: [unit] } as unknown as CaseFiles["flowsheet"],
+    flowsheet: {
+      ...(caseVars ? { variables: caseVars } : {}),
+      streams,
+      units: [unit],
+    } as unknown as CaseFiles["flowsheet"],
   };
   if (caseFiles.reactions) files.reactions = caseFiles.reactions;
   if (caseFiles.extraFiles) files.extraFiles = { ...caseFiles.extraFiles };

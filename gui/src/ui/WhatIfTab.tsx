@@ -89,6 +89,7 @@ import {
   type OperationOverride,
 } from "../case/sweepSynth.js";
 import type { CaseFiles } from "../case/types.js";
+import { collectVariableKnobs } from "../case/variableKnobs.js";
 import type { JsonDict, JsonValue } from "../dict/index.js";
 import {
   formatFlow,
@@ -179,6 +180,46 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
     [effectiveOp, pristineOp],
   );
 
+  // --- Declared variables (variables {}) -- named knobs over the SAME clone --
+  // The knob targets the variable, not a raw operation path; the engine
+  // resolves every `$ref` to it on the next pass.  Edits are in the variable's
+  // DECLARED unit (kept simple: edit `press` in bar, write back "1.5 bar").
+  const flowsheetJson = stash.files?.flowsheet as JsonDict | undefined;
+  const variableKnobs = useMemo(
+    () => collectVariableKnobs(flowsheetJson),
+    [flowsheetJson],
+  );
+  const [varEdits, setVarEdits] = useState<{ [name: string]: number }>({});
+  const effectiveVars = useMemo<JsonValue | undefined>(() => {
+    const base = flowsheetJson?.["variables"];
+    if (base === undefined) return undefined;
+    if (Object.keys(varEdits).length === 0) return base;
+    const out: JsonDict = { ...(base as JsonDict) };
+    for (const [name, val] of Object.entries(varEdits)) {
+      const knob = variableKnobs.find((k) => k.name === name);
+      out[name] = knob?.unit ? `${val} ${knob.unit}` : val;
+    }
+    return out;
+  }, [flowsheetJson, varEdits, variableKnobs]);
+  const commitVarEdit = (name: string, displayV: number | "") => {
+    setVarEdits((e) => {
+      if (displayV === "" || !Number.isFinite(Number(displayV))) return e;
+      const v = Number(displayV);
+      const knob = variableKnobs.find((k) => k.name === name);
+      // Snap back to the declared value instead of minting a no-op edit.
+      if (knob && Math.abs(v - knob.value) <= 1e-9 * Math.max(1, Math.abs(knob.value))) {
+        const { [name]: _gone, ...rest } = e;
+        return rest;
+      }
+      return { ...e, [name]: v };
+    });
+  };
+  const resetVar = (name: string) =>
+    setVarEdits((e) => {
+      const { [name]: _gone, ...rest } = e;
+      return rest;
+    });
+
   const commitEdit = (key: string, displayV: number | "") => {
     setEdits((e) => {
       if (displayV === "" || !Number.isFinite(Number(displayV))) return e;
@@ -222,7 +263,11 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
     const unit0 = { ...units[0]!, operation: effectiveOp };
     const out: CaseFiles = {
       ...files,
-      flowsheet: { ...fs, units: [unit0] } as unknown as CaseFiles["flowsheet"],
+      flowsheet: {
+        ...fs,
+        ...(effectiveVars !== undefined ? { variables: effectiveVars } : {}),
+        units: [unit0],
+      } as unknown as CaseFiles["flowsheet"],
     };
     if (outerDict) out.outerDict = outerDict;
     return out;
@@ -366,6 +411,70 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
           <Alert color="yellow" variant="light" icon={<IconAlertTriangle size={14} />} p="xs">
             <Text size="xs">{mockWarning}</Text>
           </Alert>
+        )}
+
+        {/* Declared variables -- the named knobs from the case's variables {}
+            block.  Editing one retargets every $ref to it on the next Run. */}
+        {variableKnobs.length === 0 ? (
+          <Text size="xs" c="dimmed">
+            No declared variables.  Add{" "}
+            <Code>{"variables { press 1.0 bar; }"}</Code> at the top of{" "}
+            <code>flowsheetDict</code> and reference it with <Code>$press</Code>{" "}
+            to get a reusable, named knob you can vary here.
+          </Text>
+        ) : (
+          <Stack gap={6}>
+            <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
+              Declared variables ({"variables {}"})
+            </Text>
+            <Group gap="xs" align="flex-end" wrap="wrap">
+              {variableKnobs.map((k) => {
+                const edited = k.name in varEdits;
+                return (
+                  <Box key={k.name} w={172}>
+                    <NumberInput
+                      size="xs"
+                      label={`${k.name}${k.unit ? ` [${k.unit}]` : ""}`}
+                      description={k.usedBy.length
+                        ? `drives ${k.usedBy.join(", ")}`
+                        : "declared, unreferenced"}
+                      value={varEdits[k.name] ?? k.value}
+                      onChange={(v) => commitVarEdit(k.name, v === "" ? "" : Number(v))}
+                      hideControls
+                      styles={{
+                        input: {
+                          fontFamily: "JetBrains Mono, monospace",
+                          ...(edited ? { borderColor: "var(--mantine-color-cyan-5)" } : {}),
+                        },
+                      }}
+                    />
+                  </Box>
+                );
+              })}
+            </Group>
+            {Object.keys(varEdits).length > 0 && (
+              <Group gap={4} wrap="wrap">
+                {variableKnobs
+                  .filter((k) => k.name in varEdits)
+                  .map((k) => (
+                    <Badge
+                      key={k.name}
+                      variant="light"
+                      color="cyan"
+                      rightSection={
+                        <ActionIcon size={12} variant="transparent" color="cyan"
+                          onClick={() => resetVar(k.name)} aria-label={`reset ${k.name}`}>
+                          <IconX size={10} />
+                        </ActionIcon>
+                      }
+                    >
+                      {k.name}: {formatSig(k.value)} → {formatSig(varEdits[k.name]!)}
+                      {k.unit ? ` ${k.unit}` : ""}
+                    </Badge>
+                  ))}
+              </Group>
+            )}
+          </Stack>
         )}
 
         {/* Operation scalars -- editable, LOCAL to this tab. */}
