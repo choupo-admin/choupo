@@ -60,6 +60,13 @@ export interface SweepSpec {
   nPoints: number;
   /** Response keys in SweepDriver grammar (`unit.kpi` / `stream.field`). */
   responses: string[];
+  /** Full target path override (e.g. `variables.press`).  When absent, the
+   *  target is `units[0].operation.<key>` (the legacy operation-scalar knob). */
+  targetPath?: string;
+  /** Declared unit of the knob (e.g. `bar`).  When set, `from`/`to` are in
+   *  THIS unit and the range is emitted as unit-bearing strings so the engine's
+   *  units-mandatory reader (e.g. a `variables{}` entry) is satisfied. */
+  unit?: string;
 }
 
 /** Numeric scalar keys of an operation block -- the sweepable knobs.
@@ -129,8 +136,10 @@ export function synthesizeSweepOuterDict(spec: SweepSpec): JsonDict {
   return {
     type: "sweep",
     parameter: {
-      target: `units[0].operation.${spec.key}`,
-      range: [spec.from, spec.to],
+      target: spec.targetPath ?? `units[0].operation.${spec.key}`,
+      range: spec.unit
+        ? [`${spec.from} ${spec.unit}`, `${spec.to} ${spec.unit}`]
+        : [spec.from, spec.to],
       nPoints: spec.nPoints,
     },
     responses: spec.responses,

@@ -27,24 +27,25 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  What-if tab of the unit INTERNALS page (gui-credo §4 "The what-if lives in
-  the unit's INTERNALS page" -- Vítor's ruling 2026-06-12).  Manipulate where
-  you plot; one page per unit:
+  What-if tab of the unit INTERNALS page -- a KPI INSTRUMENT (forum verdict
+  2026-06-20).  One sentence: "Watch [KPI] as I turn [knob]".
 
-    - the honesty banner (inlets FROZEN from the parent run);
-    - the unit's operation numeric scalars as editable inputs -- LOCAL
-      component state over the synthesised 1-unit clone, never the store;
-    - Run: the WASM adapter solves the clone directly (the way the Explorer
-      does its standalone runs) and the outlet streams land right here;
-    - override chips ("T: 370 K → 375 K") with per-key reset to pristine;
-    - a one-knob SENSITIVITY SWEEP: synthesise the exact `outerDict { type
-      sweep; ... }` (sweepSynth, grammar: flash06_sweep_T), run it on the
-      clone, render the harvested CSV right here (CsvAutoPlot).
+    - the KPI HERO: pick one of the unit's own emitted KPIs (result.kpis),
+      its live current value shown big -- the objective you are driving;
+    - the KNOB: blank on open (no recommended pick); choose ONE dict scalar
+      -- a declared `variables{}` entry (offered first) or a raw operation
+      scalar -- the lever you turn;
+    - the CURVE: the chosen KPI vs the chosen knob over a range, the exact
+      one-knob `outerDict { type sweep; ... }` a student would author, run on
+      the 1-unit clone (CsvAutoPlot).  A "you are here" readout ties the live
+      number to the curve.  Non-converging points are HONEST GAPS, never
+      smoothed over (glass-box).
+    - <=2 knobs is a visualisation LAW (1 -> a curve, 2 -> a surface, 3 ->
+      unviewable).  Slice 1 ships ONE knob; the 2-knob surface is next.
 
-  Showing / copying the synthesised dicts is ALLOWED (glass-box: the screen
-  teaches the dict).  There is deliberately NO save / download / write-back
-  affordance of ANY kind: the what-if is transient by definition -- closing
-  the tab is the reset.
+  Showing / copying the synthesised dict is ALLOWED (the screen teaches the
+  dict).  There is deliberately NO save / write-back: the what-if is transient
+  -- closing the tab is the reset.
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -80,13 +81,10 @@ import { withDisplayPrefs } from "../case/applyPrefs.js";
 import { operationSchemaFor } from "../case/operationSchemas.js";
 import {
   numericOperationKeys,
-  operationOverrides,
-  overrideDictText,
   sweepCsvName,
   sweepOuterDictText,
-  sweepResponses,
   synthesizeSweepOuterDict,
-  type OperationOverride,
+  type SweepSpec,
 } from "../case/sweepSynth.js";
 import type { CaseFiles } from "../case/types.js";
 import { collectVariableKnobs } from "../case/variableKnobs.js";
@@ -108,9 +106,7 @@ import { CsvAutoPlot, dropPointColumn } from "./plotting/CsvAutoPlot.js";
 import { UnitStreamsTable } from "./UnitStreamsTable.js";
 
 // ---------------------------------------------------------------------------
-//  Display-unit helpers (schema-declared SI unit -> the Units menu choice).
-//  The same three convertible quantities as the selection card; everything
-//  else is raw SI in and out.
+//  Display-unit helpers (schema-declared SI unit <-> the Units menu choice).
 // ---------------------------------------------------------------------------
 
 function unitLabelFor(siUnit: string | undefined, prefs: DisplayPrefs): string | undefined {
@@ -134,17 +130,24 @@ function displayToSi(siUnit: string | undefined, display: number, prefs: Display
   return display;
 }
 
-function fmtScalar(siUnit: string | undefined, v: JsonValue, prefs: DisplayPrefs): string {
-  if (typeof v === "number") {
-    const d = siToDisplay(siUnit, v, prefs);
-    const label = unitLabelFor(siUnit, prefs);
-    return `${formatSig(d)}${label ? ` ${label}` : ""}`;
-  }
-  return String(v);
-}
-
 const asList = (v: unknown): string[] =>
   Array.isArray(v) ? (v as string[]).map(String) : v === undefined || v === null ? [] : [String(v)];
+
+/** Count sweep rows whose KPI cell is not a finite number -- the points where
+ *  the clone did NOT converge.  They render as gaps; we caption them so the
+ *  hole is explained, never silent (glass-box). */
+function countHoles(csv: string): { holes: number; total: number } {
+  const lines = csv.trim().split("\n").filter((l) => l.trim().length > 0);
+  if (lines.length < 2) return { holes: 0, total: 0 };
+  let holes = 0;
+  const rows = lines.slice(1);
+  for (const r of rows) {
+    const cols = r.split(",");
+    const last = cols[cols.length - 1]?.trim() ?? "";
+    if (!Number.isFinite(Number(last))) holes++;
+  }
+  return { holes, total: rows.length };
+}
 
 /** The slice of the internals stash the What-if needs.  `files` is the
  *  synthesised 1-unit clone; absent only on stashes written by older builds. */
@@ -154,9 +157,25 @@ export interface WhatIfStash {
   unit: Record<string, unknown>;
   /** Pristine operation block ($vars already resolved at pop-out time). */
   operation: Record<string, unknown>;
-  /** This unit's KPIs from the parent run (sweep responses pre-seed). */
+  /** This unit's KPIs from the parent run -- the watchable objectives. */
   kpis: Record<string, number>;
   files?: CaseFiles;
+}
+
+/** One lever the student can turn: a declared variable or an operation scalar. */
+interface Knob {
+  id: string;
+  kind: "var" | "op";
+  key: string;
+  label: string;
+  /** Declared unit (var): the value/range are in THIS unit. */
+  unit?: string;
+  /** Schema SI unit (op): the value is SI, shown in the Units-menu unit. */
+  siUnit?: string;
+  /** Current value -- var: in `unit`; op: SI. */
+  current: number;
+  /** Full sweep target path (var only); op uses units[0].operation.<key>. */
+  targetPath?: string;
 }
 
 export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
@@ -166,94 +185,113 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
   const fieldUnit = (key: string) => schema?.fields.find((f) => f.key === key)?.unit;
   const fieldTitle = (key: string) => schema?.fields.find((f) => f.key === key)?.title;
 
-  // --- The clone + the LOCAL edits over it (never the store) ---------------
   const pristineOp = useMemo(() => (stash.operation ?? {}) as JsonDict, [stash.operation]);
   const numericKeys = useMemo(() => numericOperationKeys(pristineOp), [pristineOp]);
-  // SI values, keyed by operation key; only keys that differ from pristine.
-  const [edits, setEdits] = useState<{ [k: string]: number }>({});
-  const effectiveOp: JsonDict = useMemo(
-    () => ({ ...pristineOp, ...edits }),
-    [pristineOp, edits],
-  );
-  const overrides = useMemo(
-    () => operationOverrides(effectiveOp, pristineOp),
-    [effectiveOp, pristineOp],
+  const flowsheetJson = stash.files?.flowsheet as JsonDict | undefined;
+  const variableKnobs = useMemo(() => collectVariableKnobs(flowsheetJson), [flowsheetJson]);
+
+  // The levers: declared variables FIRST (the author's blessed knobs), then
+  // raw operation scalars.  Works on shipped cases with no variables{}.
+  const knobs = useMemo<Knob[]>(
+    () => [
+      ...variableKnobs.map((v) => ({
+        id: `var:${v.name}`,
+        kind: "var" as const,
+        key: v.name,
+        label: `${v.name}${v.unit ? ` [${v.unit}]` : ""}  (variable)`,
+        unit: v.unit,
+        current: v.value,
+        targetPath: `variables.${v.name}`,
+      })),
+      ...numericKeys.map((k) => ({
+        id: `op:${k}`,
+        kind: "op" as const,
+        key: k,
+        label: fieldTitle(k) ? `${fieldTitle(k)} (${k})` : k,
+        siUnit: fieldUnit(k),
+        current: pristineOp[k] as number,
+      })),
+    ],
+    // fieldTitle/fieldUnit read the stable schema; deps are the real inputs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [variableKnobs, numericKeys, pristineOp],
   );
 
-  // --- Declared variables (variables {}) -- named knobs over the SAME clone --
-  // The knob targets the variable, not a raw operation path; the engine
-  // resolves every `$ref` to it on the next pass.  Edits are in the variable's
-  // DECLARED unit (kept simple: edit `press` in bar, write back "1.5 bar").
-  const flowsheetJson = stash.files?.flowsheet as JsonDict | undefined;
-  const variableKnobs = useMemo(
-    () => collectVariableKnobs(flowsheetJson),
-    [flowsheetJson],
-  );
-  const [varEdits, setVarEdits] = useState<{ [name: string]: number }>({});
+  const [knobId, setKnobId] = useState<string | null>(null);
+  const knob = useMemo(() => knobs.find((k) => k.id === knobId) ?? null, [knobs, knobId]);
+
+  const knobDisplay = (k: Knob): number =>
+    k.kind === "op" ? siToDisplay(k.siUnit, k.current, prefs) : k.current;
+  const knobUnitLabel = (k: Knob): string | undefined =>
+    k.kind === "op" ? unitLabelFor(k.siUnit, prefs) : k.unit;
+
+  // The single turned value (display terms; "" = sit at current) + the range.
+  const [knobValue, setKnobValue] = useState<number | "">("");
+  const [range, setRange] = useState<{ from: number | ""; to: number | "" }>({ from: "", to: "" });
+  const [nPoints, setNPoints] = useState<number | "">(21);
+
+  const pickKnob = (id: string | null) => {
+    setKnobId(id);
+    setKnobValue("");
+    const k = knobs.find((x) => x.id === id);
+    if (!k) { setRange({ from: "", to: "" }); return; }
+    const cur = knobDisplay(k);
+    setRange({ from: Number(formatSig(0.8 * cur)), to: Number(formatSig(1.2 * cur)) });
+  };
+
+  // The clone with the ONE knob edit applied (op -> operation[key]; var ->
+  // variables[name]).  No edit -> pristine (the current point).
+  const effectiveOp = useMemo<JsonDict>(() => {
+    if (knob?.kind === "op" && knobValue !== "" && Number.isFinite(Number(knobValue))) {
+      const si = displayToSi(knob.siUnit, Number(knobValue), prefs);
+      if (Number.isFinite(si)) return { ...pristineOp, [knob.key]: si };
+    }
+    return pristineOp;
+  }, [knob, knobValue, pristineOp, prefs]);
+
   const effectiveVars = useMemo<JsonValue | undefined>(() => {
     const base = flowsheetJson?.["variables"];
     if (base === undefined) return undefined;
-    if (Object.keys(varEdits).length === 0) return base;
-    const out: JsonDict = { ...(base as JsonDict) };
-    for (const [name, val] of Object.entries(varEdits)) {
-      const knob = variableKnobs.find((k) => k.name === name);
-      out[name] = knob?.unit ? `${val} ${knob.unit}` : val;
+    if (knob?.kind === "var" && knobValue !== "" && Number.isFinite(Number(knobValue))) {
+      const out: JsonDict = { ...(base as JsonDict) };
+      out[knob.key] = knob.unit ? `${Number(knobValue)} ${knob.unit}` : Number(knobValue);
+      return out;
     }
-    return out;
-  }, [flowsheetJson, varEdits, variableKnobs]);
-  const commitVarEdit = (name: string, displayV: number | "") => {
-    setVarEdits((e) => {
-      if (displayV === "" || !Number.isFinite(Number(displayV))) return e;
-      const v = Number(displayV);
-      const knob = variableKnobs.find((k) => k.name === name);
-      // Snap back to the declared value instead of minting a no-op edit.
-      if (knob && Math.abs(v - knob.value) <= 1e-9 * Math.max(1, Math.abs(knob.value))) {
-        const { [name]: _gone, ...rest } = e;
-        return rest;
-      }
-      return { ...e, [name]: v };
-    });
-  };
-  const resetVar = (name: string) =>
-    setVarEdits((e) => {
-      const { [name]: _gone, ...rest } = e;
-      return rest;
-    });
+    return base;
+  }, [flowsheetJson, knob, knobValue]);
 
-  const commitEdit = (key: string, displayV: number | "") => {
-    setEdits((e) => {
-      if (displayV === "" || !Number.isFinite(Number(displayV))) return e;
-      const si = displayToSi(fieldUnit(key), Number(displayV), prefs);
-      const p = pristineOp[key];
-      // Display-unit round-trips are lossy in the last ulp; snap back to
-      // pristine instead of minting a phantom override chip.
-      if (typeof p === "number" && Math.abs(si - p) <= 1e-9 * Math.max(1, Math.abs(p))) {
-        const { [key]: _gone, ...rest } = e;
-        return rest;
-      }
-      return { ...e, [key]: si };
-    });
-  };
-  const resetOne = (o: OperationOverride) => {
-    setEdits((e) => {
-      const { [o.key]: _gone, ...rest } = e;
-      return rest;
-    });
-  };
+  const knobEdited = knobValue !== "" && knob !== null
+    && Math.abs(Number(knobValue) - knobDisplay(knob)) > 1e-9 * Math.max(1, Math.abs(knobDisplay(knob)));
+
+  // --- KPI hero ------------------------------------------------------------
+  const [lastKpis, setLastKpis] = useState<{ [k: string]: number } | null>(null);
+  const kpiMap = useMemo(() => lastKpis ?? stash.kpis ?? {}, [lastKpis, stash.kpis]);
+  const kpiOptions = useMemo(
+    () =>
+      Object.entries(kpiMap)
+        .filter(([k, v]) => typeof v === "number" && Number.isFinite(v) && k !== knob?.key)
+        .map(([k]) => ({ value: k, label: k })),
+    [kpiMap, knob],
+  );
+  const [kpiKey, setKpiKey] = useState<string | null>(null);
+  // Drop the watched KPI if the knob choice makes it invalid (e.g. KPI == knob).
+  useEffect(() => {
+    if (kpiKey && !kpiOptions.some((o) => o.value === kpiKey)) setKpiKey(null);
+  }, [kpiOptions, kpiKey]);
+  const kpiCurrent = kpiKey ? kpiMap[kpiKey] : undefined;
 
   // --- Run plumbing (own adapter calls, the Explorer pattern) --------------
   const [busy, setBusy] = useState<null | "run" | "sweep">(null);
   const [runError, setRunError] = useState<string | null>(null);
   const [mockWarning, setMockWarning] = useState<string | null>(null);
   const [outStreams, setOutStreams] = useState<StreamResult[] | null>(null);
-  const [lastKpis, setLastKpis] = useState<{ [k: string]: number } | null>(null);
+  const [dictOpen, setDictOpen] = useState(false);
+  const [sweep, setSweep] = useState<{ key: string; csv: string } | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   useEffect(() => () => abortRef.current?.abort(), []);
 
   const outNames = useMemo(() => asList(stash.unit["outputs"]), [stash.unit]);
 
-  /** The clone with this tab's edits applied to units[0].operation (and an
-   *  optional one-shot outerDict for the sweep). */
   const buildFiles = (outerDict?: JsonDict): CaseFiles | null => {
     const files = stash.files;
     if (!files) return null;
@@ -315,50 +353,31 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
     setLastKpis(result.kpis?.[stash.name] ?? null);
   };
 
-  // --- Sweep controls --------------------------------------------------------
-  const [sweepKey, setSweepKey] = useState<string | null>(numericKeys[0] ?? null);
-  // Range state in DISPLAY units (what the inputs show); converted to SI at
-  // synthesis time, so the dict always carries raw SI.
-  const seedRange = (key: string | null): { from: number | ""; to: number | "" } => {
-    if (!key) return { from: "", to: "" };
-    const si = effectiveOp[key];
-    if (typeof si !== "number") return { from: "", to: "" };
-    const u = fieldUnit(key);
-    // Default current ±20 % -- taken in SI (the physical scale).
-    return {
-      from: Number(formatSig(siToDisplay(u, 0.8 * si, prefs))),
-      to: Number(formatSig(siToDisplay(u, 1.2 * si, prefs))),
-    };
-  };
-  const [range, setRange] = useState<{ from: number | ""; to: number | "" }>(
-    () => seedRange(numericKeys[0] ?? null),
-  );
-  const [nPoints, setNPoints] = useState<number | "">(21);
-  const [dictOpen, setDictOpen] = useState(false);
-  const [sweep, setSweep] = useState<{ key: string; csv: string } | null>(null);
-
-  const pickKey = (key: string | null) => {
-    setSweepKey(key);
-    setRange(seedRange(key));
-  };
-
-  // The synthesised spec (null while the form is incomplete).
-  const spec = useMemo(() => {
-    if (!sweepKey || range.from === "" || range.to === "" || nPoints === "") return null;
-    const u = fieldUnit(sweepKey);
-    const fromSi = displayToSi(u, Number(range.from), prefs);
-    const toSi = displayToSi(u, Number(range.to), prefs);
+  // --- The synthesised one-knob sweep (null while the form is incomplete) ---
+  const spec = useMemo<SweepSpec | null>(() => {
+    if (!knob || !kpiKey || range.from === "" || range.to === "" || nPoints === "") return null;
     const n = Math.max(2, Math.round(Number(nPoints)));
-    if (!Number.isFinite(fromSi) || !Number.isFinite(toSi) || fromSi === toSi) return null;
+    let from: number, to: number, unit: string | undefined, targetPath: string | undefined;
+    if (knob.kind === "op") {
+      from = displayToSi(knob.siUnit, Number(range.from), prefs);
+      to = displayToSi(knob.siUnit, Number(range.to), prefs);
+    } else {
+      from = Number(range.from);
+      to = Number(range.to);
+      unit = knob.unit;
+      targetPath = knob.targetPath;
+    }
+    if (!Number.isFinite(from) || !Number.isFinite(to) || from === to) return null;
     return {
-      key: sweepKey,
-      from: fromSi,
-      to: toSi,
+      key: knob.key,
+      from,
+      to,
       nPoints: n,
-      responses: sweepResponses(stash.name, lastKpis ?? stash.kpis, outNames),
+      unit,
+      targetPath,
+      responses: [`${stash.name}.${kpiKey}`],
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sweepKey, range, nPoints, prefs, lastKpis, stash.kpis, stash.name, outNames]);
+  }, [knob, kpiKey, range, nPoints, prefs, stash.name]);
 
   const dictText = spec ? sweepOuterDictText(spec) : "";
 
@@ -367,14 +386,12 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
     const result = await solveClone("sweep", synthesizeSweepOuterDict(spec));
     if (!result) return;
     const wanted = sweepCsvName(spec.key);
-    const csv = result.csvFiles?.[wanted]
-      ?? Object.values(result.csvFiles ?? {})[0];
-    if (csv) {
-      setSweep({ key: spec.key, csv });
-    } else {
-      setRunError("The sweep finished but wrote no CSV — see the outer driver's grammar.");
-    }
+    const csv = result.csvFiles?.[wanted] ?? Object.values(result.csvFiles ?? {})[0];
+    if (csv) setSweep({ key: spec.key, csv });
+    else setRunError("The sweep finished but wrote no CSV — see the outer driver's grammar.");
   };
+
+  const holes = sweep ? countHoles(sweep.csv) : { holes: 0, total: 0 };
 
   // Legacy stash (pre What-if): no clone to run.  Honest refusal.
   if (!stash.files) {
@@ -391,9 +408,12 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
     );
   }
 
+  const hasKnobs = knobs.length > 0;
+  const knobLabel = knob ? knobUnitLabel(knob) : undefined;
+
   return (
     <ScrollArea h="100%" type="auto">
-      <Stack gap={10} m="md" maw={860}>
+      <Stack gap={12} m="md" maw={860}>
         {/* Honesty banner -- mandatory (gui-credo §4). */}
         <Alert color="cyan" variant="light" icon={<IconInfoCircle size={14} />} p="xs">
           <Text size="xs">
@@ -401,9 +421,9 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
             controllers, heat-links) is NOT in the loop.
           </Text>
           <Text size="xs" c="dimmed" mt={2}>
-            Transient by definition: nothing here writes back to the case —
-            closing this tab is the reset.  To keep a change, edit{" "}
-            <code>system/flowsheetDict</code> on disk (copy the override below).
+            Transient by definition: nothing here writes back — closing this tab
+            is the reset.  To keep a change, edit{" "}
+            <code>system/flowsheetDict</code> on disk.
           </Text>
         </Alert>
 
@@ -413,272 +433,221 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
           </Alert>
         )}
 
-        {/* Declared variables -- the named knobs from the case's variables {}
-            block.  Editing one retargets every $ref to it on the next Run. */}
-        {variableKnobs.length === 0 ? (
-          <Text size="xs" c="dimmed">
-            No declared variables.  Add{" "}
-            <Code>{"variables { press 1.0 bar; }"}</Code> at the top of{" "}
-            <code>flowsheetDict</code> and reference it with <Code>$press</Code>{" "}
-            to get a reusable, named knob you can vary here.
-          </Text>
-        ) : (
-          <Stack gap={6}>
-            <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
-              Declared variables ({"variables {}"})
-            </Text>
-            <Group gap="xs" align="flex-end" wrap="wrap">
-              {variableKnobs.map((k) => {
-                const edited = k.name in varEdits;
-                return (
-                  <Box key={k.name} w={172}>
-                    <NumberInput
-                      size="xs"
-                      label={`${k.name}${k.unit ? ` [${k.unit}]` : ""}`}
-                      description={k.usedBy.length
-                        ? `drives ${k.usedBy.join(", ")}`
-                        : "declared, unreferenced"}
-                      value={varEdits[k.name] ?? k.value}
-                      onChange={(v) => commitVarEdit(k.name, v === "" ? "" : Number(v))}
-                      hideControls
-                      styles={{
-                        input: {
-                          fontFamily: "JetBrains Mono, monospace",
-                          ...(edited ? { borderColor: "var(--mantine-color-cyan-5)" } : {}),
-                        },
-                      }}
-                    />
-                  </Box>
-                );
-              })}
-            </Group>
-            {Object.keys(varEdits).length > 0 && (
-              <Group gap={4} wrap="wrap">
-                {variableKnobs
-                  .filter((k) => k.name in varEdits)
-                  .map((k) => (
-                    <Badge
-                      key={k.name}
-                      variant="light"
-                      color="cyan"
-                      rightSection={
-                        <ActionIcon size={12} variant="transparent" color="cyan"
-                          onClick={() => resetVar(k.name)} aria-label={`reset ${k.name}`}>
-                          <IconX size={10} />
-                        </ActionIcon>
-                      }
-                    >
-                      {k.name}: {formatSig(k.value)} → {formatSig(varEdits[k.name]!)}
-                      {k.unit ? ` ${k.unit}` : ""}
-                    </Badge>
-                  ))}
-              </Group>
-            )}
-          </Stack>
-        )}
-
-        {/* Operation scalars -- editable, LOCAL to this tab. */}
-        {numericKeys.length === 0 ? (
+        {!hasKnobs ? (
           <Text size="sm" c="dimmed">
-            This unit's operation block has no numeric scalars to vary.
+            This unit exposes no scalar to turn.  Declare a knob —{" "}
+            <Code>{"variables { press 1.0 bar; }"}</Code> at the top of{" "}
+            <code>flowsheetDict</code>, referenced with <Code>$press</Code> — to
+            watch a KPI against it here.
           </Text>
         ) : (
-          <Stack gap={6}>
-            <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
-              Operation (this tab only)
-            </Text>
-            <Group gap="xs" align="flex-end" wrap="wrap">
-              {numericKeys.map((k) => {
-                const u = fieldUnit(k);
-                const label = unitLabelFor(u, prefs);
-                return (
-                  <NumberInput
-                    key={k}
-                    size="xs"
-                    w={150}
-                    label={`${fieldTitle(k) ?? k}${label ? ` [${label}]` : ""}`}
-                    description={k}
-                    value={siToDisplay(u, (effectiveOp[k] as number), prefs)}
-                    onChange={(v) => commitEdit(k, v === "" ? "" : Number(v))}
-                    hideControls
-                    styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }}
-                  />
-                );
-              })}
+          <Stack gap={10}>
+            {/* THE INSTRUMENT: watch a KPI as you turn a knob. */}
+            <Group gap="sm" align="flex-end" wrap="wrap">
+              <Select
+                size="sm"
+                w={260}
+                label="Watch"
+                placeholder="pick a KPI to drive"
+                data={kpiOptions}
+                value={kpiKey}
+                onChange={setKpiKey}
+                searchable
+                nothingFoundMessage="no numeric KPIs on this unit"
+              />
+              {kpiKey && (
+                <Text size="xl" fw={700} ff="JetBrains Mono, monospace" c="accent">
+                  {kpiCurrent !== undefined ? formatSig(kpiCurrent) : "—"}
+                </Text>
+              )}
             </Group>
-          </Stack>
-        )}
 
-        {/* Active overrides as chips, per-key reset to pristine. */}
-        {overrides.length > 0 && (
-          <Stack gap={4}>
-            <Group gap={4} wrap="wrap">
-              {overrides.map((o) => (
-                <Badge
-                  key={o.key}
-                  variant="light"
-                  color="orange"
+            <Group gap="sm" align="flex-end" wrap="wrap">
+              <Select
+                size="sm"
+                w={260}
+                label="as I turn"
+                placeholder="+ add knob"
+                data={knobs.map((k) => ({ value: k.id, label: k.label }))}
+                value={knobId}
+                onChange={pickKnob}
+                searchable
+              />
+              {knob && (
+                <NumberInput
                   size="sm"
-                  radius="sm"
+                  w={150}
+                  label={`current${knobLabel ? ` [${knobLabel}]` : ""}`}
+                  value={knobValue === "" ? knobDisplay(knob) : knobValue}
+                  onChange={(v) => setKnobValue(v === "" ? "" : Number(v))}
+                  hideControls
+                  styles={{
+                    input: {
+                      fontFamily: "JetBrains Mono, monospace",
+                      ...(knobEdited ? { borderColor: "var(--mantine-color-cyan-5)" } : {}),
+                    },
+                  }}
+                />
+              )}
+              <Tooltip
+                label="≤2 knobs so the response stays a curve or a surface — the 2-knob surface is coming next"
+                withArrow multiline w={240}
+              >
+                <Button size="sm" variant="default" disabled>
+                  + add knob
+                </Button>
+              </Tooltip>
+            </Group>
+
+            {/* The override chip + the substitution line (glass-box). */}
+            {knob && knobEdited && (
+              <Group gap={6} wrap="wrap" align="center">
+                <Badge
+                  variant="light" color="orange" size="sm" radius="sm"
                   styles={{ root: { textTransform: "none" } }}
                   rightSection={
-                    <Tooltip label="Reset to the parent-run value" withArrow>
-                      <ActionIcon
-                        size={12}
-                        variant="transparent"
-                        color="orange"
-                        onClick={() => resetOne(o)}
-                      >
-                        <IconX size={10} />
-                      </ActionIcon>
-                    </Tooltip>
+                    <ActionIcon size={12} variant="transparent" color="orange"
+                      onClick={() => setKnobValue("")} aria-label="reset knob">
+                      <IconX size={10} />
+                    </ActionIcon>
                   }
                 >
-                  {fieldTitle(o.key) ?? o.key}:{" "}
-                  {fmtScalar(fieldUnit(o.key), o.from, prefs)} →{" "}
-                  {fmtScalar(fieldUnit(o.key), o.to, prefs)}
+                  {knob.key}: {formatSig(knobDisplay(knob))} → {formatSig(Number(knobValue))}
+                  {knobLabel ? ` ${knobLabel}` : ""}
                 </Badge>
-              ))}
-            </Group>
-            <Group gap="xs">
-              <Text size="xs" c="dimmed">
-                Run solves the clone with these values.
-              </Text>
-              <CopyButton value={overrideDictText(overrides)}>
-                {({ copied, copy }) => (
-                  <Button size="compact-xs" variant="subtle" color="accent" onClick={copy}>
-                    {copied ? "Copied ✓" : "Copy override"}
-                  </Button>
-                )}
-              </CopyButton>
-            </Group>
-          </Stack>
-        )}
-
-        <Group gap="xs">
-          <Button
-            size="xs"
-            color="accent"
-            leftSection={<IconPlayerPlay size={13} />}
-            loading={busy === "run"}
-            disabled={busy !== null}
-            onClick={() => void runOnce()}
-          >
-            Run
-          </Button>
-          <Text size="xs" c="dimmed">
-            Solves the 1-unit clone in this tab (WASM) — the parent case is untouched.
-          </Text>
-        </Group>
-
-        {runError && (
-          <Alert color="red" variant="light" icon={<IconAlertTriangle size={14} />} p="xs">
-            <Code block style={{ fontSize: 10.5, whiteSpace: "pre-wrap" }}>{runError}</Code>
-          </Alert>
-        )}
-
-        {outStreams && (
-          <Stack gap={4}>
-            <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
-              Outlet streams (this what-if run)
-            </Text>
-            {outStreams.length === 0 ? (
-              <Text size="sm" c="dimmed">The run produced no outlet streams.</Text>
-            ) : (
-              <UnitStreamsTable groups={[{ dir: "out", streams: outStreams }]} />
+                <Text size="xs" c="dimmed" ff="JetBrains Mono, monospace">
+                  {knob.targetPath ?? `units[0].operation.${knob.key}`} ={" "}
+                  {formatSig(knobDisplay(knob))} → {formatSig(Number(knobValue))}
+                </Text>
+              </Group>
             )}
-          </Stack>
-        )}
 
-        {/* Sensitivity sweep -- one knob, the exact outerDict a student would
-            author; the harvested CSV plots RIGHT HERE. */}
-        {numericKeys.length > 0 && (
-          <>
+            <Group gap="xs">
+              <Button
+                size="xs"
+                color="accent"
+                leftSection={<IconPlayerPlay size={13} />}
+                loading={busy === "run"}
+                disabled={busy !== null}
+                onClick={() => void runOnce()}
+              >
+                Run this point
+              </Button>
+              <Text size="xs" c="dimmed">
+                Solves the 1-unit clone (WASM) — the parent case is untouched.
+              </Text>
+            </Group>
+
+            {runError && (
+              <Alert color="red" variant="light" icon={<IconAlertTriangle size={14} />} p="xs">
+                <Code block style={{ fontSize: 10.5, whiteSpace: "pre-wrap" }}>{runError}</Code>
+              </Alert>
+            )}
+
+            {outStreams && (
+              <Stack gap={4}>
+                <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
+                  Outlet streams (this point)
+                </Text>
+                {outStreams.length === 0 ? (
+                  <Text size="sm" c="dimmed">The run produced no outlet streams.</Text>
+                ) : (
+                  <UnitStreamsTable groups={[{ dir: "out", streams: outStreams }]} />
+                )}
+              </Stack>
+            )}
+
+            {/* THE CURVE: KPI vs knob over a range -- the response shape. */}
             <Divider my={2} />
             <Stack gap={6}>
-              <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Sensitivity sweep</Text>
-              <Select
-                size="xs"
-                maw={320}
-                label="Sweep one operation scalar"
-                data={numericKeys.map((k) => ({
-                  value: k,
-                  label: fieldTitle(k) ? `${fieldTitle(k)} (${k})` : k,
-                }))}
-                value={sweepKey}
-                onChange={pickKey}
-                allowDeselect={false}
-              />
-              <Group gap="xs" maw={480} grow>
-                <NumberInput
-                  size="xs"
-                  label={`From${unitLabelFor(fieldUnit(sweepKey ?? ""), prefs) ? ` [${unitLabelFor(fieldUnit(sweepKey ?? ""), prefs)}]` : ""}`}
-                  value={range.from}
-                  onChange={(v) => setRange((r) => ({ ...r, from: v === "" ? "" : Number(v) }))}
-                  hideControls
-                  styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }}
-                />
-                <NumberInput
-                  size="xs"
-                  label={`To${unitLabelFor(fieldUnit(sweepKey ?? ""), prefs) ? ` [${unitLabelFor(fieldUnit(sweepKey ?? ""), prefs)}]` : ""}`}
-                  value={range.to}
-                  onChange={(v) => setRange((r) => ({ ...r, to: v === "" ? "" : Number(v) }))}
-                  hideControls
-                  styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }}
-                />
-                <NumberInput
-                  size="xs"
-                  label="Points"
-                  value={nPoints}
-                  onChange={(v) => setNPoints(v === "" ? "" : Number(v))}
-                  min={2}
-                  hideControls
-                  styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }}
-                />
-              </Group>
-              <Group gap="xs">
-                <Button
-                  size="xs"
-                  color="accent"
-                  leftSection={<IconChartLine size={13} />}
-                  loading={busy === "sweep"}
-                  disabled={!spec || busy !== null}
-                  onClick={() => void runSweep()}
-                >
-                  Run sweep
-                </Button>
-                <CopyButton value={dictText}>
-                  {({ copied, copy }) => (
-                    <Button size="xs" variant="light" color="accent"
-                      disabled={!spec} onClick={copy}>
-                      {copied ? "Copied ✓" : "Copy outerDict"}
-                    </Button>
-                  )}
-                </CopyButton>
-                <Button size="compact-xs" variant="subtle"
-                  disabled={!spec}
-                  onClick={() => setDictOpen((o) => !o)}>
-                  {dictOpen ? "Hide dict" : "Show dict"}
-                </Button>
-              </Group>
-              <Text size="10px" c="dimmed">
-                One-shot: the synthesised <code>outerDict</code> drives that run
-                only.  To keep it, copy the dict into{" "}
-                <code>system/outerDict</code> of a case on disk.
+              <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
+                Response — {kpiKey ?? "pick a KPI"} vs {knob ? knob.key : "pick a knob"}
               </Text>
-              <Collapse in={dictOpen && !!spec}>
-                <Code block style={{ fontSize: 10.5 }}>{dictText}</Code>
-              </Collapse>
-              {sweep && (
-                <Box h={380}>
-                  <CsvAutoPlot
-                    csv={dropPointColumn(sweep.csv)}
-                    filename={sweepCsvName(sweep.key)}
-                  />
-                </Box>
+              {!kpiKey || !knob ? (
+                <Text size="sm" c="dimmed">
+                  Pick a KPI to watch and a knob to turn — the curve draws here.
+                </Text>
+              ) : (
+                <>
+                  <Group gap="xs" maw={520} grow>
+                    <NumberInput
+                      size="xs"
+                      label={`From${knobLabel ? ` [${knobLabel}]` : ""}`}
+                      value={range.from}
+                      onChange={(v) => setRange((r) => ({ ...r, from: v === "" ? "" : Number(v) }))}
+                      hideControls
+                      styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }}
+                    />
+                    <NumberInput
+                      size="xs"
+                      label={`To${knobLabel ? ` [${knobLabel}]` : ""}`}
+                      value={range.to}
+                      onChange={(v) => setRange((r) => ({ ...r, to: v === "" ? "" : Number(v) }))}
+                      hideControls
+                      styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }}
+                    />
+                    <NumberInput
+                      size="xs"
+                      label="Points"
+                      value={nPoints}
+                      onChange={(v) => setNPoints(v === "" ? "" : Number(v))}
+                      min={2}
+                      hideControls
+                      styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }}
+                    />
+                  </Group>
+                  <Group gap="xs">
+                    <Button
+                      size="xs"
+                      color="accent"
+                      leftSection={<IconChartLine size={13} />}
+                      loading={busy === "sweep"}
+                      disabled={!spec || busy !== null}
+                      onClick={() => void runSweep()}
+                    >
+                      Draw the curve
+                    </Button>
+                    <CopyButton value={dictText}>
+                      {({ copied, copy }) => (
+                        <Button size="xs" variant="light" color="accent"
+                          disabled={!spec} onClick={copy}>
+                          {copied ? "Copied ✓" : "Copy outerDict"}
+                        </Button>
+                      )}
+                    </CopyButton>
+                    <Button size="compact-xs" variant="subtle"
+                      disabled={!spec} onClick={() => setDictOpen((o) => !o)}>
+                      {dictOpen ? "Hide dict" : "Show dict"}
+                    </Button>
+                  </Group>
+                  <Collapse in={dictOpen && !!spec}>
+                    <Code block style={{ fontSize: 10.5 }}>{dictText}</Code>
+                  </Collapse>
+                  {kpiCurrent !== undefined && (
+                    <Text size="xs" c="dimmed">
+                      You are here: <b>{knob.key}</b> = {formatSig(knobDisplay(knob))}
+                      {knobLabel ? ` ${knobLabel}` : ""} →{" "}
+                      <b>{kpiKey}</b> = {formatSig(kpiCurrent)}
+                    </Text>
+                  )}
+                  {sweep && holes.holes > 0 && (
+                    <Text size="xs" c="orange.6">
+                      {holes.holes} of {holes.total} points did not converge — shown as gaps,
+                      not interpolated (a gap is an honest "no steady state here").
+                    </Text>
+                  )}
+                  {sweep && (
+                    <Box h={380}>
+                      <CsvAutoPlot
+                        csv={dropPointColumn(sweep.csv)}
+                        filename={sweepCsvName(sweep.key)}
+                      />
+                    </Box>
+                  )}
+                </>
               )}
             </Stack>
-          </>
+          </Stack>
         )}
       </Stack>
     </ScrollArea>
