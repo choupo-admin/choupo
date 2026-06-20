@@ -53,6 +53,7 @@ import {
   Alert,
   Badge,
   Group,
+  NumberInput,
   Progress,
   ScrollArea,
   Stack,
@@ -61,7 +62,7 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { IconAlertTriangle, IconExternalLink, IconInfoCircle } from "@tabler/icons-react";
+import { IconAlertTriangle, IconExternalLink, IconInfoCircle, IconX } from "@tabler/icons-react";
 
 import { popOutFileHtml } from "./filePopOut.js";
 import { classifyPhase, PHASE_LABEL } from "./plotting/palette.js";
@@ -264,7 +265,9 @@ function OpDetails({ op }: { op: JsonDict }) {
         </Group>
       </Stack>
       {schema ? (
-        <SchemaSection schema={schema} values={operation} />
+        // A choupoProps operation is not a flowsheet unit (no units[] index);
+        // -1 makes every field read-only (tinkering is a flowsheet affordance).
+        <SchemaSection schema={schema} values={operation} unitIndex={-1} />
       ) : (
         <KeyValueTable
           title="Block"
@@ -285,6 +288,12 @@ function UnitDetails({
   unit: UnitSpec;
   kpis: { [k: string]: number } | undefined;
 }) {
+  // The unit's index in flowsheet.units -- the address the scratch overlay +
+  // the engine's setScalarAtPath speak ("units[2].operation.refluxRatio").
+  const unitIndex = useStore((s) => {
+    const us = (s.caseFiles.flowsheet?.["units"] ?? []) as JsonDict[];
+    return us.findIndex((u) => u["name"] === unit.name);
+  });
   const schema = operationSchemaFor(unit.type);
   // A unit may legitimately carry NO `operation` block (a mixer has no
   // knobs; a flash separator inherits T,P).  The dict then omits the key,
@@ -340,6 +349,7 @@ function UnitDetails({
         <SchemaSection
           schema={schema}
           values={operation}
+          unitIndex={unitIndex}
         />
       ) : (
         <KeyValueTable
@@ -380,6 +390,15 @@ function StreamDetails({
   const runStream = useStore((s) =>
     runName ? findRunStream(s.runResult?.streams, runName) : undefined,
   );
+  // The RAW declared stream dict (authored unit strings like "370 K"), if this
+  // is a top-level feed in flowsheet.streams.  Present => the feed's F/T/P are
+  // TINKERABLE (transient, never written); absent (an internal/computed stream)
+  // => read-only.  The path the scratch overlay addresses is streams.<name>.<k>.
+  const rawStream = useStore((s) => {
+    const streams = s.caseFiles.flowsheet?.["streams"] as JsonDict | undefined;
+    const r = streams?.[name];
+    return r && typeof r === "object" && !Array.isArray(r) ? (r as JsonDict) : undefined;
+  });
   const prefs = useStore((s) => s.displayPrefs);
   // Model-boundary audit entry for this stream (producer/consumer on
   // different thermo models): shown as one row so the audit is visible at
@@ -478,23 +497,66 @@ function StreamDetails({
         </Group>
         <Text fw={600}>{name}</Text>
       </Stack>
-      <KeyValueTable
-        title="Conditions"
-        rows={[
-          { k: "F", v: flowStr },
-          {
-            k: "T",
-            v: `${formatTemperature(scalarToSI(stream.T), prefs.temperature)} ${temperatureLabel(prefs.temperature)}`,
-          },
-          {
-            k: "P",
-            v: `${formatPressure(scalarToSI(stream.P), prefs.pressure)} ${prefs.pressure}`,
-          },
-          ...(runStream && vf !== undefined
-            ? [{ k: "vf", v: `${formatSig(vf)}  (${PHASE_LABEL[classifyPhase(runStream)]})` }]
-            : []),
-        ]}
-      />
+      {rawStream ? (
+        // A declared feed: F/T/P are tinkerable (only scalar fields the dict
+        // authored; a flow given as molarFlows/massFlows is not a single
+        // scalar, so it stays read-only).  vf is always a computed read-out.
+        <Stack gap={6}>
+          <Text size="xs" c="dimmed" tt="uppercase" fw={600}>Conditions</Text>
+          <Table withRowBorders={false} striped="even" verticalSpacing={6}>
+            <Table.Tbody>
+              {(["F", "T", "P"] as const).map((k) => {
+                const raw = rawStream[k];
+                const tinkerable = typeof raw === "number" || (typeof raw === "string" && parseScalarString(raw) !== null);
+                const readOnly =
+                  k === "F" ? flowStr
+                  : k === "T" ? `${formatTemperature(scalarToSI(stream!.T), prefs.temperature)} ${temperatureLabel(prefs.temperature)}`
+                  : `${formatPressure(scalarToSI(stream!.P), prefs.pressure)} ${prefs.pressure}`;
+                return (
+                  <Table.Tr key={k}>
+                    <Table.Td style={{ width: "30%" }}>
+                      <Text size="sm" ff="monospace">{k}</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      {tinkerable
+                        ? <ScratchField path={`streams.${name}.${k}`} raw={raw} label={`${name}.${k}`} />
+                        : <Text size="sm" ff="monospace">{readOnly}</Text>}
+                    </Table.Td>
+                  </Table.Tr>
+                );
+              })}
+              {runStream && vf !== undefined && (
+                <Table.Tr>
+                  <Table.Td><Text size="sm" ff="monospace">vf</Text></Table.Td>
+                  <Table.Td>
+                    <Text size="sm" ff="monospace">
+                      {formatSig(vf)}  ({PHASE_LABEL[classifyPhase(runStream)]})
+                    </Text>
+                  </Table.Td>
+                </Table.Tr>
+              )}
+            </Table.Tbody>
+          </Table>
+        </Stack>
+      ) : (
+        <KeyValueTable
+          title="Conditions"
+          rows={[
+            { k: "F", v: flowStr },
+            {
+              k: "T",
+              v: `${formatTemperature(scalarToSI(stream.T), prefs.temperature)} ${temperatureLabel(prefs.temperature)}`,
+            },
+            {
+              k: "P",
+              v: `${formatPressure(scalarToSI(stream.P), prefs.pressure)} ${prefs.pressure}`,
+            },
+            ...(runStream && vf !== undefined
+              ? [{ k: "vf", v: `${formatSig(vf)}  (${PHASE_LABEL[classifyPhase(runStream)]})` }]
+              : []),
+          ]}
+        />
+      )}
       {boundary && (
         <Text size="xs" ff="monospace" c={boundary.refused ? "red.5" : "dimmed"}>
           {boundary.refused
@@ -538,9 +600,11 @@ function StreamDetails({
 function SchemaSection({
   schema,
   values,
+  unitIndex,
 }: {
   schema: OperationSchema;
   values: JsonDict;
+  unitIndex: number;
 }) {
   const prefs = useStore((s) => s.displayPrefs);
   return (
@@ -561,6 +625,7 @@ function SchemaSection({
               field={f}
               value={values[f.key]}
               prefs={prefs}
+              unitIndex={unitIndex}
             />
           ))}
         </Table.Tbody>
@@ -573,10 +638,12 @@ function SchemaRow({
   field,
   value,
   prefs,
+  unitIndex,
 }: {
   field: OperationField;
   value: JsonValue | undefined;
   prefs: DisplayPrefs;
+  unitIndex: number;
 }) {
   const flowVars = useStore(
     (s) => (s.caseFiles.flowsheet as { variables?: JsonDict } | undefined)?.variables);
@@ -600,12 +667,15 @@ function SchemaRow({
     }
   }
 
-  // Every row is READ-ONLY (Vítor's ruling 2026-06-12, gui-credo §4): the
-  // parent flowsheet stays a pure viewer -- the selection card never edits,
-  // in any case, focus tabs included.  Parameter manipulation lives in the
-  // unit's INTERNALS page (double-click) under its What-if tab; the case
-  // itself is edited as dicts on disk.
   const isReference = typeof value === "string" && value.startsWith("$");
+  // TINKERING (Vítor 2026-06-21, overruling the 2026-06-12 read-only ruling):
+  // a CONTINUOUS operation scalar may be grabbed and changed directly here --
+  // transient, never written to disk (see ScratchField + the scratch overlay).
+  // NOT editable: a $ref (it belongs to variables{}); an INTEGER field
+  // (nStages/feedStage are STRUCTURAL -- they reallocate the MESH, not a value
+  // perturbation, so they stay display-only this slice); a missing field.
+  const editable = !missing && !isReference && !field.integer && unitIndex >= 0;
+  const scratchPath = `units[${unitIndex}].operation.${field.key}`;
 
   return (
     <Table.Tr>
@@ -649,6 +719,8 @@ function SchemaRow({
               </Text>
             </Tooltip>
           </Group>
+        ) : editable ? (
+          <ScratchField path={scratchPath} raw={value} label={field.key} />
         ) : (
           <Text size="sm" ff="monospace">{displayValue}</Text>
         )}
@@ -748,6 +820,79 @@ function KpisSection({ kpis }: { kpis: { [k: string]: number } }) {
         </Table.Tbody>
       </Table>
     </Stack>
+  );
+}
+
+// --- Transient tinkering ----------------------------------------------------
+// A numeric scalar the student may grab and change directly in the Properties
+// box.  The edit is TRANSIENT (lives in the scratch overlay, applied at Run,
+// never written to disk) and LOUD (a yellow amber state + a from->to diff +
+// a per-field reset).  We edit in the scalar's AUTHORED unit (the unit string
+// the dict used, e.g. "K"/"bar"/"kmol/h", or none for a dimensionless knob like
+// a reflux ratio) -- honest to the file, and no display-pref round-trip to get
+// wrong.  `raw` is the value as it sits in the parsed dict (a number, or a
+// "<n> <unit>" string).
+function ScratchField({
+  path,
+  raw,
+  label,
+}: {
+  path: string;
+  raw: JsonValue | undefined;
+  label: string;
+}) {
+  const scratch = useStore((s) => s.scratchEdits[path]);
+  const setScratch = useStore((s) => s.setScratch);
+  const clearScratch = useStore((s) => s.clearScratch);
+
+  // The on-disk value + its authored unit.  A "$ref" or a non-scalar is not
+  // tinkerable -- the caller should not have rendered a field, but guard.
+  const parsed =
+    typeof raw === "number" ? { value: raw, unit: undefined as string | undefined }
+    : typeof raw === "string" ? parseScalarString(raw)
+    : null;
+  if (!parsed) {
+    return <Text size="sm" ff="monospace">{String(raw ?? "—")}</Text>;
+  }
+  const unit = parsed.unit;
+  const from = parsed.value;
+  const current = scratch ? scratch.value : from;
+  const edited = scratch !== undefined;
+
+  return (
+    <Group gap={6} wrap="nowrap" align="center">
+      <NumberInput
+        size="xs"
+        value={current}
+        // Let the student type freely; commit to the overlay on change.  A
+        // blank field is ignored (no silent 0); the value is whatever they
+        // type, never clamped.
+        onChange={(v) => {
+          const n = typeof v === "number" ? v : parseFloat(String(v));
+          if (!Number.isFinite(n)) return;
+          setScratch(path, { value: n, from, unit, label });
+        }}
+        styles={{ input: { width: 96, fontFamily: "monospace", textAlign: "right",
+          ...(edited ? { borderColor: "var(--mantine-color-yellow-6)" } : {}) } }}
+        hideControls
+      />
+      {unit && <Text size="xs" c="dimmed">{unit}</Text>}
+      {edited && (
+        <Group gap={2} wrap="nowrap" align="center">
+          <Tooltip label={`on disk: ${from}${unit ? ` ${unit}` : ""} — tinkered, not saved`} withArrow>
+            <Text size="10px" c="yellow.6" ff="monospace" style={{ whiteSpace: "nowrap" }}>
+              ● {from} →
+            </Text>
+          </Tooltip>
+          <Tooltip label="Reset this field to the disk value" withArrow>
+            <ActionIcon size="xs" variant="subtle" color="gray"
+              onClick={() => clearScratch(path)} aria-label="Reset field">
+              <IconX size={11} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
+      )}
+    </Group>
   );
 }
 

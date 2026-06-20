@@ -41,6 +41,7 @@ import {
   IconAlertTriangle,
   IconCircleCheck,
   IconDeviceFloppy,
+  IconFlask,
   IconRestore,
   IconRobot,
   IconClipboardCopy,
@@ -49,6 +50,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { resolveAdapter, type AdapterKind } from "../adapters/index.js";
 import { withDisplayPrefs } from "../case/applyPrefs.js";
+import { applyScratch } from "../case/scratch.js";
 import { downloadFlowsheetDict } from "../case/saveCase.js";
 import { caseHasUserCode, USER_CODE_MSG } from "../case/userCode.js";
 import { TUTORIALS } from "../cases/tutorials.js";
@@ -68,6 +70,7 @@ export function TopBar() {
   const appendLog = useStore((s) => s.appendLog);
   const caseFiles = useStore((s) => s.caseFiles);
   const pristineCaseFiles = useStore((s) => s.pristineCaseFiles);
+  const scratchEdits = useStore((s) => s.scratchEdits);
   const tutorialName = useStore((s) => s.tutorialName);
   const displayPrefs = useStore((s) => s.displayPrefs);
   const discardEdits = useStore((s) => s.discardEdits);
@@ -90,6 +93,10 @@ export function TopBar() {
     () => JSON.stringify(caseFiles) !== JSON.stringify(pristineCaseFiles),
     [caseFiles, pristineCaseFiles],
   );
+  // Transient tinkering: numbers grabbed in the Properties box, applied at Run,
+  // never written to disk.  A loud amber badge announces them; Reset clears.
+  const clearAllScratch = useStore((s) => s.clearAllScratch);
+  const scratchCount = Object.keys(scratchEdits).length;
 
   const [activeKind, setActiveKind] = useState<AdapterKind | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -152,9 +159,13 @@ export function TopBar() {
     abortRef.current = ctl;
 
     try {
+      // Apply the TRANSIENT tinkering overlay (numbers grabbed in the
+      // Properties box) onto the case JSON for THIS run only -- the dicts on
+      // disk are untouched (scratch lives in the store, never written).
+      const tinkered = applyScratch(caseFiles, scratchEdits);
       // Splice the active display preset into controlDict.units so
       // the solver log honours the same choice as the StreamsTable.
-      const filesForRun = withDisplayPrefs(caseFiles, displayPrefs);
+      const filesForRun = withDisplayPrefs(tinkered, displayPrefs);
       const result = await resolved.adapter.run(filesForRun,
         appendLog,
         ctl.signal,
@@ -237,6 +248,7 @@ export function TopBar() {
   }, [
     runDisabled,
     caseFiles,
+    scratchEdits,
     displayPrefs,
     startRun,
     appendLog,
@@ -310,9 +322,33 @@ export function TopBar() {
             </Badge>
           </Tooltip>
         )}
+        {scratchCount > 0 && (
+          <Tooltip
+            label="Tinkering: numbers you changed in the Properties box.  They are applied when you Run, but NOT saved to disk — the file is still the source of truth.  Reset (↺) returns to the file."
+            multiline w={320} withArrow
+          >
+            <Badge size="xs" radius="sm" variant="filled" color="yellow"
+              leftSection={<IconFlask size={11} />}>
+              tinkering — {scratchCount} unsaved {scratchCount === 1 ? "edit" : "edits"}
+            </Badge>
+          </Tooltip>
+        )}
       </Group>
 
       <Group gap="xs" wrap="nowrap" style={{ flexShrink: 0 }}>
+        {scratchCount > 0 && (
+          <Tooltip label="Reset tinkering — drop all unsaved Properties-box edits and return to the file" withArrow>
+            <ActionIcon
+              variant="subtle"
+              size="sm"
+              color="yellow"
+              onClick={clearAllScratch}
+              aria-label="Reset tinkering"
+            >
+              <IconRestore size={14} />
+            </ActionIcon>
+          </Tooltip>
+        )}
         {hasEdits && (
           <>
             <Tooltip label="Discard edits (revert to disk)" withArrow>

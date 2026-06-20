@@ -36,6 +36,7 @@ import { create } from "zustand";
 import { tutorialByName } from "../cases/tutorials.js";
 import { readCaseAt } from "../cases/workspace.js";
 import type { CaseFiles } from "../case/types.js";
+import type { ScratchEdit, ScratchEdits } from "../case/scratch.js";
 import type { JsonDict } from "../dict/json.js";
 import type { RunResult } from "../adapters/SolverAdapter.js";
 import {
@@ -255,6 +256,18 @@ interface AppState {
   hasEdits: () => boolean;
   /** Reset caseFiles back to pristineCaseFiles. */
   discardEdits: () => void;
+
+  // ----- Transient tinkering (the scratch overlay) -----------
+  /** In-memory edits of numeric scalars grabbed in the Properties box, keyed
+   *  by dict path (e.g. "streams.feed.T").  TRANSIENT + LOUD: never written to
+   *  disk; Run applies them; Reset clears them.  See case/scratch.ts. */
+  scratchEdits: ScratchEdits;
+  /** Set (or clear, if value===from) the tinkered value at `path`. */
+  setScratch: (path: string, edit: ScratchEdit) => void;
+  /** Drop one tinkered field (the per-field × reset). */
+  clearScratch: (path: string) => void;
+  /** Drop ALL tinkered fields (Reset all -> back to disk). */
+  clearAllScratch: () => void;
 }
 
 // Boot case: a `?case=<name>` in the URL (set when a sector/unit is opened in
@@ -363,6 +376,7 @@ export const useStore = create<AppState>((set, get) => ({
   bootExpired: initial.expired ?? null,
   caseFiles: initial.files,
   pristineCaseFiles: initial.files,
+  scratchEdits: {},
   navStack: [{ name: initial.name, files: initial.files }],
   navPos: 0,
   showIntro: false,
@@ -410,6 +424,7 @@ export const useStore = create<AppState>((set, get) => ({
         tutorialName: t.name, caseFiles: t.files, pristineCaseFiles: t.files,
         showIntro: false,
         selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null,
+      scratchEdits: {},
       };
     }),
   goForward: () =>
@@ -422,6 +437,7 @@ export const useStore = create<AppState>((set, get) => ({
         tutorialName: t.name, caseFiles: t.files, pristineCaseFiles: t.files,
         showIntro: false,
         selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null,
+      scratchEdits: {},
       };
     }),
   goHome: () =>
@@ -430,6 +446,7 @@ export const useStore = create<AppState>((set, get) => ({
       pristineCaseFiles: BLANK_CASE.files,
       showIntro: false,
       selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null,
+      scratchEdits: {},
       activeWorkspace: null,
     })),
   dismissIntro: () => {
@@ -473,6 +490,7 @@ export const useStore = create<AppState>((set, get) => ({
       tutorialName: `external:${displayName}`,
       caseFiles: files,
       pristineCaseFiles: files,
+      scratchEdits: {},
       showIntro: false, // a user's own case -> straight in, no intro
       selectedNodeId: null,
       runStatus: "idle",
@@ -487,6 +505,7 @@ export const useStore = create<AppState>((set, get) => ({
       tutorialName: `local:${dir}`,
       caseFiles: files,
       pristineCaseFiles: files,
+      scratchEdits: {},
       showIntro: false, // a user's own case -> straight in, no intro
       selectedNodeId: null,
       runStatus: "idle",
@@ -496,8 +515,11 @@ export const useStore = create<AppState>((set, get) => ({
       flowsheetRunAt: 0,
     })),
 
+  // Live-reload: the file on disk changed (the agent edited it), so any tinkered
+  // overlay is stale -- drop it so the box can't show edits over a file that
+  // moved underneath them.
   refreshLocalCaseFiles: (files) =>
-    set(() => ({ caseFiles: files, pristineCaseFiles: files })),
+    set(() => ({ caseFiles: files, pristineCaseFiles: files, scratchEdits: {} })),
 
   applyCaseFiles: (files) => set(() => ({ caseFiles: files })),
 
@@ -544,6 +566,27 @@ export const useStore = create<AppState>((set, get) => ({
     set((s) => ({
       caseFiles: s.pristineCaseFiles,
     })),
+
+  setScratch: (path, edit) =>
+    set((s) => {
+      // A value tinkered back to its on-disk original is no edit at all --
+      // drop it so the badge count + amber state stay honest.
+      if (edit.value === edit.from) {
+        if (!(path in s.scratchEdits)) return {};
+        const next = { ...s.scratchEdits };
+        delete next[path];
+        return { scratchEdits: next };
+      }
+      return { scratchEdits: { ...s.scratchEdits, [path]: edit } };
+    }),
+  clearScratch: (path) =>
+    set((s) => {
+      if (!(path in s.scratchEdits)) return {};
+      const next = { ...s.scratchEdits };
+      delete next[path];
+      return { scratchEdits: next };
+    }),
+  clearAllScratch: () => set({ scratchEdits: {} }),
 
   selectNode: (id) => set({ selectedNodeId: id }),
 
@@ -639,6 +682,7 @@ if (typeof window !== "undefined" && !isolatedTab()) {
         // Back from the flowsheet returns to the tutorial's intro page.
         showIntro: (e.state as { intro?: boolean } | null)?.intro === true,
         selectedNodeId: null, runStatus: "idle", runLog: "", runResult: null,
+      scratchEdits: {},
       });
     });
   }
@@ -694,6 +738,7 @@ if (import.meta.hot) {
         tutorialName: fresh.name,
         caseFiles: fresh.files,
         pristineCaseFiles: fresh.files,
+        scratchEdits: {},
         selectedNodeId: null,
         runStatus: "idle",
         runLog: "",
