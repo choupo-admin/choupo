@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/bubbleT.schema.json",
   "title": "bubbleT operation",
-  "description": "Bubble-point temperature at fixed pressure: find the T at which the first vapour bubble forms from a saturated liquid of the given composition.  Solved by Newton-1D in T on Sum_i K_i(T) x_i = 1.  Hardware-only: specify the pressure P; the bubble temperature is the RESULT.",
+  "description": "Bubble-point temperature at fixed pressure: the T at which the first vapour bubble forms from a saturated liquid. Solved by Newton-1D in T on Sum_i K_i(T) x_i = 1.",
   "type": "object",
   "properties": {
     "P": {

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/distillationColumn.schema.json",
   "title": "distillationColumn operation",
-  "description": "Operation block of a distillation column with constant molar overflow.  Feed enters at feedStage; condenser is stage 0, reboiler is stage nStages+1.  Solved by the sequential bubble-point (Wang-Henke, default) or the rigorous simultaneous MESH Newton (stable on azeotropes).",
+  "description": "Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes.",
   "type": "object",
   "required": ["nStages", "feedStage", "refluxRatio", "distillateRate"],
   "properties": {
@@ -10,21 +10,21 @@
       "type": "integer",
       "minimum": 2,
       "title": "Internal stages",
-      "description": "Number of equilibrium stages between condenser and reboiler (exclusive).  Total stages = nStages + 2.",
+      "description": "Equilibrium stages between condenser and reboiler. Total stages = nStages + 2.",
       "default": 20
     },
     "feedStage": {
       "type": "integer",
       "minimum": 1,
       "title": "Feed stage",
-      "description": "1-indexed stage where the feed enters (1 = top tray below condenser).  Must satisfy 1 <= feedStage <= nStages.",
+      "description": "1-indexed stage where the feed enters (1 = top tray below the condenser).",
       "default": 10
     },
     "refluxRatio": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Reflux ratio",
-      "description": "L / D, the ratio of liquid returned to the column over distillate withdrawn.",
+      "description": "L/D, liquid returned to the column over distillate withdrawn.",
       "default": 2.0
     },
     "distillateRate": {
@@ -39,7 +39,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Operating pressure",
-      "description": "Column pressure (assumed constant across all stages).  Falls back to the feed-stream pressure if omitted.",
+      "description": "Column pressure, constant across all stages. Falls back to the feed-stream pressure if omitted.",
       "unit": "Pa"
     },
     "feedQuality": {
@@ -47,7 +47,7 @@
       "minimum": 0,
       "maximum": 1,
       "title": "Feed quality q",
-      "description": "Convention q = 1 saturated liquid, q = 0 saturated vapor.  Defaults to 1 (saturated-liquid feed).",
+      "description": "Feed thermal condition: q = 1 saturated liquid, q = 0 saturated vapour.",
       "default": 1.0
     }
   },

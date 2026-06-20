@@ -2,13 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/propertyScan1D.schema.json",
   "title": "propertyScan1D operation",
-  "description": "One-dimensional property sweep: vary ONE state variable (T, P, or a mole fraction) across n evenly-spaced points, evaluating the requested properties at each.  Writes a long-form CSV (one row per scan point) ready for plotting -- the PropsView's CsvAutoPlot will render it as a multi-line plot, one trace per property.",
+  "description": "One-dimensional property sweep: varies one state variable (T, P or a mole fraction) over n evenly-spaced points and evaluates the requested properties at each. Writes one CSV row per point.",
   "type": "object",
   "properties": {
     "vary": {
       "type": "object",
       "title": "Scan axis",
-      "description": "Which variable to sweep, between which limits, and how many points (linearly spaced).",
+      "description": "Variable to sweep, its limits and the number of points (linearly spaced).",
       "properties": {
         "variable": { "type": "string", "title": "Axis variable (T, P, x[<comp>])" },
         "from":     { "type": "number", "title": "Lower bound" },
@@ -20,12 +20,12 @@
     "state": {
       "type": "object",
       "title": "Held state",
-      "description": "The (T, P, composition) values held fixed -- whichever the `vary.variable` is NOT.  Optional when vary covers the only axis you care about."
+      "description": "The (T, P, composition) values held fixed (all but the swept variable)."
     },
     "properties": {
       "type": "array",
       "title": "Properties to evaluate",
-      "description": "Per-point properties to compute and write to the CSV (Psat_<comp>, T_bubble, gamma_<comp>, Cp_ig, H_ig, S_ig, Z, v_molar, H_R, S_R, H_real, S_real,...).",
+      "description": "Properties to compute at each point and write to the CSV (e.g. Psat_<comp>, T_bubble, gamma_<comp>, Cp_ig, Z, v_molar, H_real, S_real).",
       "items": { "type": "string" },
       "minItems": 1
     },
@@ -33,7 +33,7 @@
       "type": "object",
       "title": "Output file",
       "properties": {
-        "file": { "type": "string", "title": "CSV filename (relative to the case)" }
+        "file": { "type": "string", "title": "CSV filename relative to the case" }
       },
       "required": ["file"]
     }

@@ -2,13 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/splitter.schema.json",
   "title": "splitter operation",
-  "description": "Stream splitter: divides one inlet into several outlets by the user-supplied split fractions (which must sum to 1).  All branches share the same temperature, pressure and composition as the inlet -- this is a flow split, NOT a separation (contrast the gasSolidSplitter, which spec-splits solids but likewise does not classify by size).",
+  "description": "Stream splitter: divides one inlet into several outlets by the given split fractions (which sum to 1). All branches keep the inlet temperature, pressure and composition; this is a flow split, not a separation.",
   "type": "object",
   "properties": {
     "fractions": {
       "type": "array",
       "title": "Split fractions",
-      "description": "Per-outlet split fraction (one entry per output stream).  Must sum to 1; each entry in [0, 1].  The ordering matches the `outputs` list.",
+      "description": "Per-outlet split fraction, one per output stream, summing to 1. Ordering matches the `outputs` list.",
       "items": {
         "type": "number",
         "minimum": 0,

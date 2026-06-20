@@ -2,14 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/stripper.schema.json",
   "title": "stripper operation",
-  "description": "Counter-current multistage gas stripper (Kremser) -- the inverse of the absorber.  A rich liquid (top) is contacted with a lean stripping gas (bottom) to drive the solute OUT of the liquid.  Hardware-only: the number of theoretical stages.  The per-solute removal is a RESULT; the key group is the stripping factor S = K*V/L.  For 'I need 95 % removal' wrap the unit in a DesignSpec on $stages.",
+  "description": "Counter-current multistage gas stripper solved by the Kremser method (the inverse of the absorber). A rich liquid is contacted with a lean gas to drive the solute out; per-solute removal follows from the stripping factor S = K·V/L.",
   "type": "object",
   "properties": {
     "stages": {
       "type": "number",
       "exclusiveMinimum": 0,
-      "title": "Theoretical stages (hardware)",
-      "description": "Number of equilibrium stages = the column height.  More stages give more stripping (the Kremser chart).",
+      "title": "Theoretical stages",
+      "description": "Number of equilibrium stages.",
       "unit": "-"
     }
   },

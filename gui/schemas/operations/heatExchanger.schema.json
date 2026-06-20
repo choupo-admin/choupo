@@ -2,27 +2,27 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/heatExchanger.schema.json",
   "title": "heatExchanger operation",
-  "description": "Two-stream heat exchanger solved by the effectiveness-NTU method (the rating problem).  Hardware-only: the heat-transfer area, the overall coefficient U, and an optional flow arrangement.  The outlet temperatures, the duty Q and the LMTD are RESULTS.  For 'I need T_hot_out = X' wrap the unit in a DesignSpec outerDict that manipulates $area (or $U) with a target on this unit's T_hot_out KPI.  This is the TWO-stream unit; the single-stream `heater` (furnished duty Q) is separate.",
+  "description": "Two-stream heat exchanger solved by the effectiveness-NTU method. From the area, overall coefficient U and flow arrangement it computes the outlet temperatures, the duty Q and the LMTD.",
   "type": "object",
   "properties": {
     "area": {
       "type": "number",
       "exclusiveMinimum": 0,
-      "title": "Heat-transfer area (hardware)",
-      "description": "The exchanger surface.  Larger area -> more NTU -> the outlet temperatures approach the thermodynamic limit.",
+      "title": "Heat-transfer area",
+      "description": "Exchanger surface area; larger area raises NTU.",
       "unit": "m2"
     },
     "U": {
       "type": "number",
       "exclusiveMinimum": 0,
-      "title": "Overall heat-transfer coefficient (hardware)",
-      "description": "Overall U for the surface (film + wall + fouling lumped).  NTU = U*area / C_min.",
+      "title": "Overall heat-transfer coefficient",
+      "description": "Overall U for the surface (film, wall and fouling lumped). NTU = U·area / C_min.",
       "unit": "W/m2/K"
     },
     "flow": {
       "type": "string",
       "title": "Flow arrangement",
-      "description": "counter (default, more effective) or co (co-current).",
+      "description": "Counter-current (default) or co-current.",
       "enum": ["counter", "co"]
     }
   },

@@ -2,21 +2,21 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/sprayDryer.schema.json",
   "title": "sprayDryer operation",
-  "description": "Single-stage rotary-atomiser spray dryer (PHASE 1).  Two inlets (feed liquid + drying air) and two outlets (powder + exhaust air).  The operation block carries only atomiser HARDWARE; the exhaust temperature, droplet/particle sizes, drying coefficients (h, k_c) and the constant-rate drying time are RESULTS computed from the energy balance, the Friedman rotary-disc correlation and Ranz-Marshall transfer.  Needs a transport block (viscosity + thermalConductivity + diffusivity) in the thermoPackage for the drying kinetics.",
+  "description": "Single-stage rotary-atomiser spray dryer producing powder and exhaust air. Computes the exhaust temperature, droplet and particle sizes, transfer coefficients and drying time from the energy balance, the Friedman rotary-disc correlation and Ranz-Marshall transfer. Requires a transport model in the thermoPackage.",
   "type": "object",
   "properties": {
     "wheelDiameter": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Atomiser disc diameter",
-      "description": "Diameter of the spinning atomiser wheel.  With the feed rate it sets the liquid loading per unit wetted perimeter, hence the droplet size.",
+      "description": "Diameter of the atomiser wheel; with the feed rate it sets the droplet size.",
       "unit": "m"
     },
     "wheelSpeed": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Atomiser disc speed",
-      "description": "Rotational speed of the atomiser wheel.  Faster spinning -> smaller droplets (d32 ~ N^-0.6 in the Friedman correlation).  Industrial discs run 10000-30000 rpm.",
+      "description": "Rotational speed of the atomiser wheel; faster spinning gives smaller droplets (d32 ~ N^-0.6, Friedman correlation).",
       "unit": "rpm",
       "default": 10000
     },
@@ -24,7 +24,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Feed liquid viscosity",
-      "description": "Dynamic viscosity of the feed liquid, used in the atomisation correlation.  Defaults to water (1e-3 Pa.s) -- Choupo does not yet carry liquid viscosities per component.",
+      "description": "Dynamic viscosity of the feed liquid, used in the atomisation correlation.",
       "unit": "Pa.s",
       "default": 0.001
     },
@@ -32,7 +32,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Feed surface tension",
-      "description": "Surface tension of the feed liquid, used in the atomisation correlation.  Defaults to water (0.072 N/m).",
+      "description": "Surface tension of the feed liquid, used in the atomisation correlation.",
       "unit": "N/m",
       "default": 0.072
     },
@@ -40,7 +40,7 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "PSD spread (Rosin-Rammler n)",
-      "description": "Width of the powder particle-size distribution.  The droplet sizes follow a Rosin-Rammler Q(d)=1-exp(-(d/d')^n) around d32; larger n = narrower distribution.  Rotary atomisers typically n ~ 2-2.5.  Calibratable to measured PSD data.",
+      "description": "Width of the powder particle-size distribution; the droplet sizes follow a Rosin-Rammler Q(d) = 1 - exp(-(d/d')^n), larger n giving a narrower spread.",
       "unit": "-",
       "default": 2.2
     },
@@ -48,21 +48,21 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Drying-chamber diameter",
-      "description": "Diameter of the drying chamber (HARDWARE).  Sets the gas superficial velocity v_gas = Q_gas/(pi D^2/4), hence the particle fall velocity and the residence time.  The residence time is a RESULT, not a parameter.",
+      "description": "Diameter of the drying chamber; sets the gas superficial velocity v_gas = Q_gas/(pi D^2/4) and hence the residence time.",
       "unit": "m"
     },
     "chamberHeight": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Drying-chamber height",
-      "description": "Height the particle falls through (HARDWARE).  Residence time = chamberHeight / particle fall velocity; with a sorption isotherm on the solid this closes the residual moisture.  The design question 'how tall must the chamber be to dry the powder?' is a sweep over this.",
+      "description": "Height the particle falls through; residence time = chamberHeight / particle fall velocity, which sets the residual moisture.",
       "unit": "m"
     },
     "flow": {
       "type": "string",
       "enum": ["co", "counter"],
       "title": "Gas/droplet flow direction",
-      "description": "co-current (gas and droplets fall together, v_particle = v_gas + v_terminal) or counter-current (v_particle = v_terminal - v_gas).  Co-current is the common spray-dryer arrangement.",
+      "description": "Co-current (v_particle = v_gas + v_terminal) or counter-current (v_particle = v_terminal - v_gas).",
       "default": "co"
     }
   },

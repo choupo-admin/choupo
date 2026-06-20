@@ -2,14 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/solidDryer.schema.json",
   "title": "solidDryer operation",
-  "description": "Contact / through-circulation solid dryer.  One inlet (a wet solid: crystals in s[] carrying bound moisture) and two outlets (dry solid + vapour).  The unit dries the solid toward the EQUILIBRIUM moisture set by the air's relative humidity and the solid's GAB sorption isotherm (a sample-specific `sorption {}` block on the component.dat).  X_final = min(X_in, X_eq); the water removed, the duty and the equilibrium moisture are RESULTS.  Complements the spray dryer: spray = atomise a liquid into powder; solidDryer = polish an already-solid powder down to spec.",
+  "description": "Contact / through-circulation solid dryer. A wet solid is dried toward the equilibrium moisture set by the air relative humidity and the solid's GAB sorption isotherm: X_final = min(X_in, X_eq). Computes the water removed and the duty.",
   "type": "object",
   "properties": {
     "airTemperature": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Drying-air temperature",
-      "description": "Temperature of the drying air.  Hotter air lowers the equilibrium moisture the solid can reach (the isotherm shifts).",
+      "description": "Temperature of the drying air; sets the sorption isotherm.",
       "unit": "K"
     },
     "relativeHumidity": {
@@ -17,7 +17,7 @@
       "minimum": 0,
       "maximum": 1,
       "title": "Drying-air relative humidity",
-      "description": "Relative humidity (water activity) of the drying air, 0-1.  The solid dries until its surface water activity equals this; the GAB isotherm then fixes the equilibrium moisture X_eq.  Drier air (lower RH) -> lower X_eq -> a drier product.",
+      "description": "Relative humidity (water activity) of the drying air; the GAB isotherm sets the equilibrium moisture X_eq from it.",
       "unit": "-",
       "default": 0.1
     }

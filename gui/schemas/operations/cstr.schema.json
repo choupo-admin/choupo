@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/cstr.schema.json",
   "title": "cstr operation",
-  "description": "Operation block of a continuous stirred-tank reactor.  Reactor volume is the only sizing knob; T is taken from the feed stream.",
+  "description": "Continuous stirred-tank reactor. Reactor volume is the only parameter; temperature is taken from the feed stream.",
   "type": "object",
   "required": ["V_R"],
   "properties": {

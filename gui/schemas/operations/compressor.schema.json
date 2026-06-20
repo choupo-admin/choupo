@@ -2,14 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/compressor.schema.json",
   "title": "compressor operation",
-  "description": "Operation block of a credo-pure gas-phase compressor.  Hardware-only: specify the shaft power W_shaft (W or kW, positive) and the isentropic efficiency eta.  The discharge pressure P_out, the discharge temperature T_out and the compression ratio are RESULTS computed from the isentropic-then-efficiency energy balance.  For 'I need P_out = X' wrap the unit in a DesignSpec outerDict that manipulates $W_shaft with a target on this unit's P_out KPI.",
+  "description": "Gas-phase compressor. Given the shaft power and isentropic efficiency, the discharge pressure, discharge temperature and compression ratio follow from the isentropic-then-efficiency energy balance.",
   "type": "object",
   "properties": {
     "W_shaft": {
       "type": "number",
       "exclusiveMinimum": 0,
-      "title": "Shaft power (hardware)",
-      "description": "Mechanical power delivered to the gas.  Think of it as the motor rating.  Positive (this is a compressor; use a turbine block for expansion).",
+      "title": "Shaft power",
+      "description": "Mechanical power delivered to the gas (positive).",
       "unit": "W"
     },
     "eta": {
@@ -17,7 +17,7 @@
       "exclusiveMinimum": 0,
       "maximum": 1,
       "title": "Isentropic efficiency",
-      "description": "Machine characteristic: w_isentropic / w_real.  0 < eta <= 1.  Lower eta means more of the shaft work is dissipated as heat (entropy generation) rather than compression.",
+      "description": "Isentropic efficiency w_isentropic / w_real (0 < eta <= 1). Lower eta dissipates more shaft work as heat.",
       "unit": "-"
     }
   },

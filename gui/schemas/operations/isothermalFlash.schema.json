@@ -2,21 +2,21 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/isothermalFlash.schema.json",
   "title": "isothermalFlash operation",
-  "description": "Operation block of an isothermal two-phase flash.  Both T and P are optional overrides of the feed-stream conditions; leaving them out runs the flash at the feed T and P (natural propagation through a flowsheet).",
+  "description": "Isothermal two-phase flash at fixed T and P. Both are optional overrides of the feed-stream conditions; omitting them flashes at the feed T and P.",
   "type": "object",
   "properties": {
     "T": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Operating temperature",
-      "description": "Override the feed temperature.  If omitted, the flash inherits the feed T.",
+      "description": "Override the feed temperature; if omitted, the flash uses the feed T.",
       "unit": "K"
     },
     "P": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Operating pressure",
-      "description": "Override the feed pressure.  If omitted, the flash inherits the feed P.",
+      "description": "Override the feed pressure; if omitted, the flash uses the feed P.",
       "unit": "Pa"
     }
   },

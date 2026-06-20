@@ -2,14 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/absorber.schema.json",
   "title": "absorber operation",
-  "description": "Operation block of a counter-current multistage gas absorber (Kremser group method).  Hardware-only: specify the number of theoretical stages (the column height).  The recovery of each solute is a RESULT, computed from the absorption factor A_i = L/(K_i V) and the Kremser equation; a soluble gas with a Henry's-law entry uses K = H(T)/P.  For 'I need 95 % recovery' wrap the unit in a DesignSpec outerDict that manipulates $stages with a target on this unit's recovery_<solute> KPI.",
+  "description": "Counter-current multistage gas absorber solved by the Kremser group method. Per-solute recovery follows from the absorption factor A_i = L/(K_i V); a soluble gas with a Henry's-law entry uses K = H(T)/P.",
   "type": "object",
   "properties": {
     "stages": {
       "type": "number",
       "exclusiveMinimum": 0,
-      "title": "Theoretical stages (hardware)",
-      "description": "Number of equilibrium stages = the column height.  More stages give more recovery (the Kremser chart).",
+      "title": "Theoretical stages",
+      "description": "Number of equilibrium stages.",
       "unit": "-"
     }
   },

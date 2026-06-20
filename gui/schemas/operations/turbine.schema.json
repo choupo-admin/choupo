@@ -2,14 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/turbine.schema.json",
   "title": "turbine operation",
-  "description": "Operation block of a credo-pure gas-phase turbine (expander).  Hardware-only: specify the shaft power W_shaft (W or kW, NEGATIVE because work is extracted) and the isentropic efficiency eta.  The discharge pressure P_out, the discharge temperature T_out and the expansion ratio are RESULTS.  For 'I need to exhaust at X bar' wrap the unit in a DesignSpec that manipulates $W_shaft with a target on this unit's P_out KPI.",
+  "description": "Gas-phase turbine (expander). Given the shaft power (negative, work extracted) and isentropic efficiency, the discharge pressure, discharge temperature and expansion ratio follow from the energy balance.",
   "type": "object",
   "properties": {
     "W_shaft": {
       "type": "number",
       "exclusiveMaximum": 0,
-      "title": "Shaft power (hardware, extracted)",
-      "description": "Mechanical power extracted from the gas.  NEGATIVE (work leaves the fluid).  Use a compressor block for compression.",
+      "title": "Shaft power (extracted)",
+      "description": "Mechanical power extracted from the gas (negative).",
       "unit": "W"
     },
     "eta": {
@@ -17,7 +17,7 @@
       "exclusiveMinimum": 0,
       "maximum": 1,
       "title": "Isentropic efficiency",
-      "description": "Machine characteristic: w_real / w_isentropic.  0 < eta <= 1.  Lower eta means less of the available expansion work is captured (the rest stays as heat in the exhaust).",
+      "description": "Isentropic efficiency w_real / w_isentropic (0 < eta <= 1). Lower eta captures less expansion work, leaving more heat in the exhaust.",
       "unit": "-"
     }
   },

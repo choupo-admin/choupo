@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/adiabaticFlash.schema.json",
   "title": "adiabaticFlash operation",
-  "description": "Operation block of a two-phase flash with an outer Newton loop on T so that the energy balance closes.  Credo-pure: hardware = outlet pressure only.  An adiabatic flash has Q == 0 by definition; if you want heat addition, chain a `heater` upstream.  T_out, V/F and the regime are RESULTS, not specs.",
+  "description": "Adiabatic flash (Q = 0). The feed flashes to the outlet pressure; outlet temperature, vapour fraction and phase follow from the energy balance.",
   "type": "object",
   "required": ["P"],
   "properties": {

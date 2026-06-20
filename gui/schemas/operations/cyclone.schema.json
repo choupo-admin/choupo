@@ -2,56 +2,56 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://choupo.org/schemas/operations/cyclone.schema.json",
   "title": "cyclone operation",
-  "description": "Gas-solid cyclone separator.  Hardware: the body diameter (and effective number of turns).  The cut diameter d50, the grade-efficiency curve η(d), the collection efficiency and the pressure drop ΔP are RESULTS.  The collection correlation is a SELECTABLE sub-model (model keyword) -- simple data-anchored correlations, swap to compare.  Needs a particle-size distribution on the feed (solids block) and a transport model for the gas viscosity.",
+  "description": "Gas-solid cyclone separator. Computes the cut diameter d50, the grade-efficiency curve η(d), the collection efficiency and the pressure drop ΔP. The collection correlation is selectable via the `model` keyword. Requires a feed particle-size distribution and a gas-viscosity model.",
   "type": "object",
   "properties": {
     "bodyDiameter": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Body diameter D_c",
-      "description": "Cyclone body diameter [m].  Sets the inlet area (D_c^2/8) and width (D_c/4) of the Lapple standard geometry.",
+      "description": "Cyclone body diameter; sets the inlet area and width of the Lapple standard geometry.",
       "unit": "m"
     },
     "numberOfTurns": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Effective turns N_e",
-      "description": "Effective number of gas revolutions (typical ~5).  More turns -> smaller d50 -> finer cut.",
+      "description": "Effective number of gas revolutions; more turns give a finer cut.",
       "unit": "-"
     },
     "C": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Leith-Licht constant C",
-      "description": "Geometric-configuration constant for the LeithLicht model (default 402.88, calibratable).",
+      "description": "Geometric-configuration constant for the Leith-Licht model.",
       "unit": "-"
     },
     "beta": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Logistic slope β",
-      "description": "Grade-efficiency slope for IoziaLeith (default 3.5), Barth (default 4) and Muschelknautz internal (default 3).  Lapple is the β=2 special case.",
+      "description": "Grade-efficiency slope for the Iozia-Leith, Barth and Muschelknautz models; Lapple is the β = 2 case.",
       "unit": "-"
     },
     "alpha": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Barth tangential factor α",
-      "description": "Tangential-velocity factor v_θ = α·v_i on the control surface (Barth, default 1.5, calibratable).",
+      "description": "Tangential-velocity factor v_θ = α·v_i on the control surface (Barth model).",
       "unit": "-"
     },
     "heightFactor": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Barth CS height factor",
-      "description": "Control-surface height H_cs/D_c for the Barth model (default 2, calibratable).",
+      "description": "Control-surface height H_cs/D_c for the Barth model.",
       "unit": "-"
     },
     "cLimit": {
       "type": "number",
       "exclusiveMinimum": 0,
       "title": "Muschelknautz limit loading",
-      "description": "Limit solids loading c_lim [kg solid/kg gas] for the Muschelknautz mass-loading effect (default 0.05, calibratable).  Above it, surplus solids are mass-separated near 100 %.",
+      "description": "Limit solids loading c_lim for the Muschelknautz mass-loading effect; surplus solids above it are separated near 100 %.",
       "unit": "-"
     }
   },
