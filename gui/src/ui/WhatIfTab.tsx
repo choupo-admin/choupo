@@ -438,9 +438,14 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
     const csv = result.csvFiles?.[gridSpec.file] ?? Object.values(result.csvFiles ?? {})[0];
     const parsed = csv ? parseGridCsv(csv, `${stash.name}.${kpiKey}`) : null;
     if (parsed && knob && knob2) {
-      // Friendlier SI axis labels than the raw dict paths in the CSV header.
-      parsed.aLabel = `${knob.key}${knob.siUnit ? ` [${knob.siUnit}]` : ""}`;
-      parsed.bLabel = `${knob2.key}${knob2.siUnit ? ` [${knob2.siUnit}]` : ""}`;
+      // Convert the SI grid axes to the student's display units (bar, degC, …)
+      // so the contour reads in the units they typed, not raw Pa.
+      parsed.aVals = parsed.aVals.map((v) => siToDisplay(knob.siUnit, v, prefs));
+      parsed.bVals = parsed.bVals.map((v) => siToDisplay(knob2.siUnit, v, prefs));
+      const aL = knobUnitLabel(knob);
+      const bL = knobUnitLabel(knob2);
+      parsed.aLabel = `${knob.key}${aL ? ` [${aL}]` : ""}`;
+      parsed.bLabel = `${knob2.key}${bL ? ` [${bL}]` : ""}`;
       parsed.zLabel = kpiKey ?? parsed.zLabel;
       setGrid(parsed);
     } else {
@@ -678,8 +683,7 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
                   {grid && (
                     <Box h={440}>
                       <GridContourPlot grid={grid}
-                        here={{ a: displayToSi(knob.siUnit, knobDisplay(knob), prefs),
-                                b: displayToSi(knob2.siUnit, knobDisplay(knob2), prefs) }} />
+                        here={{ a: knobDisplay(knob), b: knobDisplay(knob2) }} />
                     </Box>
                   )}
                 </>
