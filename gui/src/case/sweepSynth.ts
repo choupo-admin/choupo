@@ -196,3 +196,101 @@ export function overrideDictText(overrides: OperationOverride[]): string {
   }
   return serialize(fromJson({ operation: op }, "override"));
 }
+
+// ---------------------------------------------------------------------------
+//  Grid sweep (2-D) -- the two-knob CONTOUR.  Mirrors the 1-knob sweep but
+//  with TWO parameters; ranges are emitted as raw SI numbers (the C++
+//  GridSweepDriver reads `lookupList`, and the dict parser does not unit a
+//  list -- same convention as flash06 / SweepDriver).  The GUI converts the
+//  user's display-unit range to SI before building the spec.
+// ---------------------------------------------------------------------------
+
+export interface GridAxis {
+  /** Engine path, e.g. "units[0].operation.T". */
+  targetPath: string;
+  /** Range endpoints, already in canonical SI. */
+  from: number;
+  to: number;
+  nPoints: number;
+}
+
+export interface GridSweepSpec {
+  a: GridAxis;   // outer
+  b: GridAxis;   // inner
+  responses: string[];
+  file: string;
+}
+
+/** The CSV file name the grid sweep writes. */
+export function gridCsvName(keyA: string, keyB: string): string {
+  return `gridsweep_${keyA}_${keyB}.csv`;
+}
+
+/** The synthesised gridSweep outerDict as plain JSON. */
+export function synthesizeGridSweepOuterDict(spec: GridSweepSpec): JsonDict {
+  return {
+    type: "gridSweep",
+    parameters: [
+      { target: spec.a.targetPath, range: [spec.a.from, spec.a.to], nPoints: spec.a.nPoints },
+      { target: spec.b.targetPath, range: [spec.b.from, spec.b.to], nPoints: spec.b.nPoints },
+    ],
+    responses: spec.responses,
+    report: { format: "csv", file: spec.file },
+  };
+}
+
+/** The exact gridSweep dict TEXT (the "copy outerDict" payload). */
+export function gridSweepOuterDictText(spec: GridSweepSpec): string {
+  return serialize(fromJson(synthesizeGridSweepOuterDict(spec), "outerDict"));
+}
+
+/** The parsed grid, ready for a Plotly contour.  `z[bIdx][aIdx]` is the
+ *  response; a non-converged point ("nan" in the CSV) becomes NaN, which the
+ *  contour renders as an honest gap (never interpolated). */
+export interface GridData {
+  aVals: number[];   // x axis (knob A), ascending
+  bVals: number[];   // y axis (knob B), ascending
+  z: number[][];     // z[bIdx][aIdx]
+  aLabel: string;
+  bLabel: string;
+  zLabel: string;
+}
+
+/** Parse the long-form grid CSV (`point,A,B,resp...`) into a GridData. */
+export function parseGridCsv(csv: string, responseName?: string): GridData | null {
+  const lines = csv.trim().split(/\r?\n/);
+  if (lines.length < 3) return null;
+  const header = lines[0]!.split(",");
+  const aCol = 1, bCol = 2;
+  let zCol = 3;
+  if (responseName) {
+    const idx = header.indexOf(responseName);
+    if (idx >= 0) zCol = idx;
+  }
+  if (zCol >= header.length) return null;
+  const rows = lines.slice(1).map((l) => l.split(","));
+  const aVals: number[] = [];
+  const bVals: number[] = [];
+  for (const r of rows) {
+    const a = Number(r[aCol]);
+    const b = Number(r[bCol]);
+    if (Number.isFinite(a) && !aVals.includes(a)) aVals.push(a);
+    if (Number.isFinite(b) && !bVals.includes(b)) bVals.push(b);
+  }
+  aVals.sort((x, y) => x - y);
+  bVals.sort((x, y) => x - y);
+  const z: number[][] = bVals.map(() => aVals.map(() => NaN));
+  for (const r of rows) {
+    const ai = aVals.indexOf(Number(r[aCol]));
+    const bi = bVals.indexOf(Number(r[bCol]));
+    if (ai < 0 || bi < 0) continue;
+    const zv = Number(r[zCol]);           // "nan" -> NaN (the honest hole)
+    z[bi]![ai] = Number.isFinite(zv) ? zv : NaN;
+  }
+  return {
+    aVals, bVals, z,
+    aLabel: header[aCol] ?? "A",
+    bLabel: header[bCol] ?? "B",
+    zLabel: header[zCol] ?? "z",
+  };
+}

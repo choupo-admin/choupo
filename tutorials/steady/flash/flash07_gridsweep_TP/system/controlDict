@@ -1,0 +1,8 @@
+/*---------------------------------------------------------------------------*\
+  Meta-control for this case.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;
+description   "2-D grid sweep: flash V/F over T x P (the flash envelope)";
+
+verbosity     2;     // the grid prints one summary line per point at 3; keep terse

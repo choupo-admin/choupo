@@ -80,15 +80,22 @@ import type { StreamResult } from "../adapters/SolverAdapter.js";
 import { withDisplayPrefs } from "../case/applyPrefs.js";
 import { operationSchemaFor } from "../case/operationSchemas.js";
 import {
+  gridSweepOuterDictText,
+  gridCsvName,
   numericOperationKeys,
+  parseGridCsv,
   sweepCsvName,
   sweepOuterDictText,
+  synthesizeGridSweepOuterDict,
   synthesizeSweepOuterDict,
+  type GridData,
+  type GridSweepSpec,
   type SweepSpec,
 } from "../case/sweepSynth.js";
 import type { CaseFiles } from "../case/types.js";
 import { collectVariableKnobs } from "../case/variableKnobs.js";
 import type { JsonDict, JsonValue } from "../dict/index.js";
+import { GridContourPlot } from "./plotting/GridContourPlot.js";
 import {
   formatFlow,
   formatSig,
@@ -229,6 +236,13 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
   const [knobValue, setKnobValue] = useState<number | "">("");
   const [range, setRange] = useState<{ from: number | ""; to: number | "" }>({ from: "", to: "" });
   const [nPoints, setNPoints] = useState<number | "">(21);
+
+  // Second knob -> the 2-knob CONTOUR (gridSweep).  Continuous (op) knobs only;
+  // <=2 is the cap (3 is unviewable).  null = the 1-knob curve.
+  const [knobId2, setKnobId2] = useState<string | null>(null);
+  const [range2, setRange2] = useState<{ from: number | ""; to: number | "" }>({ from: "", to: "" });
+  const [gridSide, setGridSide] = useState<number | "">(7);
+  const [grid, setGrid] = useState<GridData | null>(null);
 
   const pickKnob = (id: string | null) => {
     setKnobId(id);
@@ -393,6 +407,47 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
 
   const holes = sweep ? countHoles(sweep.csv) : { holes: 0, total: 0 };
 
+  const knob2 = useMemo(() => knobs.find((k) => k.id === knobId2) ?? null, [knobs, knobId2]);
+
+  // The two-knob grid spec: both knobs continuous (op) scalars, valid ranges;
+  // ranges convert to SI (the gridSweep driver reads raw SI).
+  const gridSpec = useMemo<GridSweepSpec | null>(() => {
+    if (!knob || !knob2 || !kpiKey || knob.kind !== "op" || knob2.kind !== "op") return null;
+    if (range.from === "" || range.to === "" || range2.from === "" || range2.to === "") return null;
+    const n = Math.max(2, Math.round(Number(gridSide)));
+    const aFrom = displayToSi(knob.siUnit, Number(range.from), prefs);
+    const aTo = displayToSi(knob.siUnit, Number(range.to), prefs);
+    const bFrom = displayToSi(knob2.siUnit, Number(range2.from), prefs);
+    const bTo = displayToSi(knob2.siUnit, Number(range2.to), prefs);
+    if (![aFrom, aTo, bFrom, bTo].every((x) => Number.isFinite(x)) || aFrom === aTo || bFrom === bTo) return null;
+    return {
+      a: { targetPath: knob.targetPath ?? `units[0].operation.${knob.key}`, from: aFrom, to: aTo, nPoints: n },
+      b: { targetPath: knob2.targetPath ?? `units[0].operation.${knob2.key}`, from: bFrom, to: bTo, nPoints: n },
+      responses: [`${stash.name}.${kpiKey}`],
+      file: gridCsvName(knob.key, knob2.key),
+    };
+  }, [knob, knob2, kpiKey, range, range2, gridSide, prefs, stash.name]);
+
+  const gridText = gridSpec ? gridSweepOuterDictText(gridSpec) : "";
+  const gridHoles = grid ? grid.z.flat().filter((v) => !Number.isFinite(v)).length : 0;
+
+  const runGrid = async () => {
+    if (!gridSpec) return;
+    const result = await solveClone("sweep", synthesizeGridSweepOuterDict(gridSpec));
+    if (!result) return;
+    const csv = result.csvFiles?.[gridSpec.file] ?? Object.values(result.csvFiles ?? {})[0];
+    const parsed = csv ? parseGridCsv(csv, `${stash.name}.${kpiKey}`) : null;
+    if (parsed && knob && knob2) {
+      // Friendlier SI axis labels than the raw dict paths in the CSV header.
+      parsed.aLabel = `${knob.key}${knob.siUnit ? ` [${knob.siUnit}]` : ""}`;
+      parsed.bLabel = `${knob2.key}${knob2.siUnit ? ` [${knob2.siUnit}]` : ""}`;
+      parsed.zLabel = kpiKey ?? parsed.zLabel;
+      setGrid(parsed);
+    } else {
+      setRunError("The grid sweep finished but wrote no parseable CSV.");
+    }
+  };
+
   // Legacy stash (pre What-if): no clone to run.  Honest refusal.
   if (!stash.files) {
     return (
@@ -490,12 +545,22 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
                 />
               )}
               <Tooltip
-                label="≤2 knobs so the response stays a curve or a surface — the 2-knob surface is coming next"
-                withArrow multiline w={240}
+                label="≤2 knobs so the response stays a curve (1) or a surface (2) — 3 is unviewable.  A 2nd continuous knob draws a contour."
+                withArrow multiline w={250}
               >
-                <Button size="sm" variant="default" disabled>
-                  + add knob
-                </Button>
+                <Select
+                  size="sm"
+                  w={220}
+                  label="and turn (optional)"
+                  placeholder="+ 2nd knob → surface"
+                  data={knobs
+                    .filter((k) => k.kind === "op" && k.id !== knobId)
+                    .map((k) => ({ value: k.id, label: k.label }))}
+                  value={knobId2}
+                  onChange={(v) => { setKnobId2(v); setGrid(null); }}
+                  clearable
+                  searchable
+                />
               </Tooltip>
             </Group>
 
@@ -561,12 +626,63 @@ export function WhatIfTab({ stash }: { stash: WhatIfStash }) {
             <Divider my={2} />
             <Stack gap={6}>
               <Text size="xs" c="dimmed" tt="uppercase" fw={600}>
-                Response — {kpiKey ?? "pick a KPI"} vs {knob ? knob.key : "pick a knob"}
+                Response — {kpiKey ?? "pick a KPI"}{" "}
+                {knob2
+                  ? `over ${knob ? knob.key : "?"} × ${knob2.key}  (surface)`
+                  : `vs ${knob ? knob.key : "pick a knob"}`}
               </Text>
               {!kpiKey || !knob ? (
                 <Text size="sm" c="dimmed">
                   Pick a KPI to watch and a knob to turn — the curve draws here.
                 </Text>
+              ) : knob2 ? (
+                <>
+                  {/* THE CONTOUR: KPI over two knobs (gridSweep) -- the flash envelope. */}
+                  <Group gap="xs" maw={680} grow>
+                    <NumberInput size="xs" label={`${knob.key} from`} value={range.from}
+                      onChange={(v) => setRange((r) => ({ ...r, from: v === "" ? "" : Number(v) }))}
+                      hideControls styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }} />
+                    <NumberInput size="xs" label={`${knob.key} to`} value={range.to}
+                      onChange={(v) => setRange((r) => ({ ...r, to: v === "" ? "" : Number(v) }))}
+                      hideControls styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }} />
+                    <NumberInput size="xs" label={`${knob2.key} from`} value={range2.from}
+                      onChange={(v) => setRange2((r) => ({ ...r, from: v === "" ? "" : Number(v) }))}
+                      hideControls styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }} />
+                    <NumberInput size="xs" label={`${knob2.key} to`} value={range2.to}
+                      onChange={(v) => setRange2((r) => ({ ...r, to: v === "" ? "" : Number(v) }))}
+                      hideControls styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }} />
+                    <NumberInput size="xs" label="grid/side" value={gridSide}
+                      onChange={(v) => setGridSide(v === "" ? "" : Number(v))} min={2}
+                      hideControls styles={{ input: { fontFamily: "JetBrains Mono, monospace" } }} />
+                  </Group>
+                  <Group gap="xs">
+                    <Button size="xs" color="accent" leftSection={<IconChartLine size={13} />}
+                      loading={busy === "sweep"} disabled={!gridSpec || busy !== null}
+                      onClick={() => void runGrid()}>
+                      Draw the surface
+                    </Button>
+                    <CopyButton value={gridText}>
+                      {({ copied, copy }) => (
+                        <Button size="xs" variant="light" color="accent" disabled={!gridSpec} onClick={copy}>
+                          {copied ? "Copied ✓" : "Copy outerDict"}
+                        </Button>
+                      )}
+                    </CopyButton>
+                  </Group>
+                  {grid && gridHoles > 0 && (
+                    <Text size="xs" c="orange.6">
+                      {gridHoles} grid points did not converge — drawn as gaps, not interpolated
+                      (an honest "no steady state here").
+                    </Text>
+                  )}
+                  {grid && (
+                    <Box h={440}>
+                      <GridContourPlot grid={grid}
+                        here={{ a: displayToSi(knob.siUnit, knobDisplay(knob), prefs),
+                                b: displayToSi(knob2.siUnit, knobDisplay(knob2), prefs) }} />
+                    </Box>
+                  )}
+                </>
               ) : (
                 <>
                   <Group gap="xs" maw={520} grow>

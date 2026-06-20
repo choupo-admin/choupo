@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  one isothermal flash, benzene/toluene 40/60.
+
+  The base point is 370 K, 1 bar.  The gridSweep in system/outerDict overrides
+  BOTH operation.T and operation.P across a grid, so V/F traces the flash
+  envelope (V/F=0 bubble line, V/F=1 dew line) over the T x P plane.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            100.0 kmol/h;
+        T            370.0 K;
+        P              1.0 bar;
+        molarComposition  { benzene 0.40;  toluene 0.60; }
+    }
+}
+
+units
+(
+    {
+        name        flashDrum;
+        type        isothermalFlash;
+        in          feed;
+        outputs     ( liquid  vapor );
+
+        operation   { T 370.0 K;  P 1.0 bar; }
+    }
+);

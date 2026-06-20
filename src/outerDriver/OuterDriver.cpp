@@ -29,6 +29,7 @@ License
 #include "OuterDriver.H"
 #include "DesignSpec.H"
 #include "FitBinaryPair.H"
+#include "GridSweepDriver.H"
 #include "OptimizationDriver.H"
 #include "SweepDriver.H"
 
@@ -74,6 +75,10 @@ void OuterDriver::registerBuiltins()
     registerType("sweep",
         [](const DictPtr& d) -> std::unique_ptr<OuterDriver>
         { return std::make_unique<SweepDriver>(d); });
+
+    registerType("gridSweep",
+        [](const DictPtr& d) -> std::unique_ptr<OuterDriver>
+        { return std::make_unique<GridSweepDriver>(d); });
 
     registerType("fitBinaryPair",
         [](const DictPtr& d) -> std::unique_ptr<OuterDriver>

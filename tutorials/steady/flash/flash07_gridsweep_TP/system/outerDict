@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  Grid sweep (2-D) -- the What-if's two-knob CONTOUR, made a first-class case.
+
+  Two knobs move on a regular grid; V/F answers at every (T,P).  The picture
+  is the flash ENVELOPE: V/F=0 below the bubble surface, V/F=1 above the dew
+  surface, the two-phase band in between.  Three knobs would be unviewable, so
+  the surface is the cap -- one knob -> a curve (type sweep), two -> this grid.
+
+  Ranges are RAW canonical SI (the dict parser does not unit a list, same as
+  flash06): T in K, P in Pa.  A non-converging point emits `nan`, drawn as an
+  honest gap in the contour -- never interpolated.
+\*---------------------------------------------------------------------------*/
+
+type        gridSweep;
+
+parameters
+(
+    { target  units[0].operation.T;  range ( 355.0  385.0 );      nPoints 7; }   // K
+    { target  units[0].operation.P;  range ( 50000.0 200000.0 );  nPoints 7; }   // Pa (0.5 .. 2.0 bar)
+);
+
+responses
+(
+    flashDrum.V_over_F      // the envelope: 0 (sub-cooled) .. 1 (super-heated)
+);
+
+report
+{
+    format   csv;
+    file     gridsweep_TP.csv;
+}
