@@ -64,6 +64,11 @@ export interface ExploreSpec {
     groups: { group: string; count: number }[];
     estimator?: string;                      // default "Joback"
     reference?: { [key: string]: number };
+    /** Polymer estimators (VanKrevelen, Yang2020) read the repeat unit's groups
+     *  the same way Joback does, but VanKrevelen's density also needs the
+     *  packing factor k (V = k*Vw).  Emitted as `polymer { packing k; }` only
+     *  when present — the small-molecule (Joback) path stays byte-identical. */
+    polymer?: { packing?: number; state?: string };
   };
   /** Raw .dat bodies for NON-standard components, keyed by relative path
    *  (e.g. "constant/components/myComp.dat") -> verbatim into MEMFS. */
@@ -174,6 +179,14 @@ export function synthesizeExploreCase(spec: ExploreSpec): CaseFiles {
           model: e.estimator ?? "Joback",
           groups: e.groups.map((g) => ({ group: g.group, count: g.count })),
           ...(e.reference && Object.keys(e.reference).length > 0 ? { reference: { ...e.reference } } : {}),
+          // Polymer (VanKrevelen) packing factor: V = k*Vw → ρ = M0/V.
+          // Announced in the dict, never hidden (no-silent-crutch credo).
+          ...(e.polymer && (e.polymer.packing !== undefined || e.polymer.state !== undefined)
+            ? { polymer: {
+                ...(e.polymer.packing !== undefined ? { packing: e.polymer.packing } : {}),
+                ...(e.polymer.state !== undefined ? { state: e.polymer.state } : {}),
+              } }
+            : {}),
           output: { proposal: "auto" },
         },
       ],

@@ -41,4 +41,33 @@ describe("synthesizeExploreCase — estimate branch (G3)", () => {
     const ops = files.propsDict!.operations as Array<Record<string, unknown>>;
     expect(ops[0]!.reference).toEqual({ Tb: 300, Tc: 500, Pc: 3.7e6 });
   });
+
+  it("Van Krevelen polymer mode: model + polymer{packing} block, no reference", () => {
+    const files = synthesizeExploreCase({
+      ...base,
+      estimate: {
+        component: "polystyrene", estimator: "VanKrevelen",
+        groups: [{ group: "CH2", count: 1 }, { group: "CH", count: 1 },
+                 { group: "ACH", count: 5 }, { group: "AC", count: 1 }],
+        polymer: { packing: 1.6, state: "amorphous" },
+      },
+    } as ExploreSpec);
+    const ops = files.propsDict!.operations as Array<Record<string, unknown>>;
+    expect(ops[0]!.model).toBe("VanKrevelen");
+    expect(ops[0]!.polymer).toEqual({ packing: 1.6, state: "amorphous" });
+    expect(ops[0]!.groups).toHaveLength(4);
+  });
+
+  it("Yang 2020 polymer mode: model Yang2020, no polymer block (Tg needs no packing)", () => {
+    const files = synthesizeExploreCase({
+      ...base,
+      estimate: {
+        component: "pvc", estimator: "Yang2020",
+        groups: [{ group: "CH2", count: 1 }, { group: "CHCl", count: 1 }],
+      },
+    } as ExploreSpec);
+    const ops = files.propsDict!.operations as Array<Record<string, unknown>>;
+    expect(ops[0]!.model).toBe("Yang2020");
+    expect(ops[0]!.polymer).toBeUndefined();
+  });
 });

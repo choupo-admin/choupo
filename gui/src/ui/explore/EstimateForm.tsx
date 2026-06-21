@@ -21,6 +21,10 @@ import { resolveAdapter } from "../../adapters/index.js";
 import type { RunResult } from "../../adapters/SolverAdapter.js";
 import { synthesizeExploreCase } from "../../case/exploreSynth.js";
 import { downloadComponentProposal } from "../../case/saveCase.js";
+import {
+  VAN_KREVELEN_GROUPS, YANG2020_GROUPS, VK_QUICKPICKS, YANG_QUICKPICKS,
+  selectData, groupBy, type PolymerGroup, type QuickPick,
+} from "./polymerGroups.js";
 
 // The Joback first-order groups the engine knows (mirrors EstimateComponent's
 // table — a new group is added there + here together).
@@ -42,6 +46,17 @@ const JOBACK_GROUPS: { value: string; label: string }[] = [
   { value: "arC", label: "=C< (aromatic)" },
 ];
 
+// The three estimate modes the form offers.  Joback (small molecule) stays the
+// default; the two polymer modes run the SAME estimateComponent op through the
+// VanKrevelen / Yang2020 group estimators (data/standards/{vanKrevelen,yang2020}).
+type Mode = "Joback" | "VanKrevelen" | "Yang2020";
+
+const MODE_OPTIONS: { value: Mode; label: string }[] = [
+  { value: "Joback", label: "Small molecule — Joback (Tc, Pc, ω, Psat)" },
+  { value: "VanKrevelen", label: "Polymer density — Van Krevelen (ρ)" },
+  { value: "Yang2020", label: "Polymer Tg — Yang 2020 (Tg∞)" },
+];
+
 interface Row { group: string; count: number; }
 
 function num(v: number | string, fallback: number): number {
@@ -56,8 +71,22 @@ export function EstimateForm({
   onClose: () => void;
   prefillName: string;
 }) {
+  const [mode, setMode] = useState<Mode>("Joback");
   const [name, setName] = useState(prefillName);
   const [rows, setRows] = useState<Row[]>([{ group: "CH3", count: 1 }]);
+  // Van Krevelen packing factor k (V = k·Vw → ρ = M0/V).  1.60 amorphous/glassy,
+  // ~1.43 crystalline.  Visible + the student's to own (no-silent-crutch credo).
+  const [packing, setPacking] = useState<string>("1.60");
+
+  // The group table + UX bits for the current mode.
+  const isPolymer = mode === "VanKrevelen" || mode === "Yang2020";
+  const groupTable: PolymerGroup[] | null =
+    mode === "VanKrevelen" ? VAN_KREVELEN_GROUPS : mode === "Yang2020" ? YANG2020_GROUPS : null;
+  const groupSelect = mode === "Joback" ? JOBACK_GROUPS : selectData(groupTable!);
+  const groupIndex = groupTable ? groupBy(groupTable) : null;
+  const quickPicks: QuickPick[] =
+    mode === "VanKrevelen" ? VK_QUICKPICKS : mode === "Yang2020" ? YANG_QUICKPICKS : [];
+  const defaultGroup = (): string => groupSelect[0]?.value ?? "CH2";
   // optional reference (validation): user-facing units (K, K, bar, -)
   const [refOpen, setRefOpen] = useState(false);
   const [refTb, setRefTb] = useState<string>("");
@@ -72,10 +101,26 @@ export function EstimateForm({
   // Reseed the name when the modal is (re)opened with a new prefill.
   useEffect(() => { if (opened) { setName(prefillName); setResult(null); setErr(null); } }, [opened, prefillName]);
 
+  // Switching mode swaps the group catalogue: reset the rows to a valid group of
+  // the new table (a Joback key is meaningless to Yang and vice-versa) + clear
+  // the stale result.  Joback's default first group is CH3.
+  const switchMode = (m: Mode) => {
+    setMode(m);
+    const table = m === "VanKrevelen" ? VAN_KREVELEN_GROUPS : YANG2020_GROUPS;
+    const first = m === "Joback" ? "CH3" : (table[0]?.name ?? "CH2");
+    setRows([{ group: first, count: 1 }]);
+    setResult(null); setErr(null);
+  };
+
   const setRow = (i: number, patch: Partial<Row>) =>
     setRows((rs) => rs.map((r, k) => (k === i ? { ...r, ...patch } : r)));
-  const addRow = () => setRows((rs) => [...rs, { group: "CH2", count: 1 }]);
+  const addRow = () => setRows((rs) => [...rs, { group: defaultGroup(), count: 1 }]);
   const delRow = (i: number) => setRows((rs) => rs.filter((_, k) => k !== i));
+  const applyQuickPick = (qp: QuickPick) => {
+    setName(qp.name);
+    setRows(qp.rows.map((r) => ({ ...r })));
+    setResult(null); setErr(null);
+  };
 
   // The reference the user typed (display units) — also used to show dev%.
   const refDisplay = (): { Tb?: number; Tc?: number; Pc_bar?: number; omega?: number } => ({
@@ -105,8 +150,11 @@ export function EstimateForm({
         estimate: {
           component: name.trim(),
           groups: rows.map((r) => ({ group: r.group, count: Math.round(r.count) })),
-          estimator: "Joback",
-          ...(Object.keys(reference).length > 0 ? { reference } : {}),
+          estimator: mode,
+          // small-molecule reference (Tb/Tc/Pc/ω) is only meaningful for Joback
+          ...(mode === "Joback" && Object.keys(reference).length > 0 ? { reference } : {}),
+          // Van Krevelen density needs the packing factor; Yang's Tg does not.
+          ...(mode === "VanKrevelen" ? { polymer: { packing: num(packing, 1.6), state: "amorphous" } } : {}),
         },
       });
       const resolved = await resolveAdapter("wasm");
@@ -115,7 +163,7 @@ export function EstimateForm({
       }
       const res = await resolved.adapter.run(files, () => {}, undefined, "choupoProps");
       if (res.status !== "done")
-        setErr("estimateComponent did not finish — check the groups (every group must be a known Joback key).");
+        setErr(`estimateComponent did not finish — check the groups (every group must be a known ${mode} key).`);
       setResult(res);
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
@@ -140,7 +188,8 @@ export function EstimateForm({
   };
 
   // (estimated value, label, unit, reference value for dev)
-  const constRows: [number | undefined, string, string, number | undefined][] = [
+  // Joback (small molecule) result rows.
+  const jobackRows: [number | undefined, string, string, number | undefined][] = [
     [d.Tb_K, "Tb (normal b.p.)", "K", rd.Tb],
     [d.Tc_K, "Tc (critical)", "K", rd.Tc],
     [d.Pc_bar, "Pc (critical)", "bar", rd.Pc_bar],
@@ -150,29 +199,101 @@ export function EstimateForm({
     [d.Cp298, "Cp_ig(298 K)", "J/mol·K", undefined],
     [d.Psat_298_bar, "Psat(298 K)", "bar", undefined],
   ];
+  // Polymer result rows — keys from EstimateComponent::runPolymer diagnostics.
+  const vanKrevelenRows: [number | undefined, string, string, number | undefined][] = [
+    [d.M0_g_per_mol, "M0 (repeat-unit mass)", "g/mol", undefined],
+    [d.Vw_cm3_per_mol, "Vw (van der Waals vol.)", "cm³/mol", undefined],
+    [d.packing_k, "k (packing factor)", "—", undefined],
+    [d.V_cm3_per_mol, "V = k·Vw (molar vol.)", "cm³/mol", undefined],
+    [d.density_g_cm3, "ρ (density)", "g/cm³", undefined],
+  ];
+  const yangRows: [number | undefined, string, string, number | undefined][] = [
+    [d.M0_g_per_mol, "M0 (repeat-unit mass)", "g/mol", undefined],
+    [d.YgSum_1e3gKmol, "ΣYg (Tg function)", "10³ g·K/mol", undefined],
+    [d.Tg_K, "Tg∞ (glass transition)", "K", undefined],
+  ];
+  const constRows = mode === "VanKrevelen" ? vanKrevelenRows
+    : mode === "Yang2020" ? yangRows : jobackRows;
+
+  // Glass-box additive breakdown (group | count | MW·count | contribution·count).
+  // The GUI recomputes the SUM the engine also prints — same numbers, two places;
+  // the engine's diagnostics remain the authoritative result above.
+  const breakdown = (isPolymer && groupIndex)
+    ? rows.map((r) => {
+        const g = groupIndex[r.group];
+        const c = Math.round(r.count);
+        return {
+          group: r.group, count: c,
+          mw: g ? g.mw * c : undefined,
+          contrib: g ? g.contrib * c : undefined,
+        };
+      })
+    : [];
+  const contribLabel = mode === "VanKrevelen" ? "n·Vw (cm³/mol)" : "n·Yg (10³ g·K/mol)";
+
+  const title = mode === "VanKrevelen"
+    ? "Estimate a polymer density — Van Krevelen group contribution"
+    : mode === "Yang2020"
+      ? "Estimate a polymer Tg — Yang 2020 group contribution"
+      : "Estimate a new component — Joback group contribution";
+
+  const intro = mode === "Joback" ? (
+    <Text size="xs" c="dimmed">
+      Declare the molecular groups; the engine estimates the pure-component
+      constants (+ Psat by Ambrose-Walton, Vliq by Rackett). The result is an
+      <b> ESTIMATE</b> you DOWNLOAD as a reviewable proposal — rename it to
+      <code> constant/components/{name.trim() || "<name>"}.dat</code> on disk to promote.
+    </Text>
+  ) : mode === "VanKrevelen" ? (
+    <Text size="xs" c="dimmed">
+      Decompose the polymer's <b>repeat unit</b> into Van Krevelen groups; the
+      engine sums M0 = Σn·MW and Vw = Σn·Vw (Bondi 1964) and returns
+      <b> ρ = M0 / (k·Vw)</b>. k is the packing factor (≈1.60 amorphous, ≈1.43
+      crystalline) — yours to set, and shown, never hidden.
+    </Text>
+  ) : (
+    <Text size="xs" c="dimmed">
+      Decompose the polymer's <b>repeat unit</b> into Yang 2020 groups; the engine
+      sums M0 = Σn·MW and Yg = Σn·Yg (ACS Omega 2020, CC-BY) and returns the
+      infinite-Mw glass transition <b>Tg∞ = ΣYg·10³ / M0</b>. For most vinyl
+      polymers Nb (backbone-in-side-chain) = 0; add the <code>backboneSideChain</code>
+      group only when a backbone atom sits in a side chain.
+    </Text>
+  );
 
   return (
-    <Modal opened={opened} onClose={onClose} size="lg" title={
-      <Text fw={600}>Estimate a new component — Joback group contribution</Text>
-    }>
+    <Modal opened={opened} onClose={onClose} size="lg" title={<Text fw={600}>{title}</Text>}>
       <Stack gap="sm">
-        <Text size="xs" c="dimmed">
-          Declare the molecular groups; the engine estimates the pure-component
-          constants (+ Psat by Ambrose-Walton, Vliq by Rackett). The result is an
-          <b> ESTIMATE</b> you DOWNLOAD as a reviewable proposal — rename it to
-          <code> constant/components/{name.trim() || "<name>"}.dat</code> on disk to promote.
-        </Text>
+        <Select label="What to estimate" data={MODE_OPTIONS} value={mode}
+          allowDeselect={false} onChange={(v) => v && switchMode(v as Mode)} />
 
-        <TextInput label="Component name (the filename stem you will type in cases)"
-          placeholder="pentadiene" value={name} onChange={(e) => setName(e.currentTarget.value)} />
+        {intro}
+
+        <TextInput label={isPolymer
+          ? "Polymer name (the filename stem you will type in cases)"
+          : "Component name (the filename stem you will type in cases)"}
+          placeholder={isPolymer ? "polystyrene" : "pentadiene"}
+          value={name} onChange={(e) => setName(e.currentTarget.value)} />
+
+        {quickPicks.length > 0 && (
+          <Group gap="xs" align="center">
+            <Text size="xs" c="dimmed">Quick-pick repeat unit:</Text>
+            {quickPicks.map((qp) => (
+              <Button key={qp.name} variant="light" size="compact-xs"
+                onClick={() => applyQuickPick(qp)}>{qp.label}</Button>
+            ))}
+          </Group>
+        )}
 
         <div>
-          <Text size="sm" fw={500} mb={4}>Molecular groups (Joback)</Text>
+          <Text size="sm" fw={500} mb={4}>
+            {isPolymer ? `Repeat-unit groups (${mode})` : "Molecular groups (Joback)"}
+          </Text>
           <Stack gap={6}>
             {rows.map((r, i) => (
               <Group key={i} gap="xs" wrap="nowrap">
-                <Select data={JOBACK_GROUPS} value={r.group} searchable
-                  onChange={(v) => setRow(i, { group: v ?? "CH3" })} w={250} allowDeselect={false} />
+                <Select data={groupSelect} value={r.group} searchable
+                  onChange={(v) => setRow(i, { group: v ?? defaultGroup() })} w={320} allowDeselect={false} />
                 <NumberInput value={r.count} min={1} w={90}
                   onChange={(v) => setRow(i, { count: Math.max(1, Math.round(num(v, 1))) })} />
                 <ActionIcon variant="subtle" color="gray" aria-label="remove group"
@@ -186,17 +307,27 @@ export function EstimateForm({
             onClick={addRow} mt={6}>add group</Button>
         </div>
 
-        <Button variant="subtle" size="compact-xs" onClick={() => setRefOpen((o) => !o)} w="fit-content">
-          {refOpen ? "Hide reference (validation)" : "Reference values (optional — see the deviation)"}
-        </Button>
-        <Collapse in={refOpen}>
-          <Group gap="xs" wrap="wrap">
-            <NumberInput label="Tb (K)" value={refTb} onChange={(v) => setRefTb(String(v ?? ""))} w={110} />
-            <NumberInput label="Tc (K)" value={refTc} onChange={(v) => setRefTc(String(v ?? ""))} w={110} />
-            <NumberInput label="Pc (bar)" value={refPc} onChange={(v) => setRefPc(String(v ?? ""))} w={110} />
-            <NumberInput label="ω (-)" value={refW} onChange={(v) => setRefW(String(v ?? ""))} w={110} />
-          </Group>
-        </Collapse>
+        {mode === "VanKrevelen" && (
+          <NumberInput label="Packing factor k  (V = k·Vw; ≈1.60 amorphous, ≈1.43 crystalline)"
+            value={packing} min={1.0} max={2.0} step={0.01} decimalScale={2} w={360}
+            onChange={(v) => setPacking(String(v ?? "1.60"))} />
+        )}
+
+        {mode === "Joback" && (
+          <>
+            <Button variant="subtle" size="compact-xs" onClick={() => setRefOpen((o) => !o)} w="fit-content">
+              {refOpen ? "Hide reference (validation)" : "Reference values (optional — see the deviation)"}
+            </Button>
+            <Collapse in={refOpen}>
+              <Group gap="xs" wrap="wrap">
+                <NumberInput label="Tb (K)" value={refTb} onChange={(v) => setRefTb(String(v ?? ""))} w={110} />
+                <NumberInput label="Tc (K)" value={refTc} onChange={(v) => setRefTc(String(v ?? ""))} w={110} />
+                <NumberInput label="Pc (bar)" value={refPc} onChange={(v) => setRefPc(String(v ?? ""))} w={110} />
+                <NumberInput label="ω (-)" value={refW} onChange={(v) => setRefW(String(v ?? ""))} w={110} />
+              </Group>
+            </Collapse>
+          </>
+        )}
 
         <Group>
           <Button color="accent" onClick={() => void run()} disabled={!canRun || busy}
@@ -210,6 +341,41 @@ export function EstimateForm({
 
         {op && (
           <>
+            {isPolymer && breakdown.length > 0 && (
+              <>
+                <Divider label="Additive group sum (glass-box — redo it by hand)" labelPosition="center" />
+                <Table withRowBorders={false} verticalSpacing={2} fz="xs">
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>group</Table.Th><Table.Th ta="right">count</Table.Th>
+                      <Table.Th ta="right">n·MW (g/mol)</Table.Th>
+                      <Table.Th ta="right">{contribLabel}</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    {breakdown.map((b, i) => (
+                      <Table.Tr key={i}>
+                        <Table.Td ff="monospace">{b.group}</Table.Td>
+                        <Table.Td ta="right">{b.count}</Table.Td>
+                        <Table.Td ta="right" ff="monospace">{b.mw !== undefined ? b.mw.toFixed(3) : "—"}</Table.Td>
+                        <Table.Td ta="right" ff="monospace">{b.contrib !== undefined ? b.contrib.toFixed(3) : "—"}</Table.Td>
+                      </Table.Tr>
+                    ))}
+                    <Table.Tr>
+                      <Table.Td fw={600}>Σ (M0, {mode === "VanKrevelen" ? "Vw" : "Yg"})</Table.Td>
+                      <Table.Td />
+                      <Table.Td ta="right" fw={600} ff="monospace">
+                        {breakdown.reduce((s, b) => s + (b.mw ?? 0), 0).toFixed(3)}
+                      </Table.Td>
+                      <Table.Td ta="right" fw={600} ff="monospace">
+                        {breakdown.reduce((s, b) => s + (b.contrib ?? 0), 0).toFixed(3)}
+                      </Table.Td>
+                    </Table.Tr>
+                  </Table.Tbody>
+                </Table>
+              </>
+            )}
+
             <Divider label="Estimated properties (ESTIMATE — review before trusting)" labelPosition="center" />
             <Table withRowBorders={false} verticalSpacing={2} fz="xs">
               <Table.Thead>
@@ -229,10 +395,20 @@ export function EstimateForm({
                 ))}
               </Table.Tbody>
             </Table>
+            {mode === "Yang2020" && d.Tg_K !== undefined && (
+              <Text size="xs" c="dimmed">
+                Tg∞ is the <b>infinite-molecular-weight limit</b>; a real sample's Tg(Mn) =
+                Tg∞ − K/Mn sits a little below it.
+              </Text>
+            )}
             <Group gap={6}>
               <Badge size="sm" variant="light" color="orange">origin: estimate</Badge>
               <Text size="xs" c="dimmed">
-                Joback + Lee-Kesler ω + Ambrose-Walton Psat + Rackett Vliq — corresponding states, a few % error (worse for polar species).
+                {mode === "VanKrevelen"
+                  ? "Van Krevelen / Bondi 1964 Vw — ρ carries the packing-factor k uncertainty (try crystalline k≈1.43)."
+                  : mode === "Yang2020"
+                    ? "Yang 2020 (ACS Omega, CC-BY) — additive main-chain Tg∞; over-predicts bulky pendants (e.g. polystyrene +19%)."
+                    : "Joback + Lee-Kesler ω + Ambrose-Walton Psat + Rackett Vliq — corresponding states, a few % error (worse for polar species)."}
               </Text>
             </Group>
 
