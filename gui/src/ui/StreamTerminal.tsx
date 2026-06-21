@@ -35,6 +35,7 @@ import { Group, Stack, Text, Tooltip } from "@mantine/core";
 import { IconBolt } from "@tabler/icons-react";
 
 import type { StreamSpec } from "../case/types.js";
+import { scalarToSI } from "../dict/scalarSI.js";
 import { useStore } from "../state/store.js";
 import { phaseColor as phaseColorFor } from "./plotting/palette.js";
 import {
@@ -259,9 +260,9 @@ export function StreamTerminal({ data, selected }: NodeProps) {
             {/* T AND P always, no F=/T=/P= prefixes (Vitor 2026-06-11): the
                 units already name each quantity -- kg/h is a flow, degC a
                 temperature, bar a pressure.  Just the state, clean. */}
-            {formatFlowFor(prefs.flow, resolved, stream)} {prefs.flow}
-            {" "}· {formatTfor(prefs.temperature, resolved?.T ?? stream?.T)}{" "}{temperatureLabel(prefs.temperature)}
-            {" "}· {formatPfor(prefs.pressure, resolved?.P ?? stream?.P)}{" "}{pressureLabel(prefs.pressure)}
+            {formatFlowFor(prefs.flow, resolved, stream)}
+            {" "}· {formatTfor(prefs.temperature, resolved?.T ?? scalarToSI(stream?.T))}{" "}{temperatureLabel(prefs.temperature)}
+            {" "}· {formatPfor(prefs.pressure, resolved?.P ?? scalarToSI(stream?.P))}{" "}{pressureLabel(prefs.pressure)}
           </Text>
         )}
       </Stack>
@@ -281,16 +282,21 @@ function formatFlowFor(
   resolved: { F: number; F_mass?: number; F_solid_mass?: number; F_solid?: number } | undefined,
   stream: StreamSpec | null,
 ): string {
-  let si: number | undefined;
   if (flowBasis(flow) === "mass") {
     const fluid = resolved?.F_mass;
-    si = fluid === undefined ? undefined : fluid + (resolved?.F_solid_mass ?? 0);
-  } else {
-    const fluid = resolved?.F ?? stream?.F;
-    si = fluid === undefined ? undefined : fluid + (resolved?.F_solid ?? 0);
+    const si = fluid === undefined ? undefined : fluid + (resolved?.F_solid_mass ?? 0);
+    if (si !== undefined && Number.isFinite(si) && si > 0) return `${formatFlow(si, flow)} ${flow}`;
+    // Pre-run on a mass basis we cannot know kg/h (it needs the molar mass the
+    // solver computes) -- but the AUTHORED molar flow IS known, so show it
+    // honestly in kmol/h rather than "—": a feed input is always visible.
+    const molar = resolved?.F ?? scalarToSI(stream?.F);
+    if (molar !== undefined && Number.isFinite(molar) && molar > 0) return `${formatFlow(molar, "kmol/h")} kmol/h`;
+    return "—";
   }
+  const fluid = resolved?.F ?? scalarToSI(stream?.F);
+  const si = fluid === undefined ? undefined : fluid + (resolved?.F_solid ?? 0);
   if (si === undefined || !Number.isFinite(si) || si <= 0) return "—";
-  return formatFlow(si, flow);
+  return `${formatFlow(si, flow)} ${flow}`;
 }
 
 // Temperature label; treats a missing / non-physical (<= 0 K) value as "—".
