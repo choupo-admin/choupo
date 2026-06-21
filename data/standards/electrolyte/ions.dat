@@ -62,4 +62,27 @@ ions
     { species OH; ion "OH-"; z -1; MW 17.007; hfAq -229990; sAq -10.75; cpAq -148.5; radius 3.00e-10; D0 5.27e-09; }  // Wagman 1982; radius+D0 Nightingale 1959 (lambda0 198.0, Grotthuss)
     { species SO4; ion "SO4-2"; z -2; MW 96.06; radius 3.79e-10; D0 1.06e-09; }   // radius+D0 Nightingale 1959 (lambda0 160.0 molar)
     { species H4SiO4; ion "H4SiO4"; z 0; MW 96.113; }                                  // neutral silica master, phreeqc.dat (speciation)
+
+    // --- EXPANSION (appended 2026-06-21) ---------------------------------
+    // Master ions for the newly-in-scope chemistry (Fe(3), Mn(3), Al, B as
+    // H3BO3, P, N as NO3/NO2/NH4, S(-2) as HS, plus trace metals Zn/Cd/Pb/Cu),
+    // parsed deterministically from the phreeqc.dat SOLUTION_MASTER_SPECIES
+    // block by bin/curate (this run).  MW = ION mass (standard IUPAC atomic
+    // weights summed over the formula; the db lists only the element gfw).
+    // No enthalpy / transport tier yet (absence-tolerant; added on curation).
+    // Source: USGS PHREEQC phreeqc.dat (public domain); primary not stated in db.
+    { species Al; ion "Al+3"; z +3; MW 26.982; }
+    { species Cd; ion "Cd+2"; z +2; MW 112.414; }
+    { species Cu; ion "Cu+2"; z +2; MW 63.546; }
+    { species Cup; ion "Cu+1"; z +1; MW 63.546; }
+    { species Fep3; ion "Fe+3"; z +3; MW 55.845; }
+    { species H3BO3; ion "H3BO3"; z 0; MW 61.831; }
+    { species HS; ion "HS-"; z -1; MW 33.068; }
+    { species Mnp3; ion "Mn+3"; z +3; MW 54.938; }
+    { species NH4; ion "NH4+"; z +1; MW 18.039; }
+    { species NO2; ion "NO2-"; z -1; MW 46.005; }
+    { species NO3; ion "NO3-"; z -1; MW 62.004; }
+    { species Pb; ion "Pb+2"; z +2; MW 207.2; }
+    { species PO4; ion "PO4-3"; z -3; MW 94.97; }
+    { species Zn; ion "Zn+2"; z +2; MW 65.38; }
 );

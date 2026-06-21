@@ -18,9 +18,18 @@
   (logK 10.329, dH -3.561 kcal); rows touched carry "HCO3-basis" comments.
   Conversion pin: CO2aq logK25 6.352 = pK1 of carbonic acid (lit. 6.35).
 
-  Scaling minerals only.  NOTE: brucite Mg(OH)2 is ABSENT from phreeqc.dat
-  (it lives in pitzer.dat / wateq4f) and is therefore not imported here.
-  nuWater < 0 means water is CONSUMED on dissolution (SiO2 + 2 H2O = H4SiO4).
+  Scaling minerals.  nuWater < 0 means water is CONSUMED on dissolution
+  (SiO2 + 2 H2O = H4SiO4).
+
+  EXPANSION (fetched 2026-06-21, phreeqc.dat byte-identical to the 2026-06-11
+  import): appended 12 minerals beyond the original 11 (which are preserved
+  byte-for-byte above the marker).  NEW = dolomite, siderite, rhodochrosite,
+  strontianite, witherite (carbonates, HCO3-basis), arcanite, mirabilite,
+  thenardite, epsomite, hexahydrite, kieserite (K/Na/Mg sulfates), quartz
+  (SiO2).  Master set widened to {Fe, Mn, Sr, Ba} carbonates (these ions are
+  already in ions.dat).  SKIPPED: hydroxyapatite Ca5(PO4)3OH (needs a PO4
+  master that ions.dat does not carry); brucite Mg(OH)2 (still ABSENT from
+  phreeqc.dat -- it lives in pitzer.dat / wateq4f, out of this import's scope).
 \*---------------------------------------------------------------------------*/
 
 minerals
@@ -47,4 +56,28 @@ minerals
       logK25 -2.71; dH 13974.6; analytic ( -0.26 0 -731 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
     { mineral sylvite; formula "KCl"; masters ( { ion K; nu 1; } { ion Cl; nu 1; } );
       logK25 0.9; dH 8500; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { mineral dolomite; formula "CaMg(CO3)2"; masters ( { ion Ca; nu 1; } { ion Mg; nu 1; } { ion HCO3; nu 2; } { ion H; nu -2; } );
+      logK25 3.568; dH -69278.7; analytic ( 247.0572 -0.02474302 -16741.58 -77.85122 1127427.8 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: 25 C: Hemingway and Robie, 1994; 50175 C: Benezeth et al., 2018, GCA 224, 262-275"; }   // HCO3-basis: CaMg(CO3)2(s) + H+ = products
+    { mineral siderite; formula "FeCO3"; masters ( { ion Fe; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 -0.561; dH -25275.5; source "USGS PHREEQC phreeqc.dat (public domain)"; }   // HCO3-basis: FeCO3(s) + H+ = products
+    { mineral rhodochrosite; formula "MnCO3"; masters ( { ion Mn; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 -0.801; dH -20882.3; source "USGS PHREEQC phreeqc.dat (public domain)"; }   // HCO3-basis: MnCO3(s) + H+ = products
+    { mineral strontianite; formula "SrCO3"; masters ( { ion Sr; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 1.058; dH -16572.8; analytic ( 262.9176 0.03252849 -12391.384 -95.51199 563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }   // HCO3-basis: SrCO3(s) + H+ = products
+    { mineral witherite; formula "BaCO3"; masters ( { ion Ba; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 1.767; dH -11957.9; analytic ( 715.5291 0.15362649 -25163.04 -275.42041 563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }   // HCO3-basis: BaCO3(s) + H+ = products
+    { mineral arcanite; formula "K2SO4"; masters ( { ion K; nu 2; } { ion SO4; nu 1; } );
+      logK25 -1.776; dH 20920; analytic ( 674.142 0.30423 -18037 -280.236 0 -0.000144055 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: ref. 3"; }
+    { mineral mirabilite; formula "Na2SO4:10H2O"; masters ( { ion Na; nu 2; } { ion SO4; nu 1; } ); nuWater 10;
+      logK25 -0.706; dH 124000; analytic ( -53.037 0.1242 4562 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: ref. 3"; }
+    { mineral thenardite; formula "Na2SO4"; masters ( { ion Na; nu 2; } { ion SO4; nu 1; } );
+      logK25 0.65; dH -23100; analytic ( 159.849 0.01699 -5000 -59.6073 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: ref. 3"; }
+    { mineral epsomite; formula "MgSO4:7H2O"; masters ( { ion Mg; nu 1; } { ion SO4; nu 1; } ); nuWater 7;
+      logK25 -1.74; dH 10570; analytic ( -3.59 0.00621 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { mineral hexahydrite; formula "MgSO4:6H2O"; masters ( { ion Mg; nu 1; } { ion SO4; nu 1; } ); nuWater 6;
+      logK25 -1.57; dH 2350; analytic ( -1.978 0.00138 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { mineral kieserite; formula "MgSO4:H2O"; masters ( { ion Mg; nu 1; } { ion SO4; nu 1; } ); nuWater 1;
+      logK25 -1.16; dH 9220; analytic ( 29.485 -0.0507 0 -2.662 -795000 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { mineral quartz; formula "SiO2"; masters ( { ion H4SiO4; nu 1; } ); nuWater -2;
+      logK25 -3.98; dH 25062.2; analytic ( 0.41 0 -1309 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
 );

@@ -203,3 +203,114 @@ for s,(l,z) in lam.items():
 * **GAP — temperature dependence.** `D0` is the 25 °C value; a Stokes–Einstein
   T-correction (via the water-viscosity ratio) is deferred. v1 ED cases run at /
   near 25 °C and the unit announces the constant-`D0` assumption.
+
+---
+
+## Expansion 2026-06-21
+
+A coordinated catalogue expansion widened the master-ion / species / mineral /
+gas coverage beyond the core seawater system, plus a NEW `gases.dat` file.  All
+imports were **deterministic** (no hand-typed values), re-using the existing
+`bin/curate/parse_*.py` machinery with the master set widened; every existing
+entry is **preserved byte-for-byte** (each importer guards by re-deriving the
+prior rows identically) and new rows are appended below a clearly-marked
+divider.  Per-value primary-citation discipline is unchanged: the `source`
+field carries the database's **own inline primary** where it gives one, and is
+explicitly marked `"… ; primary not stated in db"` where it does not — the
+**aggregator's arrangement is never cited as the primary**.  Public-domain
+status (USGS, no copyright) was re-confirmed by re-fetching each DB.
+
+**Databases fetched (all USGS PHREEQC v3, public domain):**
+
+* `phreeqc.dat` —
+  `https://raw.githubusercontent.com/usgs-coupled/phreeqc3/master/database/phreeqc.dat`
+  (fetched 2026-06-21; **byte-identical** to the cached import ref
+  `bin/curate/refs/phreeqc.dat` — md5 `07ba2ffc…`, so the expansion is provably
+  consistent with the original import).
+* `pitzer.dat` —
+  `https://raw.githubusercontent.com/usgs-coupled/phreeqc3/master/database/pitzer.dat`
+  (fetched 2026-06-21; byte-identical to the cached ref — 37,225 bytes).
+* `wateq4f.dat` — fetched 2026-06-21 (consulted for coverage gaps only; no rows
+  imported in this round — its Al/Si/aluminosilicate/redox masters are outside
+  the catalogue's master set).
+
+**Per-file detail:**
+
+* **`ions.dat`** — **+14 master ions** (of the 50 `SOLUTION_MASTER_SPECIES`
+  lines in `phreeqc.dat`; the rest were already present, or are neutral / gas /
+  electron placeholders, or redox duplicates of an emitted ion).  Added: Fe(3)
+  `Fe+3`, Mn(3) `Mn+3`, Al `Al+3`, B as the neutral boric-acid master `H3BO3`,
+  the N family `NO3-`/`NO2-`/`NH4+`, P `PO4-3`, S(-2) `HS-`, and the trace
+  metals `Zn+2`/`Cd+2`/`Pb+2`/`Cu+2`/`Cu+1`.  Source: deterministic parse of the
+  `SOLUTION_MASTER_SPECIES` block.  Dict-safe keys, charge-disambiguated on
+  collision (`Fep3`/`Mnp3`/`Cup` vs the existing `Fe`/`Mn`/`Cu`); polyatomic
+  molar masses summed from IUPAC atomic weights (NO3 62.004, PO4 94.97, NH4
+  18.039, HS 33.068, H3BO3 61.831).  No per-master primary in the db → every new
+  row marked `"USGS PHREEQC phreeqc.dat (public domain); primary not stated in
+  db"`.  No enthalpy/transport tier added (absence-tolerant, a later pin).
+  **Skipped:** neutral/gas/electron placeholders (not aqueous ions).
+
+* **`speciation.dat`** — **+18 aqueous-complex rows** (35 → 53 species, 0
+  minerals), appended below a `--- EXPANSION 2026-06-21 ---` divider.  Source:
+  `bin/curate/parse_speciation.py` `SOLUTION_SPECIES` path with `MASTERS`
+  widened by `Fe+2→Fe`, `Mn+2→Mn`.  New Fe complexes: FeOHp, FeOH2aq, FeOH3m,
+  FeCO3aq, FeHCO3p, FeFp, FeSO4aq, FeHSO4p, FeClp.  New Mn complexes: MnOHp,
+  MnOH3m, MnCO3aq, MnHCO3p, MnFp, MnSO4aq, MnClp, MnCl2aq, MnCl3m.  Same HCO3⁻
+  basis swap, chaining, dH-unit handling as the original import (FeOH+ 13.2 kcal
+  = 55228.8 J; MnSO4 21.55 kJ = 21550 J, both verified against the db text).  No
+  per-row primary in the db → all carry `"USGS PHREEQC phreeqc.dat (public
+  domain)"`.  **Skipped:** Al complexes (no Al master pre-existing in scope),
+  Fe(+3)/Mn(+3) complexes (form only via excluded e⁻ redox couples), and
+  PO4/NO3/HS complexes of Fe/Mn (masters outside the parse set).
+
+* **`minerals.dat`** — **+12 minerals** (11 → 23), appended after the preserved
+  original block (all 11 originals re-derive byte-for-byte vs `git show HEAD`).
+  Source: `bin/curate/parse_speciation.py` PHASES path with widened `MASTERS`
+  and `TARGET_PHASES`.  Added carbonates (HCO3⁻ basis, CO3²⁻→HCO3⁻ sign-flip):
+  dolomite (*Hemingway & Robie 1994; Bénézeth et al. 2018, GCA 224*), siderite,
+  rhodochrosite, strontianite, witherite; sulfates: arcanite K2SO4, mirabilite
+  Na2SO4·10H2O, thenardite Na2SO4 (all *ref. 3 = Appelo, Appl. Geochem. 55
+  (2015) 62*), epsomite MgSO4·7H2O, hexahydrite MgSO4·6H2O, kieserite
+  MgSO4·H2O; silica: quartz SiO2.  Each carries `analytic`/`validC` where the db
+  provides them and `dH` in J/mol.  Per-row primary = the db's own `lit:` note
+  (or "primary not stated" where absent).  **Skipped:** hydroxyapatite (needs a
+  PO4 master not in `ions.dat` at parse time), brucite (absent from
+  `phreeqc.dat`), and gibbsite/kaolinite/feldspars/pyrite/hematite/heavy-metal
+  minerals (need Al/Si/redox/heavy-metal masters outside the master set).
+
+* **`gases.dat`** — **NEW FILE** (did not exist before): the gas–aqueous
+  Henry's-law dissolution catalogue, plus its importer `bin/curate/parse_gases.py`.
+  Source: deterministic parse of the `PHASES` gas reactions in `phreeqc.dat`.
+  **+8 gases** (of 13 gas PHASES): CO2, H2O, O2, H2, N2, H2S, CH4, NH3.  Each row
+  carries `logK25` (decadic Henry constant, 25 °C), `dH` [J/mol], the full
+  `analytic` A1..A6 K(T) vector, and Peng–Robinson `Tc` [K] / `Pc` [atm] /
+  `omega`.  dH-unit verified by van't Hoff against each phase's own `-analytic`
+  slope (CO2 −4.776 kcal ×4.184 = −19.98 kJ matches; the script GUARDS this and
+  fails loudly on mismatch).  H2S(g) is the db's fused `H2S = H+ + HS-`
+  (Henry + Ka1), flagged `// Henry+Ka1 fused`.  Per-row primary from the db's
+  inline comments: H2 → *Zhu 2022; Chabab 2020; Gordon 1977; Crozier 1974*;
+  H2S → *Jiang et al., 2020, Chem. Geol. 555, 119816*; CH4 → "CH4 solubilities
+  25–100 °C"; CO2/H2O/O2/N2/NH3 → `"… ; primary not stated in db"`.  **Skipped:**
+  the 5 redox-decoupled twin masters Oxg/Hdg/Ntg/Mtg/H2Sg (duplicates of
+  O2/H2/N2/CH4/H2S, not new chemistry).
+
+* **`pairs.dat`** — **no entries added.**  A re-fetch + re-parse of `pitzer.dat`
+  via `bin/curate/parse_pitzer.py` confirmed the file is **already fully
+  expanded**: all 54 cation–anion Pitzer binaries the db yields (including the
+  Sr/Ba/Br/Li/B-borate/Fe/Mn pairs) are present, and the 25 °C base values
+  match the freshly-fetched DB exactly (spot-checked e.g. Mn|SO4 β0=0.2065,
+  β1=2.9511, β2=−40.0, Cφ=0.01636).  Appending would have duplicated every entry
+  (forbidden by the preserve rule), so the correct action was none.  Gap made
+  visible: Al/F have no pitzer.dat master; Si appears only as the neutral H4SiO4
+  LAMBDA term (no charged β-pair) — Al/F/Si binaries would need a different DB
+  (wateq4f/llnl), out of scope.
+
+**Summary table**
+
+| file | entries added | db | primary discipline |
+|------|--------------:|----|--------------------|
+| `ions.dat` | +14 master ions | phreeqc.dat | db has no per-master primary → "primary not stated in db" |
+| `speciation.dat` | +18 aqueous complexes (Fe, Mn) | phreeqc.dat | db has no per-row primary → "USGS PHREEQC phreeqc.dat (public domain)" |
+| `minerals.dat` | +12 minerals | phreeqc.dat | per-row db `lit:` note (Hemingway & Robie 1994; Bénézeth 2018; Appelo 2015), else "primary not stated" |
+| `gases.dat` (NEW) | +8 gases | phreeqc.dat | db inline (Zhu 2022 / Jiang 2020 / …), else "primary not stated in db" |
+| `pairs.dat` | 0 (already complete) | pitzer.dat | (unchanged — Appelo 2014/2015/2017) |

@@ -26,6 +26,16 @@
   {H, Ca, Mg, Na, K, Ba, Sr, Cl, SO4, HCO3, F, H4SiO4} only.  EXCLUDED:
   all redox / e- couples, the Pitzer activity-correction dimers (CO2)2 and
   (H2S)2, and species outside the master set.
+
+  EXPANSION 2026-06-21 (fetched https://github.com/usgs-coupled/phreeqc3
+  master, byte-identical to the import ref): the master set was widened to
+  include the newly-in-scope transition metals Fe (=Fe+2) and Mn (=Mn+2),
+  whose ions.dat masters already existed.  The 18 rows BELOW the
+  "--- EXPANSION ---" divider are new (Fe/Mn carbonate, bicarbonate,
+  hydroxide, fluoride, sulfate and chloride complexes); the original 35 above
+  it are unchanged.  Fe(+3)/Mn(+3) complexes are EXCLUDED (they form only via
+  the redox couple Fe+2 = Fe+3 + e-, dropped with all other e- couples); Al
+  complexes are SKIPPED (no Al master ion in ions.dat to anchor them).
 \*---------------------------------------------------------------------------*/
 
 reactions
@@ -100,4 +110,42 @@ reactions
       logK25 -13.29; source "USGS PHREEQC phreeqc.dat (public domain)"; }
     { species SrSO4aq; ion "SrSO4"; z 0; masters ( { ion Sr; nu 1; } { ion SO4; nu 1; } );
       logK25 2.29; dH 8702.7; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+
+    // --- EXPANSION 2026-06-21: Fe + Mn aqueous complexes (phreeqc.dat) ---
+    { species FeClp; ion "FeCl+"; z +1; masters ( { ion Fe; nu 1; } { ion Cl; nu 1; } );
+      logK25 0.14; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species FeCO3aq; ion "FeCO3"; z 0; masters ( { ion Fe; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 -5.949; source "USGS PHREEQC phreeqc.dat (public domain)"; }   // HCO3-basis
+    { species FeFp; ion "FeF+"; z +1; masters ( { ion Fe; nu 1; } { ion F; nu 1; } );
+      logK25 1; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species FeHCO3p; ion "FeHCO3+"; z +1; masters ( { ion Fe; nu 1; } { ion HCO3; nu 1; } );
+      logK25 2; source "USGS PHREEQC phreeqc.dat (public domain)"; }   // HCO3-basis
+    { species FeHSO4p; ion "FeHSO4+"; z +1; masters ( { ion Fe; nu 1; } { ion H; nu 1; } { ion SO4; nu 1; } );
+      logK25 3.068; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species FeOH2aq; ion "Fe(OH)2"; z 0; masters ( { ion Fe; nu 1; } { ion H; nu -2; } ); nuWater 2;
+      logK25 -20.57; dH 119516; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species FeOH3m; ion "Fe(OH)3-"; z -1; masters ( { ion Fe; nu 1; } { ion H; nu -3; } ); nuWater 3;
+      logK25 -31; dH 126775.2; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species FeOHp; ion "FeOH+"; z +1; masters ( { ion Fe; nu 1; } { ion H; nu -1; } ); nuWater 1;
+      logK25 -9.5; dH 55228.8; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species FeSO4aq; ion "FeSO4"; z 0; masters ( { ion Fe; nu 1; } { ion SO4; nu 1; } );
+      logK25 2.25; dH 13514.3; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species MnCl2aq; ion "MnCl2"; z 0; masters ( { ion Mn; nu 1; } { ion Cl; nu 2; } );
+      logK25 0.25; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species MnCl3m; ion "MnCl3-"; z -1; masters ( { ion Mn; nu 1; } { ion Cl; nu 3; } );
+      logK25 -0.31; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species MnClp; ion "MnCl+"; z +1; masters ( { ion Mn; nu 1; } { ion Cl; nu 1; } );
+      logK25 0.61; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species MnCO3aq; ion "MnCO3"; z 0; masters ( { ion Mn; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
+      logK25 -5.429; source "USGS PHREEQC phreeqc.dat (public domain)"; }   // HCO3-basis
+    { species MnFp; ion "MnF+"; z +1; masters ( { ion Mn; nu 1; } { ion F; nu 1; } );
+      logK25 0.84; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species MnHCO3p; ion "MnHCO3+"; z +1; masters ( { ion Mn; nu 1; } { ion HCO3; nu 1; } );
+      logK25 1.95; source "USGS PHREEQC phreeqc.dat (public domain)"; }   // HCO3-basis
+    { species MnOH3m; ion "Mn(OH)3-"; z -1; masters ( { ion Mn; nu 1; } { ion H; nu -3; } ); nuWater 3;
+      logK25 -34.8; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species MnOHp; ion "MnOH+"; z +1; masters ( { ion Mn; nu 1; } { ion H; nu -1; } ); nuWater 1;
+      logK25 -10.59; dH 60249.6; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    { species MnSO4aq; ion "MnSO4"; z 0; masters ( { ion Mn; nu 1; } { ion SO4; nu 1; } );
+      logK25 1.408; dH 21550; source "USGS PHREEQC phreeqc.dat (public domain)"; }
 );
