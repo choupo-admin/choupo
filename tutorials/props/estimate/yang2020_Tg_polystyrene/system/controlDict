@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "ESTIMATE the glass-transition Tg of polystyrene by the Yang 2020 modified group-contribution scheme (CC-BY) -- the repeat unit -CH2-CH(phenyl)- gives Tg(inf)=444 K, an HONEST +19% over-estimate of the measured ~373 K (a teaching point about group-contribution limits)";
+
+verbosity     2;

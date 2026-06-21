@@ -1,0 +1,64 @@
+/*---------------------------------------------------------------------------*\
+  yang2020_Tg_polystyrene  --  Yang-2020 Tg estimate + an HONEST limitation
+  =========================================================================
+  ESTIMATE the GLASS-TRANSITION temperature Tg of polystyrene by the YANG 2020
+  modified group-contribution scheme.  The repeat unit -CH2-CH(phenyl)- decomposes
+  into two Yang main-chain groups:
+
+      CH2     :  MW 14    Yg 4.026
+      CHphenyl:  MW 90    Yg 42.153
+      ----------------------------------
+      M0      = 14 + 90              = 104   g/mol
+      Yg(inf) = 4.026 + 42.153       = 46.179 (1e3 g.K/mol)
+      Tg(inf) = 46.179*1e3 / 104     = 444 K
+
+  >>> THE HONEST TEACHING POINT <<<
+  Measured polystyrene Tg ~ 373 K (atactic, high Mw).  Yang 2020 gives 444 K --
+  a +19% OVER-ESTIMATE.  This is NOT a bug: it is the model telling the truth
+  about itself.  The CHphenyl contribution (Yg 42.153) was regressed across the
+  whole training set, and the bulky monosubstituted phenyl pendant is one where
+  an additive main-chain scheme over-predicts the limiting Tg.  Box: "all models
+  are wrong, some are useful".  The student SEES the deviation (the console
+  prints the per-cent error against the measured anchor) and learns where a
+  group-contribution method earns trust (PVC: 351 vs 354 K, -0.8%) and where it
+  does not (polystyrene: 444 vs 373 K, +19%).
+
+  Contrast the flagship `yang2020_Tg_pvc`, where Tg(inf)=351 K reproduces the
+  paper's Fig 6 value EXACTLY -- that case goldens Tg as validated physics.  Here
+  Tg is SHOWN (the machinery is identical) but the case exists to expose the
+  over-estimate, so only M0 (an exact mass-balance fact) is goldened, not Tg.
+
+  This is Yang 2020 -- NOT bare Van Krevelen.  Nb (backbone-in-the-side-chain)
+  = 0 for this vinyl polymer.
+
+  SOURCE + LICENCE:
+    Yang, Zou, Ye, Zhu, Dong, Bi, ACS Omega 5 (2020) 19655,
+    doi:10.1021/acsomega.0c04499 -- CC-BY 4.0; values cited per group as
+    "Yang 2020", never "Van Krevelen".
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        yang2020_Tg_polystyrene;
+        type        estimateComponent;
+        model       Yang2020;                // POLYMER-group estimator (Tg, CC-BY)
+        component   polystyrene;
+
+        // Repeat unit  -CH2-CH(phenyl)-  :  one methylene + one phenyl-methine.
+        groups
+        (
+            { group CH2;      count 1; }
+            { group CHphenyl; count 1; }
+        );
+
+        // "See, then decide": the measured anchor exposes the +19% over-estimate.
+        reference
+        {
+            source   "atactic polystyrene Tg ~ 373 K (high Mw)";
+            Tg       373.0;                  // K -- the honest target the model misses
+        }
+
+        output  { proposal auto; }
+    }
+);

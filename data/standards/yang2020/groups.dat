@@ -1,0 +1,282 @@
+/*---------------------------------------------------------------------------*\
+  Yang 2020 polymer group contributions for the GLASS TRANSITION Tg(inf).
+
+  Source (genuinely open, redistributable -- unlike the Van Krevelen book):
+    Yang, Zou, Ye, Zhu, Dong, Bi, "A Modified Group Contribution Scheme to
+    Predict Homopolymer Glass Transition Temperatures", ACS Omega 5 (2020)
+    19655, doi:10.1021/acsomega.0c04499 -- CC-BY 4.0.
+    Values transcribed FAITHFULLY from Supporting Information Table S3
+    ("Formula weights and contributions of groups used to predict Tg(inf)",
+    pp. S10-S13), fetched via the europepmc open mirror (PMC7676332).
+
+  THE EQUATION (paper eq 5):
+    Tg(inf) = [ sum N_i*Yg_i(inf) + Nb*Ygb ] / M0
+      Yg in 10^3 g.K/mol ; M0 = sum N_i*MW_i in g/mol  -> Tg in K.
+
+  Nb / Ygb -- THE BACKBONE-IN-THE-SIDE-CHAIN TERM.
+    `Ygb` (group `backboneSideChain`, SI row 58, Yg = 2.771) is the per-occurrence
+    contribution `Nb` counts.  Nb = number of backbone atoms that sit in a SIDE
+    chain (not on the main chain).  For the common vinyl polymers (PVC,
+    polystyrene, poly(vinylpyridine), ...) Nb = 0, so the bracket is just
+    sum N_i*Yg_i.  When a case has side-chain backbone atoms, add the group
+    `backboneSideChain` with `count Nb` -- it is an ordinary additive term.
+
+  GROUP IDENTITIES -- VERIFIED 2026-06-22.
+    Table S3 draws each group as a 2D-structure IMAGE.  Rows S10-S11 (groups
+    1-35) were matched to main-chain repeat-unit fragments and CROSS-VALIDATED
+    against the paper's Fig 6: PVC (CH2 + CHCl) = 351 K, poly(4-vinylpyridine)
+    (CH2 + CH4pyridyl) = 426 K, poly(N-vinylpyrrolidone) (CH2 + CH2pyrrolidinone)
+    = 452 K, poly(N-vinylcarbazole) (CH2 + CHcarbazolyl) = 504 K -- all EXACT vs
+    the paper.  Rows S12-S13 (groups 36-58) are the linker / aromatic / heteroatom
+    groups, transcribed from the SI figures.
+
+  *  Groups marked `vanKrevelen` in `provenance.note` carry an asterisk in
+     Table S3 ("Group found in Van Krevelen's book"): the FW + Yg are reported by
+     Yang 2020 (this is what we cite + redistribute), the structure originally
+     catalogued by Van Krevelen.
+
+  The engine REFUSES to write under data/standards/ -- editing this file is a
+  CURATION act (see CLAUDE.md SS7).
+\*---------------------------------------------------------------------------*/
+
+groups
+(
+    // ---- Main-chain repeat-unit groups (Table S3 rows 1-35) -- VERIFIED -----
+    { name CH2;                MW 14;    Yg 4.026;
+      structure "-CH2-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; method "limiting Tg group contribution Yg(inf)"; note "unambiguous SI text label; verified via PVC/4VP/NVP/NVC = 351/426/452/504 K"; } }
+
+    { name CHCH3;              MW 28;    Yg 8.222;
+      structure "-CH(CH3)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 2"; } }
+
+    { name CHOCH3;             MW 44;    Yg 10.611;
+      structure "-CH(OCH3)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 3"; } }
+
+    { name CHCOOH;             MW 58;    Yg 18.820;
+      structure "-CH(COOH)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 4"; } }
+
+    { name CHOH;               MW 30;    Yg 4.697;
+      structure "-CH(OH)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 5"; } }
+
+    { name CHCONH2;            MW 57;    Yg 29.918;
+      structure "-CH(CONH2)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 6"; } }
+
+    { name CHcyclopentyl;      MW 82;    Yg 29.607;
+      structure "-CH(cyclopentyl)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 7"; } }
+
+    { name CHcyclohexyl;       MW 96;    Yg 38.934;
+      structure "-CH(cyclohexyl)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 8"; } }
+
+    { name CHphenyl;           MW 90;    Yg 42.153;
+      structure "-CH(phenyl)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 9 -- styrene main-chain unit"; } }
+
+    { name CHCl;               MW 48.5;  Yg 17.911;
+      structure "-CH(Cl)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 10 -- VERIFIED via PVC (CH2+CHCl)=351 K"; } }
+
+    { name CHvinyl;            MW 40;    Yg 10.770;
+      structure "-CH(CH=CH2)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 11"; } }
+
+    { name CHeqCH;             MW 26;    Yg 1.344;
+      structure "-CH=CH-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 12 -- main-chain double bond"; } }
+
+    { name CCH3eqCH;           MW 40;    Yg 6.228;
+      structure "-C(CH3)=CH-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 13"; } }
+
+    { name CCleqCH;            MW 60.5;  Yg 13.807;
+      structure "-C(Cl)=CH-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 14"; } }
+
+    { name CH4pyridyl;         MW 91;    Yg 40.704;
+      structure "-CH(4-pyridyl)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 15 -- VERIFIED via poly(4-vinylpyridine)=426 K"; } }
+
+    { name CH2pyrrolidinone;   MW 97;    Yg 46.146;
+      structure "-CH(2-pyrrolidinone)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 16 -- VERIFIED via poly(N-vinylpyrrolidone)=452 K"; } }
+
+    { name CHCN;               MW 39;    Yg 15.637;
+      structure "-CH(CN)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 17 -- acrylonitrile main-chain unit"; } }
+
+    { name CHcarbazolyl;       MW 179;   Yg 93.246;
+      structure "-CH(carbazolyl)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 18 -- VERIFIED via poly(N-vinylcarbazole)=504 K"; } }
+
+    { name CCH3CH3;            MW 42;    Yg 18.234;
+      structure "-C(CH3)(CH3)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 19 -- isobutylene main-chain unit"; } }
+
+    { name CCH3COOCH3;         MW 86;    Yg 37.503;
+      structure "-C(CH3)(COOCH3)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 20 -- MMA main-chain unit"; } }
+
+    { name CCOOCH3COOCH3;      MW 130;   Yg 57.666;
+      structure "-C(COOCH3)(COOCH3)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 21"; } }
+
+    { name CCH3phenyl;         MW 104;   Yg 54.475;
+      structure "-C(CH3)(phenyl)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 22 -- alpha-methylstyrene main-chain unit"; } }
+
+    { name CClCOOCH3;          MW 106.5; Yg 43.597;
+      structure "-C(Cl)(COOCH3)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 23"; } }
+
+    { name CFF;                MW 50;    Yg 17.503;
+      structure "-C(F)(F)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 24 -- PTFE main-chain unit"; } }
+
+    { name CClCl;              MW 83;    Yg 23.910;
+      structure "-C(Cl)(Cl)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 25"; } }
+
+    { name CFCl;               MW 66.5;  Yg 26.884;
+      structure "-C(F)(Cl)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 26"; } }
+
+    { name CFCF3;              MW 100;   Yg 32.682;
+      structure "-C(F)(CF3)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 27"; } }
+
+    { name CHCF3;              MW 82;    Yg 25.254;
+      structure "-CH(CF3)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 28"; } }
+
+    { name CCF3CF3;            MW 150;   Yg 80.103;
+      structure "-C(CF3)(CF3)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 29"; } }
+
+    { name NCOCH3;             MW 57;    Yg 23.331;
+      structure "-N(COCH3)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 30 -- main-chain N-acetyl"; } }
+
+    { name O;                  MW 16;    Yg -14.718;
+      structure "-O-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 31 -- main-chain ether O (negative contribution)"; } }
+
+    { name Oend;               MW 16;    Yg 12.011;
+      structure "-O- (end)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 32 -- terminal/end O"; } }
+
+    { name Ooxide;             MW 16;    Yg 4.989;
+      structure "-O- (oxide)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 33 -- oxide O"; } }
+
+    { name S;                  MW 32;    Yg -2.887;
+      structure "-S-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 34 -- main-chain thioether (negative contribution)"; } }
+
+    { name CO;                 MW 28;    Yg 4.370;
+      structure "-C(=O)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 35 -- main-chain carbonyl"; } }
+
+    // ---- Linker / aromatic / heteroatom groups (Table S3 rows 36-58) -------
+    { name SO2;                MW 64;    Yg 15.373;
+      structure "-S(=O)(=O)-  (sulfone)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 36* (Van Krevelen) -- sulfone linker"; } }
+
+    { name OCSO;               MW 76;    Yg 14.676;
+      structure "-O-C(=S)-O-  (thiocarbonate)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 37 -- thiocarbonate linker"; } }
+
+    { name COO;                MW 44;    Yg 7.025;
+      structure "-C(=O)-O-  (ester)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 38* (Van Krevelen) -- ester linker"; } }
+
+    { name CONH;               MW 43;    Yg 19.247;
+      structure "-C(=O)-NH-  (amide)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 39* (Van Krevelen) -- amide linker"; } }
+
+    { name OCOO;               MW 60;    Yg 13.663;
+      structure "-O-C(=O)-O-  (carbonate)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 40* (Van Krevelen) -- carbonate linker"; } }
+
+    { name OCONH;              MW 59;    Yg 16.108;
+      structure "-O-C(=O)-NH-  (urethane)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 41* (Van Krevelen) -- urethane linker"; } }
+
+    { name pPhenylene;         MW 76;    Yg 42.182;
+      structure "-C6H4-  (p-phenylene)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 42* (Van Krevelen) -- 1,4-phenylene ring linker"; } }
+
+    { name methylPhenylene;    MW 90;    Yg 43.893;
+      structure "-C6H3(CH3)-  (methyl-p-phenylene)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 43* (Van Krevelen) -- toluene-derived phenylene linker"; } }
+
+    { name dimethylPhenylene;  MW 104;   Yg 68.975;
+      structure "-C6H2(CH3)2-  (2,6-dimethyl-p-phenylene)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 44* (Van Krevelen) -- xylylene linker (PPO repeat ring)"; } }
+
+    { name cyclohexylene;      MW 82;    Yg 36.274;
+      structure "-C6H10-  (1,4-cyclohexylene)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 45* (Van Krevelen) -- saturated cyclohexane ring linker"; } }
+
+    { name naphthylene;        MW 126;   Yg 111.805;
+      structure "-C10H6-  (2,6-naphthylene)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 46* (Van Krevelen) -- fused naphthalene ring linker"; } }
+
+    { name pyromelliticDiimide; MW 214;  Yg 187.952;
+      structure "N,N'-pyromellitic diimide (PMDA imide)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 47* (Van Krevelen) -- polyimide PMDA diimide ring"; } }
+
+    { name glutarimide;        MW 111;   Yg 44.226;
+      structure "N-substituted glutarimide ring";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 48 -- six-membered glutarimide ring"; } }
+
+    { name phthalimide;        MW 145;   Yg 103.180;
+      structure "N-substituted phthalimide ring";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 49* (Van Krevelen) -- benzene-fused imide ring"; } }
+
+    { name quinoxaline;        MW 128;   Yg 112.517;
+      structure "2,6-quinoxalinediyl ring";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 50 -- fused diazine aromatic ring"; } }
+
+    { name phenylQuinoxaline;  MW 204;   Yg 141.851;
+      structure "2-phenyl-quinoxalinediyl ring";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 51 -- phenyl-substituted quinoxaline ring"; } }
+
+    { name benzoxazole;        MW 117;   Yg 88.241;
+      structure "2,5-benzoxazolediyl ring";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 52 -- fused benzoxazole aromatic ring"; } }
+
+    { name thiophene;          MW 82;    Yg 35.372;
+      structure "2,5-thiophenediyl ring";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 53 -- thiophene ring linker"; } }
+
+    { name dioxane;            MW 86;    Yg 33.723;
+      structure "1,3-dioxane-2,5-diyl ring (-O-CH<...>CH-O-)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 54 -- acetal/dioxane ring linker"; } }
+
+    { name SiCH3CH3;           MW 58;    Yg -1.059;
+      structure "-Si(CH3)2-  (dimethylsiloxane Si)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 55* (Van Krevelen) -- PDMS Si centre (negative contribution)"; } }
+
+    { name SiCH3phenyl;        MW 120;   Yg 21.853;
+      structure "-Si(CH3)(phenyl)-";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 56 -- methyl-phenyl siloxane Si centre"; } }
+
+    // SI row 57 -- "-(CH2)n- (oxide)" : the per-CH2 PER-UNIT contribution
+    // (FW = n*14, Yg = n*3.412).  Stored as the n=1 unit; use `count` = n.
+    { name CH2oxide;           MW 14;    Yg 3.412;
+      structure "-(CH2)- in a poly(oxide) backbone  (per CH2, FW=n*14, Yg=n*3.412)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; note "row 57 -- per-CH2 unit of a -(CH2)n-O- oxide backbone; multiply by count=n"; } }
+
+    // SI row 58 -- "backbone in the side chain" : THE Ngb/Ygb term.  FW "depend
+    // on atoms" -> carried as 0 here (its mass is already counted by the side-
+    // chain groups); only its Yg = 2.771 enters the Tg bracket, once per Nb.
+    { name backboneSideChain;  MW 0;     Yg 2.771;
+      structure "backbone atom located in a side chain (the Nb/Ygb term)";
+      provenance { origin "Yang et al., ACS Omega 5 (2020) 19655, Table S3 (CC-BY)"; method "Nb*Ygb backbone-in-side-chain term of eq 5"; note "row 58 -- FW 'depend on atoms' (mass counted by the side-chain groups, so MW=0 here); add with count=Nb (0 for common vinyl polymers)"; } }
+);

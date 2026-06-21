@@ -1,4 +1,0 @@
-application   choupoProps;
-description   "ESTIMATE the glass-transition Tg of polyethylene by the Yang 2020 modified group-contribution scheme (CC-BY) -- glass-box additive sum, distinct from Van Krevelen";
-
-verbosity     2;

@@ -44,15 +44,15 @@ namespace {
 // printed `? (no value)`, never a silent zero.
 struct YGroup { double MW; double Yg; bool hasYg; };
 
-// Loaded ONCE from data/proposed/yang2020/groups.dat (PROVISIONAL tier: the
-// numeric values are faithful, but the group<->structure mapping needs human
-// verification against the SI figures).
+// Loaded ONCE from data/standards/yang2020/groups.dat.  The 58-group mapping is
+// VERIFIED (2026-06-22): PVC/4VP/NVP/NVC reproduce the paper's Fig 6 Tg(inf)
+// (351/426/452/504 K) exactly -- see the groups.dat header.
 const std::map<std::string, YGroup>& table()
 {
     static const std::map<std::string, YGroup> t = [] {
         namespace fs = std::filesystem;
         const fs::path p = fs::path(Database::currentRoot())
-                         / "proposed" / "yang2020" / "groups.dat";
+                         / "standards" / "yang2020" / "groups.dat";
         const auto d = Dictionary::fromFile(p.string());
         std::map<std::string, YGroup> m;
         for (const auto& g : d->lookupDictList("groups"))

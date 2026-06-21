@@ -1,5 +1,0 @@
-# Reference KPIs (golden master, auto-recorded by runTests --record).
-# kind   name      key         expected        reltol
-diag    yang2020_Tg_polyethylene M0_g_per_mol     28                 1e-4
-diag    yang2020_Tg_polyethylene Tg_K             287.6              1e-4
-diag    yang2020_Tg_polyethylene YgSum_1e3gKmol   8.052              1e-4

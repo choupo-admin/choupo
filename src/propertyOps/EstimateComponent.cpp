@@ -720,7 +720,7 @@ int EstimateComponent::runPolymer(const DictPtr& dict, const std::string& comp,
                   << "    molarVolume         " << est.V   << ";   // cm3/mol\n"
                   << "    density             " << est.rho << ";   // g/cm3\n";
             if (est.hasTg)
-                f << "    Tg                  " << est.Tg << ";   // K  Tg(inf), Yang 2020 (PROVISIONAL)\n";
+                f << "    Tg                  " << est.Tg << ";   // K  Tg(inf), Yang 2020 (CC-BY)\n";
             if (!est.hasVol && !est.hasTg)
                 f << "    // value OMITTED: a group lacked an open value (no laundering).\n";
             f << "}\n\n";
@@ -776,8 +776,8 @@ int EstimateComponent::runPolymer(const DictPtr& dict, const std::string& comp,
         std::cout << "\n  ---------------------------------------------------------------\n"
                   << "  Yang et al., ACS Omega 5 (2020) 19655 (CC-BY) -- the MODIFIED GC\n"
                   << "  scheme predicting Tg at infinite Mw; distinct from Van Krevelen.\n"
-                  << "  PROVISIONAL: the group<->structure mapping (SI Table S3 figures)\n"
-                  << "  needs human verification -- values are in data/proposed/yang2020/.\n"
+                  << "  Group table data/standards/yang2020/groups.dat (VERIFIED: PVC/4VP/\n"
+                  << "  NVP/NVC reproduce the paper's Fig 6 Tg = 351/426/452/504 K exactly).\n"
                   << "===============================================================\n\n";
         return 0;
     }

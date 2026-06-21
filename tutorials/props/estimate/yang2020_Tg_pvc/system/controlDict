@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "ESTIMATE the glass-transition Tg of poly(vinyl chloride) (PVC) by the Yang 2020 modified group-contribution scheme (CC-BY) -- the repeat unit -CH2-CHCl- gives Tg(inf)=351 K, EXACT vs the paper (Fig 6)";
+
+verbosity     2;

@@ -1,0 +1,64 @@
+/*---------------------------------------------------------------------------*\
+  yang2020_Tg_pvc  --  FLAGSHIP Yang-2020 glass-transition estimate
+  =================================================================
+  ESTIMATE the GLASS-TRANSITION temperature Tg of poly(vinyl chloride) (PVC) by
+  the YANG 2020 modified group-contribution scheme -- the polymer sibling of the
+  Joback small-molecule path, for Tg.  The repeat unit -CH2-CHCl- is decomposed
+  into two Yang main-chain groups; each adds its limiting Tg contribution
+  Yg(inf):
+
+      M0      = sum n_i MW_i                 repeat-unit molar mass   [g/mol]
+      Yg(inf) = sum n_i Yg_i(inf) (+ Nb*Ygb) limiting Tg function     [1e3 g.K/mol]
+      Tg(inf) = Yg(inf) * 1e3 / M0           Tg at infinite Mw        [K]
+
+  THE ADDITIVE SUM (shown on the console):
+      CH2 :  MW 14    Yg 4.026
+      CHCl:  MW 48.5  Yg 17.911
+      ----------------------------------
+      M0      = 14 + 48.5            = 62.5  g/mol
+      Yg(inf) = 4.026 + 17.911       = 21.937 (1e3 g.K/mol)
+      Tg(inf) = 21.937*1e3 / 62.5    = 351 K     <-- EXACT vs Yang 2020, Fig 6
+
+  This is Yang 2020 -- NOT bare Van Krevelen.  The scheme predicts the INFINITE-
+  Mw limit Tg(inf); the molecular-weight dependence Tg(Mn) = Tg(inf) - K/Mn is a
+  later slice.  Nb (backbone-in-the-side-chain) = 0 for this vinyl polymer, so
+  the bracket is just the sum of the two main-chain group contributions.
+
+  SOURCE + LICENCE (the honest part):
+    Yang, Zou, Ye, Zhu, Dong, Bi, ACS Omega 5 (2020) 19655,
+    doi:10.1021/acsomega.0c04499 -- CC-BY 4.0, so the parameter values ARE
+    redistributable.  Cited per value as "Yang 2020", never "Van Krevelen".
+
+  THE GOLDEN: M0 (an exact mass-balance fact) AND Tg(inf)=351 K are checked --
+  Tg here is VALIDATED PHYSICS (it reproduces the paper's Fig 6 value exactly),
+  not just a mass balance.  The measured anchor (PVC Tg ~ 354 K) confirms it.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        yang2020_Tg_pvc;
+        type        estimateComponent;
+        model       Yang2020;                // POLYMER-group estimator (Tg, CC-BY)
+        component   pvc;
+
+        // Repeat unit  -CH2-CHCl-  :  one methylene + one chloromethine.
+        groups
+        (
+            { group CH2;  count 1; }
+            { group CHCl; count 1; }
+        );
+
+        // "See, then trust": the measured anchor.  PVC Tg is well-established
+        // ~354 K (commercial rigid PVC); the Yang estimate 351 K lands within
+        // ~1% -- a genuine validation, not just context.
+        reference
+        {
+            source   "poly(vinyl chloride) Tg ~ 354 K (commercial rigid PVC)";
+            Tg       354.0;                  // K
+        }
+
+        // Opt-in PROMOTE: write a polymer repeat-unit proposal .dat.
+        output  { proposal auto; }
+    }
+);

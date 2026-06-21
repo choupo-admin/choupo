@@ -1,0 +1,6 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# Only M0 (an exact mass-balance fact) is goldened.  Tg=444 K is SHOWN but NOT
+# goldened: it is a +19% over-estimate of the measured ~373 K -- the honest
+# teaching point of this case (cf. yang2020_Tg_pvc, where Tg IS validated).
+# kind   name      key         expected        reltol
+diag    yang2020_Tg_polystyrene M0_g_per_mol     104                1e-4

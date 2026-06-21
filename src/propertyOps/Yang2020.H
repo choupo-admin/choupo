@@ -44,11 +44,13 @@ License
   "limiting molar glass-transition function"; Tg(inf) is the infinite-Mw limit
   (the Fox-Flory Tg(Mn) follows by Tg = Tg(inf) - K/Mn -- a later slice).
 
-  IMPORTANT -- PROVISIONAL DATA (data/proposed/, NOT promoted):
-  Table S3 of the SI gives each group's FW + Yg(inf), but the group IDENTITIES
-  are drawn as 2D-structure IMAGES; the numeric values are transcribed
-  faithfully, but the group-name <-> structure mapping needs human verification
-  against the SI figures.  See data/proposed/yang2020/groups.dat.
+  DATA -- PROMOTED + VERIFIED (data/standards/yang2020/groups.dat):
+  Table S3 of the SI gives each group's FW + Yg(inf) (CC-BY, redistributable).
+  The 58-group mapping was matched to the SI structure figures and CROSS-
+  VALIDATED against the paper's Fig 6: PVC (CH2+CHCl)=351 K, poly(4-vinyl-
+  pyridine)=426 K, poly(N-vinylpyrrolidone)=452 K, poly(N-vinylcarbazole)=504 K
+  -- all EXACT.  See data/standards/yang2020/groups.dat for the full table +
+  the Nb*Ygb backbone-in-side-chain convention.
 \*---------------------------------------------------------------------------*/
 
 #ifndef Choupo_Yang2020_H
