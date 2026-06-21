@@ -26,32 +26,32 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 File
-    Constants.H
+    LU.H
 
 Description
-    Physical & numerical constants used throughout the simulator.
-    SI units everywhere unless explicitly noted.
+    Dense LU factorisation with partial (row) pivoting, split out of gaussSolve
+    so one factorisation of A can be REUSED across several right-hand sides --
+    the Rosenbrock stiff integrator factors the iteration matrix W = I-gamma*h*J
+    once per step and back-solves it three times.  Pedagogical, no BLAS/LAPACK.
+
+        luFactor: overwrites A with its L\U factors (unit-diagonal L implied)
+                  and fills the pivot permutation piv.  Throws if singular.
+        luSolve:  forward/back substitution for one right-hand side b.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
 
-#include "Types.H"
+#include "core/Types.H"
 
-namespace Choupo::constant {
+#include <cstddef>
+#include <vector>
 
-// -- Mathematical -------------------------------------------------------------
-constexpr scalar pi      = 3.14159265358979323846;   // M_PI is non-standard;
-                                                     // declare ours explicitly.
+namespace Choupo::solver
+{
 
-// -- Physical -----------------------------------------------------------------
-constexpr scalar R       = 8.314462618;     // [J/(mol·K)] universal gas constant
-constexpr scalar Na      = 6.02214076e23;   // [1/mol]     Avogadro
-constexpr scalar kB      = 1.380649e-23;    // [J/K]       Boltzmann
-constexpr scalar Pref    = 1.0e5;           // [Pa] thermochemical standard state (1 bar)
+void    luFactor(std::vector<sVector>& A, std::vector<std::size_t>& piv);
+sVector luSolve (const std::vector<sVector>& LU,
+                 const std::vector<std::size_t>& piv,
+                 sVector b);
 
-// -- Conversions --------------------------------------------------------------
-constexpr scalar bar_to_Pa  = 1.0e5;
-constexpr scalar Pa_to_bar  = 1.0e-5;
-constexpr scalar atm_to_bar = 1.01325;
-
-} // namespace Choupo::constant
+} // namespace Choupo::solver

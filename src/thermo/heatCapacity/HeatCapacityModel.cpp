@@ -28,6 +28,7 @@ License
 
 #include "HeatCapacityModel.H"
 #include "PolynomialCp.H"
+#include "NASA7Cp.H"
 
 #include <stdexcept>
 
@@ -59,6 +60,9 @@ void HeatCapacityModel::registerBuiltins()
     registerModel("polynomial",
         [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
         { return std::make_unique<PolynomialCp>(d); });
+    registerModel("NASA7",
+        [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
+        { return std::make_unique<NASA7Cp>(d); });
 }
 
 } // namespace Choupo

@@ -25,33 +25,33 @@ License
     Credit and attribution: see AUTHORS
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
-File
-    Constants.H
+Class
+    Choupo::solver::RK4
 
-Description
-    Physical & numerical constants used throughout the simulator.
-    SI units everywhere unless explicitly noted.
+    Classical 4th-order explicit Runge-Kutta, fixed step.  The same scheme the
+    batch reactors have always used (k1..k4, the 1/6 weighting), now behind the
+    ODEIntegrator interface so it can be compared head-to-head with the stiff
+    methods.  Fast and accurate on NON-stiff problems; on a stiff system it is
+    stability-limited to tiny steps -- the lesson the stiffness meter makes
+    visible.  Step = ctrl.hInit (whole interval if hInit <= 0).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
 
-#include "Types.H"
+#include "ODEIntegrator.H"
 
-namespace Choupo::constant {
+namespace Choupo::solver
+{
 
-// -- Mathematical -------------------------------------------------------------
-constexpr scalar pi      = 3.14159265358979323846;   // M_PI is non-standard;
-                                                     // declare ours explicitly.
+class RK4 : public ODEIntegrator
+{
+public:
+    ODEStats integrate(sVector& y, scalar t0, scalar t1,
+                       const DerivFn& f, const ODEControls& ctrl) const override;
+    const std::string& name() const override { return name_; }
 
-// -- Physical -----------------------------------------------------------------
-constexpr scalar R       = 8.314462618;     // [J/(mol·K)] universal gas constant
-constexpr scalar Na      = 6.02214076e23;   // [1/mol]     Avogadro
-constexpr scalar kB      = 1.380649e-23;    // [J/K]       Boltzmann
-constexpr scalar Pref    = 1.0e5;           // [Pa] thermochemical standard state (1 bar)
+private:
+    inline static const std::string name_ = "RK4";
+};
 
-// -- Conversions --------------------------------------------------------------
-constexpr scalar bar_to_Pa  = 1.0e5;
-constexpr scalar Pa_to_bar  = 1.0e-5;
-constexpr scalar atm_to_bar = 1.01325;
-
-} // namespace Choupo::constant
+} // namespace Choupo::solver

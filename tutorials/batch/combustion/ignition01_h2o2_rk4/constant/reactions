@@ -1,0 +1,177 @@
+/*---------------------------------------------------------------------------*\
+  H2/O2 SKELETAL CHAIN-BRANCHING MECHANISM  --  *** SYNTHETIC / ILLUSTRATIVE ***
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │  THE RATE CONSTANTS BELOW ARE SYNTHETIC.  They are NOT transcribed from   │
+  │  any published mechanism (GRI-Mech, Ó Conaire, Burke, San Diego, …).      │
+  │  They are hand-chosen, order-of-magnitude-plausible values whose ONLY     │
+  │  purpose is to exercise the chain-branching STRUCTURE so the stiff        │
+  │  integrator (Rosenbrock23) has something stiff to integrate and an        │
+  │  ignition delay to report.  Do NOT use the τ_ign it produces as a         │
+  │  quantitative result.  Vítor must replace these k's with a curated        │
+  │  literature mechanism before this leaves the data/proposed/ tier.         │
+  └─────────────────────────────────────────────────────────────────────────┘
+
+  WHAT *IS* REAL HERE: nothing in this file fixes the thermodynamics.  The
+  equilibrium each reversible step relaxes toward, the heat release, and the
+  final adiabatic temperature all come from the CURATED gas-phase thermo of the
+  nine species (H2 O2 H O OH HO2 H2O2 water N2) in data/standards/components/
+  (their gibbsFormation + idealGasHeatCapacity, each individually cited).  So
+  the WHERE-it-ends-up is curated physics; only the HOW-FAST is illustrative.
+
+  THE STRUCTURE (the part that teaches): a slow initiation builds a trace
+  radical pool; chain BRANCHING (R2, R3, R5 — one radical in, two out) then
+  outruns termination (R6, R9), the radical population explodes, and the heat
+  release runs away.  The radical lifetimes (~µs) are ~10^6× shorter than the
+  induction time (~ms): that timescale split IS the stiffness.
+
+  provenance:
+*/
+provenance
+{
+    status  "UNVERIFIED, SYNTHETIC -- illustrative rate constants, NOT a literature mechanism; thermo is curated (data/standards). Vítor must replace the kinetics before promotion.";
+    review  { state pending; reviewer Vitor; }
+    kinetics_source  "synthetic (hand-authored, illustrative only)";
+    thermo_source    "data/standards/components/*.dat (curated, per-species cited)";
+}
+
+// ── Initiation (slow; high barrier) ────────────────────────────────────────
+init_H2_O2                       // H2 + O2 -> HO2 + H
+{
+    limitingReactant  H2;
+    stoichiometry
+    (
+        { component H2;   nu -1;  order 1; }
+        { component O2;   nu -1;  order 1; }
+        { component HO2;  nu  1;  order 0; }
+        { component H;    nu  1;  order 0; }
+    );
+    kinetics { type Arrhenius;  A 1.0e8;   Ea 2.0e5; }   // SI (m³/kmol/s, J/mol)
+}
+
+// ── Chain branching: one radical in, two out (the engine of ignition) ──────
+branch_H_O2                      // H + O2 <-> O + OH    (declared in CHEMKIN units)
+{
+    reversible        true;
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;   nu -1;  order 1; }
+        { component O2;  nu -1;  order 1; }
+        { component O;   nu  1;  order 0; }
+        { component OH;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A    1.5e12;  b 0.0;  Ea 16730;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }   // -> SI on load (announced)
+    }
+}
+
+branch_O_H2                      // O + H2 <-> H + OH    (declared in CHEMKIN units)
+{
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component O;   nu -1;  order 1; }
+        { component H2;  nu -1;  order 1; }
+        { component H;   nu  1;  order 0; }
+        { component OH;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type modifiedArrhenius;
+        A    5.0e11;  b 0.0;  Ea 9560;
+        units { A "cm3/mol/s"; Ea "cal/mol"; }
+    }
+}
+
+// ── Propagation ────────────────────────────────────────────────────────────
+prop_OH_H2                       // OH + H2 <-> H + H2O
+{
+    reversible        true;
+    limitingReactant  OH;
+    stoichiometry
+    (
+        { component OH;     nu -1;  order 1; }
+        { component H2;     nu -1;  order 1; }
+        { component H;      nu  1;  order 0; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics { type modifiedArrhenius; A 1.0e11; b 0.0; Ea 2.0e4; }   // SI
+}
+
+branch_O_H2O                     // O + H2O <-> OH + OH
+{
+    reversible        true;
+    limitingReactant  O;
+    stoichiometry
+    (
+        { component O;      nu -1;  order 1; }
+        { component water;  nu -1;  order 1; }
+        { component OH;     nu  2;  order 0; }
+    );
+    kinetics { type modifiedArrhenius; A 3.0e10; b 0.0; Ea 7.0e4; }   // SI
+}
+
+// ── Third-body recombination / termination (drains the radical pool) ───────
+recomb_H_O2_M                    // H + O2 + M -> HO2 + M
+{
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;    nu -1;  order 1; }
+        { component O2;   nu -1;  order 1; }
+        { component HO2;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;          // k·[M], [M] = Σ eff_j·c_j
+        A 5.0e6;  b 0.0;  Ea 0.0;
+        thirdBody { water 12.0; H2 2.5; N2 1.0; }   // unlisted => 1.0
+    }
+}
+
+ho2_H_branch                     // HO2 + H -> OH + OH
+{
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component HO2;  nu -1;  order 1; }
+        { component H;    nu -1;  order 1; }
+        { component OH;   nu  2;  order 0; }
+    );
+    kinetics { type Arrhenius; A 1.0e11; Ea 5.0e3; }   // SI
+}
+
+ho2_H_recombine                  // HO2 + H -> H2 + O2
+{
+    limitingReactant  HO2;
+    stoichiometry
+    (
+        { component HO2;  nu -1;  order 1; }
+        { component H;    nu -1;  order 1; }
+        { component H2;   nu  1;  order 0; }
+        { component O2;   nu  1;  order 0; }
+    );
+    kinetics { type Arrhenius; A 5.0e10; Ea 5.0e3; }   // SI
+}
+
+recomb_H_OH_M                    // H + OH + M -> H2O + M  (chain termination)
+{
+    limitingReactant  H;
+    stoichiometry
+    (
+        { component H;      nu -1;  order 1; }
+        { component OH;     nu -1;  order 1; }
+        { component water;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type thirdBody;
+        A 5.0e6;  b 0.0;  Ea 0.0;
+        thirdBody { water 12.0; H2 2.5; N2 1.0; }
+    }
+}

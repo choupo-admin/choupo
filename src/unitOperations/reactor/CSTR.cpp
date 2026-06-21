@@ -28,6 +28,7 @@ License
 
 #include "CSTR.H"
 #include "core/Constants.H"
+#include "thermo/reaction/Reaction.H"
 #include "solver/NewtonRaphson.H"
 
 #include <cmath>
@@ -85,26 +86,18 @@ int CSTR::solve(const DictPtr& dict,
     const scalar A_pre = kinDict->lookupScalar("A");
     const scalar Ea    = kinDict->lookupScalar("Ea");
 
-    const scalar k = A_pre * std::exp(-Ea / (constant::R * T));
+    const scalar k = Reaction::arrheniusRate(A_pre, Ea, T);
 
     // Optional reversible reaction:
-    //   When `reversible true;` is set on the reaction, the reverse
-    //   rate constant is derived from thermodynamic consistency:
-    //       K_eq(T) = exp(-dG_rxn(T) / (R T))
-    //       k_rev   = k_fwd / K_eq
-    //   with dG_rxn(T) = Sum_i nu_i * g_pure_ig_i(T) for an ideal-gas
-    //   reference.  Both directions use the same activation energy
-    //   structure for the forward, the reverse rate falls out by
-    //   detailed balance.
+    //   When `reversible true;` is set on the reaction, the reverse rate
+    //   constant follows from detailed balance, k_rev = k_fwd / Kc, with Kc
+    //   the concentration-basis equilibrium constant (Reaction::equilibriumKc).
     const bool reversible = rxnDict->lookupWordOrDefault("reversible", "false") == "true";
     scalar K_eq = 0.0;
     scalar k_rev = 0.0;
     if (reversible)
     {
-        scalar dG = 0.0;
-        for (std::size_t i = 0; i < n; ++i)
-            if (nu[i] != 0.0) dG += nu[i] * thermo.comp(i).g_pure_ig(T);
-        K_eq  = std::exp(-dG / (constant::R * T));
+        K_eq  = Reaction::equilibriumKc(thermo, nu, T);
         k_rev = k / K_eq;
     }
 
@@ -145,8 +138,15 @@ int CSTR::solve(const DictPtr& dict,
                   << "  A_pre:  " << A_pre << "\n"
                   << "  Ea:     " << Ea << "  J/mol\n";
         if (reversible)
-            std::cout << "  K_eq(T): " << std::scientific << std::setprecision(4)
-                      << K_eq << "    k_rev = k_fwd / K_eq = " << k_rev << "\n";
+        {
+            const auto eq = Reaction::equilibrium(thermo, nu, T);
+            std::cout << "  Kp(T):  " << std::scientific << std::setprecision(4)
+                      << eq.Kp << "   Σν = " << std::showpos << eq.sumNu
+                      << std::noshowpos << "\n"
+                      << "  Kc(T):  " << eq.Kc
+                      << "  (= Kp·(P°/RuT)^Σν, concentration basis)\n"
+                      << "  k_rev = k_fwd / Kc = " << k_rev << "\n";
+        }
         std::cout << "\nFeed v_mol  = " << std::scientific << V_mol_in
                   << " m³/mol\nVolumetric Q = " << Q << " m³/s\n"
                   << "Residence τ  = " << std::fixed << std::setprecision(4)

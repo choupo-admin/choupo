@@ -29,8 +29,14 @@ License
 #include "BatchReactor.H"
 #include "core/Constants.H"
 #include "streams/Composition.H"
+#include "thermo/ThermoPackage.H"
+#include "thermo/Component.H"
+#include "thermo/reaction/Reaction.H"
+#include "solver/ODE/ODEIntegrator.H"
 
+#include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -87,6 +93,39 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     }
 
     // -----------------------------------------------------------------
+    //  Optional time-integrator selection.
+    //      solver { integrator RK4 | EulerSI | Rosenbrock23; }
+    //  Default RK4 -- the classic explicit step every batch tutorial uses,
+    //  so omitting the block changes nothing.  Stiff chemistry (detailed
+    //  kinetics) selects Rosenbrock23.
+    // -----------------------------------------------------------------
+    if (unitDict->found("solver"))
+    {
+        auto solverDict = unitDict->subDict("solver");
+        integrator_ = solverDict->lookupWordOrDefault("integrator", "RK4");
+        // The stiff integrators announce their step/stiffness verdict at
+        // verbosity>=3 (numerical-honesty credo).  Read it here, default 3 so
+        // a case that opted into a stiff method gets the lesson by default.
+        verbosity_  = static_cast<int>(solverDict->lookupScalarOrDefault("verbosity", 3));
+    }
+
+    // -----------------------------------------------------------------
+    //  Adiabatic energy basis (only consulted in adiabatic mode).
+    //      operation { mode adiabatic; energy gasConstantV | liquidDH; }
+    //  Default liquidDH = the legacy per-reaction-ΔH / liquid-Cp path, so
+    //  every existing adiabatic tutorial is unchanged.  gasConstantV is the
+    //  closed fixed-volume gas-phase balance for combustion (heat release from
+    //  the species' formation enthalpies, gas Cv).
+    // -----------------------------------------------------------------
+    {
+        const std::string ebasis = opDict->lookupWordOrDefault("energy", "liquidDH");
+        if      (ebasis == "liquidDH")     energy_ = Energy::LiquidDH;
+        else if (ebasis == "gasConstantV") energy_ = Energy::GasConstantV;
+        else throw std::runtime_error("BatchReactor: unknown energy basis '"
+                + ebasis + "' (expected 'liquidDH' or 'gasConstantV')");
+    }
+
+    // -----------------------------------------------------------------
     //  Reaction(s) lookup.  Backward-compat: accept either
     //      reaction   name;            (single)
     //  or
@@ -127,11 +166,62 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
 
         auto kin = rxn->subDict("kinetics");
         const std::string ktype = kin->lookupWord("type");
-        if (ktype != "Arrhenius")
+
+        // Forward molecularity (for the cm-mol-s -> SI A conversion): the sum
+        // of the positive (reactant-side) power-law orders, rounded to int.
+        int molecularity = 0;
+        for (scalar o : r.order) if (o > 0.0) molecularity += static_cast<int>(std::lround(o));
+
+        // Optional units block: convert CHEMKIN cm-mol-s / cal-mol to SI on
+        // load (and announce it).  Absent => values already SI (legacy).
+        const auto convA  = [&](scalar A, int molec) { return ckA_(kin, A, molec); };
+        const auto convEa = [&](scalar Ea)           { return ckEa_(kin, Ea);     };
+
+        if (ktype == "Arrhenius")
+        {
+            r.form  = RateForm::Arrhenius;
+            r.A_pre = convA(kin->lookupScalar("A"), molecularity);
+            r.Ea    = convEa(kin->lookupScalar("Ea"));
+        }
+        else if (ktype == "modifiedArrhenius")
+        {
+            r.form  = RateForm::ModArrhenius;
+            r.A_pre = convA(kin->lookupScalar("A"), molecularity);
+            r.b     = kin->lookupScalar("b");
+            r.Ea    = convEa(kin->lookupScalar("Ea"));
+        }
+        else if (ktype == "thirdBody")
+        {
+            // k·[M], [M] from per-species efficiencies; molecularity gains the
+            // +M, so the A conversion uses molecularity+1.
+            r.form  = RateForm::ThirdBody;
+            r.A_pre = convA(kin->lookupScalar("A"), molecularity + 1);
+            r.b     = kin->lookupScalarOrDefault("b", 0.0);
+            r.Ea    = convEa(kin->lookupScalar("Ea"));
+            r.tbEff = thirdBodyEfficiencies_(kin, thermo);
+        }
+        else if (ktype == "falloff")
+        {
+            // High-pressure limit kInf on the main A/b/Ea; low-pressure kLow in
+            // a `low {…}` sub-dict (molecularity+1); optional `troe ( … )`.
+            r.form  = RateForm::Falloff;
+            r.A_pre = convA(kin->lookupScalar("A"), molecularity);        // kInf
+            r.b     = kin->lookupScalarOrDefault("b", 0.0);
+            r.Ea    = convEa(kin->lookupScalar("Ea"));
+            auto low = kin->subDict("low");
+            r.A_low  = ckA_(low, low->lookupScalar("A"), molecularity + 1);
+            r.b_low  = low->lookupScalarOrDefault("b", 0.0);
+            r.Ea_low = ckEa_(low, low->lookupScalar("Ea"));
+            if (kin->found("troe")) r.troe = kin->lookupList("troe");
+            r.tbEff = kin->found("thirdBody")
+                      ? thirdBodyEfficiencies_(kin, thermo) : sVector{};
+        }
+        else
+        {
             throw std::runtime_error("BatchReactor: reaction '" + rxnName
-                + "': only kinetics 'Arrhenius' implemented (got '" + ktype + "')");
-        r.A_pre = kin->lookupScalar("A");
-        r.Ea    = kin->lookupScalar("Ea");
+                + "': unknown kinetics type '" + ktype + "' (expected Arrhenius,"
+                " modifiedArrhenius, thirdBody, or falloff)");
+        }
 
         // Heat of reaction.  Optional (default 0) so isothermal cases that
         // don't care about it can omit it without error.  For adiabatic
@@ -160,14 +250,21 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
             // Quiet --- the run will simply be isothermal in practice
             // (no heat release).  Pedagogically harmless.
         }
-        // Also: every component must have a liquidHeatCapacity for the
-        // energy balance to evaluate.
+        // Each component must carry the thermo the chosen energy basis reads:
+        //   liquidDH     -> liquidHeatCapacity (legacy)
+        //   gasConstantV -> ideal-gas Cp + formation (h_pure_ig / Cv)
         for (std::size_t i = 0; i < n; ++i)
         {
-            if (!thermo.comp(i).hasCpLiquid())
-                throw std::runtime_error("BatchReactor (adiabatic): component '"
-                    + thermo.comp(i).name() + "' has no liquidHeatCapacity in"
-                    " its.dat file");
+            const auto& c = thermo.comp(i);
+            if (energy_ == Energy::LiquidDH && !c.hasCpLiquid())
+                throw std::runtime_error("BatchReactor (adiabatic, liquidDH):"
+                    " component '" + c.name() + "' has no liquidHeatCapacity"
+                    " in its.dat file");
+            if (energy_ == Energy::GasConstantV && (!c.hasCpIdealGas() || !c.hasGibbsData()))
+                throw std::runtime_error("BatchReactor (adiabatic, gasConstantV):"
+                    " component '" + c.name() + "' needs idealGasHeatCapacity +"
+                    " gibbsFormation (for u_i = h_pure_ig − R_uT and Cv) in its"
+                    " .dat file");
         }
     }
 }
@@ -179,12 +276,86 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
 //
 //  k(T) = A · exp(−Ea / RT)  with R in J/(mol·K) and Ea in J/mol.
 // -----------------------------------------------------------------------
+// -- CHEMKIN unit conversion on load (announced at verbosity>=2) -------------
+scalar BatchReactor::ckA_(const DictPtr& kin, scalar A, int molecularity) const
+{
+    if (!kin->found("units")) return A;
+    const std::string u = kin->subDict("units")->lookupWordOrDefault("A", "");
+    // cm-mol-s -> SI kmol-m³-s:  A_SI = A · (1e-3)^(molecularity-1).
+    if (u.find("cm") != std::string::npos)
+    {
+        const scalar f = std::pow(1.0e-3, molecularity - 1);
+        if (verbosity_ >= 2)
+            std::cout << "  [kinetics] A: " << A << " " << u << "  ->  "
+                      << A * f << " (SI, kmol-m³-s; ×" << f << ", molecularity "
+                      << molecularity << ")\n";
+        return A * f;
+    }
+    return A;
+}
+
+scalar BatchReactor::ckEa_(const DictPtr& kin, scalar Ea) const
+{
+    if (!kin->found("units")) return Ea;
+    const std::string u = kin->subDict("units")->lookupWordOrDefault("Ea", "");
+    scalar f = 1.0;
+    if      (u.find("kcal") != std::string::npos) f = 4184.0;
+    else if (u.find("cal")  != std::string::npos) f = 4.184;
+    else if (u.find("kJ")   != std::string::npos) f = 1000.0;
+    if (f != 1.0 && verbosity_ >= 2)
+        std::cout << "  [kinetics] Ea: " << Ea << " " << u << "  ->  "
+                  << Ea * f << " J/mol (×" << f << ")\n";
+    return Ea * f;
+}
+
+sVector
+BatchReactor::thirdBodyEfficiencies_(const DictPtr& kin,
+                                     const ThermoPackage& thermo) const
+{
+    sVector eff(thermo.n(), 1.0);            // unlisted species => 1.0
+    auto tb = kin->subDict("thirdBody");
+    for (const auto& sp : tb->keys())
+        eff[thermo.indexOf(sp)] = tb->lookupScalar(sp);
+    return eff;
+}
+
 scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
                                      scalar               T,
                                      const sVector&       n,
                                      scalar               V) const
 {
-    const scalar k = rxn.A_pre * std::exp(-rxn.Ea / (constant::R * T));
+    // Forward rate constant k_eff(T, c), with third-body [M] and fall-off
+    // blending folded in.  Concentration vector c_j = n_j/V (kmol/m³) is only
+    // needed for [M] (third-body / fall-off); cheap to skip otherwise.
+    scalar k = 0.0;
+    switch (rxn.form)
+    {
+        case RateForm::Arrhenius:
+            k = Reaction::arrheniusRate(rxn.A_pre, rxn.Ea, T);
+            break;
+        case RateForm::ModArrhenius:
+            k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
+            break;
+        case RateForm::ThirdBody:
+        case RateForm::Falloff:
+        {
+            sVector conc(n.size());
+            for (std::size_t j = 0; j < n.size(); ++j) conc[j] = n[j] / V;
+            static const sVector kAll1;
+            const sVector& eff = rxn.tbEff.empty() ? kAll1 : rxn.tbEff;
+            const scalar M = Reaction::thirdBodyConcentration(conc, eff);
+            if (rxn.form == RateForm::ThirdBody)
+                k = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T) * M;
+            else
+            {
+                const scalar kInf = Reaction::modifiedArrheniusRate(rxn.A_pre, rxn.b, rxn.Ea, T);
+                const scalar kLow = Reaction::modifiedArrheniusRate(rxn.A_low, rxn.b_low, rxn.Ea_low, T);
+                k = Reaction::falloffRate(kLow, kInf, M, T, rxn.troe);
+            }
+            break;
+        }
+    }
+
     scalar r = k;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
     {
@@ -194,13 +365,12 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     }
     if (!rxn.reversible) return r;
 
-    // Reverse leg (detailed balance): k_rev = k_fwd / K_eq, with
-    //   K_eq(T) = exp(-dG_rxn(T) / RT),  dG_rxn = Σ_s ν_s · g_pure_ig_s(T).
-    // Re-evaluated here each call so it tracks T in adiabatic mode.
-    scalar dG = 0.0;
-    for (std::size_t s = 0; s < rxn.comps.size(); ++s)
-        dG += rxn.nu[s] * thermo_->comp(rxn.comps[s]).g_pure_ig(T);
-    const scalar K_eq  = std::exp(-dG / (constant::R * T));
+    // Reverse leg (detailed balance): k_rev = k_fwd / Kc, the concentration-
+    // basis equilibrium constant (Reaction::equilibriumKc), re-evaluated each
+    // call so it tracks T in adiabatic mode.  For third-body/fall-off the same
+    // k_eff carries [M]/the blend, which cancels at equilibrium (Kc is the
+    // gas-species ratio), so this stays consistent.
+    const scalar K_eq  = Reaction::equilibriumKc(*thermo_, rxn.comps, rxn.nu, T);
     const scalar k_rev = k / K_eq;
 
     scalar r_rev = k_rev;
@@ -232,8 +402,8 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
 
     sVector dydt(n + 1, 0.0);
 
-    // Loop over reactions; accumulate the species derivatives and the
-    // heat release.
+    // Loop over reactions; accumulate the species derivatives and (for the
+    // liquid-ΔH basis) the per-reaction heat release.
     scalar heatRate = 0.0;   // Σ r_r · V · ΔH_r  [J·kmol / (mol·s)]
                              // (the mol/kmol factor cancels in dT/dt --- see header)
     for (const auto& rxn : reactions_)
@@ -244,9 +414,9 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
         heatRate += rxn.dH * r_r * V;                            // J·kmol/(mol·s)
     }
 
-    if (mode_ == Mode::Adiabatic)
+    if (mode_ == Mode::Adiabatic && energy_ == Energy::LiquidDH)
     {
-        // Total heat capacity Σ n_i · Cp_i(T) in [kmol · J/(mol·K)]
+        // Legacy liquid path: Σ r·V·ΔH over liquid Cp.
         scalar CpTot = 0.0;
         for (std::size_t i = 0; i < n; ++i)
             CpTot += n_vec[i] * thermo_->comp(i).cpLiquid().Cp(T);
@@ -255,6 +425,26 @@ sVector BatchReactor::derivatives_(const sVector& packed) const
         else                  { dydt[n] = -heatRate / CpTot; }
         // The (J·kmol / mol·s) / (kmol · J/(mol·K)) = K/s  --- the
         // mol/kmol factors cancel, no explicit 1000 needed.
+    }
+    else if (mode_ == Mode::Adiabatic && energy_ == Energy::GasConstantV)
+    {
+        // Closed fixed-volume gas: first law dU = 0 gives, per the chain rule,
+        //     dT/dt = − Σ_i u_i(T)·(dn_i/dt) / Σ_i n_i·Cv_i(T)
+        // with u_i = h_pure_ig_i(T) − R_u·T  (internal energy, ideal gas) and
+        // Cv_i = Cp_gas_i(T) − R_u.  The heat release is INTRINSIC to the
+        // species' formation enthalpies (curated thermo) -- no per-reaction ΔH.
+        // The kmol(dn/dt)·J/mol(u) and kmol(n)·J/mol/K(Cv) factors of 1000
+        // cancel, as in the liquid path.
+        scalar uDot  = 0.0;   // Σ u_i · dn_i/dt
+        scalar CvTot = 0.0;   // Σ n_i · Cv_i
+        for (std::size_t i = 0; i < n; ++i)
+        {
+            const scalar u_i  = thermo_->comp(i).h_pure_ig(T) - constant::R * T;
+            const scalar Cv_i = thermo_->comp(i).cpIdealGas().Cp(T) - constant::R;
+            uDot  += u_i  * dydt[i];
+            CvTot += n_vec[i] * Cv_i;
+        }
+        dydt[n] = (CvTot < 1.0e-30) ? 0.0 : -uDot / CvTot;
     }
     // else: dydt[n] stays 0 (isothermal)
 
@@ -289,28 +479,53 @@ void BatchReactor::setOperationParameter(const std::string& key, scalar value)
 
 void BatchReactor::step(scalar /*t*/, scalar dt)
 {
-    // Pack state for RK4: (n[0..n-1], T).
+    // Pack state: (n[0..n-1], T).
     const std::size_t n = state_.n.size();
     sVector y0(n + 1);
     for (std::size_t i = 0; i < n; ++i) y0[i] = state_.n[i];
     y0[n] = state_.T;
 
-    auto axpy = [](const sVector& x, scalar a, const sVector& y) {
-        sVector r(x.size());
-        for (std::size_t i = 0; i < x.size(); ++i) r[i] = x[i] + a * y[i];
-        return r;
-    };
+    if (integrator_ == "RK4")
+    {
+        // The classic explicit step -- unchanged, so every existing batch
+        // tutorial is byte-identical.
+        auto axpy = [](const sVector& x, scalar a, const sVector& y) {
+            sVector r(x.size());
+            for (std::size_t i = 0; i < x.size(); ++i) r[i] = x[i] + a * y[i];
+            return r;
+        };
 
-    auto k1 = derivatives_(y0);
-    auto k2 = derivatives_(axpy(y0, 0.5 * dt, k1));
-    auto k3 = derivatives_(axpy(y0, 0.5 * dt, k2));
-    auto k4 = derivatives_(axpy(y0,       dt, k3));
+        auto k1 = derivatives_(y0);
+        auto k2 = derivatives_(axpy(y0, 0.5 * dt, k1));
+        auto k3 = derivatives_(axpy(y0, 0.5 * dt, k2));
+        auto k4 = derivatives_(axpy(y0,       dt, k3));
 
-    for (std::size_t i = 0; i < y0.size(); ++i)
-        y0[i] += dt / 6.0 * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i]);
+        for (std::size_t i = 0; i < y0.size(); ++i)
+            y0[i] += dt / 6.0 * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i]);
+    }
+    else
+    {
+        // Stiff / semi-implicit path: advance the SAME packed derivatives over
+        // [0, dt] with the selected adaptive integrator.  The derivatives are
+        // autonomous in t (chemistry), so the wrapper ignores the time arg.
+        if (!solver::ODEIntegrator::known(integrator_))
+            solver::ODEIntegrator::registerBuiltins();
+        auto integ = solver::ODEIntegrator::New(integrator_);
+
+        solver::DerivFn f =
+            [this](scalar /*t*/, const sVector& y) { return derivatives_(y); };
+
+        solver::ODEControls ctrl;
+        ctrl.atol.assign(n + 1, 1.0e-15);   // species rows: rtol dominates
+        ctrl.atol[n] = 1.0e-6;              // temperature row [K]
+        ctrl.rtol      = 1.0e-7;
+        ctrl.nPositive = n;                 // mole numbers must stay >= 0 (T free)
+        ctrl.verbosity = verbosity_;
+        integ->integrate(y0, 0.0, dt, f, ctrl);
+    }
 
     // Unpack and guard against numerical drift below zero on the mole
-    // numbers (the rate eqs are nonlinear --- RK4 can overshoot).
+    // numbers (the rate eqs are nonlinear --- the step can overshoot).
     for (std::size_t i = 0; i < n; ++i)
         state_.n[i] = std::max<scalar>(y0[i], 0.0);
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y0[n];

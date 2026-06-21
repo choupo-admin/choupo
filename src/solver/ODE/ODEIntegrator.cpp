@@ -24,34 +24,53 @@ License
 
     Credit and attribution: see AUTHORS
     Required legal notices:  see NOTICE
--------------------------------------------------------------------------------
-File
-    Constants.H
-
-Description
-    Physical & numerical constants used throughout the simulator.
-    SI units everywhere unless explicitly noted.
 \*---------------------------------------------------------------------------*/
 
-#pragma once
+#include "ODEIntegrator.H"
+#include "RK4.H"
+#include "EulerSI.H"
+#include "Rosenbrock23.H"
 
-#include "Types.H"
+#include <stdexcept>
 
-namespace Choupo::constant {
+namespace Choupo::solver
+{
 
-// -- Mathematical -------------------------------------------------------------
-constexpr scalar pi      = 3.14159265358979323846;   // M_PI is non-standard;
-                                                     // declare ours explicitly.
+std::map<std::string, ODEIntegrator::Factory>& ODEIntegrator::registry()
+{
+    static std::map<std::string, Factory> r;
+    return r;
+}
 
-// -- Physical -----------------------------------------------------------------
-constexpr scalar R       = 8.314462618;     // [J/(mol·K)] universal gas constant
-constexpr scalar Na      = 6.02214076e23;   // [1/mol]     Avogadro
-constexpr scalar kB      = 1.380649e-23;    // [J/K]       Boltzmann
-constexpr scalar Pref    = 1.0e5;           // [Pa] thermochemical standard state (1 bar)
+void ODEIntegrator::registerType(const std::string& name, Factory f)
+{
+    registry()[name] = std::move(f);
+}
 
-// -- Conversions --------------------------------------------------------------
-constexpr scalar bar_to_Pa  = 1.0e5;
-constexpr scalar Pa_to_bar  = 1.0e-5;
-constexpr scalar atm_to_bar = 1.01325;
+bool ODEIntegrator::known(const std::string& name)
+{
+    return registry().count(name) != 0;
+}
 
-} // namespace Choupo::constant
+std::unique_ptr<ODEIntegrator> ODEIntegrator::New(const std::string& name)
+{
+    auto it = registry().find(name);
+    if (it == registry().end())
+        throw std::runtime_error("Unknown ODE integrator '" + name
+            + "' (known: RK4, EulerSI, Rosenbrock23)");
+    return it->second();
+}
+
+// Explicit registration -- no static-init macros (pedagogical clarity, and no
+// linker discard surprises).  Called once at start-up.
+void ODEIntegrator::registerBuiltins()
+{
+    registerType("RK4",
+        [] { return std::make_unique<RK4>(); });
+    registerType("EulerSI",
+        [] { return std::make_unique<EulerSI>(); });
+    registerType("Rosenbrock23",
+        [] { return std::make_unique<Rosenbrock23>(); });
+}
+
+} // namespace Choupo::solver

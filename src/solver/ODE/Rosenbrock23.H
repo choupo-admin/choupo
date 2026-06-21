@@ -25,33 +25,42 @@ License
     Credit and attribution: see AUTHORS
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
-File
-    Constants.H
+Class
+    Choupo::solver::Rosenbrock23
 
-Description
-    Physical & numerical constants used throughout the simulator.
-    SI units everywhere unless explicitly noted.
+    L-stable, linearly-implicit, embedded 2(3) Rosenbrock pair -- the "ode23s"
+    of Shampine & Reichelt (SIAM J. Sci. Comput. 18 (1997) 1), the same family
+    OpenFOAM ships for stiff chemistry.  One step from (t, y, h), with
+    d = 1/(2+sqrt2), e32 = 6+sqrt2, and W = I - h*d*J:
+
+        k1 = W^{-1} ( f(t,y)              + h*d*Td )
+        k2 = W^{-1} ( f(t+h/2, y+h/2 k1)  - k1 ) + k1
+        y* = y + h*k2
+        k3 = W^{-1} ( f(t+h, y*) - e32 (k2 - f2) - 2 (k1 - f1) + h*d*Td )
+        err = (h/6) (k1 - 2 k2 + k3)
+
+    ONE Jacobian + ONE LU factorisation of W per step, THREE back-solves --
+    no Newton iteration, no BDF history.  Second-order accurate, third-order
+    error estimate -> adaptive step.  Per-component error scaling, per-row
+    positivity step-rejection, and a printed stiffness verdict (verbosity>=3).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
 
-#include "Types.H"
+#include "ODEIntegrator.H"
 
-namespace Choupo::constant {
+namespace Choupo::solver
+{
 
-// -- Mathematical -------------------------------------------------------------
-constexpr scalar pi      = 3.14159265358979323846;   // M_PI is non-standard;
-                                                     // declare ours explicitly.
+class Rosenbrock23 : public ODEIntegrator
+{
+public:
+    ODEStats integrate(sVector& y, scalar t0, scalar t1,
+                       const DerivFn& f, const ODEControls& ctrl) const override;
+    const std::string& name() const override { return name_; }
 
-// -- Physical -----------------------------------------------------------------
-constexpr scalar R       = 8.314462618;     // [J/(mol·K)] universal gas constant
-constexpr scalar Na      = 6.02214076e23;   // [1/mol]     Avogadro
-constexpr scalar kB      = 1.380649e-23;    // [J/K]       Boltzmann
-constexpr scalar Pref    = 1.0e5;           // [Pa] thermochemical standard state (1 bar)
+private:
+    inline static const std::string name_ = "Rosenbrock23";
+};
 
-// -- Conversions --------------------------------------------------------------
-constexpr scalar bar_to_Pa  = 1.0e5;
-constexpr scalar Pa_to_bar  = 1.0e-5;
-constexpr scalar atm_to_bar = 1.01325;
-
-} // namespace Choupo::constant
+} // namespace Choupo::solver

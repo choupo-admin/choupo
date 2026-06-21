@@ -97,3 +97,8 @@ __pycache__/
 *.pyc
 docs/*.fls
 docs/*.fdb_latexmk
+
+# Third-party combustion mechanisms (GRI/DRM/LLNL etc.) are all-rights-reserved;
+# kept LOCAL for curation. Only primary-transcribed, licence-clear mechanisms
+# may be committed. See data/proposed/mechanisms/INDEX.md.
+data/proposed/mechanisms/

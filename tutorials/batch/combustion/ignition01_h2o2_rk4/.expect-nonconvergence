@@ -1,0 +1,5 @@
+This case integrates the stiff H2/O2 ignition with EXPLICIT RK4 at the same
+deltaT the Rosenbrock23 sibling uses.  It is SUPPOSED to blow up to NaN within a
+few steps -- that is the lesson (explicit methods are stability-limited on stiff
+chemistry).  runTests skips it (it would trip the NaN guard by design).  Run it
+by hand: runCase tutorials/batch/combustion/ignition01_h2o2_rk4

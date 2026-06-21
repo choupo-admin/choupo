@@ -194,7 +194,17 @@ else
     for cat in steady batch ctrl props electrochem; do
         [ -d "tutorials/$cat" ] || continue
         while IFS= read -r cd; do
-            CASES+=("$(dirname "$(dirname "$cd")")")
+            case_dir="$(dirname "$(dirname "$cd")")"
+            # A case may opt OUT of the pass/fail gate by shipping a
+            # `.expect-nonconvergence` marker: it is a DELIBERATELY failing
+            # teaching case (e.g. the explicit RK4 integrator blowing up on
+            # stiff chemistry, ignition01_h2o2_rk4 -- the whole point is that it
+            # NaNs).  Such a case is announced, run by hand, never gated.
+            if [ -f "$case_dir/.expect-nonconvergence" ]; then
+                echo "skip (teaching non-convergence, not gated): $case_dir"
+                continue
+            fi
+            CASES+=("$case_dir")
         done < <(find "tutorials/$cat" -path '*/system/controlDict' 2>/dev/null | sort)
     done
     # plant/ is a run-only showcase EXCEPT a FLAT case that ships an `expected`

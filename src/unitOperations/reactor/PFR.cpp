@@ -27,7 +27,9 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PFR.H"
+#include "PolymerKPIs.H"
 #include "core/Constants.H"
+#include "thermo/reaction/Reaction.H"
 
 #include <algorithm>
 #include <cmath>
@@ -85,22 +87,19 @@ int PFR::solve(const DictPtr& dict,
         throw std::runtime_error("PFR: only Arrhenius kinetics implemented");
     const scalar A_pre = kinDict->lookupScalar("A");
     const scalar Ea    = kinDict->lookupScalar("Ea");
-    const scalar k     = A_pre * std::exp(-Ea / (constant::R * T));
+    const scalar k     = Reaction::arrheniusRate(A_pre, Ea, T);
 
-    // Optional reversible reaction: same detailed-balance closure
-    // as the CSTR --- K_eq(T) = exp(-dG_rxn/RT) with dG = Σ νᵢ g_pure_ig_i(T),
-    // and k_rev = k_fwd / K_eq.  The PFR is isothermal, so K_eq is evaluated
-    // once; the reactor then relaxes toward the equilibrium conversion along
-    // its length instead of running to 100 %.
+    // Optional reversible reaction: same detailed-balance closure as the
+    // CSTR --- k_rev = k_fwd / Kc with Kc the concentration-basis equilibrium
+    // constant (Reaction::equilibriumKc).  The PFR is isothermal, so Kc is
+    // evaluated once; the reactor then relaxes toward the equilibrium
+    // conversion along its length instead of running to 100 %.
     const bool reversible =
         rxnDict->lookupWordOrDefault("reversible", "false") == "true";
     scalar k_rev = 0.0;
     if (reversible)
     {
-        scalar dG = 0.0;
-        for (std::size_t i = 0; i < n; ++i)
-            if (nu[i] != 0.0) dG += nu[i] * thermo.comp(i).g_pure_ig(T);
-        const scalar K_eq = std::exp(-dG / (constant::R * T));
+        const scalar K_eq = Reaction::equilibriumKc(thermo, nu, T);
         k_rev = k / K_eq;
     }
 
@@ -182,6 +181,16 @@ int PFR::solve(const DictPtr& dict,
               << "k(T) = " << k << "  (units depend on rate-law order)\n"
               << "Integrator:  RK4,  " << nSteps << " uniform steps,  dV = "
               << dV << " m³\n\n";
+
+    if (reversible && verbosity >= 3)
+    {
+        const auto eq = Reaction::equilibrium(thermo, nu, T);
+        std::cout << "Reversible:  Kp = " << std::scientific << std::setprecision(4)
+                  << eq.Kp << "   Σν = " << std::showpos << eq.sumNu << std::noshowpos
+                  << "   Kc = " << eq.Kc
+                  << "  (= Kp·(P°/RuT)^Σν)\n"
+                  << "             k_rev = k_fwd / Kc = " << k_rev << "\n\n";
+    }
 
     const bool showTrace = (verbosity >= 4)
                         || (verbosity >= 3 && nWrite > 0);
@@ -274,6 +283,41 @@ int PFR::solve(const DictPtr& dict,
     out.z    = z_out;
     out.vf   = 0.0;
     produced_.push_back(out);
+
+    // -- KPIs (published for outer drivers / post-processors) -------------
+    kpis_.clear();
+    kpis_["V_R"]          = V_R;
+    kpis_["T"]            = T;
+    kpis_["tau_s"]        = tau;
+    kpis_["Da_kTau"]      = Da;
+    kpis_["X_limiting"]   = X;
+    kpis_["F_out_kmol_h"] = F_out * 3600.0 / 1000.0;
+
+    // -- Optional step-growth polymer statistics --------------------------
+    //  An opt-in `polymer { mode stepGrowth; M0 ...; }` sub-dict turns the
+    //  reactor's conversion p into Carothers/Flory chain statistics.  The
+    //  PFR is uniform-residence-time, so the Flory-Schulz distribution
+    //  (PDI = 1+p) is physically valid here (unlike a CSTR).  Absent block
+    //  -> nothing changes (the keyed parser ignores it).
+    if (rxnDict->found("polymer"))
+    {
+        auto polyDict = rxnDict->subDict("polymer");
+        const std::string mode =
+            polyDict->lookupWordOrDefault("mode", "stepGrowth");
+        if (mode != "stepGrowth")
+            throw std::runtime_error("PFR: polymer mode '" + mode
+                + "' not supported (chain-growth is a future slice); "
+                  "use 'stepGrowth'");
+        const scalar M0 = polyDict->lookupScalar("M0", Dims::molarMass);
+        const int maxX  = static_cast<int>(
+            polyDict->lookupScalarOrDefault("maxChainLength", 100));
+        const bool wantDist =
+            polyDict->lookupWordOrDefault("distribution", "true") == "true";
+        //  p = conversion of the limiting functional group (single source
+        //  of truth: the reactor's own X).
+        PolymerKPIs::addStepGrowthKPIs(kpis_, profile_, X, M0,
+                                       maxX, wantDist, verbosity);
+    }
 
     return 0;
 }

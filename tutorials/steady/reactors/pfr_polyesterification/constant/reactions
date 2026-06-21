@@ -1,0 +1,42 @@
+/*---------------------------------------------------------------------------*\
+  Step-growth self-polycondensation (AB-type monomer):
+
+      n HO-(CH2)5-COOH  ->  H-[O-(CH2)5-CO]n-OH  +  (n-1) H2O
+
+  Lumped per monomer reacted:  monomer -> repeat + water
+      C6H12O3 (132.16)  ->  C6H10O2 (114.14)  +  H2O (18.015)   [mass closes]
+
+  The -OH of one molecule esterifies the -COOH of another; each ester bond
+  releases one water.  p = conversion of the limiting monomer = fraction of
+  functional groups reacted, which drives the Carothers/Flory statistics in
+  the `polymer{}` block.  Pseudo-first-order illustrative Arrhenius kinetics.
+\*---------------------------------------------------------------------------*/
+
+polycondensation
+{
+    limitingReactant   hydroxyhexanoicAcid;
+
+    stoichiometry
+    (
+        { component hydroxyhexanoicAcid;  nu -1;  order 1; }
+        { component pclRepeat;            nu  1;  order 0; }
+        { component water;                nu  1;  order 0; }
+    );
+
+    kinetics
+    {
+        type   Arrhenius;          // illustrative; tuned so Da = kτ ≈ 4 → p ≈ 0.98
+        A      6.3e3;
+        Ea     6.0e4;
+    }
+
+    // Step-growth chain statistics (Carothers / Flory).  Opt-in: absent ->
+    // the reactor behaves exactly as a normal PFR.
+    polymer
+    {
+        mode            stepGrowth;
+        M0              [1 0 0 0 -1] 114.14;   // repeat-unit molar mass [kg/kmol]
+        distribution    true;
+        maxChainLength  60;
+    }
+}

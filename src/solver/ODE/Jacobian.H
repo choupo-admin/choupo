@@ -26,32 +26,40 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 File
-    Constants.H
+    Jacobian.H
 
 Description
-    Physical & numerical constants used throughout the simulator.
-    SI units everywhere unless explicitly noted.
+    Finite-difference Jacobian J[i][j] = d f_i / d y_j of a packed
+    derivative functor, with PER-COMPONENT perturbation so a trace radical at
+    1e-10 and the bath gas at 1e0 are both differentiated meaningfully:
+
+        eps_j = sqrt(machine_eps) * max(|y_j|, typ_j)
+
+    Forward differences (n+1 functor evaluations): a linearly-implicit stiff
+    solver tolerates an approximate Jacobian, so the cheaper one-sided formula
+    is the right trade.  Also the partial w.r.t. t (df/dt), one extra eval --
+    zero for autonomous chemistry but kept for generality.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
 
-#include "Types.H"
+#include "ODEIntegrator.H"
+#include "core/Types.H"
 
-namespace Choupo::constant {
+#include <vector>
 
-// -- Mathematical -------------------------------------------------------------
-constexpr scalar pi      = 3.14159265358979323846;   // M_PI is non-standard;
-                                                     // declare ours explicitly.
+namespace Choupo::solver
+{
 
-// -- Physical -----------------------------------------------------------------
-constexpr scalar R       = 8.314462618;     // [J/(mol·K)] universal gas constant
-constexpr scalar Na      = 6.02214076e23;   // [1/mol]     Avogadro
-constexpr scalar kB      = 1.380649e-23;    // [J/K]       Boltzmann
-constexpr scalar Pref    = 1.0e5;           // [Pa] thermochemical standard state (1 bar)
+// J[i][j] = d f_i / d y_j by forward differences (f0 = f(t,y) supplied).
+std::vector<sVector> fdJacobianODE(const DerivFn&  f,
+                                   scalar          t,
+                                   const sVector&  y,
+                                   const sVector&  f0,
+                                   const sVector&  typ);
 
-// -- Conversions --------------------------------------------------------------
-constexpr scalar bar_to_Pa  = 1.0e5;
-constexpr scalar Pa_to_bar  = 1.0e-5;
-constexpr scalar atm_to_bar = 1.01325;
+// df/dt by a forward difference (zero for an autonomous f).
+sVector fdDfDt(const DerivFn& f, scalar t, const sVector& y,
+               const sVector& f0, scalar tScale);
 
-} // namespace Choupo::constant
+} // namespace Choupo::solver

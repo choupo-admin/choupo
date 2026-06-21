@@ -25,33 +25,36 @@ License
     Credit and attribution: see AUTHORS
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
-File
-    Constants.H
+Class
+    Choupo::solver::EulerSI
 
-Description
-    Physical & numerical constants used throughout the simulator.
-    SI units everywhere unless explicitly noted.
+    Semi-implicit (linearly-implicit) Euler -- the "hello, stiffness" method.
+    One Newton-like solve per step but NO iteration:
+
+        (I - h J) * dy = h * f(y),     y <- y + dy
+
+    Unconditionally stable (A-stable), so it survives a stiff system where
+    explicit Euler/RK4 blow up; only first-order accurate, so it is the
+    pedagogical stepping stone to the second-order Rosenbrock23, not the
+    production solver.  Fixed step = ctrl.hInit (whole interval if <= 0).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
 
-#include "Types.H"
+#include "ODEIntegrator.H"
 
-namespace Choupo::constant {
+namespace Choupo::solver
+{
 
-// -- Mathematical -------------------------------------------------------------
-constexpr scalar pi      = 3.14159265358979323846;   // M_PI is non-standard;
-                                                     // declare ours explicitly.
+class EulerSI : public ODEIntegrator
+{
+public:
+    ODEStats integrate(sVector& y, scalar t0, scalar t1,
+                       const DerivFn& f, const ODEControls& ctrl) const override;
+    const std::string& name() const override { return name_; }
 
-// -- Physical -----------------------------------------------------------------
-constexpr scalar R       = 8.314462618;     // [J/(mol·K)] universal gas constant
-constexpr scalar Na      = 6.02214076e23;   // [1/mol]     Avogadro
-constexpr scalar kB      = 1.380649e-23;    // [J/K]       Boltzmann
-constexpr scalar Pref    = 1.0e5;           // [Pa] thermochemical standard state (1 bar)
+private:
+    inline static const std::string name_ = "EulerSI";
+};
 
-// -- Conversions --------------------------------------------------------------
-constexpr scalar bar_to_Pa  = 1.0e5;
-constexpr scalar Pa_to_bar  = 1.0e-5;
-constexpr scalar atm_to_bar = 1.01325;
-
-} // namespace Choupo::constant
+} // namespace Choupo::solver
