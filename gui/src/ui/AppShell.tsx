@@ -54,6 +54,7 @@ import { Suspense, lazy, useEffect } from "react";
 import { useStore, hasCaseOpen } from "../state/store.js";
 import { AgentConsole } from "./AgentConsole.js";
 import { CaseWorkspace } from "./CaseWorkspace.js";
+import { resolveHelp, helpUrl } from "../help/helpMap.js";
 import { FlowCanvas } from "./FlowCanvas.js";
 import { WelcomeScreen } from "./WelcomeScreen.js";
 import { CaseIntro } from "./CaseIntro.js";
@@ -129,6 +130,30 @@ export function AppShell() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [activeWorkspace, setActiveWorkspace]);
+
+  // F1 opens the guide AT the section for the current context (selected unit's
+  // type, else the active workspace).  Reads fresh store state inside the
+  // handler so the listener binds once.  preventDefault stops the browser's
+  // own F1 help.
+  useEffect(() => {
+    const onKey = (ev: KeyboardEvent) => {
+      if (ev.key !== "F1") return;
+      ev.preventDefault();
+      const s = useStore.getState();
+      let selectedUnitType: string | null = null;
+      const sel = s.selectedNodeId;
+      if (sel && sel.startsWith("unit:") && s.caseFiles.flowsheet) {
+        const name = sel.slice(5);
+        const units = (s.caseFiles.flowsheet["units"] ?? []) as Array<Record<string, unknown>>;
+        const u = units.find((x) => x["name"] === name);
+        selectedUnitType = (u?.["type"] as string | undefined) ?? null;
+      }
+      const target = resolveHelp({ selectedUnitType, activeWorkspace: s.activeWorkspace });
+      window.open(helpUrl(target, import.meta.env.BASE_URL), "_blank", "noopener");
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   // Browser-tab title: show the case name (or sector/unit leaf when
   // drilled-in via a sub-case URL) instead of the static "Choupo".  A

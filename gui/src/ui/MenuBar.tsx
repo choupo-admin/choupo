@@ -48,6 +48,7 @@ import { useDisclosure, useHotkeys } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 
 import { useStore, reopenLastCase, lastCaseLabel, hasCaseOpen, isIsolatedTab, type WorkspaceKey } from "../state/store.js";
+import { resolveHelp, helpUrl } from "../help/helpMap.js";
 import { OpenTutorialModal } from "./OpenTutorialModal.js";
 import { NewCaseModal } from "./NewCaseModal.js";
 import { DuplicateCaseModal } from "./DuplicateCaseModal.js";
@@ -323,6 +324,27 @@ export function MenuBar() {
 
         {/* --- Help ----------------------------------------------------- */}
         <TopMenu label="Help">
+          {/* Context-sensitive: opens the guide AT the section for whatever is
+              selected (a unit's type) or the active workspace.  Same resolution
+              as the global F1 shortcut. */}
+          <Menu.Item
+            rightSection={<Text size="xs" c="dimmed">F1</Text>}
+            onClick={() => {
+              const s = useStore.getState();
+              let selectedUnitType: string | null = null;
+              const sel = s.selectedNodeId;
+              if (sel && sel.startsWith("unit:") && s.caseFiles.flowsheet) {
+                const name = sel.slice(5);
+                const units = (s.caseFiles.flowsheet["units"] ?? []) as Array<Record<string, unknown>>;
+                selectedUnitType = (units.find((x) => x["name"] === name)?.["type"] as string | undefined) ?? null;
+              }
+              const target = resolveHelp({ selectedUnitType, activeWorkspace: s.activeWorkspace });
+              window.open(helpUrl(target, import.meta.env.BASE_URL), "_blank", "noopener");
+            }}
+          >
+            Help on current view
+          </Menu.Item>
+          <Menu.Divider />
           {/* The four glass-box manuals, all built by docs/Makefile and copied
               into public/docs by scripts/copyDocs.mjs (base-aware so the links
               work at "/" in dev and under a deployed base like /app):
