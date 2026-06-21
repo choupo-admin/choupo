@@ -26,43 +26,51 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "HeatCapacityModel.H"
-#include "PolynomialCp.H"
-#include "NASA7Cp.H"
+#include "ODEIntegrator.H"
+#include "RK4.H"
+#include "EulerSI.H"
+#include "Rosenbrock23.H"
 
 #include <stdexcept>
 
-namespace Choupo {
+namespace Choupo::solver
+{
 
-std::map<std::string, HeatCapacityModel::Factory>& HeatCapacityModel::registry()
+std::map<std::string, ODEIntegrator::Factory>& ODEIntegrator::registry()
 {
     static std::map<std::string, Factory> r;
     return r;
 }
 
-void HeatCapacityModel::registerModel(const std::string& name, Factory f)
+void ODEIntegrator::registerType(const std::string& name, Factory f)
 {
     registry()[name] = std::move(f);
 }
 
-std::unique_ptr<HeatCapacityModel>
-HeatCapacityModel::New(const DictPtr& dict)
+bool ODEIntegrator::known(const std::string& name)
 {
-    const std::string modelName = dict->lookupWord("model");
-    auto it = registry().find(modelName);
+    return registry().count(name) != 0;
+}
+
+std::unique_ptr<ODEIntegrator> ODEIntegrator::New(const std::string& name)
+{
+    auto it = registry().find(name);
     if (it == registry().end())
-        throw std::runtime_error("Unknown heat-capacity model '" + modelName + "'");
-    return it->second(dict);
+        throw std::runtime_error("Unknown ODE integrator '" + name
+            + "' (known: RK4, EulerSI, Rosenbrock23)");
+    return it->second();
 }
 
-void HeatCapacityModel::registerBuiltins()
+// Explicit registration -- no static-init macros (pedagogical clarity, and no
+// linker discard surprises).  Called once at start-up.
+void ODEIntegrator::registerBuiltins()
 {
-    registerModel("polynomial",
-        [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
-        { return std::make_unique<PolynomialCp>(d); });
-    registerModel("NASA7",
-        [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
-        { return std::make_unique<NASA7Cp>(d); });
+    registerType("RK4",
+        [] { return std::make_unique<RK4>(); });
+    registerType("EulerSI",
+        [] { return std::make_unique<EulerSI>(); });
+    registerType("Rosenbrock23",
+        [] { return std::make_unique<Rosenbrock23>(); });
 }
 
-} // namespace Choupo
+} // namespace Choupo::solver

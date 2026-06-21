@@ -73,6 +73,26 @@ public:
     //    A in the rate-law units, Ea in J/mol, T in K.
     static scalar arrheniusRate(scalar A, scalar Ea, scalar T);
 
+    // -- Modified (Kooij) Arrhenius:  k(T) = A · T^b · exp(−Ea / (R T)) -----
+    //    The CHEMKIN three-parameter form; b = 0 reduces to plain Arrhenius.
+    static scalar modifiedArrheniusRate(scalar A, scalar b, scalar Ea, scalar T);
+
+    // -- Third-body concentration  [M] = Σ_j eff_j · c_j --------------------
+    //    `efficiencies` is a full-length vector (one entry per component); an
+    //    unlisted species has efficiency 1.0, so pass 1.0 for those.  c is in
+    //    the reactor's concentration units (kmol/m³).
+    static scalar thirdBodyConcentration(const sVector& conc,
+                                         const sVector& efficiencies);
+
+    // -- Pressure fall-off (Troe / Lindemann) blended rate ------------------
+    //    kLow, kInf already evaluated at T (low- and high-pressure limits);
+    //    M = third-body concentration.  Reduced pressure Pr = kLow·M/kInf, the
+    //    Lindemann base kInf·Pr/(1+Pr), broadened by the Troe factor F.
+    //    `troe` = (alpha, T3, T1) or (alpha, T3, T1, T2); EMPTY => Lindemann
+    //    (F = 1).  Returns the effective k(T, M).
+    static scalar falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
+                              const sVector& troe);
+
     // -- Reaction equilibrium constant Kc(T) on a CONCENTRATION basis ------
     //    used as k_rev = k_fwd / Kc by detailed balance.  Two overloads that
     //    differ only in how the species are addressed (and so preserve each

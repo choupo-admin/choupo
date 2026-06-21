@@ -106,6 +106,12 @@ private:
     Mode                        mode_       = Mode::Isothermal;
     scalar                      T_setpoint_ = 0;
 
+    // Time integrator: RK4 (default, the classic explicit step) or a stiff
+    // method (EulerSI / Rosenbrock23) selected via `solver { integrator … }`.
+    // Default RK4 keeps every existing batch tutorial byte-identical.
+    std::string                 integrator_ = "RK4";
+    int                         verbosity_  = 1;
+
     // Rate r [kmol/(m³·s)] of a single reaction at (T, n, V).
     scalar rateOfReaction_(const ReactionSpec& rxn,
                            scalar T,

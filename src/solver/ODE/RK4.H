@@ -24,45 +24,34 @@ License
 
     Credit and attribution: see AUTHORS
     Required legal notices:  see NOTICE
+-------------------------------------------------------------------------------
+Class
+    Choupo::solver::RK4
+
+    Classical 4th-order explicit Runge-Kutta, fixed step.  The same scheme the
+    batch reactors have always used (k1..k4, the 1/6 weighting), now behind the
+    ODEIntegrator interface so it can be compared head-to-head with the stiff
+    methods.  Fast and accurate on NON-stiff problems; on a stiff system it is
+    stability-limited to tiny steps -- the lesson the stiffness meter makes
+    visible.  Step = ctrl.hInit (whole interval if hInit <= 0).
 \*---------------------------------------------------------------------------*/
 
-#include "HeatCapacityModel.H"
-#include "PolynomialCp.H"
-#include "NASA7Cp.H"
+#pragma once
 
-#include <stdexcept>
+#include "ODEIntegrator.H"
 
-namespace Choupo {
-
-std::map<std::string, HeatCapacityModel::Factory>& HeatCapacityModel::registry()
+namespace Choupo::solver
 {
-    static std::map<std::string, Factory> r;
-    return r;
-}
 
-void HeatCapacityModel::registerModel(const std::string& name, Factory f)
+class RK4 : public ODEIntegrator
 {
-    registry()[name] = std::move(f);
-}
+public:
+    ODEStats integrate(sVector& y, scalar t0, scalar t1,
+                       const DerivFn& f, const ODEControls& ctrl) const override;
+    const std::string& name() const override { return name_; }
 
-std::unique_ptr<HeatCapacityModel>
-HeatCapacityModel::New(const DictPtr& dict)
-{
-    const std::string modelName = dict->lookupWord("model");
-    auto it = registry().find(modelName);
-    if (it == registry().end())
-        throw std::runtime_error("Unknown heat-capacity model '" + modelName + "'");
-    return it->second(dict);
-}
+private:
+    inline static const std::string name_ = "RK4";
+};
 
-void HeatCapacityModel::registerBuiltins()
-{
-    registerModel("polynomial",
-        [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
-        { return std::make_unique<PolynomialCp>(d); });
-    registerModel("NASA7",
-        [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
-        { return std::make_unique<NASA7Cp>(d); });
-}
-
-} // namespace Choupo
+} // namespace Choupo::solver

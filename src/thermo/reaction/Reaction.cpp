@@ -43,6 +43,59 @@ scalar Reaction::arrheniusRate(scalar A, scalar Ea, scalar T)
     return A * std::exp(-Ea / (constant::R * T));
 }
 
+scalar Reaction::modifiedArrheniusRate(scalar A, scalar b, scalar Ea, scalar T)
+{
+    // A·T^b·exp(−Ea/RT).  b == 0 returns exactly arrheniusRate (no pow call,
+    // so a plain-Arrhenius reaction is bit-for-bit unchanged).
+    if (b == 0.0) return A * std::exp(-Ea / (constant::R * T));
+    return A * std::pow(T, b) * std::exp(-Ea / (constant::R * T));
+}
+
+scalar Reaction::thirdBodyConcentration(const sVector& conc,
+                                        const sVector& efficiencies)
+{
+    scalar M = 0.0;
+    for (std::size_t j = 0; j < conc.size(); ++j)
+    {
+        const scalar eff = (j < efficiencies.size()) ? efficiencies[j] : 1.0;
+        M += eff * conc[j];
+    }
+    return M;
+}
+
+scalar Reaction::falloffRate(scalar kLow, scalar kInf, scalar M, scalar T,
+                             const sVector& troe)
+{
+    // Reduced pressure and the Lindemann blend.
+    if (kInf <= 0.0) return 0.0;
+    const scalar Pr = kLow * M / kInf;
+    const scalar lindemann = kInf * Pr / (1.0 + Pr);
+
+    if (troe.size() < 3) return lindemann;          // Lindemann (F = 1)
+
+    // Troe broadening factor Fcent and its blending with the reduced pressure.
+    const scalar alpha = troe[0];
+    const scalar T3    = troe[1];   // "T***"
+    const scalar T1    = troe[2];   // "T*"
+    scalar Fcent = (1.0 - alpha) * std::exp(-T / T3) + alpha * std::exp(-T / T1);
+    if (troe.size() >= 4)
+    {
+        const scalar T2 = troe[3];  // "T**"
+        Fcent += std::exp(-T2 / T);
+    }
+    if (Fcent <= 0.0) return lindemann;
+
+    const scalar logFcent = std::log10(Fcent);
+    const scalar c   = -0.4 - 0.67 * logFcent;
+    const scalar nT  =  0.75 - 1.27 * logFcent;
+    const scalar dT  =  0.14;
+    const scalar logPr = std::log10(std::max(Pr, 1.0e-300));
+    const scalar x   = (logPr + c) / (nT - dT * (logPr + c));
+    const scalar logF = logFcent / (1.0 + x * x);
+    const scalar F   = std::pow(10.0, logF);
+    return lindemann * F;
+}
+
 // Concentration-basis correction.  Kp = exp(−dG/RT) is the standard-state
 // (1 bar) pressure-basis constant; the reverse rate k_rev = k_fwd/Kc needs the
 // CONCENTRATION-basis Kc.  For an ideal gas Kc = Kp·(P°/(R_u T))^{Σν}, where

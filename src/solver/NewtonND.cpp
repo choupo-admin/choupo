@@ -27,10 +27,12 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "NewtonND.H"
+#include "LU.H"
 
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
+#include <utility>
 
 namespace Choupo::solver {
 
@@ -69,7 +71,13 @@ std::vector<sVector> fdJacobian(const std::function<sVector(const sVector&)>& F,
 } // anonymous namespace
 
 // ---------------------------------------------------------------------------
-//  Gauss elimination with partial pivoting
+//  Gauss elimination with partial pivoting.
+//
+//  Now a thin wrapper over the reusable luFactor / luSolve (src/solver/LU) so
+//  a single factorisation can be shared -- the stiff Rosenbrock integrator
+//  factors W = I - gamma*h*J once and back-solves it three times.  Same
+//  partial-pivot rule, same singular threshold, same U entries and
+//  substitution order, so Newton's results are unchanged.
 // ---------------------------------------------------------------------------
 sVector gaussSolve(std::vector<sVector> A, sVector b)
 {
@@ -77,47 +85,9 @@ sVector gaussSolve(std::vector<sVector> A, sVector b)
     if (A.size() != n)
         throw std::runtime_error("gaussSolve: A.size != b.size");
 
-    // Forward elimination
-    for (std::size_t k = 0; k < n; ++k)
-    {
-        // Partial pivot
-        std::size_t pivot = k;
-        scalar       best  = std::abs(A[k][k]);
-        for (std::size_t i = k + 1; i < n; ++i)
-        {
-            if (std::abs(A[i][k]) > best)
-            {
-                best  = std::abs(A[i][k]);
-                pivot = i;
-            }
-        }
-        if (best < 1.0e-30)
-            throw std::runtime_error("gaussSolve: matrix is singular at row "
-                                     + std::to_string(k));
-        if (pivot != k)
-        {
-            std::swap(A[k], A[pivot]);
-            std::swap(b[k], b[pivot]);
-        }
-
-        // Eliminate
-        for (std::size_t i = k + 1; i < n; ++i)
-        {
-            const scalar factor = A[i][k] / A[k][k];
-            for (std::size_t j = k; j < n; ++j) A[i][j] -= factor * A[k][j];
-            b[i] -= factor * b[k];
-        }
-    }
-
-    // Back substitution
-    sVector x(n);
-    for (std::size_t k = n; k-- > 0; )
-    {
-        scalar s = b[k];
-        for (std::size_t j = k + 1; j < n; ++j) s -= A[k][j] * x[j];
-        x[k] = s / A[k][k];
-    }
-    return x;
+    std::vector<std::size_t> piv;
+    luFactor(A, piv);
+    return luSolve(A, piv, std::move(b));
 }
 
 // ---------------------------------------------------------------------------

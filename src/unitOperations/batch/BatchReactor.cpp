@@ -30,6 +30,7 @@ License
 #include "core/Constants.H"
 #include "streams/Composition.H"
 #include "thermo/reaction/Reaction.H"
+#include "solver/ODE/ODEIntegrator.H"
 
 #include <cmath>
 #include <stdexcept>
@@ -85,6 +86,19 @@ void BatchReactor::initialise(const DictPtr&       unitDict,
     {
         throw std::runtime_error("BatchReactor: unknown mode '" + mode
             + "' (expected 'isothermal' or 'adiabatic')");
+    }
+
+    // -----------------------------------------------------------------
+    //  Optional time-integrator selection.
+    //      solver { integrator RK4 | EulerSI | Rosenbrock23; }
+    //  Default RK4 -- the classic explicit step every batch tutorial uses,
+    //  so omitting the block changes nothing.  Stiff chemistry (detailed
+    //  kinetics) selects Rosenbrock23.
+    // -----------------------------------------------------------------
+    if (unitDict->found("solver"))
+    {
+        auto solverDict = unitDict->subDict("solver");
+        integrator_ = solverDict->lookupWordOrDefault("integrator", "RK4");
     }
 
     // -----------------------------------------------------------------
@@ -287,28 +301,53 @@ void BatchReactor::setOperationParameter(const std::string& key, scalar value)
 
 void BatchReactor::step(scalar /*t*/, scalar dt)
 {
-    // Pack state for RK4: (n[0..n-1], T).
+    // Pack state: (n[0..n-1], T).
     const std::size_t n = state_.n.size();
     sVector y0(n + 1);
     for (std::size_t i = 0; i < n; ++i) y0[i] = state_.n[i];
     y0[n] = state_.T;
 
-    auto axpy = [](const sVector& x, scalar a, const sVector& y) {
-        sVector r(x.size());
-        for (std::size_t i = 0; i < x.size(); ++i) r[i] = x[i] + a * y[i];
-        return r;
-    };
+    if (integrator_ == "RK4")
+    {
+        // The classic explicit step -- unchanged, so every existing batch
+        // tutorial is byte-identical.
+        auto axpy = [](const sVector& x, scalar a, const sVector& y) {
+            sVector r(x.size());
+            for (std::size_t i = 0; i < x.size(); ++i) r[i] = x[i] + a * y[i];
+            return r;
+        };
 
-    auto k1 = derivatives_(y0);
-    auto k2 = derivatives_(axpy(y0, 0.5 * dt, k1));
-    auto k3 = derivatives_(axpy(y0, 0.5 * dt, k2));
-    auto k4 = derivatives_(axpy(y0,       dt, k3));
+        auto k1 = derivatives_(y0);
+        auto k2 = derivatives_(axpy(y0, 0.5 * dt, k1));
+        auto k3 = derivatives_(axpy(y0, 0.5 * dt, k2));
+        auto k4 = derivatives_(axpy(y0,       dt, k3));
 
-    for (std::size_t i = 0; i < y0.size(); ++i)
-        y0[i] += dt / 6.0 * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i]);
+        for (std::size_t i = 0; i < y0.size(); ++i)
+            y0[i] += dt / 6.0 * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i]);
+    }
+    else
+    {
+        // Stiff / semi-implicit path: advance the SAME packed derivatives over
+        // [0, dt] with the selected adaptive integrator.  The derivatives are
+        // autonomous in t (chemistry), so the wrapper ignores the time arg.
+        if (!solver::ODEIntegrator::known(integrator_))
+            solver::ODEIntegrator::registerBuiltins();
+        auto integ = solver::ODEIntegrator::New(integrator_);
+
+        solver::DerivFn f =
+            [this](scalar /*t*/, const sVector& y) { return derivatives_(y); };
+
+        solver::ODEControls ctrl;
+        ctrl.atol.assign(n + 1, 1.0e-15);   // species rows: rtol dominates
+        ctrl.atol[n] = 1.0e-6;              // temperature row [K]
+        ctrl.rtol      = 1.0e-7;
+        ctrl.nPositive = n;                 // mole numbers must stay >= 0 (T free)
+        ctrl.verbosity = verbosity_;
+        integ->integrate(y0, 0.0, dt, f, ctrl);
+    }
 
     // Unpack and guard against numerical drift below zero on the mole
-    // numbers (the rate eqs are nonlinear --- RK4 can overshoot).
+    // numbers (the rate eqs are nonlinear --- the step can overshoot).
     for (std::size_t i = 0; i < n; ++i)
         state_.n[i] = std::max<scalar>(y0[i], 0.0);
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y0[n];
