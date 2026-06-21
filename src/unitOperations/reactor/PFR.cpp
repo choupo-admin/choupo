@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PFR.H"
+#include "PolymerKPIs.H"
 #include "core/Constants.H"
 #include "thermo/reaction/Reaction.H"
 
@@ -282,6 +283,41 @@ int PFR::solve(const DictPtr& dict,
     out.z    = z_out;
     out.vf   = 0.0;
     produced_.push_back(out);
+
+    // -- KPIs (published for outer drivers / post-processors) -------------
+    kpis_.clear();
+    kpis_["V_R"]          = V_R;
+    kpis_["T"]            = T;
+    kpis_["tau_s"]        = tau;
+    kpis_["Da_kTau"]      = Da;
+    kpis_["X_limiting"]   = X;
+    kpis_["F_out_kmol_h"] = F_out * 3600.0 / 1000.0;
+
+    // -- Optional step-growth polymer statistics --------------------------
+    //  An opt-in `polymer { mode stepGrowth; M0 ...; }` sub-dict turns the
+    //  reactor's conversion p into Carothers/Flory chain statistics.  The
+    //  PFR is uniform-residence-time, so the Flory-Schulz distribution
+    //  (PDI = 1+p) is physically valid here (unlike a CSTR).  Absent block
+    //  -> nothing changes (the keyed parser ignores it).
+    if (rxnDict->found("polymer"))
+    {
+        auto polyDict = rxnDict->subDict("polymer");
+        const std::string mode =
+            polyDict->lookupWordOrDefault("mode", "stepGrowth");
+        if (mode != "stepGrowth")
+            throw std::runtime_error("PFR: polymer mode '" + mode
+                + "' not supported (chain-growth is a future slice); "
+                  "use 'stepGrowth'");
+        const scalar M0 = polyDict->lookupScalar("M0", Dims::molarMass);
+        const int maxX  = static_cast<int>(
+            polyDict->lookupScalarOrDefault("maxChainLength", 100));
+        const bool wantDist =
+            polyDict->lookupWordOrDefault("distribution", "true") == "true";
+        //  p = conversion of the limiting functional group (single source
+        //  of truth: the reactor's own X).
+        PolymerKPIs::addStepGrowthKPIs(kpis_, profile_, X, M0,
+                                       maxX, wantDist, verbosity);
+    }
 
     return 0;
 }

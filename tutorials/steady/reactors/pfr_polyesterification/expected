@@ -1,0 +1,16 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  feed                   F                0.000277777777778  1e-4
+stream  polymerMelt            F                0.000550395491925  1e-4
+kpi     reactor                Da_kTau          3.98587252785      1e-4
+kpi     reactor                F_out_kmol_h     1.98142377093      1e-4
+kpi     reactor                Mn_kg_kmol       6144.41174045      1e-4
+kpi     reactor                Mw_kg_kmol       12174.6834809      1e-4
+kpi     reactor                PDI              1.98142377093      1e-4
+kpi     reactor                T                450                1e-4
+kpi     reactor                V_R              0.2                1e-4
+kpi     reactor                X_limiting       0.981423770929     1e-4
+kpi     reactor                Xn               53.8322388335      1e-4
+kpi     reactor                Xw               106.664477667      1e-4
+kpi     reactor                p_conversion     0.981423770929     1e-4
+kpi     reactor                tau_s            5829.95951417      1e-4

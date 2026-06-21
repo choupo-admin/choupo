@@ -1,0 +1,39 @@
+/*---------------------------------------------------------------------------*\
+  Step-growth polyesterification in a PFR.  A molten AB-type hydroxy-acid
+  monomer self-condenses to polycaprolactone, releasing water.  As the
+  monomer conversion p rises along the reactor, the Carothers relation
+  Xn = 1/(1-p) makes the average chain length climb steeply, and the
+  polydispersity PDI = 1+p approaches 2 (the most-probable distribution).
+
+  Try a `sweep` over operation.V_R and watch Xn, Mn and PDI climb and the
+  Flory-Schulz distribution broaden -- the whole story in one glass-box run.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            1.0 kmol/h;
+        T            450.0 K;             // molten monomer
+        P            1.01325 bar;
+        molarComposition  { hydroxyhexanoicAcid 1.0;  pclRepeat 0.0;  water 0.0; }
+    }
+}
+
+units
+(
+    {
+        name        reactor;
+        type        pfr;
+        in          feed;
+        outputs     ( polymerMelt );
+
+        operation
+        {
+            V_R          0.20;     // m³  (sized for high conversion)
+            nSteps       200;
+            writeInterval 25;
+        }
+        reaction    polycondensation;
+    }
+);

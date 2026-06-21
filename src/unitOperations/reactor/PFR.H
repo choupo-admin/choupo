@@ -55,6 +55,7 @@ Description
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -82,10 +83,13 @@ public:
         return profile_;
     }
 
+    std::map<std::string, scalar> kpis() const override { return kpis_; }
+
 private:
     inline static const std::string type_ = "pfr";
-    std::vector<ProcessStream>  produced_;
-    UnitProfile                 profile_;
+    std::vector<ProcessStream>     produced_;
+    UnitProfile                    profile_;
+    std::map<std::string, scalar>  kpis_;
 };
 
 } // namespace Choupo

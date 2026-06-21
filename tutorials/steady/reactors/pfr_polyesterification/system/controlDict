@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "PFR step-growth polyesterification — Carothers/Flory chain statistics";
+verbosity     3;
