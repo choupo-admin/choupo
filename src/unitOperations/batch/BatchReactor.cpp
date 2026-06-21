@@ -29,6 +29,7 @@ License
 #include "BatchReactor.H"
 #include "core/Constants.H"
 #include "streams/Composition.H"
+#include "thermo/reaction/Reaction.H"
 
 #include <cmath>
 #include <stdexcept>
@@ -184,7 +185,7 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
                                      const sVector&       n,
                                      scalar               V) const
 {
-    const scalar k = rxn.A_pre * std::exp(-rxn.Ea / (constant::R * T));
+    const scalar k = Reaction::arrheniusRate(rxn.A_pre, rxn.Ea, T);
     scalar r = k;
     for (std::size_t s = 0; s < rxn.comps.size(); ++s)
     {
@@ -194,13 +195,10 @@ scalar BatchReactor::rateOfReaction_(const ReactionSpec& rxn,
     }
     if (!rxn.reversible) return r;
 
-    // Reverse leg (detailed balance): k_rev = k_fwd / K_eq, with
-    //   K_eq(T) = exp(-dG_rxn(T) / RT),  dG_rxn = Σ_s ν_s · g_pure_ig_s(T).
-    // Re-evaluated here each call so it tracks T in adiabatic mode.
-    scalar dG = 0.0;
-    for (std::size_t s = 0; s < rxn.comps.size(); ++s)
-        dG += rxn.nu[s] * thermo_->comp(rxn.comps[s]).g_pure_ig(T);
-    const scalar K_eq  = std::exp(-dG / (constant::R * T));
+    // Reverse leg (detailed balance): k_rev = k_fwd / Kc, the concentration-
+    // basis equilibrium constant (Reaction::equilibriumKc), re-evaluated each
+    // call so it tracks T in adiabatic mode.
+    const scalar K_eq  = Reaction::equilibriumKc(*thermo_, rxn.comps, rxn.nu, T);
     const scalar k_rev = k / K_eq;
 
     scalar r_rev = k_rev;

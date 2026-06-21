@@ -28,6 +28,7 @@ License
 
 #include "PFR.H"
 #include "core/Constants.H"
+#include "thermo/reaction/Reaction.H"
 
 #include <algorithm>
 #include <cmath>
@@ -85,22 +86,19 @@ int PFR::solve(const DictPtr& dict,
         throw std::runtime_error("PFR: only Arrhenius kinetics implemented");
     const scalar A_pre = kinDict->lookupScalar("A");
     const scalar Ea    = kinDict->lookupScalar("Ea");
-    const scalar k     = A_pre * std::exp(-Ea / (constant::R * T));
+    const scalar k     = Reaction::arrheniusRate(A_pre, Ea, T);
 
-    // Optional reversible reaction: same detailed-balance closure
-    // as the CSTR --- K_eq(T) = exp(-dG_rxn/RT) with dG = Σ νᵢ g_pure_ig_i(T),
-    // and k_rev = k_fwd / K_eq.  The PFR is isothermal, so K_eq is evaluated
-    // once; the reactor then relaxes toward the equilibrium conversion along
-    // its length instead of running to 100 %.
+    // Optional reversible reaction: same detailed-balance closure as the
+    // CSTR --- k_rev = k_fwd / Kc with Kc the concentration-basis equilibrium
+    // constant (Reaction::equilibriumKc).  The PFR is isothermal, so Kc is
+    // evaluated once; the reactor then relaxes toward the equilibrium
+    // conversion along its length instead of running to 100 %.
     const bool reversible =
         rxnDict->lookupWordOrDefault("reversible", "false") == "true";
     scalar k_rev = 0.0;
     if (reversible)
     {
-        scalar dG = 0.0;
-        for (std::size_t i = 0; i < n; ++i)
-            if (nu[i] != 0.0) dG += nu[i] * thermo.comp(i).g_pure_ig(T);
-        const scalar K_eq = std::exp(-dG / (constant::R * T));
+        const scalar K_eq = Reaction::equilibriumKc(thermo, nu, T);
         k_rev = k / K_eq;
     }
 
