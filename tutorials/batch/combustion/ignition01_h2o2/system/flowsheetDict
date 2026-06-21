@@ -1,0 +1,57 @@
+/*---------------------------------------------------------------------------*\
+  ignition01_h2o2 -- closed rigid vessel, stoichiometric H2/O2 in N2 at 1100 K.
+
+    H2 : O2 : N2  =  2 : 1 : 4   (stoichiometric H2 + 1/2 O2 -> H2O, 57% N2)
+
+  mode adiabatic + energy gasConstantV: the first law dU = 0 in a fixed volume,
+  with the heat release coming from the species FORMATION enthalpies (curated
+  thermo) -- no per-reaction ΔH is supplied.  Temperature, and the radicals
+  H/O/OH/HO2, are integrated by the stiff solver until branching runs away.
+
+  solver { integrator Rosenbrock23; }  -- the L-stable stiff method.  Swap to
+  RK4 (see the ignition01_h2o2_rk4 sibling) and the same step blows up.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        bomb;
+        type        batchReactor;
+
+        initial
+        {
+            T            1100.0 K;
+            P               5.0 bar;
+            V             0.001;            // m³ (1 litre, held constant)
+            totalMoles    5.0e-5;           // kmol
+            molarComposition
+            {
+                H2     0.285614;
+                O2     0.142857;
+                N2     0.571429;
+                H      0.0001;               // small radical seed -> skips the
+                                            // slow initiation, starts branching
+                O      0.0;  OH 0.0;  HO2 0.0;  H2O2 0.0;  water 0.0;
+            }
+        }
+
+        operation
+        {
+            mode      adiabatic;
+            energy    gasConstantV;         // closed fixed-V gas; heat from Hf
+        }
+
+        solver
+        {
+            integrator  Rosenbrock23;       // L-stable stiff method
+            verbosity   3;                  // announce the stiffness verdict
+        }
+
+        reactions
+        (
+            init_H2_O2
+            branch_H_O2  branch_O_H2  prop_OH_H2  branch_O_H2O
+            recomb_H_O2_M  ho2_H_branch  ho2_H_recombine  recomb_H_OH_M
+        );
+    }
+);

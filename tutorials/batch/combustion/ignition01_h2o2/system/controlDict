@@ -1,0 +1,26 @@
+/*---------------------------------------------------------------------------*\
+  ignition01_h2o2 -- adiabatic constant-volume H2/O2 ignition (choupoBatch).
+
+  A stoichiometric H2/O2 charge diluted in N2 is held in a closed rigid vessel
+  at 1100 K.  A slow initiation seeds radicals; chain branching then runs away
+  and the mixture IGNITES -- a sharp temperature jump after an induction delay.
+
+  The stiff solver (Rosenbrock23, chosen in flowsheetDict) integrates the
+  µs-scale radical chemistry across the ms-scale induction with steps set by
+  ACCURACY, not stability.  The sibling case ignition01_h2o2_rk4 runs the SAME
+  problem with explicit RK4 and the same deltaT to show it grind / blow up --
+  the stiffness lesson, seen.
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Adiabatic constant-V H2/O2 ignition at 1100 K (SYNTHETIC kinetics, curated thermo); Rosenbrock23 stiff solver; reports ignition delay";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;          // s
+endTime         1.0e-2;       // s
+deltaT          1.0e-5;     // s   (the stiff integrator sub-steps adaptively
+                            //      within each deltaT; the explicit RK4 sibling
+                            //      cannot survive this step -- that is the point)
+writeInterval   1.0e-4;     // s   (trajectory snapshot)

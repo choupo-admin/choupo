@@ -85,6 +85,13 @@ protected:
 private:
     inline static const std::string type_ = "batchReactor";
 
+    // The rate-constant form a reaction declares (CHEMKIN gas-phase set).
+    //   Arrhenius     k = A·exp(−Ea/RT)                  (legacy, bit-identical)
+    //   ModArrhenius  k = A·T^b·exp(−Ea/RT)              (the 3-parameter form)
+    //   ThirdBody     k·[M], [M] = Σ eff_j·c_j           (explicit +M reactant)
+    //   Falloff       Lindemann/Troe blend of kLow,kInf  (pressure dependence)
+    enum class RateForm { Arrhenius, ModArrhenius, ThirdBody, Falloff };
+
     // Per-reaction kinetic + thermo data
     struct ReactionSpec
     {
@@ -92,18 +99,35 @@ private:
         std::vector<std::size_t> comps;   // component indices listed in stoichiometry
         std::vector<scalar>      nu;      // signed stoichiometric coefficients
         std::vector<scalar>      order;   // power-law orders (positive = reactant)
-        scalar                   A_pre = 0;     // pre-exponential
+        RateForm                 form  = RateForm::Arrhenius;
+        scalar                   A_pre = 0;     // pre-exponential (SI, kmol-m³-s)
+        scalar                   b     = 0;     // temperature exponent (ModArrhenius)
         scalar                   Ea    = 0;     // activation energy [J/mol]
         scalar                   dH    = 0;     // heat of reaction  [J/mol of limiting reactant]
-        bool                     reversible = false;  // k_rev = k_fwd / K_eq (detailed balance)
+        bool                     reversible = false;  // k_rev = k_fwd / Kc (detailed balance)
+        // Third-body / fall-off support:
+        sVector                  tbEff;          // full-length efficiency vector (empty => all 1)
+        scalar                   A_low = 0;      // low-pressure-limit Arrhenius (Falloff)
+        scalar                   b_low = 0;
+        scalar                   Ea_low = 0;
+        sVector                  troe;           // (a T*** T* [T**]); empty => Lindemann
     };
 
     enum class Mode { Isothermal, Adiabatic };
+
+    // Adiabatic energy basis:
+    //   LiquidDH      Σ r·V·ΔH_rxn over liquid Cp (the legacy, default path).
+    //   GasConstantV  closed fixed-volume gas: dT/dt from species internal
+    //                 energy u_i = h_pure_ig − R_uT over gas Cv = Cp − R.  The
+    //                 heat release comes from the species' FORMATION enthalpies
+    //                 (curated thermo), not a per-reaction ΔH.  For combustion.
+    enum class Energy { LiquidDH, GasConstantV };
 
     BatchState                  state_;
     const ThermoPackage*        thermo_ = nullptr;
     std::vector<ReactionSpec>   reactions_;
     Mode                        mode_       = Mode::Isothermal;
+    Energy                      energy_     = Energy::LiquidDH;
     scalar                      T_setpoint_ = 0;
 
     // Time integrator: RK4 (default, the classic explicit step) or a stiff
@@ -117,6 +141,16 @@ private:
                            scalar T,
                            const sVector& n,
                            scalar V) const;
+
+    // CHEMKIN unit helpers: convert a declared `units { A "cm3/mol/s"; Ea
+    // "cal/mol"; }` to SI (kmol-m³-s, J/mol) on load, announcing the factor at
+    // verbosity>=2.  No `units` block => value already SI (returned unchanged).
+    scalar ckA_ (const DictPtr& kin, scalar A,  int molecularity) const;
+    scalar ckEa_(const DictPtr& kin, scalar Ea) const;
+    // Full-length third-body efficiency vector from a `thirdBody { sp eff; }`
+    // sub-dict (unlisted species => 1.0).
+    sVector thirdBodyEfficiencies_(const DictPtr& kin,
+                                   const ThermoPackage& thermo) const;
 
     // Combined derivatives for the packed state.
     //   packed[0..n-1] = mole numbers (kmol)
