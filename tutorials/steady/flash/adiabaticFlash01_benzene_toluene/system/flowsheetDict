@@ -2,15 +2,9 @@
   Adiabatic flash: sub-cooled 40/60 benzene/toluene liquid at 380 K, 3 bar
   expanded to 1 atm.  ΔT and V/F come from the energy balance.
 
-  The outlet pressure is PARAMETRIZED: declare it once in `variables {}` and
-  reference it with `$press`.  Vary `press` (by hand, in a sweep, or in the
-  GUI What-if) and every `$press` reader follows.
+  The outlet pressure is a plain editable value -- tweak it in the GUI's
+  Properties box (transient tinkering) and re-run, or edit it here.
 \*---------------------------------------------------------------------------*/
-
-variables
-{
-    press        1.01325 bar;       // outlet pressure of the flash -- the knob
-}
 
 streams
 {
@@ -39,7 +33,7 @@ units
             // per unit op).  No Tref --- the enthalpy reference cancels in
             // H_out - H_in for a non-reacting unit, so the simulator picks
             // it internally.
-            P        $press;            // outlet pressure (see variables {})
+            P        1.01325 bar;       // outlet pressure (editable -- tinker it in the GUI)
         }
     }
 );
