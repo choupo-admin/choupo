@@ -94,10 +94,23 @@ struct PolymerEstimate
     double k   = 0.0;   // packing factor used (announced)
     bool   hasVol = false;   // false if any group lacks an open Vw value
 
+    // ---- Slice 2: glass transition (Yang 2020 modified scheme) -----------
+    // Tg(inf) = [ sum N_i * Yg_i(inf) + Nb * Ygb ] / M0   (Yang et al. 2020,
+    // ACS Omega 5, 19655, CC-BY).  Yg in 10^3 g.K/mol; M0 in g/mol -> K.
+    double YgSum = 0.0;  // sum N_i * Yg_i(inf) (+ Nb*Ygb)   [10^3 g.K/mol]
+    double Tg    = 0.0;  // Tg(inf) = YgSum*1e3 / M0          [K]
+    bool   hasTg = false;
+
     // Per-group contribution for the glass-box console build-up.  A group with
-    // no open Vw value carries hasVw=false -> printed `? (no open value)`,
-    // never a silent zero.
-    struct PolyBreakdown { std::string name; int count; double dMW, dVw; bool hasVw; };
+    // no open Vw (density path) or no Yg (Tg path) carries the matching flag
+    // false -> printed `? (no open value)`, never a silent zero.
+    struct PolyBreakdown
+    {
+        std::string name; int count;
+        double dMW = 0.0;
+        double dVw = 0.0;  bool hasVw = false;   // density path
+        double dYg = 0.0;  bool hasYg = false;   // Tg path (Yang 2020)
+    };
     std::vector<PolyBreakdown> breakdown;
 };
 

@@ -30,6 +30,7 @@ License
 #include "Joback.H"
 #include "RiaziDaubert.H"
 #include "VanKrevelen.H"
+#include "Yang2020.H"
 
 #include <map>
 #include <stdexcept>
@@ -74,6 +75,7 @@ void ConstantEstimator::registerBuiltins()
     registerType("Joback", [] { return std::make_unique<Joback>(); });
     registerType("RiaziDaubert", [] { return std::make_unique<RiaziDaubert>(); });
     registerType("VanKrevelen", [] { return std::make_unique<VanKrevelen>(); });
+    registerType("Yang2020", [] { return std::make_unique<Yang2020>(); });
 }
 
 } // namespace Choupo

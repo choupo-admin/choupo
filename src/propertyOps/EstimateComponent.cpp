@@ -661,12 +661,17 @@ int EstimateComponent::runPolymer(const DictPtr& dict, const std::string& comp,
     { std::cerr << "estimateComponent '" << comp << "': " << err << "\n"; return 1; }
 
     diag_["M0_g_per_mol"]   = est.M0;
-    diag_["Vw_cm3_per_mol"] = est.Vw;
-    diag_["packing_k"]      = est.k;
     if (est.hasVol)
     {
+        diag_["Vw_cm3_per_mol"] = est.Vw;
+        diag_["packing_k"]      = est.k;
         diag_["V_cm3_per_mol"]  = est.V;
         diag_["density_g_cm3"]  = est.rho;
+    }
+    if (est.hasTg)
+    {
+        diag_["YgSum_1e3gKmol"] = est.YgSum;
+        diag_["Tg_K"]           = est.Tg;
     }
 
     // ---- PROMOTE (opt-in): write a polymer repeat-unit proposal .dat -------
@@ -701,33 +706,28 @@ int EstimateComponent::runPolymer(const DictPtr& dict, const std::string& comp,
             f << "/*--------------------------------*- Choupo -*-----------------------*\\\n"
               << "  POLYMER repeat-unit estimate: " << comp << "\n"
               << "  Generated: " << isoDateUtc() << " by choupoProps estimateComponent\n"
-              << "  Method:    Van Krevelen group contribution (density).\n"
-              << "             M0 = sum n_i MW_i;  Vw = sum n_i Vw_i (Bondi 1964);\n"
-              << "             V = k*Vw (k=" << est.k << ", " << state
-              << ");  rho = M0/V.\n"
-              << "  SLICE 1 = density only.  Tg / solubility-parameter / Tm are DEFERRED\n"
-              << "  (their open parameters are a separate, correctly-attributed thing).\n"
+              << "  Method:    " << estimator.method() << "\n"
               << "\\*---------------------------------------------------------------------------*/\n\n";
             f << "identity\n{\n"
               << "    name        " << comp << ";\n"
               << "    M0          " << est.M0 << ";        // g/mol  repeat-unit molar mass\n"
               << "}\n\n";
             f << "polymer\n{\n"
-              << "    M0                  " << est.M0 << ";   // g/mol\n"
-              << "    vanDerWaalsVolume   " << est.Vw << ";   // cm3/mol (Bondi 1964)\n";
+              << "    M0                  " << est.M0 << ";   // g/mol\n";
             if (est.hasVol)
-                f << "    packing             " << est.k  << ";   // V = k*Vw (" << state << ")\n"
+                f << "    vanDerWaalsVolume   " << est.Vw << ";   // cm3/mol (Bondi 1964)\n"
+                  << "    packing             " << est.k  << ";   // V = k*Vw (" << state << ")\n"
                   << "    molarVolume         " << est.V   << ";   // cm3/mol\n"
                   << "    density             " << est.rho << ";   // g/cm3\n";
-            else
-                f << "    // density OMITTED: a group lacked an open Vw value (no laundering).\n";
+            if (est.hasTg)
+                f << "    Tg                  " << est.Tg << ";   // K  Tg(inf), Yang 2020 (PROVISIONAL)\n";
+            if (!est.hasVol && !est.hasTg)
+                f << "    // value OMITTED: a group lacked an open value (no laundering).\n";
             f << "}\n\n";
             f << "provenance\n{\n"
               << "    status        \"ESTIMATE\";\n"
               << "    origin        estimated;\n"
-              << "    method        \"Van Krevelen group contribution (density); Vw from Bondi 1964 via UNIFAC R_k x 15.17\";\n"
-              << "    note          \"repeat-unit density estimate; packing factor k=" << est.k
-              << " (" << state << ") -- review vs measured before promoting\";\n"
+              << "    method        \"" << estimator.method() << "\";\n"
               << "    estimateDate  \"" << isoDateUtc() << "\";\n"
               << "}\n";
             if (verbosity >= 2)
@@ -744,11 +744,46 @@ int EstimateComponent::runPolymer(const DictPtr& dict, const std::string& comp,
     DictPtr ref = dict->found("validation") ? dict->subDict("validation")
                 : dict->found("reference")  ? dict->subDict("reference") : nullptr;
 
-    std::cout << "\n=========  Van Krevelen polymer estimate: " << comp
-              << "  =========\n"
-              << "  Repeat unit decomposed into groups; each adds its MW and Bondi\n"
-              << "  van der Waals volume (Vw).  You can redo every line by hand.\n"
-              << "  ---------------------------------------------------------------\n"
+    std::cout << "\n=========  polymer estimate: " << comp << "  =========\n"
+              << "  method: " << estimator.method() << "\n"
+              << "  Repeat unit decomposed into groups; each adds its contribution.\n"
+              << "  You can redo every line by hand.\n";
+
+    if (est.hasTg)
+    {
+        // ---- Yang 2020 Tg(inf) path -------------------------------------
+        std::cout << "  ---------------------------------------------------------------\n"
+                  << "  group           count    dMW(g/mol)   dYg(1e3 g.K/mol)\n";
+        for (const auto& p : est.breakdown)
+        {
+            std::cout << "    " << std::left << std::setw(14) << p.name << std::right
+                      << std::setw(4) << p.count
+                      << std::setw(13) << std::setprecision(3) << p.dMW;
+            if (p.hasYg) std::cout << std::setw(13) << p.dYg << "   [Yang 2020]\n";
+            else         std::cout << std::setw(13) << "?" << "   (no value)\n";
+        }
+        std::cout << std::setprecision(4)
+                  << "  ---------------------------------------------------------------\n"
+                  << "  M0     = sum n_i MW_i            = " << est.M0 << " g/mol\n"
+                  << "  Yg(inf)= sum n_i Yg_i            = " << est.YgSum << " (1e3 g.K/mol)\n"
+                  << "  Tg(inf)= Yg(inf)*1e3 / M0        = " << est.Tg << " K";
+        if (ref && ref->found("Tg"))
+        {
+            const double rv = ref->lookupScalar("Tg");
+            const double dev = (est.Tg - rv) / (std::abs(rv) > 1e-30 ? rv : 1.0) * 100.0;
+            std::cout << "   [exp " << rv << " K, " << (dev >= 0 ? "+" : "") << dev << "%]";
+        }
+        std::cout << "\n  ---------------------------------------------------------------\n"
+                  << "  Yang et al., ACS Omega 5 (2020) 19655 (CC-BY) -- the MODIFIED GC\n"
+                  << "  scheme predicting Tg at infinite Mw; distinct from Van Krevelen.\n"
+                  << "  PROVISIONAL: the group<->structure mapping (SI Table S3 figures)\n"
+                  << "  needs human verification -- values are in data/proposed/yang2020/.\n"
+                  << "===============================================================\n\n";
+        return 0;
+    }
+
+    // ---- Van Krevelen density path --------------------------------------
+    std::cout << "  ---------------------------------------------------------------\n"
               << "  group           count    dMW(g/mol)   dVw(cm3/mol)\n";
     for (const auto& p : est.breakdown)
     {
@@ -781,7 +816,7 @@ int EstimateComponent::runPolymer(const DictPtr& dict, const std::string& comp,
     std::cout << "  ---------------------------------------------------------------\n"
               << "  NOTE: k is the packing factor (V/Vw); ~1.60 amorphous, ~1.43 crystalline.\n"
               << "        It is YOURS to set -- change `polymer { packing k; }` and re-run.\n"
-              << "        Slice 1 = density.  Tg / delta / Tm are DEFERRED (licence + physics).\n"
+              << "        Slice 1 = density.  delta / Tm are DEFERRED (licence + physics).\n"
               << "===============================================================\n\n";
     return 0;
 }
