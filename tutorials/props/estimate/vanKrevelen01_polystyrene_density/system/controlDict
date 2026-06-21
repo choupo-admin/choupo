@@ -1,0 +1,4 @@
+application   choupoProps;
+description   "ESTIMATE the density of polystyrene by Van Krevelen group contribution on the repeat unit -- glass-box additive sum, Vw from Bondi 1964 (licence-clean via UNIFAC R)";
+
+verbosity     2;

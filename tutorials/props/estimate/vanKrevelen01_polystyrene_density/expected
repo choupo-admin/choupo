@@ -1,0 +1,7 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    vanKrevelen01_polystyrene_density M0_g_per_mol     104                1e-4
+diag    vanKrevelen01_polystyrene_density V_cm3_per_mol    101                1e-4
+diag    vanKrevelen01_polystyrene_density Vw_cm3_per_mol   62.9               1e-4
+diag    vanKrevelen01_polystyrene_density density_g_cm3    1.04               1e-4
+diag    vanKrevelen01_polystyrene_density packing_k        1.6                1e-4

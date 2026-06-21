@@ -86,6 +86,13 @@ int EstimateComponent::run(const DictPtr& dict,
     if (estimator->inputKind() == ConstantEstimator::InputKind::Scalars)
         return runScalar(dict, comp, *estimator, verbosity);
 
+    // A POLYMER group-contribution method (VanKrevelen) reads the repeat unit's
+    // groups + a packing factor and produces repeat-unit properties (M0,
+    // density) -- a different proposal layout (no Tb/Tc/omega/Psat chain), so it
+    // gets its own code path.
+    if (estimator->inputKind() == ConstantEstimator::InputKind::PolymerGroups)
+        return runPolymer(dict, comp, *estimator, verbosity);
+
     if (!dict->found("groups"))
     {
         std::cerr << "estimateComponent '" << comp
@@ -615,6 +622,166 @@ int EstimateComponent::runScalar(const DictPtr& dict, const std::string& comp,
               << "  NOTE: a pseudo-component is a CORRELATION on bulk (Tb,SG); the error\n"
               << "        is larger than for a pure species.  Overlay vs assay/measured\n"
               << "        cut data before design.  Estimation has error -- SEE it.\n"
+              << "===============================================================\n\n";
+    return 0;
+}
+
+// ===========================================================================
+//  POLYMER group path (VanKrevelen -- Slice 1: DENSITY)
+// ===========================================================================
+int EstimateComponent::runPolymer(const DictPtr& dict, const std::string& comp,
+                                  ConstantEstimator& estimator, int verbosity)
+{
+    if (!dict->found("groups"))
+    {
+        std::cerr << "estimateComponent '" << comp << "': the " << estimator.method()
+                  << " method needs the repeat unit's `groups ( {group; count;} ... )`"
+                     " list.\n";
+        return 1;
+    }
+    std::vector<ConstantEstimator::GroupSpec> specs;
+    for (const auto& e : dict->lookupDictList("groups"))
+        specs.push_back({ e->lookupWord("group"),
+                          static_cast<int>(e->lookupScalarOrDefault("count", 1.0)) });
+
+    // The packing factor k (V = k*Vw).  Default 1.60 (amorphous/glassy);
+    // ~1.43 crystalline.  ANNOUNCED, never hidden (no-silent-crutch credo).
+    double k = 1.60;
+    std::string state = "amorphous";
+    if (dict->found("polymer"))
+    {
+        auto pm = dict->subDict("polymer");
+        k = pm->lookupScalarOrDefault("packing", k);
+        state = pm->lookupWordOrDefault("state", state);
+    }
+
+    bool ok = true; std::string err;
+    const PolymerEstimate est = estimator.estimatePolymer(specs, k, ok, err);
+    if (!ok)
+    { std::cerr << "estimateComponent '" << comp << "': " << err << "\n"; return 1; }
+
+    diag_["M0_g_per_mol"]   = est.M0;
+    diag_["Vw_cm3_per_mol"] = est.Vw;
+    diag_["packing_k"]      = est.k;
+    if (est.hasVol)
+    {
+        diag_["V_cm3_per_mol"]  = est.V;
+        diag_["density_g_cm3"]  = est.rho;
+    }
+
+    // ---- PROMOTE (opt-in): write a polymer repeat-unit proposal .dat -------
+    std::string proposalPath;
+    if (dict->found("output"))
+    {
+        auto o = dict->subDict("output");
+        if (o->found("proposal")) proposalPath = o->lookupWord("proposal");
+    }
+    if (!proposalPath.empty())
+    {
+        namespace fs = std::filesystem;
+        std::string outPath = proposalPath;
+        if (proposalPath == "auto")
+        {
+            fs::path outDir = fs::path("constant") / "components";
+            std::error_code ec; fs::create_directories(outDir, ec);
+            outPath = (outDir / (comp + ".estimate-" + isoDateUtc() + ".dat")).string();
+        }
+        for (const auto& part : fs::path(outPath))
+            if (part == "standards")
+            {
+                std::cerr << "estimateComponent '" << comp
+                          << "': refusing to write the proposal into '" << outPath << "'.\n"
+                          << "  The standard catalogue (data/standards/) is FROZEN.\n";
+                return 1;
+            }
+        std::ofstream f(outPath);
+        if (f)
+        {
+            f << std::setprecision(6);
+            f << "/*--------------------------------*- Choupo -*-----------------------*\\\n"
+              << "  POLYMER repeat-unit estimate: " << comp << "\n"
+              << "  Generated: " << isoDateUtc() << " by choupoProps estimateComponent\n"
+              << "  Method:    Van Krevelen group contribution (density).\n"
+              << "             M0 = sum n_i MW_i;  Vw = sum n_i Vw_i (Bondi 1964);\n"
+              << "             V = k*Vw (k=" << est.k << ", " << state
+              << ");  rho = M0/V.\n"
+              << "  SLICE 1 = density only.  Tg / solubility-parameter / Tm are DEFERRED\n"
+              << "  (their open parameters are a separate, correctly-attributed thing).\n"
+              << "\\*---------------------------------------------------------------------------*/\n\n";
+            f << "identity\n{\n"
+              << "    name        " << comp << ";\n"
+              << "    M0          " << est.M0 << ";        // g/mol  repeat-unit molar mass\n"
+              << "}\n\n";
+            f << "polymer\n{\n"
+              << "    M0                  " << est.M0 << ";   // g/mol\n"
+              << "    vanDerWaalsVolume   " << est.Vw << ";   // cm3/mol (Bondi 1964)\n";
+            if (est.hasVol)
+                f << "    packing             " << est.k  << ";   // V = k*Vw (" << state << ")\n"
+                  << "    molarVolume         " << est.V   << ";   // cm3/mol\n"
+                  << "    density             " << est.rho << ";   // g/cm3\n";
+            else
+                f << "    // density OMITTED: a group lacked an open Vw value (no laundering).\n";
+            f << "}\n\n";
+            f << "provenance\n{\n"
+              << "    status        \"ESTIMATE\";\n"
+              << "    origin        estimated;\n"
+              << "    method        \"Van Krevelen group contribution (density); Vw from Bondi 1964 via UNIFAC R_k x 15.17\";\n"
+              << "    note          \"repeat-unit density estimate; packing factor k=" << est.k
+              << " (" << state << ") -- review vs measured before promoting\";\n"
+              << "    estimateDate  \"" << isoDateUtc() << "\";\n"
+              << "}\n";
+            if (verbosity >= 2)
+                std::cout << "  proposal written to: " << outPath
+                          << "   (polymer ESTIMATE -- review before promoting)\n";
+        }
+        else if (verbosity >= 1)
+            std::cerr << "  estimateComponent: could not write proposal " << outPath << "\n";
+    }
+
+    if (verbosity < 1) return 0;
+
+    // ---- console: the glass-box additive build-up -------------------------
+    DictPtr ref = dict->found("validation") ? dict->subDict("validation")
+                : dict->found("reference")  ? dict->subDict("reference") : nullptr;
+
+    std::cout << "\n=========  Van Krevelen polymer estimate: " << comp
+              << "  =========\n"
+              << "  Repeat unit decomposed into groups; each adds its MW and Bondi\n"
+              << "  van der Waals volume (Vw).  You can redo every line by hand.\n"
+              << "  ---------------------------------------------------------------\n"
+              << "  group           count    dMW(g/mol)   dVw(cm3/mol)\n";
+    for (const auto& p : est.breakdown)
+    {
+        std::cout << "    " << std::left << std::setw(14) << p.name << std::right
+                  << std::setw(4) << p.count
+                  << std::setw(13) << std::setprecision(3) << p.dMW;
+        if (p.hasVw) std::cout << std::setw(13) << p.dVw << "   [Bondi 1964]\n";
+        else         std::cout << std::setw(13) << "?" << "   (no open value)\n";
+    }
+    std::cout << std::setprecision(3)
+              << "  ---------------------------------------------------------------\n"
+              << "  M0  = sum n_i MW_i             = " << est.M0 << " g/mol\n"
+              << "  Vw  = sum n_i Vw_i             = " << est.Vw << " cm3/mol\n";
+    if (est.hasVol)
+    {
+        std::cout << "  V   = k * Vw = " << est.k << " * " << est.Vw
+                  << " = " << est.V << " cm3/mol   [k=" << est.k << ", " << state
+                  << " -- ANNOUNCED]\n"
+                  << "  rho = M0 / V                   = " << est.rho << " g/cm3";
+        if (ref && ref->found("density"))
+        {
+            const double rv = ref->lookupScalar("density");
+            const double dev = (est.rho - rv) / (std::abs(rv) > 1e-30 ? rv : 1.0) * 100.0;
+            std::cout << "   [exp " << rv << ", " << (dev >= 0 ? "+" : "") << dev << "%]";
+        }
+        std::cout << "\n";
+    }
+    else
+        std::cout << "  density OMITTED -- a group has no open Vw value (no laundering).\n";
+    std::cout << "  ---------------------------------------------------------------\n"
+              << "  NOTE: k is the packing factor (V/Vw); ~1.60 amorphous, ~1.43 crystalline.\n"
+              << "        It is YOURS to set -- change `polymer { packing k; }` and re-run.\n"
+              << "        Slice 1 = density.  Tg / delta / Tm are DEFERRED (licence + physics).\n"
               << "===============================================================\n\n";
     return 0;
 }

@@ -80,6 +80,27 @@ struct ConstantEstimate
     std::vector<GroupContribution> breakdown;
 };
 
+// The POLYMER repeat-unit properties a group-contribution method produces.
+// A separate struct from the fluid ConstantEstimate: a polymer has no Tb/Tc/
+// omega closure chain -- it has a repeat-unit molar mass M0 and (Slice 1)
+// a van-der-Waals volume / molar volume / density.  Tg, delta, Tm follow in
+// later slices (own provenance, own equations).
+struct PolymerEstimate
+{
+    double M0  = 0.0;   // repeat-unit molar mass            [g/mol]
+    double Vw  = 0.0;   // Bondi van der Waals volume        [cm^3/mol]
+    double V   = 0.0;   // molar volume V = k * Vw           [cm^3/mol]
+    double rho = 0.0;   // density rho = M0 / V              [g/cm^3]
+    double k   = 0.0;   // packing factor used (announced)
+    bool   hasVol = false;   // false if any group lacks an open Vw value
+
+    // Per-group contribution for the glass-box console build-up.  A group with
+    // no open Vw value carries hasVw=false -> printed `? (no open value)`,
+    // never a silent zero.
+    struct PolyBreakdown { std::string name; int count; double dMW, dVw; bool hasVw; };
+    std::vector<PolyBreakdown> breakdown;
+};
+
 class ConstantEstimator
 {
 public:
@@ -88,7 +109,7 @@ public:
 
     // Which input channel the method consumes (drives the op's dispatch + the
     // user-facing error when the wrong block is supplied).
-    enum class InputKind { Groups, Scalars };
+    enum class InputKind { Groups, Scalars, PolymerGroups };
 
     virtual ~ConstantEstimator() = default;
 
@@ -136,6 +157,22 @@ public:
     // The recognised anchor keys (for the user-facing error message).  Empty
     // for a group-input estimator.
     virtual std::vector<std::string> knownAnchors() const { return {}; }
+
+    // ---- POLYMER GROUP channel (Van Krevelen & co.) -----------------------
+    // Estimate repeat-unit properties from the repeat unit's groups + the
+    // packing factor k (V = k * Vw).  On an unknown group, sets ok=false and
+    // fills `error` -- never throws.  Default: refuse (this estimator is not a
+    // polymer group-contribution method).
+    virtual PolymerEstimate estimatePolymer(const std::vector<GroupSpec>& /*groups*/,
+                                            double /*k*/,
+                                            bool& ok, std::string& error) const
+    {
+        ok = false;
+        error = "estimator '" + method()
+              + "' is not a POLYMER group-contribution method -- it does not take"
+                " a polymer repeat-unit `groups ( ... )` block.";
+        return {};
+    }
 
     static void registerType(const std::string& name, Factory f);
     static std::unique_ptr<ConstantEstimator> New(const std::string& name);

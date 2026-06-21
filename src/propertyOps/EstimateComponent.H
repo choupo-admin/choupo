@@ -98,6 +98,12 @@ private:
     int runScalar(const DictPtr& dict, const std::string& comp,
                   class ConstantEstimator& estimator, int verbosity);
 
+    // The POLYMER-group path (VanKrevelen): reads the repeat unit's `groups`
+    // + `polymer { packing k; }`, produces a polymer{ M0; density; ... } block.
+    // Output-only -- never touches critical{}/gasIdeal{}/liquidPure{}.
+    int runPolymer(const DictPtr& dict, const std::string& comp,
+                   class ConstantEstimator& estimator, int verbosity);
+
     inline static const std::string type_ = "estimateComponent";
     std::map<std::string, scalar> diag_;
 };

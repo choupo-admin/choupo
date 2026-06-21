@@ -1,0 +1,50 @@
+/*---------------------------------------------------------------------------*\
+  Van Krevelen polymer group contribution -- SLICE 1: DENSITY groups.
+
+  Each group carries two numbers:
+    MW  [g/mol]     -- the group's molar mass (atomic masses; a trivial fact).
+    Vw  [cm^3/mol]  -- the BONDI van der Waals group volume.
+
+  PROVENANCE OF Vw (the licence-clean path -- read this):
+    The Vw values are Bondi, J. Phys. Chem. 68 (1964) 441 -- the PRIMARY source
+    per value.  They are NOT copied from the Van Krevelen book table (copyright);
+    they are DERIVED from the UNIFAC R_k volume parameters Choupo already ships
+    in data/standards/unifac/groups.dat (ChemSep Artistic-2.0, Hansen 1991, whose
+    R_k are themselves Bondi van der Waals volumes), via the standard
+    Abrams-Prausnitz normalisation:
+
+        Vw = R_k * 15.17  cm^3/mol          (R_k = Vw / 15.17)
+
+    e.g. CH2: R_k = 0.6744 -> Vw = 10.231 cm^3/mol (Bondi's tabulated CH2).
+    So every Vw here is reproducible from an already-in-repo, openly-licensed
+    number -- no book table was read, no value was hand-typed from VK.
+
+  The PACKING FACTOR k (used as V = k*Vw, rho = M0/V) is NOT a group property --
+  it lives in the case op's `polymer { packing k; }` (default 1.60 amorphous;
+  ~1.43 crystalline).  It is announced on the console, never hidden.
+
+  DEFERRED (not here -- Slice 2/3): Tg (needs the Yang 2020 modified scheme,
+  separately attributed -- NOT bare Van Krevelen), solubility parameter delta,
+  Tm, Cp.  Those open parameters are a different, correctly-cited thing.
+\*---------------------------------------------------------------------------*/
+
+groups
+(
+    // name      MW [g/mol]   Vw [cm3/mol]   (Vw = R_UNIFAC * 15.17; primary Bondi 1964)
+    { name CH3;    MW 15.035;   Vw 13.670;
+      provenance { origin "Bondi, J. Phys. Chem. 68 (1964) 441"; method "Vw = R_UNIFAC(0.9011) x 15.17"; adoptedVia "data/standards/unifac (Hansen 1991, ChemSep Artistic-2.0)"; } }
+    { name CH2;    MW 14.027;   Vw 10.231;
+      provenance { origin "Bondi 1964"; method "Vw = R_UNIFAC(0.6744) x 15.17"; adoptedVia "data/standards/unifac"; } }
+    { name CH;     MW 13.019;   Vw  6.780;
+      provenance { origin "Bondi 1964"; method "Vw = R_UNIFAC(0.4469) x 15.17"; adoptedVia "data/standards/unifac"; } }
+    { name C;      MW 12.011;   Vw  3.330;
+      provenance { origin "Bondi 1964"; method "Vw = R_UNIFAC(0.2195) x 15.17"; adoptedVia "data/standards/unifac"; } }
+    { name ACH;    MW 13.019;   Vw  8.060;
+      provenance { origin "Bondi 1964"; method "Vw = R_UNIFAC(0.5313) x 15.17 (aromatic =CH-)"; adoptedVia "data/standards/unifac"; } }
+    { name AC;     MW 12.011;   Vw  5.540;
+      provenance { origin "Bondi 1964"; method "Vw = R_UNIFAC(0.3652) x 15.17 (aromatic =C<, substituted)"; adoptedVia "data/standards/unifac"; } }
+    { name CHCl;   MW 48.472;   Vw 18.781;
+      provenance { origin "Bondi 1964"; method "Vw = R_UNIFAC(1.2380) x 15.17 (combined >CHCl)"; adoptedVia "data/standards/unifac"; } }
+    { name CH2Cl;  MW 49.480;   Vw 22.230;
+      provenance { origin "Bondi 1964"; method "Vw = R_UNIFAC(1.4654) x 15.17 (combined -CH2Cl)"; adoptedVia "data/standards/unifac"; } }
+);

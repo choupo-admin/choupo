@@ -1,0 +1,70 @@
+/*---------------------------------------------------------------------------*\
+  vanKrevelen01_polystyrene_density
+  =================================
+
+  ESTIMATE a POLYMER's repeat-unit DENSITY by group contribution -- the polymer
+  sibling of the Joback small-molecule path.  Polystyrene's repeat unit
+  -[CH2-CH(C6H5)]- is decomposed into groups; each adds its molar mass and its
+  Bondi van der Waals volume Vw; the sums give
+
+      M0  = sum n_i MW_i            repeat-unit molar mass
+      Vw  = sum n_i Vw_i            van der Waals volume (Bondi 1964)
+      V   = k * Vw                  molar volume (k = packing factor)
+      rho = M0 / V                  density
+
+  GLASS-BOX: the console prints every group's contribution -- you can redo the
+  whole estimate by hand.  M0 is an exact mass-balance fact (104.15 g/mol);
+  rho carries the packing-factor uncertainty (the teaching point below).
+
+  LICENCE (the honest part): the Vw group values are Bondi, J. Phys. Chem. 68
+  (1964) 441 -- the PRIMARY per value -- derived from the UNIFAC R_k volume
+  parameters Choupo already ships (Vw = R_k x 15.17), NOT copied from the Van
+  Krevelen book table (copyright).  See data/standards/vanKrevelen/groups.dat.
+  Slice 1 ships DENSITY only; Tg / solubility-parameter / Tm are DEFERRED (their
+  open parameters are a separate, correctly-attributed thing).
+
+  THE TEACHING POINT -- the packing factor k:
+    rho depends on k = V/Vw, the fraction of space the chains do NOT pack into.
+    Default k = 1.60 (amorphous/glassy); crystalline packs denser (~1.43).  k is
+    YOURS: change `polymer { packing k; }` and watch rho move.  Atactic PS is
+    amorphous (rho ~ 1.05) -- the estimate lands there; a crystalline polymer
+    would need the smaller k.  That k is visible (never hidden) is the lesson.
+
+  M0 = 104.15 also feeds the step-growth reactor KPIs (Mn = M0/(1-p)) -- the
+  same repeat-unit mass, two places.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        vanKrevelen01_polystyrene_density;
+        type        estimateComponent;
+        model       VanKrevelen;             // POLYMER-group estimator (density)
+        component   polystyrene;
+
+        // Repeat unit  -[CH2-CH(C6H5)]-  :  backbone CH2 + CH, phenyl = 5 ACH + 1 AC
+        groups
+        (
+            { group CH2; count 1; }
+            { group CH;  count 1; }
+            { group ACH; count 5; }          // aromatic =CH- of the phenyl ring
+            { group AC;  count 1; }          // aromatic =C< bonded to the backbone
+        );
+
+        polymer
+        {
+            packing  1.60;                   // V = k*Vw; 1.60 amorphous, ~1.43 crystalline
+            state    amorphous;
+        }
+
+        // "See, then trust": compare rho to the measured atactic-PS value.
+        reference
+        {
+            source   "atactic polystyrene, amorphous, ~298 K (textbook)";
+            density  1.05;                    // g/cm3
+        }
+
+        // Opt-in PROMOTE: write a polymer repeat-unit proposal .dat.
+        output  { proposal auto; }
+    }
+);

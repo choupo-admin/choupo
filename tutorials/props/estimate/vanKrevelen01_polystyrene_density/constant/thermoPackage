@@ -1,0 +1,6 @@
+// Van Krevelen reads only the polymer `groups` block; a single placeholder
+// component keeps the loader happy.
+components       ( benzene );
+
+activityModel    { model ideal; }
+equationOfState  { model idealGas; }
