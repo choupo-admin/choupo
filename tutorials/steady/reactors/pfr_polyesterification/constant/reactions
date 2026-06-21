@@ -35,7 +35,7 @@ polycondensation
     polymer
     {
         mode            stepGrowth;
-        M0              [1 0 0 0 -1] 114.14;   // repeat-unit molar mass [kg/kmol]
+        M0              114.14 kg/kmol;        // repeat-unit molar mass (named unit — both parsers)
         distribution    true;
         maxChainLength  60;
     }
