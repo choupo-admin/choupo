@@ -47,6 +47,7 @@ constexpr scalar pi      = 3.14159265358979323846;   // M_PI is non-standard;
 constexpr scalar R       = 8.314462618;     // [J/(mol·K)] universal gas constant
 constexpr scalar Na      = 6.02214076e23;   // [1/mol]     Avogadro
 constexpr scalar kB      = 1.380649e-23;    // [J/K]       Boltzmann
+constexpr scalar Pref    = 1.0e5;           // [Pa] thermochemical standard state (1 bar)
 
 // -- Conversions --------------------------------------------------------------
 constexpr scalar bar_to_Pa  = 1.0e5;

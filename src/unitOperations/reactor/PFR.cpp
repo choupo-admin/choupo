@@ -181,6 +181,16 @@ int PFR::solve(const DictPtr& dict,
               << "Integrator:  RK4,  " << nSteps << " uniform steps,  dV = "
               << dV << " m³\n\n";
 
+    if (reversible && verbosity >= 3)
+    {
+        const auto eq = Reaction::equilibrium(thermo, nu, T);
+        std::cout << "Reversible:  Kp = " << std::scientific << std::setprecision(4)
+                  << eq.Kp << "   Σν = " << std::showpos << eq.sumNu << std::noshowpos
+                  << "   Kc = " << eq.Kc
+                  << "  (= Kp·(P°/RuT)^Σν)\n"
+                  << "             k_rev = k_fwd / Kc = " << k_rev << "\n\n";
+    }
+
     const bool showTrace = (verbosity >= 4)
                         || (verbosity >= 3 && nWrite > 0);
     if (showTrace)

@@ -90,6 +90,13 @@ public:
     static scalar equilibriumKc(const ThermoPackage& thermo,
                                 const sVector&       nu,
                                 scalar               T);
+
+    // -- The same computation, broken out for a glass-box report ----------
+    //    Kp (pressure basis), Σν, and Kc = Kp·(P°/(R_u T))^Σν.
+    struct Equilibrium { scalar Kp; scalar sumNu; scalar Kc; };
+    static Equilibrium equilibrium(const ThermoPackage& thermo,
+                                   const sVector&       nu,
+                                   scalar               T);
 };
 
 } // namespace Choupo

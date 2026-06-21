@@ -138,8 +138,15 @@ int CSTR::solve(const DictPtr& dict,
                   << "  A_pre:  " << A_pre << "\n"
                   << "  Ea:     " << Ea << "  J/mol\n";
         if (reversible)
-            std::cout << "  K_eq(T): " << std::scientific << std::setprecision(4)
-                      << K_eq << "    k_rev = k_fwd / K_eq = " << k_rev << "\n";
+        {
+            const auto eq = Reaction::equilibrium(thermo, nu, T);
+            std::cout << "  Kp(T):  " << std::scientific << std::setprecision(4)
+                      << eq.Kp << "   Σν = " << std::showpos << eq.sumNu
+                      << std::noshowpos << "\n"
+                      << "  Kc(T):  " << eq.Kc
+                      << "  (= Kp·(P°/RuT)^Σν, concentration basis)\n"
+                      << "  k_rev = k_fwd / Kc = " << k_rev << "\n";
+        }
         std::cout << "\nFeed v_mol  = " << std::scientific << V_mol_in
                   << " m³/mol\nVolumetric Q = " << Q << " m³/s\n"
                   << "Residence τ  = " << std::fixed << std::setprecision(4)
