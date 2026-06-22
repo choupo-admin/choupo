@@ -93,7 +93,7 @@ GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
     {
         g_over_RT[i] = thermo.comp(p.compIdx[i]).g_pure_ig(T) / RTt;
         if (p.condensable[i])
-        { cond[i] = true; lnPsat[i] = std::log(thermo.comp(p.compIdx[i]).vp().Psat_Pa(T)); }
+        { cond[i] = true; lnPsat[i] = std::log(thermo.comp(p.compIdx[i]).vp().Psat_Pa(T) / constant::Pref); }  // ln(Psat/P0): symmetric with the gas ln(P/P0) so the V-L equilibrium term is consistent (QA gibbs09)
     }
 
     // Reaction directions (null space of A) + the condensable index list.
@@ -173,7 +173,7 @@ GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
     for (std::size_t a = 0; a < K; ++a)
     {
         const std::size_t c = condIdx[a];
-        const scalar Psat = std::exp(lnPsat[c]);
+        const scalar Psat = std::exp(lnPsat[c]) * constant::Pref;  // back to Pa (lnPsat is now ln(Psat/P0))
         const scalar y_c  = gas.nGas[c] / gas.Ntotal_gas;
         xc[R + a] = (y_c * p.P > Psat) ? std::min(0.8, 1.0 - Psat / (y_c * p.P)) : 0.0;
     }
