@@ -1,0 +1,81 @@
+// --- vendored for self-containment (2026-06-22) -----------------------
+// origin   standard
+// source   data/standards/components/water.dat
+// sha256   3e05335c926c72a7ac85d708481877e7eca7fa31a3f91f7a6ee06f695abfcf11
+// note     byte-copy of the FROZEN reference at vendoring time, so this
+//          LLE scan is self-contained + reproducible (incl. the UNIFAC
+//          groups{} block UNIFAC reads) even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Water  (H2O, CAS 7732-18-5)
+  Warning: Antoine fit accurate for 273-373 K only.
+           Above ~373 K use steam tables or a proper EoS (IAPWS).
+\*---------------------------------------------------------------------------*/
+
+name        water;
+formula     H2O;
+CAS         7732-18-5;
+
+MW          18.015;
+Tc          647.14;
+Pc          220.64;
+omega       0.3449;
+Tb          373.15;
+HvapTb      40660;
+Vliq        1.807e-5;
+diffusionVolume  13.1;          // Fuller diffusion volume [-]
+
+
+gibbsFormation
+{
+    dHf_298   -241826.0;        // J/mol  -- ideal-gas reference
+    s_298     188.834;         // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (JANAF convention)
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.40221   1838.675   -31.737);
+    Trange        (273  373);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (32.243   1.924e-3   1.0555e-5   -3.596e-9);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (75.5);
+    Trange        (273  373);
+}
+
+// Ebulioscopic / cryoscopic constants for water (v0.28+):
+//   K_b = 0.512 K * kg / mol  (boiling-point elevation, ΔT = K_b · m)
+//   K_f = 1.853 K * kg / mol  (freezing-point depression, ΔT = K_f · m)
+// Reference: individual literature values -- primary re-citation pending (IST review).
+ebulioscopic
+{
+    K_b   0.512;
+    K_f   1.853;
+}
+
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
+associationFactor  2.6;
+liquidViscosity
+{
+    andrade { A -13.03; B 1796.1; }
+    vogel   { A -10.5366; B 541.4; C 144.0; }
+}
+
+groups
+{
+    unifac ( { group H2O; count 1; } );
+}

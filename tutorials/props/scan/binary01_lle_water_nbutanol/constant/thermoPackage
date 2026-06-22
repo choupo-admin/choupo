@@ -1,6 +1,13 @@
-/*  Two liquid phases sharing a predictive UNIFAC activity model (no fitted
-    pairs) -- the liquid-liquid flash needs >= 2 liquid phases to split.
-    UNIFAC groups come from each component's .dat (water, nButanol). */
+/*  Two liquid phases sharing a PREDICTIVE UNIFAC activity model (no fitted
+    pairs) -- the liquid-liquid flash needs >= 2 liquid phases to even attempt
+    a split.  UNIFAC groups come from each component's case-local .dat
+    (constant/components/water.dat, nButanol.dat -- vendored from the standard
+    catalogue so this case is self-contained).
+
+    HONEST-FAILURE NOTE (see README.md): predictive UNIFAC does NOT reproduce
+    the water/1-butanol LLE gap -- it predicts one convex g_mix well and hence
+    complete miscibility.  We keep the predictive model (no fabricated pair) and
+    let the absence of a split be the lesson. */
 components ( water nButanol );
 phases
 (

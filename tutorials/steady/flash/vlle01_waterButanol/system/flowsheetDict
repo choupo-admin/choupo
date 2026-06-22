@@ -1,30 +1,41 @@
 /*---------------------------------------------------------------------------*\
   vlle01_waterButanol  --  isothermal flash with `phaseSet VLLE`.
 
-  At T = 365 K, P = 1 bar with the NRTL parameters declared in
-  `constant/thermoPackage`, the water + 1-butanol system is hot enough
-  for substantial vapour formation but the LL miscibility gap has just
-  closed for the equimolar feed.  The VLLE solver therefore reports a
-  TWO-PHASE V + L result (sol.threePhase == false), and the flowsheet
-  emits THREE streams with the empty "organic" carrying F = 0.
+  HONEST-FAILURE TUTORIAL (read README.md).  Water + 1-butanol is the
+  classic partially-miscible binary, so a student rightly expects a
+  V + Laqueous + Lorganic three-phase split at 373 K, 1.013 bar (above
+  the bubble point, so vapour is genuinely present).  It does NOT happen
+  here -- and that is the lesson.
 
-  This demonstrates:
+  The NRTL parameters in `constant/thermoPackage` are the REAL, cited
+  DECHEMA VLE-regressed set (Vol. I/1a p.336, via ChemSep -- see the
+  thermoPackage header for the full provenance).  Being a VLE fit, that
+  set carries NO liquid-liquid miscibility gap: the VLLE Gibbs-minimiser
+  finds the single-liquid optimum, demotes to a TWO-phase V + L result
+  (sol.threePhase == false), and the flowsheet emits THREE streams with
+  the empty `organic` carrying F = 0.  The surviving liquid is
+  butanol-rich (so its `aqueous` label is only a slot name, not a
+  physical aqueous phase -- the README spells this out).
 
-      * the new IsothermalFlash VLLE branch (direct Gibbs-energy
-        minimisation on the 2n-dimensional (β_V, β_α, y[0..n-2],
-        x_α[0..n-2]) simplex, with multi-start Nelder-Mead);
-      * the 2-phase fallback path inside the VLLE branch (one phase
-        collapses to β ≈ 0 → demoted to V+L);
-      * the 3-output flowsheet contract for VLLE (always emit V +
-        Lα + Lβ; absent phases get F = 0 so the topology stays
-        fixed regardless of the optimum's regime).
+  We deliberately keep cited-but-LLE-blind parameters instead of inventing
+  numbers to manufacture a gap (Choupo credo: sourced-and-cited, or
+  honest-failure-as-lesson -- nothing in between).
 
-  True 3-phase coexistence at fixed T and P is a 1-D curve in
-  parameter space for binaries (Gibbs phase rule F = 2 + 2 - 3 = 1)
-  --- a heteroazeotrope is a *point* on the saturation envelope at
-  each pressure.  Pedagogically robust 3-phase tutorials live in
-  ternary systems (F = 2 + 3 - 3 = 2, a 2-D region); a ternary
-  VLLE example is scheduled with the solids work in v0.20.
+  WHAT THIS DEMONSTRATES:
+
+      * the VLE-fit-misses-LLE failure mode, made VISIBLE: a published
+        parameter set that is fine for VLE silently has no LL gap;
+      * the IsothermalFlash VLLE branch and its honest 2-phase fallback
+        (direct Gibbs-energy minimisation, multi-start Nelder-Mead; one
+        liquid collapses to beta ~ 0 -> demoted to V+L, announced aloud);
+      * the fixed 3-output flowsheet contract for VLLE (always emit V +
+        Lalpha + Lbeta; absent phases get F = 0 so the topology is fixed
+        regardless of the optimum's regime).
+
+  To actually SEE the gap a student must supply LLE-specific parameters
+  (DECHEMA Vol. V LLE Data Collection, Soerensen & Arlt) -- the README
+  gives the recipe.  A correctly-split tutorial awaits a curated,
+  per-value-cited LLE parameter set.
 \*---------------------------------------------------------------------------*/
 
 streams
@@ -32,7 +43,7 @@ streams
     feed
     {
         F            100.0 kmol/h;
-        T            365.0 K;
+        T            373.0 K;
         P            1.013 bar;
         molarComposition  { water 0.50;  nButanol 0.50; }
     }
@@ -48,7 +59,7 @@ units
 
         operation
         {
-            T          365.0 K;
+            T          373.0 K;
             P          1.013 bar;
             phaseSet   VLLE;
             alphaRich  water;

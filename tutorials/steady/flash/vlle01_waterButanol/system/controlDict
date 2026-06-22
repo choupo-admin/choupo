@@ -1,4 +1,4 @@
 application   choupoSolve;
-description   "Three-phase VLLE flash of water + 1-butanol near the heteroazeotrope (T = 366 K, P = 1.013 bar)";
+description   "VLLE flash of water + 1-butanol at 373 K, 1.013 bar -- honest-failure tutorial: cited DECHEMA VLE-fit NRTL carries NO LL gap, so vapour + ONE liquid, no liquid-liquid split (see README)";
 
 verbosity     3;
