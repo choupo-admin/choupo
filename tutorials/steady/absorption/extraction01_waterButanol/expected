@@ -10,3 +10,4 @@ kpi     decanter01             P                101325             1e-4
 kpi     decanter01             T                298.15             1e-4
 kpi     decanter01             V_over_F         0.493604933098     1e-4
 kpi     decanter01             phaseSet         1                  1e-4
+kpi     decanter01             Q_kW             0                  1e-6

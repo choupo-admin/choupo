@@ -953,6 +953,29 @@ int IsothermalFlash::solve(const DictPtr& dict,
                      && feedSol.V_over_F < 1.0 - 1.0e-9;
         }
 
+        // The OUTPUT phases must be valued by their ACTUAL nature, not by a
+        // blanket "α liquid + β vapour" assumption.  For a VL flash β IS the
+        // vapour; but for an LL decanter BOTH product phases are LIQUIDS
+        // (sol.x = α, sol.y = β), and for a genuine 3-phase VLLE the vapour
+        // lives in sol.xVapor / sol.betaVapor while sol.x / sol.y are the two
+        // liquids.  Treating the β-liquid as a vapour (vf = 1) adds its full
+        // latent heat of vaporisation to H_out --- the LL phantom duty (H8):
+        // an adiabatic LL split read 661 kW + 0.30 kg/s steam though no heat
+        // crosses its boundary.  Decide once, here, what is vapour:
+        //
+        //   isLLnoVapour : phaseSet == LL, OR a VLLE that demoted to LL --- no
+        //                  vapour at all → both products are liquids, Q ≈ 0 for
+        //                  an isothermal/adiabatic split (the liquids carry the
+        //                  feed's enthalpy).
+        //   threePhase   : genuine VLLE → vapour = sol.xVapor @ sol.betaVapor,
+        //                  the two liquids = sol.x (β_α) + sol.y (β_β).
+        //   otherwise    : VL (or a VLLE that demoted to VL) → sol.y is vapour.
+        const bool vlleDemotedToLL =
+            (opts.phaseSet == PhaseSet::VLLE) && !sol.threePhase
+            && sol.regime.find("VL") == std::string::npos;
+        const bool isLLnoVapour =
+            (opts.phaseSet == PhaseSet::LL) || vlleDemotedToLL;
+
         bool useForm = true;
         for (std::size_t i = 0; i < thermo.n(); ++i)
             if (!thermo.comp(i).hasGibbsData()) { useForm = false; break; }
@@ -961,12 +984,10 @@ int IsothermalFlash::solve(const DictPtr& dict,
         {
             // H_stream(T,P,vf,z) blends each component by the SAME vf over the
             // overall z --- it does NOT solve the VLE split.  For BOTH ends of
-            // the duty we use the equilibrium PHASE compositions (x liquid,
-            // y vapour) weighted by the split, i.e. the very enthalpies the
-            // streams carry.  Using in.z with V_over_F instead smears the
-            // condensable over the vapour and gives the wrong sign (a condenser
-            // then reads as a heater).
-            const scalar bV = sol.V_over_F;
+            // the duty we use the equilibrium PHASE compositions weighted by
+            // the split, i.e. the very enthalpies the streams carry.  Using
+            // in.z with V_over_F instead smears the condensable over the vapour
+            // and gives the wrong sign (a condenser then reads as a heater).
             if (feedSplit)
             {
                 const scalar bF = feedSol.V_over_F;
@@ -975,12 +996,43 @@ int IsothermalFlash::solve(const DictPtr& dict,
             }
             else
                 H_in = thermo.H_stream(T_feed, P_feed, vf_feed, in.z);
-            H_out = (1.0 - bV) * thermo.H_stream(in.T, in.P, 0.0, sol.x)
-                  +        bV  * thermo.H_stream(in.T, in.P, 1.0, sol.y);
+
+            if (isLLnoVapour)
+            {
+                // Two LIQUID products, no vapour.  Both at vf = 0.
+                const scalar bB = sol.V_over_F;          // β-liquid fraction
+                H_out = (1.0 - bB) * thermo.H_stream(in.T, in.P, 0.0, sol.x)
+                      +        bB  * thermo.H_stream(in.T, in.P, 0.0, sol.y);
+            }
+            else if (sol.threePhase)
+            {
+                // Genuine VLLE: vapour (xVapor @ betaVapor) + two liquids.
+                const scalar bVap = sol.betaVapor;
+                const scalar bA   = sol.V_over_F;        // α-liquid fraction
+                const scalar bB   = 1.0 - bVap - bA;     // β-liquid fraction
+                H_out = bVap * thermo.H_stream(in.T, in.P, 1.0, sol.xVapor)
+                      + bA   * thermo.H_stream(in.T, in.P, 0.0, sol.x)
+                      + bB   * thermo.H_stream(in.T, in.P, 0.0, sol.y);
+            }
+            else
+            {
+                // VL: sol.x liquid, sol.y vapour.
+                const scalar bV = sol.V_over_F;
+                H_out = (1.0 - bV) * thermo.H_stream(in.T, in.P, 0.0, sol.x)
+                      +        bV  * thermo.H_stream(in.T, in.P, 1.0, sol.y);
+            }
         }
         else
         {
-            H_out = thermo.Hmixture(in.T, sol.V_over_F, sol.x, sol.y, T_feed);
+            if (isLLnoVapour)
+            {
+                // Two liquids, no vapour: pass V/F = 0 so Hmixture values the
+                // overall composition as a single liquid (the α + β liquids
+                // carry the feed enthalpy → Q ≈ 0 for an isothermal split).
+                H_out = thermo.Hmixture(in.T, 0.0, in.z, sol.y, T_feed);
+            }
+            else
+                H_out = thermo.Hmixture(in.T, sol.V_over_F, sol.x, sol.y, T_feed);
             if (feedSplit)
                 H_in = thermo.Hmixture(T_feed, feedSol.V_over_F,
                                        feedSol.x, feedSol.y, T_feed);
