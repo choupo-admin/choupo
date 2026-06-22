@@ -1,6 +1,0 @@
-founder-WIP. The sprayDryer op H2 bug is now FIXED (energy-capped drying): the
-SD sector is physical (no more -53 C / eta>1). The plant still fails for SEPARATE
-reasons -- a sector NaN/sub-zero T (not the dryer), plus a stale golden that is
-byte-identical to v1's despite a different topology and predates the op fix.
-Re-record from v2's OWN clean full-plant run once the remaining sector issues are
-resolved (Vitor's curation). See TUTORIAL-QA-2026-06-22.md (H2, H7).

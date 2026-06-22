@@ -1,14 +1,14 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
-stream  DryerVapour            F                0.00211260003065  1e-4
-stream  DryingAir              F                0.0833333333333   1e-4
-stream  EvapCondensate1        F                0.0166666666667   1e-4
-stream  EvapCondensate2        F                0.00896304738613  1e-4
-stream  EvapVapour             F                0.00911273615566  1e-4
-stream  PlantSteam             F                0.0166666666667   1e-4
+stream  DryerVapour            F                0.00155397930722 1e-4
+stream  DryingAir              F                0.0833333333333  1e-4
+stream  EvapCondensate1        F                0.0166666666667  1e-4
+stream  EvapCondensate2        F                0.00908154950558 1e-4
+stream  EvapVapour             F                0.00923202330697 1e-4
+stream  PlantSteam             F                0.0166666666667  1e-4
 stream  Powder                 F                0.000347684762749 1e-4
-stream  RawJuice               F                0.0416666666667   1e-4
-stream  RecoveredDust          F                0                 1e-4
-stream  Stack                  F                0.0889096816648   1e-4
-stream  EthanolVapour          F                0.0037869813364   1e-4
-stream  Purge                  F                0.0150492344537   1e-4
+stream  RawJuice               F                0.0416666666667  1e-4
+stream  RecoveredDust          F                0                1e-4
+stream  Stack                  F                0.0892305131175  1e-4
+stream  EthanolVapour          F                0.00378697975222 1e-4
+stream  Purge                  F                0.0150492322005  1e-4
