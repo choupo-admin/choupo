@@ -55,26 +55,32 @@ namespace Choupo {
 namespace {
 
 // Convert composition (mole fractions z) + total molar flow F [kmol/s] +
-// average molar mass MW_avg [kg/kmol] + liquid density rho [kg/m³] into
-// per-solute concentrations c_i [kmol/m³] and the volumetric flow Q
+// per-component molar mass MW [kg/kmol] + solution mass density rho [kg/m³]
+// into per-component concentrations c_i [kmol/m³] and the volumetric flow Q
 // [m³/s].
 //
-// For dilute aqueous solutions the simplest is to take rho ≈ rho_water
-// (1000 kg/m³) and MW_avg ≈ MW_water (18 kg/kmol).  Higher-fidelity
-// mixing rules can come later.
+// Closure: `rho` is the SOLUTION mass density (constant, the dilute-aqueous
+// approximation).  The volumetric flow is the TRUE mass flow over rho ---
+//   Q = (Σ z_i F · MW_i) / rho ---
+// so the reconstructed mass density Σ c_i · MW_i equals rho EXACTLY and mass
+// is conserved through the module.  (The earlier shortcut took Q with
+// MW_avg ≈ MW_water AND pinned the downstream water concentration to the
+// PURE-water value rho/MW_water; the two together added the solute mass on
+// top of a full pure-water mass and CREATED ~1 % mass across an element --
+// the closure assertion below now catches any such drift.)
 struct BulkState
 {
     scalar Q;                       // m³/s
     std::vector<scalar> c;          // kmol/m³ per component
 };
 
-BulkState toBulk(scalar F_kmols, const sVector& z, scalar MW_water,
+BulkState toBulk(scalar F_kmols, const sVector& z, const sVector& MW,
                  scalar rho_kgm3, std::size_t Ncomp)
 {
-    // Volume flow Q [m³/s] = F [kmol/s] · MW_avg [kg/kmol] / rho [kg/m³]
-    // For dilute aqueous: MW_avg ≈ MW_water (the solute mass fraction is
-    // ~0.01–0.04 of the mixture even for seawater).
-    const scalar Q = F_kmols * MW_water / rho_kgm3;
+    // Mass flow [kg/s] = F [kmol/s] · MW_avg [kg/kmol];  Q = mass / rho.
+    scalar MW_avg = 0.0;
+    for (std::size_t i = 0; i < Ncomp; ++i) MW_avg += z[i] * MW[i];
+    const scalar Q = F_kmols * MW_avg / rho_kgm3;
     // c_i [kmol/m³] = (F_i [kmol/s]) / Q [m³/s] = (z_i F) / Q
     BulkState s;
     s.Q = Q;
@@ -323,6 +329,12 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     const std::size_t iWater = thermo.indexOf("water");
     const scalar MW_water = thermo.comp(iWater).MW();      // kg/kmol
 
+    // Per-component molar masses [kg/kmol]: needed for a mass-consistent
+    // bulk closure (the true mixture mass sets the volumetric flow, so
+    // Σ c_i·MW_i reconstructs to rho exactly --- mass conserves).
+    sVector MW(Ncomp, 0.0);
+    for (std::size_t i = 0; i < Ncomp; ++i) MW[i] = thermo.comp(i).MW();
+
     // ---- Build per-solute permeability table from the Membrane DB ---------
     const Membrane& mem = MembraneRegistry::byName(membraneName);
 
@@ -373,7 +385,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     const scalar dz = L / nNodes;
 
     // Initial bulk state from the inlet stream.
-    auto bulk0 = toBulk(F_in, z_in, MW_water, rho, Ncomp);
+    auto bulk0 = toBulk(F_in, z_in, MW, rho, Ncomp);
     // Pack into per-solute bulk concentrations (the local solver only
     // needs the solute c values).
     std::vector<scalar> c_b(Ns, 0.0);
@@ -774,15 +786,25 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     }
 
     // ---- Build outlet streams --------------------------------------------
-    // Retentate at z = L: state (Q_b, c_b) with feed-side pressure P_b.
-    // Total molar flow of retentate:  F_ret = (c_water + Σ c_s) · Q_b · 3600
-    // Composition: x_i = c_i / Σ c
+    // Mass-consistent closure: `rho` is the solution mass density, so the
+    // water molar concentration is whatever fills the volume the solutes do
+    // NOT --- c_water = (rho − Σ c_s·MW_s) / MW_water --- and Σ c_i·MW_i = rho
+    // by construction.  Both outlets then carry mass density rho, and since
+    // volume is conserved along the march (Q_feed = Q_b + Q_perm) the masses
+    // close to the feed EXACTLY (verified by the assertion below).  Pinning
+    // c_water to the pure-water value rho/MW_water was the ~1 %-mass bug: it
+    // added the solute mass on top of a full pure-water mass.
     out_.clear();
+    scalar mass_ret = 0.0, mass_perm = 0.0;        // kg/s (for the closure check)
     {
-        const scalar c_water = rho / MW_water - 0.0;     // dilute approx
+        scalar mass_solute = 0.0;                  // Σ c_s·MW_s [kg/m³]
+        for (std::size_t s = 0; s < Ns; ++s)
+            mass_solute += c_b[s] * MW[soluteIdx[s]];
+        const scalar c_water = (rho - mass_solute) / MW_water;  // kmol/m³
         scalar cTot = c_water;
         for (auto ci : c_b) cTot += ci;
         const scalar F_ret = cTot * Q_b;          // kmol/s SI
+        mass_ret = rho * Q_b;                      // = (Σ c_i·MW_i)·Q_b
         ProcessStream ret;
         ret.name = "retentate";
         ret.F = F_ret;
@@ -795,15 +817,20 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             ret.z[soluteIdx[s]] = (cTot > 0) ? c_b[s] / cTot : 0.0;
         out_.push_back(std::move(ret));
     }
-    // Permeate: same MW approximation; F_water_perm = Q_perm · c_water_perm,
-    // with the convention that water carries the bulk volumetric flux and
-    // solute permeate flows are F_perm_solute.
+    // Permeate: same mass-consistent closure.  Water carries the bulk
+    // volumetric flux Q_perm; the solute permeate molar flows are
+    // F_perm_solute (accumulated exactly along the march).
     {
-        const scalar c_water_perm = rho / MW_water;     // dilute approx
+        scalar mass_solute_p = 0.0;                // Σ (F_s/Q)·MW_s [kg/m³]
+        for (std::size_t s = 0; s < Ns; ++s)
+            mass_solute_p += (Q_perm > 0 ? F_perm_solute[s] / Q_perm : 0.0)
+                           * MW[soluteIdx[s]];
+        const scalar c_water_perm = (rho - mass_solute_p) / MW_water; // kmol/m³
         scalar cTot_p = c_water_perm;
-        for (auto fs : F_perm_solute)
-            cTot_p += (Q_perm > 0 ? fs / Q_perm : 0.0);
+        for (std::size_t s = 0; s < Ns; ++s)
+            cTot_p += (Q_perm > 0 ? F_perm_solute[s] / Q_perm : 0.0);
         const scalar F_perm_total = cTot_p * Q_perm;    // kmol/s SI
+        mass_perm = rho * Q_perm;                  // = (Σ c_i·MW_i)·Q_perm
         ProcessStream perm;
         perm.name = "permeate";
         perm.F = F_perm_total;
@@ -820,6 +847,31 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         out_.push_back(std::move(perm));
     }
 
+    // ---- Overall mass-closure guard (CREDO: balances close) ---------------
+    // feed mass = retentate mass + permeate mass, to machine precision.  This
+    // is the module's own first law of mass and must never silently regress
+    // (the +1 % "mass created" QA bug).  When the channel ran dry the march
+    // stops mid-vessel, so the equality is only asserted on a completed run.
+    // The relative residual is surfaced as a KPI below (after kpis_.clear()).
+    scalar mass_closure_rel = 0.0;
+    if (!dry)
+    {
+        const scalar mass_feed = rho * bulk0.Q;    // kg/s
+        const scalar mass_out  = mass_ret + mass_perm;
+        mass_closure_rel = (mass_feed > 0.0)
+                         ? std::abs(mass_out - mass_feed) / mass_feed : 0.0;
+        if (mass_closure_rel > 1.0e-9)
+        {
+            char b[200];
+            std::snprintf(b, sizeof(b),
+                "spiralWoundModule mass balance does not close: feed %.9g kg/s "
+                "vs retentate+permeate %.9g kg/s (rel = %.3e)",
+                static_cast<double>(mass_feed), static_cast<double>(mass_out),
+                static_cast<double>(mass_closure_rel));
+            throw std::runtime_error(b);
+        }
+    }
+
     // ---- KPIs -------------------------------------------------------------
     kpis_.clear();
     const scalar feed_vol = bulk0.Q;                       // m³/s
@@ -829,6 +881,10 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     kpis_["water_recovery"] = recovery;
     kpis_["J_w_avg"]        = (A_total > 0) ? Q_perm / A_total : 0.0;  // m/s
     kpis_["dP_feed"]        = P_in - P_b;
+    // Mass-closure residual |feed − (ret+perm)| / feed (the guard above also
+    // throws if it ever exceeds 1e-9): a permanent, visible witness that the
+    // module conserves mass.
+    if (!dry) kpis_["mass_closure_rel"] = mass_closure_rel;
     // Scaling-audit KPIs: max wall SI per mineral, the module where the wall
     // first crosses SI = 0 (-1 = never) and the cumulative recovery there.
     if (doScaling)

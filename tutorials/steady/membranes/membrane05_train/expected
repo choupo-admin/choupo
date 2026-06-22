@@ -1,16 +1,16 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
-stream  feed                   F                0.159722222222     1e-4
-stream  permeate               F                0.0564268899262    1e-4
-stream  retentate              F                0.104955328192     1e-4
-kpi     ROunit                 J_w_avg          9.68092390234e-06  1e-4
-kpi     ROunit                 R_obs_NaCl       0.996839421257     1e-4
-kpi     ROunit                 c_ret_elem1      0.69666282346      1e-4
-kpi     ROunit                 c_ret_elem2      0.804879828973     1e-4
-kpi     ROunit                 c_ret_elem3      0.891043179054     1e-4
-kpi     ROunit                 dP_feed          99346.4166301      1e-4
-kpi     ROunit                 elements         3                  1e-4
-kpi     ROunit                 recovery_elem1   0.171914491924     1e-4
-kpi     ROunit                 recovery_elem2   0.283672513218     1e-4
-kpi     ROunit                 recovery_elem3   0.353269785815     1e-4
-kpi     ROunit                 water_recovery   0.353269785815     1e-4
+stream  feed                   F                0.159722222222   1e-4
+stream  permeate               F                0.0590874153104  1e-4
+stream  retentate              F                0.100637449271   1e-4
+kpi     ROunit                 J_w_avg          1.01384186683e-05 1e-4
+kpi     ROunit                 R_obs_NaCl       0.99694467035    1e-4
+kpi     ROunit                 c_ret_elem1      0.68349184216    1e-4
+kpi     ROunit                 c_ret_elem2      0.793343136295   1e-4
+kpi     ROunit                 c_ret_elem3      0.881961644632   1e-4
+kpi     ROunit                 dP_feed          101143.55107     1e-4
+kpi     ROunit                 elements         3                1e-4
+kpi     ROunit                 recovery_elem1   0.175213731874   1e-4
+kpi     ROunit                 recovery_elem2   0.289843097471   1e-4
+kpi     ROunit                 recovery_elem3   0.361527335552   1e-4
+kpi     ROunit                 water_recovery   0.361527335552   1e-4

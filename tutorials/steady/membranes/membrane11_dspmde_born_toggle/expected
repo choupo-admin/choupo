@@ -1,16 +1,16 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
-stream  feed_born              F                0.0555555555556    1e-4
-stream  feed_noBorn            F                0.0555555555556    1e-4
-stream  perm_born              F                0.0103192502462    1e-4
-stream  perm_noBorn            F                0.0112223857542    1e-4
-stream  ret_born               F                0.0452862691028    1e-4
-stream  ret_noBorn             F                0.0443831363834    1e-4
-kpi     NF_born                J_w_avg          3.71756143522e-05  1e-4
-kpi     NF_born                R_obs_NaCl       0.861190824117     1e-4
-kpi     NF_born                dP_feed          100000             1e-4
-kpi     NF_born                water_recovery   0.185723302343     1e-4
-kpi     NF_noBorn              J_w_avg          4.04218801044e-05  1e-4
-kpi     NF_noBorn              R_obs_NaCl       0.65981658293      1e-4
-kpi     NF_noBorn              dP_feed          100000             1e-4
-kpi     NF_noBorn              water_recovery   0.201941116258     1e-4
+stream  feed_born              F                0.0555555555556  1e-4
+stream  feed_noBorn            F                0.0555555555556  1e-4
+stream  perm_born              F                0.0103299082671  1e-4
+stream  perm_noBorn            F                0.0112254914132  1e-4
+stream  ret_born               F                0.0452257284146  1e-4
+stream  ret_noBorn             F                0.0443301389741  1e-4
+kpi     NF_born                J_w_avg          3.7229087272e-05 1e-4
+kpi     NF_born                R_obs_NaCl       0.861027895843   1e-4
+kpi     NF_born                dP_feed          100000           1e-4
+kpi     NF_born                water_recovery   0.185615581216   1e-4
+kpi     NF_noBorn              J_w_avg          4.0473218085e-05 1e-4
+kpi     NF_noBorn              R_obs_NaCl       0.65954044001    1e-4
+kpi     NF_noBorn              dP_feed          100000           1e-4
+kpi     NF_noBorn              water_recovery   0.201790063872   1e-4
