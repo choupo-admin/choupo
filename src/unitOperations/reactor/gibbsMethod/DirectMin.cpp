@@ -85,7 +85,7 @@ GibbsEquilibrium DirectMin::equilibrium(const GibbsProblem& p, scalar T,
     const auto&       thermo = *p.thermo;
     const std::size_t M = p.M(), N = p.N();
     const scalar      RTt  = constant::R * T;
-    const scalar      ln_P = std::log(p.P);
+    const scalar      ln_P = std::log(p.P / constant::Pref);  // ln(P/P0), P0 = 1 bar; was log(p.P) treating Pa as bar (QA gibbs02)
 
     sVector g_over_RT(N), lnPsat(N, 0.0);
     std::vector<bool> cond(N, false);

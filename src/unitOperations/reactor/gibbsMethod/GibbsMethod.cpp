@@ -50,7 +50,7 @@ GibbsEquilibrium gibbsGasSolve(const GibbsProblem& p, scalar T,
 {
     const std::size_t M = p.M(), N = p.N();
     const auto& A = p.A;
-    const scalar ln_P = std::log(p.P);            // P° = 1 bar suppressed (convention)
+    const scalar ln_P = std::log(p.P / constant::Pref);  // ln(P/P0), P0 = 1 bar; was log(p.P) which treated Pa as bar and broke Dn!=0 equilibria (QA gibbs02)
 
     scalar N0 = 0.0; for (auto v : p.nIn) N0 += v;
     if (N0 <= 0.0) N0 = 1.0;

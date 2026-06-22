@@ -1,0 +1,6 @@
+directMin multi-phase: this WGS-cooled case does not make the V->V+L transition
+(condensation) that the elementPotential method does (cf. gibbs07_wgs_cooled, same
+problem, which condenses correctly). Exposed by the P-reference fix (QA gibbs02):
+the case previously "passed" only because the inflated ln_P term forced a (wrong)
+condensation. The directMin V+L detection near saturation needs a separate fix.
+See TUTORIAL-QA-2026-06-22.md.
