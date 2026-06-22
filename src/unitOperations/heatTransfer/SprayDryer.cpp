@@ -251,7 +251,18 @@ int SprayDryer::solve(const DictPtr& dict,
     scalar cp_air_molar = 0.0;                                              // J/(mol·K)
     for (std::size_t i = 0; i < n; ++i)
         if (yAir[i] > 0.0) cp_air_molar += yAir[i] * thermo.comp(i).cpIdealGas().Cp(T_air);
-    const scalar T_out = T_air - Q / std::max(1.0, F_air * 1000.0 * cp_air_molar);
+    const scalar cp_air_W = std::max(1.0, F_air * 1000.0 * cp_air_molar);   // W/K
+    // Energy cap: the air cannot cool below its adiabatic-saturation (wet-bulb)
+    // temperature.  If the feed solvent exceeds what the air can carry to
+    // saturation, drying is ENERGY-limited -- the air leaves saturated at T_wb
+    // and the unevaporated solvent stays in the powder (a wet product), not the
+    // unphysical sub-wet-bulb T the "all solvent evaporates" balance would give.
+    const scalar q_per_evap = solv.Hvap_latent(T_wb) + cpL_w * (T_wb - T_feed);  // J/mol
+    const scalar n_evap_max = (q_per_evap > 0.0)
+                            ? cp_air_W * (T_air - T_wb) / (1000.0 * q_per_evap)  // kmol/s
+                            : n_solv_feed;
+    const bool   energy_limited = (n_solv_feed > n_evap_max);
+    const scalar T_out = energy_limited ? T_wb : T_air - Q / cp_air_W;
 
     // -------------------------------------------------------------------
     //  Atomisation -- Friedman/Marshall rotary-disc correlation:
@@ -391,9 +402,13 @@ int SprayDryer::solve(const DictPtr& dict,
         }
         X_final = std::max(X_final, X_eq);          // cannot dry below equilibrium
     }
-    const scalar m_water_resid = X_final * m_solid;            // kg/s held in the powder
-    const scalar n_water_resid = m_water_resid / MW_w;         // kmol/s
-    const scalar n_evap        = std::max(0.0, n_solv_feed - n_water_resid);
+    // Residual moisture = the LARGER of the kinetic hold-up (residence time)
+    // and the energy floor (solvent the air could not carry to saturation).
+    const scalar n_resid_kinetic = X_final * m_solid / MW_w;  // kmol/s
+    const scalar n_resid_energy  = energy_limited ? std::max(0.0, n_solv_feed - n_evap_max) : 0.0;
+    const scalar n_water_resid   = std::max(n_resid_kinetic, n_resid_energy);  // kmol/s
+    const scalar m_water_resid   = n_water_resid * MW_w;      // kg/s held in the powder
+    const scalar n_evap          = std::max(0.0, n_solv_feed - n_water_resid);
 
     // -------------------------------------------------------------------
     //  Particle-size distribution.  Atomisation produces a SPREAD of

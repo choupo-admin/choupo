@@ -1,1 +1,6 @@
-golden-fail: DryerVapour.F = 0.001554 vs golden 0.002113 (~26% off) -- the H2 spray-dryer drying regression; re-record from a correct run after the sprayDryer op is fixed. See TUTORIAL-QA-2026-06-22.md (H2, H7).
+founder-WIP. The sprayDryer op H2 bug is now FIXED (energy-capped drying): the
+SD sector is physical (eta_th = 0.90, Exhaust T_out ~ 60 C, no more -53 C). The
+plant still fails for SEPARATE reasons in another sector -- NaN/inf in the log
+and a sub-zero T elsewhere (not the dryer) -- and the committed golden predates
+the op fix. Re-record from a clean full-plant run once the remaining sector
+issues are resolved (Vitor's curation). See TUTORIAL-QA-2026-06-22.md (H2, H7).
