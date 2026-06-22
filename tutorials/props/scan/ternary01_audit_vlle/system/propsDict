@@ -16,6 +16,11 @@ operations
     {
         name      lle;
         type      propertyScanTernary;
+        // HONEST provenance: there is NO primary literature source -- compA/B/C
+        // are artificial components with inline NRTL pairs deliberately tuned to
+        // guarantee a VLLE region (see the header).  We record that truthfully
+        // rather than fabricate a citation.
+        source    "synthetic / illustrative (artificial components, no real system)";
         mode      vlle;                 // full vapour + 2-liquid (3-phase) classification
         state     { T 350 K;  P 1 bar; }
         grid      { n 14; }             // intervals per edge (interior nodes)

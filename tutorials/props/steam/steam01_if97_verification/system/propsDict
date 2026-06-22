@@ -21,16 +21,19 @@ operations
     {
         name   r1_T300_p3MPa;
         type   steamTables;
+        source "IAPWS R7-97(2012)";
         point  { P 3 MPa; T 300 K; }
     }
     {
         name   r1_T300_p80MPa;
         type   steamTables;
+        source "IAPWS R7-97(2012)";
         point  { P 80 MPa; T 300 K; }
     }
     {
         name   r1_T500_p3MPa;
         type   steamTables;
+        source "IAPWS R7-97(2012)";
         point  { P 3 MPa; T 500 K; }
     }
 
@@ -38,16 +41,19 @@ operations
     {
         name   r2_T300_p3p5kPa;
         type   steamTables;
+        source "IAPWS R7-97(2012)";
         point  { P 3.5 kPa; T 300 K; }
     }
     {
         name   r2_T700_p3p5kPa;
         type   steamTables;
+        source "IAPWS R7-97(2012)";
         point  { P 3.5 kPa; T 700 K; }
     }
     {
         name   r2_T700_p30MPa;
         type   steamTables;
+        source "IAPWS R7-97(2012)";
         point  { P 30 MPa; T 700 K; }
     }
 
@@ -55,6 +61,7 @@ operations
     {
         name   satline;
         type   steamTables;
+        source "IAPWS R7-97(2012)";
         saturation { from 0.01 degC; to 350 degC; n 50; }
         output { file saturation.csv; }
     }
@@ -63,18 +70,21 @@ operations
     {
         name   isobar_1bar;
         type   steamTables;
+        source "IAPWS R7-97(2012)";
         isobar { P 1 bar; from 20 degC; to 300 degC; n 57; }
         output { file isobar_1bar.csv; }
     }
     {
         name   isobar_1MPa;
         type   steamTables;
+        source "IAPWS R7-97(2012)";
         isobar { P 1 MPa; from 20 degC; to 250 degC; n 47; }
         output { file isobar_1MPa.csv; }
     }
     {
         name   isobar_10MPa;
         type   steamTables;
+        source "IAPWS R7-97(2012)";
         isobar { P 10 MPa; from 20 degC; to 350 degC; n 67; }
         output { file isobar_10MPa.csv; }
     }

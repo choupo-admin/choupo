@@ -11,6 +11,10 @@ operations
         type      pitzerActivity;
         cation    Ca;
         anion     Cl;
+        // PRIMARY source of the Pitzer parameters this op consumes (Ca,Cl),
+        // wired into the structured provenance field.  This is the source the
+        // curated values themselves declare in constant/electrolyte/pairs.dat.
+        source    "Appelo, Appl. Geochem. 55 (2015) 62";
         molality  { from 0.1; to 2.0; n 20; }
         output    { file pitzer_cacl2.csv; }
     }
