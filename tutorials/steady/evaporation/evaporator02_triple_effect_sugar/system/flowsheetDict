@@ -49,9 +49,9 @@
 
     2.  Economy:  in single-effect (evaporator01_brine) the economy
         was ~ 0.83 kg evap / kg steam.  Running this cascade gives
-        total V_evap / utility steam ~ 1.7 (= 17 519 / 10 338) ---
-        a doubling, simply by chaining the heat through three
-        effects.  Industrial design targets ~ 2.5 with optimised
+        total V_evap / utility steam ~ 2.0 (= 17 972 / 8 917) ---
+        more than a doubling, simply by chaining the heat through
+        three effects.  Industrial design targets ~ 2.5 with optimised
         area allocation and pressure cascade.
 
     3.  BPE matters more in Effect 3 (most concentrated solute,
@@ -98,7 +98,7 @@ streams
         // across the three effects.  An outer DesignSpec (see
         // designSpec01_triple_equal_areas) finds the F that hits a
         // target outlet concentration.
-        F                540.0  kmol/h;
+        F                495.0  kmol/h;
         P                200.0  kPa;
         state            saturatedVapour;
         molarComposition  { water 1.0; }

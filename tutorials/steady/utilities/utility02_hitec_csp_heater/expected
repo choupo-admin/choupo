@@ -1,0 +1,22 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  boilerFeed             F                0.0222222222222    1e-4
+stream  boilerOut              F                0.0222222222222    1e-4
+stream  boilerOut              T                517.400926398      1e-4
+stream  saltReturn             F                0.0833333333333    1e-4
+stream  saltSupply             F                0.0833333333333    1e-4
+kpi     boilerHX               C_cold           1677.77777778      1e-4
+kpi     boilerHX               C_hot            12795.4797468      1e-4
+kpi     boilerHX               C_r              0.131122694184     1e-4
+kpi     boilerHX               LMTD             306.566828203      1e-4
+kpi     boilerHX               NTU              0.405298013245     1e-4
+kpi     boilerHX               Q                208465.443178      1e-4
+kpi     boilerHX               Q_kW             208.465443178      1e-4
+kpi     boilerHX               T_cold_in        393.15             1e-4
+kpi     boilerHX               T_cold_out       517.400926398      1e-4
+kpi     boilerHX               T_hot_in         773.15             1e-4
+kpi     boilerHX               T_hot_out        756.857883776      1e-4
+kpi     boilerHX               U                800                1e-4
+kpi     boilerHX               UA               680                1e-4
+kpi     boilerHX               area             0.85               1e-4
+kpi     boilerHX               effectiveness    0.326976122099     1e-4

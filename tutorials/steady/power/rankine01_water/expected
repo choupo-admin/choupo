@@ -1,0 +1,33 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+stream  cooled                 F                0.001              1e-4
+stream  exhaust                F                0.001              1e-4
+stream  feedSteam              F                0.001              1e-4
+kpi     cooler                 F                0.001              1e-4
+kpi     cooler                 P                52827.3976295      1e-4
+kpi     cooler                 Q                -5000              1e-4
+kpi     cooler                 Q_kW             -5                 1e-4
+kpi     cooler                 Q_per_mol        -5000              1e-4
+kpi     cooler                 T_in             530.878445241      1e-4
+kpi     cooler                 T_out            388.087132345      1e-4
+kpi     cooler                 dT               -142.791312896     1e-4
+kpi     generator              W_electric       9700               1e-4
+kpi     generator              W_electric_kW    9.7                1e-4
+kpi     generator              W_losses         300                1e-4
+kpi     generator              W_shaft          10000              1e-4
+kpi     generator              W_shaft_kW       10                 1e-4
+kpi     generator              eta_generator    0.97               1e-4
+kpi     steamTurbine           F                0.001              1e-4
+kpi     steamTurbine           P_in             500000             1e-4
+kpi     steamTurbine           P_out            52827.3976295      1e-4
+kpi     steamTurbine           T_in             800                1e-4
+kpi     steamTurbine           T_out            530.878445241      1e-4
+kpi     steamTurbine           T_out_isen       480.867522315      1e-4
+kpi     steamTurbine           W_gen_kW         10                 1e-4
+kpi     steamTurbine           W_generated      10000              1e-4
+kpi     steamTurbine           W_shaft          -10000             1e-4
+kpi     steamTurbine           dS_gen           3.49159133909      1e-4
+kpi     steamTurbine           dT               -269.121554759     1e-4
+kpi     steamTurbine           dT_isen          -319.132477685     1e-4
+kpi     steamTurbine           eta_isen         0.85               1e-4
+kpi     steamTurbine           ratio            9.46478574445      1e-4

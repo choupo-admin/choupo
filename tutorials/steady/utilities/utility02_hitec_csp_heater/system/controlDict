@@ -1,5 +1,5 @@
 application   choupoSolve;
-description   "HITEC molten salt loop sensibly heats pressurised (40 bar) boiler feedwater for a downstream steam generator (eps-NTU, no phase change), ~636 kW duty";
+description   "HITEC molten salt loop sensibly heats pressurised (40 bar) boiler feedwater to ~244 C, just below T_sat, for a downstream steam generator (eps-NTU, no phase change), ~208 kW duty";
 
 verbosity     3;
 

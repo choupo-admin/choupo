@@ -1,1 +1,0 @@
-crashes (exit 2): the cooler Q=-8 kW drives exhaust below Tsat and the engine correctly refuses; reduce cooler duty (~-5 kW) or use a condenser op. See TUTORIAL-QA-2026-06-22.md (H4).

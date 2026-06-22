@@ -17,7 +17,7 @@
       feedSteam (superheated, 5 bar, 800 K, 1 mol/s)
         -> steamTurbine (W_shaft -10 kW, eta 0.85)
         -> exhaust (vapour, ~0.53 bar, ~531 K)
-        -> cooler (heater, Q -8 kW)
+        -> cooler (heater, Q -5 kW)  -> cooled (vapour, ~388 K)
 
   Shaft routing (the new electricLoad unit, v0.0.44):
       steamTurbine.shaft  ----wire---->  generator (electricLoad, eta 0.97)
@@ -34,13 +34,16 @@
   this 5 -> ~0.5 bar expansion (an early draft over-specified -300 kW,
   which would have demanded a physically absurd expansion).
 
-  KNOWN ISSUE (this case aborts at the cooler --- leave it for the
-  multi-phase fix): the turbine exhaust at 0.528 bar has Tsat = 355.5 K,
-  so cooling it with Q = -8 kW drives T_out to ~300 K, crossing the
-  saturation dome.  A sensible-only `heater` cannot cross the dome and
-  the solver correctly refuses (it asks for a phaseChanger/condenser).
-  Closing this leg needs the multi-phase Boiler/Condenser unit op on the
-  v0.0.45 roadmap; until then the case stops at the cooler by design.
+  The cooler duty is deliberately bounded: the turbine exhaust at
+  0.528 bar has Tsat = 355.5 K, so the sensible-only `heater` must stop
+  ABOVE the saturation dome.  Q = -5 kW removes the desuperheat down to
+  ~388 K (~33 K of margin above Tsat) and the cooled stream stays
+  vapour (vf = 1) -- a legitimate gas-phase desuperheater.  Push the
+  duty past ~-6 kW and the outlet would cross the dome; a sensible-only
+  heater correctly refuses (it asks for a phaseChanger/condenser).
+  Fully closing the cycle (condensing back to a liquid leg + pump) needs
+  the multi-phase Boiler/Condenser unit op on the v0.0.45 roadmap; this
+  gas-phase demonstration stops at the desuperheater by design.
 \*---------------------------------------------------------------------------*/
 
 variables
@@ -86,7 +89,7 @@ units
         type        heater;
         in          exhaust;
         outputs     ( cooled );
-        operation   { Q -8.0 kW; }
+        operation   { Q -5.0 kW; }
     }
 
     {
