@@ -48,7 +48,7 @@ namespace Choupo {
 // in the message, so the banner always prints what is actually HEAD.
 // The 4 main.cpp banners pick the new version up automatically through
 // printBanner().
-inline constexpr const char* CHOUPO_VERSION = "v0.2.0";
+inline constexpr const char* CHOUPO_VERSION = "v0.3.0";
 
 // Print the startup banner to stdout, with `suffix` placed right after the
 // version (e.g. "  batch", "  ctrl", "  props"; empty for choupoSolve).  The

@@ -5,6 +5,48 @@ All notable changes to **Choupo** are documented here.  The format follows
 [Semantic Versioning](https://semver.org/) (pre-1.0: minor bumps may carry
 breaking changes).
 
+## [v0.3.0] — 2026-06-22
+
+A large release: new capabilities plus a point-by-point QA pass (an MIT-student
+review storm + two MIT and two CalTech "virtual professors") that closed eight
+real engine bugs, each gated and with primary-source provenance.
+
+### Added
+- **Variable parametrisation + What-if** as a KPI instrument; transient
+  tinkering (edit Properties-box numbers, run, never written to disk).
+- **Context-sensitive F1 help** → the relevant theory-guide section.
+- **Gas-phase CHEMKIN kinetics** + a **Rosenbrock23 stiff ODE integrator**
+  (validated on Robertson) + NASA-7 Cp; H2/O2 ignition.
+- **Polymer property estimators** — Van Krevelen density + Yang 2020 Tg
+  (CC-BY) — in the Explorer; a **polycaprolactone production plant** tutorial.
+- **PHREEQC electrolyte data** expansion (+52 entries; public-domain USGS).
+- **Honest test harness** — `runTests` now FAILS on a non-zero exit / missing
+  result block (the forbidden `binary && PASS` anti-pattern is gone);
+  `.known-broken` / `.expect-nonconvergence` markers make breakage visible.
+
+### Fixed
+- **Gibbs reactor pressure reference P°** (gas term + directMin V-L liquid
+  term): treated `p.P` in Pa as bar — only bit Δn≠0 reactions, so **steam
+  reforming went 1.8% → 99%**; the twin of the earlier `Kc` bug.
+- **sprayDryer** — energy-capped drying: the air cannot cool below the
+  wet-bulb, so no more sub-zero (−53 °C) product or η>1; excess solvent stays
+  in the powder (a wet product).
+- **Spiral-wound membrane** — mass balance now closes to machine precision
+  (was ~1% mass created from inconsistent solution-density conventions).
+- **Water/n-butanol LLE** — cited **Winkelman et al., FPE 284 (2009) 71–79**
+  UNIQUAC restores the genuine liquid-liquid split; the UNIQUAC engine now
+  evaluates the full `A(T)=a+bT+cT²`.
+- **IsothermalFlash** — removed a phantom LL-decanter duty (the β-liquid was
+  priced as a vapour); Q≈0 for an isothermal split.
+- **Honest vf/phase inference** — a stream that omits `vf` is no longer
+  silently "liquid"; a supercritical carrier gas is inferred as vapour with a
+  loud advisory (the no-silent-crutch credo).
+- **Provenance** — declared citations wired into the structured `source` field
+  (IAPWS, Appelo 2015, Yang 2020); synthetic data labelled honestly.
+- **Spurious txy/VLE envelopes** suppressed for non-VLE units.
+- **24 tutorial READMEs** corrected against real output; pitzer prose fixed
+  (Appelo 2015, not Pitzer & Mayorga 1973).
+
 ## [v0.2.0] — 2026-06-09
 
 First version since the launch.  The banner was deliberately held at `v0.1.0`
