@@ -297,17 +297,30 @@ ProcessStream readSourceStream(const std::string& name,
     }
 
     // -----------------------------------------------------------------
-    // Step 2b -- phase is a CONSEQUENCE of (T, P, z), not a silent default
+    // Step 2b -- phase is a CONSEQUENCE of (T, P, z), and the engine must
+    //            ANNOUNCE the consequence it inferred --- never bury it.
     //
-    //   When the user declares NEITHER `state` NOR `vf`, do NOT assume the
-    //   feed is liquid (vf = 0).  That silent assumption charged a phantom
-    //   latent-heat duty on a feed that was already two-phase at its own
-    //   T, P (e.g. flash01: feed at 370 K / 1 bar is ~30 % vapour, yet was
-    //   stamped LIQUID and the flash "paid" steam to boil what was already
-    //   boiled).  Duhem: (T, P, z) fix the equilibrium state — so flash the
-    //   feed at its OWN conditions and record the true vapour fraction.  An
-    //   explicit `state`/`vf` above is a deliberate override (a metastable
-    //   inlet) and wins.  vf is intensive, so F is irrelevant here.
+    //   When the user declares NEITHER `state` NOR `vf`, do NOT silently
+    //   assume the feed is liquid (vf = 0).  Two distinct silent traps once
+    //   lived here:
+    //
+    //   (1) PHANTOM LATENT HEAT.  Stamping a two-phase feed LIQUID made the
+    //       downstream flash "pay" steam to boil what was already boiled
+    //       (flash01: feed at 370 K / 1 bar is ~30 % vapour).  Cured by
+    //       flashing the feed at its OWN (T, P, z) --- Duhem fixes the state.
+    //
+    //   (2) "LIQUID NITROGEN" / "LIQUID STEAM" (QA T3).  A carrier gas declared
+    //       by (T, P) only (sprayDryer drying air = N2 at 200 C; utility02
+    //       water at 499 C / 40 bar) flashed to vf = 0 because the pure-
+    //       component Psat is extrapolated FAR outside its Antoine range above
+    //       Tc, so the VL split is physically meaningless --- yet the stream
+    //       silently became a cold liquid.  A species at T > Tc CANNOT be
+    //       liquid, so a liquid verdict there is a numerical artefact.
+    //
+    //   The credo (no silent crutch): the engine either INFERS the phase and
+    //   says so, or WARNS when the inference is untrustworthy.  An explicit
+    //   `state`/`vf` above is the author's deliberate override and is left
+    //   untouched (and unannounced).  vf is intensive, so F is irrelevant.
     // -----------------------------------------------------------------
     //   Only meaningful when the package can actually do VLE: an LL-only
     //   package (a decanter's two-liquid thermo, no vapour phase / EoS)
@@ -319,6 +332,26 @@ ProcessStream readSourceStream(const std::string& name,
     for (const scalar zi : s.z) zsum_phase += zi;
     if (!phaseDeclared && canVLE && zsum_phase > 1.0e-9 && s.T > 0.0 && s.P > 0.0)
     {
+        // Is the stream supercritical in its dominant species?  A component
+        // with a finite Tc below the stream T cannot condense; if such species
+        // make up the majority of the stream, any "liquid" flash verdict is a
+        // Psat-extrapolation artefact, not a phase.  (Tc <= 0 = unknown -> not
+        // counted; we never override on missing data.)
+        scalar      z_supercrit = 0.0;
+        std::string scWorst;            // worst offender, for the message
+        scalar      scWorstZ = 0.0;
+        for (std::size_t i = 0; i < thermo.n() && i < s.z.size(); ++i)
+        {
+            const scalar zi = s.z[i] / zsum_phase;
+            const scalar Tc = thermo.comp(i).Tc();
+            if (zi > 1.0e-9 && Tc > 0.0 && s.T > Tc)
+            {
+                z_supercrit += zi;
+                if (zi > scWorstZ) { scWorstZ = zi; scWorst = thermo.comp(i).name(); }
+            }
+        }
+        const bool supercriticalFeed = z_supercrit > 0.5;   // majority cannot condense
+
         FlashInput fin;
         fin.F = 1.0;                       // intensive: vf is F-independent
         fin.T = s.T;
@@ -328,8 +361,71 @@ ProcessStream readSourceStream(const std::string& name,
         FlashOptions fopts;
         fopts.verbosity = 0;               // silent: we only want the vf
         const FlashSolution fs = IsothermalFlash::solveCore(fin, thermo, fopts);
-        if (fs.converged && std::isfinite(fs.V_over_F))
-            s.vf = std::min(1.0, std::max(0.0, fs.V_over_F));
+        const bool   flashOK  = fs.converged && std::isfinite(fs.V_over_F);
+        const scalar vfFlash  = flashOK
+            ? std::min(1.0, std::max(0.0, fs.V_over_F)) : 0.0;
+
+        // Display-unit temperature for the human-readable advisory.
+        const auto& du = DisplayUnits::instance();
+        const auto [T_disp, T_lbl] = du.convert(s.T, Dims::temperature);
+        char tbuf[24];
+        std::snprintf(tbuf, sizeof(tbuf), "%.1f", static_cast<double>(T_disp));
+        const std::string Tstr  = std::string(tbuf) + " " + T_lbl;
+        const std::string locus = "stream '" + name + "'";
+
+        if (supercriticalFeed && vfFlash < 0.5)
+        {
+            // The VL flash says liquid, but the stream is supercritical in its
+            // dominant species -- a liquid here is a Psat-extrapolation ghost.
+            // Override to vapour and WARN: this is the "liquid N2" trap (QA T3).
+            s.vf = 1.0;
+            const std::string msg =
+                "vf/state unspecified and the feed-flash returned liquid, but '"
+                + scWorst + "' is supercritical at " + Tstr
+                + " (T > Tc) -- a liquid verdict is a vapour-pressure"
+                  " extrapolation artefact, not physics.  Treating the stream"
+                  " as VAPOUR (vf = 1).  Declare `state superheatedVapour;`"
+                  " (or an explicit `vf`) to silence this.";
+            if (AdvisoryLog::instance().add("phase", "warning", locus, msg))
+                std::cout << "  [phase] WARNING: " << locus << ": " << msg << "\n";
+        }
+        else if (flashOK)
+        {
+            s.vf = vfFlash;
+            // Announce the NON-trivial inferences (two-phase or all-vapour).
+            // A plain vf = 0 (subcooled liquid) is the unsurprising case and is
+            // left unannounced so every liquid-feed tutorial is not flooded.
+            if (s.vf > 1.0e-6)
+            {
+                char vbuf[16];
+                std::snprintf(vbuf, sizeof(vbuf), "%.3f",
+                              static_cast<double>(s.vf));
+                const std::string phaseWord =
+                    (s.vf > 1.0 - 1.0e-6) ? "VAPOUR" : "two-phase (VL)";
+                const std::string msg =
+                    "vf/state unspecified; feed-flash at " + Tstr
+                    + " gives vf = " + vbuf + " -> " + phaseWord
+                    + ".  (Declare `state`/`vf` to fix the phase explicitly.)";
+                if (AdvisoryLog::instance().add("phase", "info", locus, msg))
+                    std::cout << "  [phase] " << locus << ": " << msg << "\n";
+            }
+        }
+        else if (supercriticalFeed)
+        {
+            // Flash did not even converge AND the feed is supercritical: the
+            // package cannot represent a phase split here.  Honest vapour.
+            s.vf = 1.0;
+            const std::string msg =
+                "vf/state unspecified, the feed-flash did not converge, and '"
+                + scWorst + "' is supercritical at " + Tstr
+                + " -- treating the stream as VAPOUR (vf = 1) rather than"
+                  " silently liquid.  Declare `state superheatedVapour;` to be"
+                  " explicit.";
+            if (AdvisoryLog::instance().add("phase", "warning", locus, msg))
+                std::cout << "  [phase] WARNING: " << locus << ": " << msg << "\n";
+        }
+        // else: flash failed and the feed is not supercritical -> leave the
+        // vf = 0 default (no basis to infer otherwise; a genuine cold liquid).
     }
 
     // -----------------------------------------------------------------
