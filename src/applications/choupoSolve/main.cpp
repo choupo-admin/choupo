@@ -186,11 +186,57 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     // feed pressure).  Skip cheaply if not a 2-component package or
     // if the package has no vapor phase (e.g. an LL-only extraction
     // case --- bubble-T calls would dereference a null EoS).
-    if (thermo.n() == 2 && !r.streams.empty()
+    //
+    // A bubble/dew envelope is ONLY physical when the two components form a
+    // genuine VLE.  Three guards (QA finding T4) keep us from shipping a
+    // garbage envelope the GUI would plot:
+    //
+    //   (1) BOTH components must be VOLATILE (carry a vapour-pressure model and
+    //       not be flagged nonvolatile).  A nonvolatile solute --- sucrose, a
+    //       salt, a polymer repeat unit --- has no bubble/dew point, so the
+    //       envelope is undefined (e.g. solidDryer01_sugar: water + sucrose).
+    //
+    //   (2) The PHYSICS of the unit must be phase equilibrium.  Single-phase
+    //       rotating equipment (turbine / compressor / pump) and pure-transport
+    //       contexts have no VLE envelope in their model; a 2-gas package
+    //       (turbine01_air: N2 + O2) would otherwise drive bubble-T to the
+    //       solver bracket floor and emit mole fractions far outside [0,1].
+    //
+    //   (3) The computed envelope must be VALID --- every vapour mole fraction
+    //       in [0,1] (a small slack for round-off).  A y outside that range is
+    //       a diverged / clamped solve; we never ship out-of-range fractions.
+    bool allVolatile = (thermo.n() == 2);
+    for (std::size_t i = 0; i < thermo.n() && allVolatile; ++i)
+    {
+        const auto& c = thermo.comp(i);
+        if (!c.hasVaporPressure() || c.isNonvolatile()) allVolatile = false;
+    }
+
+    // A txy envelope is part of the physics only for phase-equilibrium units;
+    // it is meaningless for single-phase rotating equipment and pure transport.
+    // We emit ONLY when EVERY unit in the flattened flowsheet is an
+    // equilibrium-capable type (no turbine/compressor/pump in the path).
+    static const std::set<std::string> kNonEquilibrium =
+        { "turbine", "compressor", "pump" };
+    bool equilibriumPhysics = !r.topology.empty();
+    for (const auto& u : r.topology)
+        if (kNonEquilibrium.count(u.type)) equilibriumPhysics = false;
+
+    if (allVolatile && equilibriumPhysics && !r.streams.empty()
         && !thermo.phasesOfType("vapor").empty())
     {
         try {
-            r.txy = binaryTxy(thermo, r.streams.begin()->second.P, 31);
+            BinaryTxy t = binaryTxy(thermo, r.streams.begin()->second.P, 31);
+
+            // Guard (3): reject an envelope with any out-of-range vapour mole
+            // fraction --- a sign the inner bubble-T solve diverged or hit the
+            // bracket floor.  Better no plot than a mole fraction of 170.
+            constexpr scalar slack = 1.0e-6;
+            bool yValid = !t.yDew.empty();
+            for (scalar y : t.yDew)
+                if (y < -slack || y > 1.0 + slack) { yValid = false; break; }
+
+            if (yValid) r.txy = std::move(t);
         } catch (const std::exception&) {
             // Some thermo combinations (e.g. azeotropes near pure-component
             // bounds) can fail the inner Newton; degrade silently.
