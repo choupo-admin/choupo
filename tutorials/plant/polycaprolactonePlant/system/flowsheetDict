@@ -1,0 +1,158 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  flowsheetDict -- poly(caprolactone) production PLANT (single FLAT flowsheet).
+
+      freshMonomer ──┐
+                     │
+                  [Mixer] ──► [Reactor:PFR] ──► [Devolatiliser:flash] ──► polymerMelt (PRODUCT)
+                     ▲           polymer{}            (volatile water        (non-volatile melt,
+                     │           Mn/Mw/PDI             condensate overhead)    carries Mn/Mw/PDI)
+                     │                                      │
+                     │                                      ▼ overhead (the water condensate)
+                     │                                  [Recovery:splitter]
+                     └───── condensateRecycle ◄───────────┤
+                              (the TEAR)                  └──────► condensate (PURGE: water out)
+
+  THE PLANT STORY (Le Chatelier) -- the engineering rationale of the flowsheet:
+      ~OH + ~COOH  <=>  ~ester~ + H2O
+  The polycondensation is an EQUILIBRIUM, and chain growth (high conversion p -> 1,
+  hence high Mn) is driven industrially by REMOVING the water condensate.  The
+  Devolatiliser flash does exactly that: at the reactor T the water (Tb 373 K,
+  ~100x more volatile than everything else here) flashes off almost completely,
+  while the polymer melt (effectively non-volatile pclRepeat) and the little
+  unreacted monomer (Tb 550 K) stay in the liquid bottoms.  Reduced pressure
+  (0.15 bar) is how real devolatilisers strip the condensate.  This is THE
+  industrial trick that drives polyester / PCL molecular weight up.
+
+  HONEST MODEL NOTE (glass-box): this case reuses the SHIPPED illustrative
+  kinetics of pfr_polyesterification -- pseudo-first-order and IRREVERSIBLE in the
+  monomer.  So the water does NOT appear in the rate law and the equilibrium
+  BACK-reaction is not modelled; conversion here is set purely by the Damkohler
+  number kτ.  The devolatiliser still correctly does its real job (separating the
+  water condensate from the polymer melt by volatility).  To make the Le Chatelier
+  drive a literal rate effect you would set `reversible true;` on the reaction
+  (the PFR then closes k_rev = k/Kc from the formation data) -- deliberately left
+  OFF here to keep the case deterministic and aligned with the reference reactor.
+
+  THE RECYCLE -- the requested Newton-on-tears feature:
+  The overhead is the water condensate.  A Recovery splitter sends a SMALL fraction
+  BACK to the Mixer (condensateRecycle, the TEAR) and purges the rest.  This
+  exercises the classic Reactor-Separator-Recycle architecture, solved by
+  Newton-on-tears -- the proven flat pattern (the tear name is BOTH a Mixer input
+  AND a producer output, listed after the Mixer; see process03_recycle / hda).
+  Engineering reading: recycling the water condensate is what a real plant must
+  AVOID (it would push the equilibrium back, in a reversible model); the loop is
+  kept small (15% recovered, 85% purged) so it demonstrates the solver without
+  pretending the irreversible kinetics here punish it.
+
+  Why NOT a "monomer recycle"?  With these (illustrative) volatilities water is
+  ~100x more volatile than the monomer (see the K-values in the run), so a single
+  flash overhead is essentially pure water -- there is no clean monomer stream to
+  recover.  Recovering monomer would need a second separation; the honest single-
+  flash plant removes water and keeps the (small) unreacted monomer in the melt.
+
+  KPIs reported (on the units): the PFR's p, Xn, Xw, Mn, Mw, PDI; the streams give
+  the polymerMelt flow (the product), the water removed (condensate), and -- via
+  the recycle -- the Le Chatelier conversion penalty.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    freshMonomer
+    {
+        F            1.0 kmol/h;             // molten AB-type hydroxy-acid monomer
+        T            450.0 K;
+        P            1.01325 bar;
+        vf           0;                       // liquid (molten) feed
+        molarComposition  { hydroxyhexanoicAcid 1.0;  pclRepeat 0.0;  water 0.0; }
+    }
+
+    // tear SEED (initial guess; the outer Newton loop iterates it to its fixed
+    // point).  The recovered overhead is the water condensate.
+    condensateRecycle
+    {
+        F            0.15 kmol/h;
+        T            470.0 K;
+        P            0.15 bar;
+        vf           1;
+        molarComposition  { water 0.95;  pclRepeat 0.04;  hydroxyhexanoicAcid 0.01; }
+
+        // OPTIONAL author cage for the tear iterate — GENEROUS, so non-binding;
+        // if one DID bind the solver SAYS so (no-silent-crutch credo).
+        bounds
+        {
+            F  { reference feedTotal;  min 0.0;  max 4; }   // 0 .. 4x the fresh feed
+        }
+    }
+}
+
+units
+(
+    {
+        name        Mixer;
+        type        mixer;
+        inputs      ( freshMonomer  condensateRecycle );
+        outputs     ( reactorFeed );
+
+        // ISOTHERMAL: a polycondensation reactor is TEMPERATURE-CONTROLLED
+        // (jacketed/heated), not adiabatic.  We DECLARE the controlled reactor
+        // feed temperature here; the PFR takes its isothermal T from this inlet.
+        // Declaring it (honest, energy-balance skipped + announced) also breaks
+        // the hot-recycle -> rising-T -> runaway-k positive feedback that an
+        // adiabatic mix would otherwise create across the loop.
+        operation   { T 450 K; }
+    }
+
+    {
+        name        Reactor;
+        type        pfr;
+        in          reactorFeed;
+        outputs     ( reactorOut );
+
+        operation
+        {
+            V_R          0.20;     // m³  (sized for high conversion, as the reference case)
+            nSteps       200;
+            writeInterval 25;
+        }
+        reaction    polycondensation;
+    }
+
+    {
+        name        Devolatiliser;
+        type        isothermalFlash;
+        in          reactorOut;
+        outputs     ( polymerMelt  overhead );    // VL -> [liquid bottoms, vapour overhead]
+
+        // At 470 K, 0.15 bar: water (Tb 373 K) flashes off almost completely
+        // (K ~ 100), the polymer melt (non-volatile pclRepeat, K ~ 0.04) and the
+        // little unreacted monomer (K ~ 0.9) stay in the liquid bottoms.  Reduced
+        // pressure is how real devolatilisers strip the condensate.
+        operation   { T 470.0 K;  P 0.15 bar;  phaseSet VL; }
+    }
+
+    {
+        name        Recovery;
+        type        splitter;
+        in          overhead;
+        outputs     ( condensateRecycle  condensate );   // recycle FEEDS BACK into Mixer
+
+        // 15% of the condensate returns (exercising the loop), 85% is PURGED.
+        // The 15% recycled water is the Le Chatelier penalty made visible.
+        operation   { fractions ( 0.15  0.85 ); }
+    }
+);
+
+boundary
+{
+    inlets   ( freshMonomer );
+    outlets  ( polymerMelt  condensate );
+}
+
+tearStreams           ( condensateRecycle );
+recycleSolver          Newton;        // Newton on the tear variables
+recycleTol             1e-5;
+recycleMaxIter         120;
+// Flash regime switching across the loop -> start with direct substitution
+// (gentle), no Wegstein acceleration.
+recycleWegsteinQmin    0.0;
+recycleWegsteinQmax    0.0;

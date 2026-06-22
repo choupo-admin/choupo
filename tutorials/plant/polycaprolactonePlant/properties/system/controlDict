@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "Close the loop: ESTIMATE the PCL repeat-unit glass transition Tg by the Yang 2020 group-contribution scheme — the plant gives Mn/PDI, this gives the physical property from the SAME repeat unit -[O-(CH2)5-CO]-";
+verbosity     2;

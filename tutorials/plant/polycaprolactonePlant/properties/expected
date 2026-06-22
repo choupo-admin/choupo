@@ -1,0 +1,5 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# kind   name      key         expected        reltol
+diag    pclRepeat_Tg_yang2020  M0_g_per_mol     114                1e-4
+diag    pclRepeat_Tg_yang2020  Tg_K             85.81              1e-4
+diag    pclRepeat_Tg_yang2020  YgSum_1e3gKmol   9.782              1e-4

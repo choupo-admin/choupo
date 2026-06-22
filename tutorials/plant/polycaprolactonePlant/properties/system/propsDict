@@ -1,0 +1,66 @@
+/*---------------------------------------------------------------------------*\
+  pclProperties  --  CLOSE THE LOOP: process -> molar mass -> physical property.
+  ===========================================================================
+  The plant (../) gave you the chain statistics from the KINETICS: Mn, Mw, PDI on
+  the polycaprolactone it makes.  Here you ESTIMATE the polymer's PHYSICAL
+  PROPERTIES from the SAME repeat unit -[O-(CH2)5-CO]- by group contribution —
+  the bridge from "how big are the chains" to "how does the material behave".
+
+  TWO estimators, two properties, on the repeat unit pclRepeat (M0 = 114.14):
+
+   (A) Tg, the GLASS-TRANSITION temperature — Yang 2020 (run below).
+       Repeat unit -[O-(CH2)5-CO]- decomposes into Yang main-chain groups:
+           O    x1 :  MW 16   Yg -14.718
+           CH2  x5 :  MW 14   Yg   4.026   (each)
+           CO   x1 :  MW 28   Yg   4.370
+         ------------------------------------------------
+           M0      = 16 + 5*14 + 28          = 114    g/mol   (matches the reactor M0!)
+           Yg(inf) = -14.718 + 5*4.026 + 4.370 = 9.782 (1e3 g.K/mol)
+           Tg(inf) = 9.782e3 / 114            ~ 86 K  (the additive estimate)
+       (Measured PCL Tg ~ 213 K / -60 C; an additive main-chain scheme is weak for
+        a flexible aliphatic polyester — the model tells the truth about itself,
+        which IS the lesson.  See the console's per-cent error vs the anchor.)
+
+   (B) DENSITY — Van Krevelen (Bondi Vw).  NOT runnable on PCL with the shipped
+       data: the Slice-1 Van Krevelen set ships only hydrocarbon + chloro groups
+       (CH3 CH2 CH C ACH AC CHCl CH2Cl); it has NO ester -O- / -CO- group, so the
+       repeat unit -[O-(CH2)5-CO]- cannot be decomposed.  Running it would HARD-
+       ERROR with "unknown polymer group 'O'" — the estimator refuses to invent a
+       value (no silent zero).  The honest path: density needs the ester groups
+       curated into data/standards/vanKrevelen/groups.dat first.  The worked
+       Van Krevelen DENSITY example lives in
+       tutorials/props/estimate/vanKrevelen01_polystyrene_density (a pure-
+       hydrocarbon repeat unit the Slice-1 set CAN do).
+
+  This is the same M0 = 114.14 the reactor's polymer{} block used for Mn = M0/(1-p)
+  — one repeat-unit mass, two places (process AND property).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        pclRepeat_Tg_yang2020;
+        type        estimateComponent;
+        model       Yang2020;                 // POLYMER-group estimator (Tg, CC-BY)
+        component   pclRepeat;
+
+        // Repeat unit  -[O-(CH2)5-CO]-  (the polycaprolactone repeat).
+        groups
+        (
+            { group O;   count 1; }           // ester / chain oxygen
+            { group CH2; count 5; }           // the five methylenes
+            { group CO;  count 1; }           // carbonyl
+        );
+
+        // "See, then decide": the measured anchor exposes the additive scheme's
+        // weakness for a flexible aliphatic polyester (the honest teaching point).
+        reference
+        {
+            source   "polycaprolactone Tg ~ 213 K (-60 C), high Mw (textbook)";
+            Tg       213.0;                   // K
+        }
+
+        // Opt-in PROMOTE: write a polymer repeat-unit proposal .dat (ESTIMATE).
+        output  { proposal auto; }
+    }
+);

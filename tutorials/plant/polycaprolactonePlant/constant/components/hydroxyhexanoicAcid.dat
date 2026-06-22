@@ -1,0 +1,51 @@
+// --- ILLUSTRATIVE teaching component (NOT curated literature data) ----------
+//  status   ILLUSTRATIVE -- plausible round properties for a step-growth
+//           teaching case; do NOT use for quantitative work or promote to
+//           data/standards/ without curating each value against a primary
+//           source.  The polymer KPI math (Carothers/Flory) is exact; only
+//           these monomer properties are illustrative.
+// ----------------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: 6-hydroxyhexanoic acid  (HO-(CH2)5-COOH, C6H12O3)
+  An AB-type difunctional monomer (one -OH + one -COOH): it self-
+  condenses to polycaprolactone, releasing one water per ester bond.
+  CAS 1191-25-9.  Properties below are illustrative estimates.
+\*---------------------------------------------------------------------------*/
+
+name        hydroxyhexanoicAcid;
+formula     C6H12O3;
+CAS         1191-25-9;
+
+MW          132.16;
+Tc          750.0;            // illustrative
+Pc          33.0;             // illustrative [bar]
+omega       0.75;             // illustrative
+Tb          550.0;            // illustrative [K]
+HvapTb      55000;            // illustrative [J/mol]
+Vliq        1.235e-4;         // 123.5 cm³/mol  (MW / rho, rho ~ 1.07 g/cm³)
+
+gibbsFormation
+{
+    dHf_298   -660000.0;       // illustrative [J/mol], ideal-gas reference
+    s_298     330.0;          // illustrative [J/(mol·K)]
+    phase     gas;
+}
+vaporPressure
+{
+    model         Antoine;     // illustrative coefficients (low-volatility)
+    coefficients  (4.5   2200.0   -60.0);
+    Trange        (350  560);
+}
+idealGasHeatCapacity
+{
+    model         polynomial;  // illustrative
+    coefficients  (20.0   0.40   -2.0e-4   4.0e-8);
+    Trange        (200  1500);
+}
+liquidHeatCapacity
+{
+    model         polynomial;  // illustrative
+    coefficients  (250.0);
+    Trange        (300  560);
+}

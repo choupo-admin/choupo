@@ -1,0 +1,3 @@
+application   choupoSolve;
+description   "Poly(caprolactone) production PLANT — step-growth PFR (Carothers/Flory Mn/Mw/PDI) + devolatiliser that strips the water condensate from the polymer melt + a condensate-recovery recycle (Newton-on-tears)";
+verbosity     3;

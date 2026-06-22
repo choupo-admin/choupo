@@ -1,0 +1,50 @@
+// --- ILLUSTRATIVE teaching component (NOT curated literature data) ----------
+//  status   ILLUSTRATIVE -- a lumped pseudo-component standing for the
+//           polycaprolactone repeat unit -[O-(CH2)5-CO]-.  Properties are
+//           plausible estimates for a teaching case only; do NOT promote
+//           without curation.  Used to close the mass balance of the
+//           self-condensation; the chain statistics come from the polymer{}
+//           block, not from this component.
+// ----------------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: polycaprolactone repeat unit  (-[O-(CH2)5-CO]-, C6H10O2)
+  Mass balance: monomer C6H12O3 (132.16) = repeat C6H10O2 (114.14)
+  + water (18.02) -- one water released per ester bond formed.
+\*---------------------------------------------------------------------------*/
+
+name        pclRepeat;
+formula     C6H10O2;
+
+MW          114.14;
+Tc          800.0;            // illustrative
+Pc          28.0;             // illustrative [bar]
+omega       0.90;             // illustrative
+Tb          600.0;            // illustrative [K]
+HvapTb      60000;            // illustrative [J/mol]
+Vliq        1.038e-4;         // 103.8 cm³/mol (MW / rho, rho ~ 1.10 g/cm³)
+
+gibbsFormation
+{
+    dHf_298   -560000.0;       // illustrative [J/mol], ideal-gas reference
+    s_298     300.0;          // illustrative [J/(mol·K)]
+    phase     gas;
+}
+vaporPressure
+{
+    model         Antoine;     // illustrative (effectively non-volatile)
+    coefficients  (4.3   2600.0   -70.0);
+    Trange        (400  610);
+}
+idealGasHeatCapacity
+{
+    model         polynomial;  // illustrative
+    coefficients  (18.0   0.36   -1.8e-4   3.6e-8);
+    Trange        (200  1500);
+}
+liquidHeatCapacity
+{
+    model         polynomial;  // illustrative
+    coefficients  (240.0);
+    Trange        (350  610);
+}
