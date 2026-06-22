@@ -1,8 +1,10 @@
 /*---------------------------------------------------------------------------*\
   pitzer02_cacl2 --- the same Pitzer engine on a 2:1 electrolyte (Ca2+, 2 Cl-).
-  Parameters curated in data/standards/electrolyte/CaCl2.dat (Pitzer & Mayorga
-  1973).  gamma_pm dips below 0.45 then climbs steeply --- the divalent-cation
-  signature.  Valid to ~2 mol/kg with the 2-parameter set.
+  Parameters curated case-local in constant/electrolyte/pairs.dat (PRIMARY:
+  Appelo, Appl. Geochem. 55 (2015) 62).  gamma_pm dips below 0.45 then climbs
+  steeply --- the divalent-cation signature.  Valid to ~2 mol/kg; CaCl2 carries
+  a non-zero beta2 (-1.13, with alpha2 = 12) on top of beta0/beta1/Cphi --- the
+  extra association term a 2:1 salt needs (NaCl, by contrast, has beta2 = 0).
 \*---------------------------------------------------------------------------*/
 operations
 (
