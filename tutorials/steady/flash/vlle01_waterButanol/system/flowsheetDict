@@ -1,41 +1,43 @@
 /*---------------------------------------------------------------------------*\
-  vlle01_waterButanol  --  isothermal flash with `phaseSet VLLE`.
+  vlle01_waterButanol  --  liquid-liquid flash of water + 1-butanol with the
+  cited Winkelman et al. (2009) UNIQUAC LLE parameters.
 
-  HONEST-FAILURE TUTORIAL (read README.md).  Water + 1-butanol is the
-  classic partially-miscible binary, so a student rightly expects a
-  V + Laqueous + Lorganic three-phase split at 373 K, 1.013 bar (above
-  the bubble point, so vapour is genuinely present).  It does NOT happen
-  here -- and that is the lesson.
+  Water + 1-butanol is THE textbook partially-miscible binary.  At 320 K and
+  1.013 bar an equimolar mixture is well below the bubble point (water boils at
+  373 K, 1-butanol near 390 K), so the equilibrium is GENUINELY two LIQUIDS --
+  no vapour.  A simple `phaseSet LL` flash (Michelsen TPD pre-check, then direct
+  Gibbs-energy minimisation, multi-start Nelder-Mead) finds the split.
 
-  The NRTL parameters in `constant/thermoPackage` are the REAL, cited
-  DECHEMA VLE-regressed set (Vol. I/1a p.336, via ChemSep -- see the
-  thermoPackage header for the full provenance).  Being a VLE fit, that
-  set carries NO liquid-liquid miscibility gap: the VLLE Gibbs-minimiser
-  finds the single-liquid optimum, demotes to a TWO-phase V + L result
-  (sol.threePhase == false), and the flowsheet emits THREE streams with
-  the empty `organic` carrying F = 0.  The surviving liquid is
-  butanol-rich (so its `aqueous` label is only a slot name, not a
-  physical aqueous phase -- the README spells this out).
+  THE PARAMETERS (cited, NOT fabricated -- see constant/thermoPackage and
+  README.md):  the UNIQUAC interaction parameters are the LLE-specific fit of
 
-  We deliberately keep cited-but-LLE-blind parameters instead of inventing
-  numbers to manufacture a gap (Choupo credo: sourced-and-cited, or
-  honest-failure-as-lesson -- nothing in between).
+      J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, Fluid Phase Equilibria 284
+      (2009) 71-79, Table 2 (p.73); structural r,q from their Table 1 (p.72).
+
+  with the full temperature dependence A_ij(T) = a_ij + b_ij*T + c_ij*T^2
+  (their Eq. 10), tau_ij = exp(-A_ij/T) (their Eq. 7), valid 273-363 K.  The
+  same numbers, fully provenanced, also live in
+  data/standards/binaryPairs/UNIQUAC/nButanol-water.dat.
 
   WHAT THIS DEMONSTRATES:
 
-      * the VLE-fit-misses-LLE failure mode, made VISIBLE: a published
-        parameter set that is fine for VLE silently has no LL gap;
-      * the IsothermalFlash VLLE branch and its honest 2-phase fallback
-        (direct Gibbs-energy minimisation, multi-start Nelder-Mead; one
-        liquid collapses to beta ~ 0 -> demoted to V+L, announced aloud);
-      * the fixed 3-output flowsheet contract for VLLE (always emit V +
-        Lalpha + Lbeta; absent phases get F = 0 so the topology is fixed
-        regardless of the optimum's regime).
+      * a REAL liquid-liquid miscibility gap, reproduced from a cited primary
+        source -- the water-rich phase is ~98.3 mol% water (~1.7 mol% butanol)
+        and the butanol-rich phase is ~54 mol% water (~46 mol% butanol),
+        matching Winkelman's Figs 1-2;
+      * the IsothermalFlash LL branch: a Michelsen TPD stability test that flags
+        the feed as unstable, then a direct Gibbs-minimisation that resolves the
+        two coexisting compositions;
+      * honest phase labelling -- the two output streams are named by their
+        actual composition (waterRich / butanolRich), with alphaRich/betaRich
+        hints steering which liquid lands in which slot.
 
-  To actually SEE the gap a student must supply LLE-specific parameters
-  (DECHEMA Vol. V LLE Data Collection, Soerensen & Arlt) -- the README
-  gives the recipe.  A correctly-split tutorial awaits a curated,
-  per-value-cited LLE parameter set.
+  HISTORICAL NOTE: an earlier version of this case carried only a DECHEMA
+  VLE-fit NRTL set, which (being a VLE fit) has NO miscibility gap, so the flash
+  found a single liquid -- it was kept as an honest "VLE-fit-misses-LLE" lesson
+  pending a cited LLE set.  Winkelman et al. (2009) IS that cited set, so the
+  case now shows the genuine split.  (The VLE-blind NRTL lesson lives on in the
+  NRTL catalogue file's provenance.)
 \*---------------------------------------------------------------------------*/
 
 streams
@@ -43,9 +45,15 @@ streams
     feed
     {
         F            100.0 kmol/h;
-        T            373.0 K;
+        T            320.0 K;
         P            1.013 bar;
-        molarComposition  { water 0.50;  nButanol 0.50; }
+        // Overall composition chosen INSIDE the miscibility gap.  At 320 K the
+        // two binodal points are x_butanol ~ 0.017 (water-rich) and ~ 0.46
+        // (butanol-rich), so a feed must satisfy 0.017 < z_butanol < 0.46 to
+        // split into two liquids (lever rule).  z_butanol = 0.20 sits squarely
+        // inside; an equimolar feed (z=0.5) would be a SINGLE butanol-rich
+        // liquid -- outside the envelope on the butanol side.
+        molarComposition  { water 0.80;  nButanol 0.20; }
     }
 }
 
@@ -55,15 +63,15 @@ units
         name        decanter01;
         type        isothermalFlash;
         in          feed;
-        outputs     ( vapor  aqueous  organic );
+        outputs     ( waterRich  butanolRich );
 
         operation
         {
-            T          373.0 K;
+            T          320.0 K;
             P          1.013 bar;
-            phaseSet   VLLE;
-            alphaRich  water;
-            betaRich   nButanol;
+            phaseSet   LL;
+            alphaRich  water;       // -> waterRich slot (alpha, ~98 mol% water)
+            betaRich   nButanol;    // -> butanolRich slot (beta, ~46 mol% butanol)
         }
 
         compositionTol   1e-5;

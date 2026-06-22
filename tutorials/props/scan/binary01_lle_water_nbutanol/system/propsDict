@@ -5,6 +5,11 @@ operations
         type      propertyScanBinary;
         state     { T 298.15 K;  P 1 bar; }
         grid      { n 41; }            // interior g_mix samples (x1 = i/n)
+        // The LL flash feed must lie INSIDE the gap.  For water/1-butanol the
+        // binodal is asymmetric -- both branches sit below 50 mol% butanol -- so
+        // an equimolar feed is OUTSIDE it.  z(water) = 0.80 (20 mol% butanol)
+        // is squarely inside; the flash then resolves both binodal points.
+        feed      { water 0.80; }
         output    { file binaryLle.csv; }
     }
 );

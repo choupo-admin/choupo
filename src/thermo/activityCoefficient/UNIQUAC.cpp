@@ -85,6 +85,7 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
     q_.assign(n_, 0.0);
     aMat_.assign(n_*n_, 0.0);
     bMat_.assign(n_*n_, 0.0);
+    cMat_.assign(n_*n_, 0.0);
 
     // ---- Pure-component r, q (structural; glass-box, the student cites them) ----
     if (!dict->found("rq"))
@@ -126,6 +127,8 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
         aMat_[j*n_ + i] = p->lookupScalarOrDefault("a_ji", 0.0);
         bMat_[i*n_ + j] = p->lookupScalarOrDefault("b_ij", 0.0);
         bMat_[j*n_ + i] = p->lookupScalarOrDefault("b_ji", 0.0);
+        cMat_[i*n_ + j] = p->lookupScalarOrDefault("c_ij", 0.0);
+        cMat_[j*n_ + i] = p->lookupScalarOrDefault("c_ji", 0.0);
         covered[i*n_ + j] = covered[j*n_ + i] = true;
     };
 
@@ -186,11 +189,12 @@ sVector UNIQUAC::gamma(scalar T, const sVector& x) const
     if (x.size() != n_)
         throw std::runtime_error("UNIQUAC::gamma: x.size() != n_components");
 
-    // tau_ij at this T.
+    // tau_ij at this T.  A_ij(T) = a_ij + b_ij*T + c_ij*T^2 (Winkelman Eq. 10);
+    // tau_ij = exp(-A_ij/T) (Eq. 7).  c = 0 recovers the linear a + b*T form.
     std::vector<scalar> tau(n_*n_, 1.0);
     for (std::size_t i = 0; i < n_; ++i)
         for (std::size_t j = 0; j < n_; ++j)
-            tau[i*n_ + j] = std::exp(-(a(i,j) + b(i,j) * T) / T);   // tau_ii = exp(0) = 1
+            tau[i*n_ + j] = std::exp(-(a(i,j) + b(i,j) * T + c(i,j) * T * T) / T);   // tau_ii = exp(0) = 1
 
     // Segment (phi) and area (theta) fractions.
     scalar sumRx = 0.0, sumQx = 0.0;

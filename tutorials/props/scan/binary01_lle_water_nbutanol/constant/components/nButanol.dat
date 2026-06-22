@@ -1,10 +1,9 @@
-// --- vendored for self-containment (2026-06-22) -----------------------
+// --- vendored for self-containment (2026-06-22) ---------------------
 // origin   standard
 // source   data/standards/components/nButanol.dat
 // sha256   828bad1520d8ed0b597d53e6e72549657b4eb966fca024762c50aed8f699eb44
-// note     byte-copy of the FROZEN reference at vendoring time, so this
-//          LLE scan is self-contained + reproducible (incl. the UNIFAC
-//          groups{} block UNIFAC reads) even if the standard evolves.
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
 //          Verify-vs-standard / re-sync is a deliberate curation act.
 // ----------------------------------------------------------------------
 

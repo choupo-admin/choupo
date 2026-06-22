@@ -1,0 +1,68 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- nButanol / water  (LLE-specific).
+
+  This is a LIQUID-LIQUID EQUILIBRIUM fit: it reproduces the mutual
+  solubilities of the partially-miscible 1-butanol/water binary (a textbook
+  miscibility gap that VLE-regressed sets miss).  Use it for LLE / VLLE flashes.
+
+  PRIMARY SOURCE (cited per value -- no fabrication)
+  -------------------------------------------------
+    J.G.M. Winkelman, G.N. Kraai, H.J. Heeres,
+    "Binary, ternary and quaternary liquid-liquid equilibria in 1-butanol,
+     oleic acid, water and n-heptane mixtures",
+    Fluid Phase Equilibria 284 (2009) 71-79.
+    doi:10.1016/j.fluid.2009.06.013
+
+  TEMPERATURE-DEPENDENT INTERACTION PARAMETERS -- their Table 2 (p.73), for the
+  binary 1-butanol(1)/water(3), valid 273-363 K.  Their correlation (Eq. 10):
+
+        A_ij(T) = a_ij + b_ij*T + c_ij*T^2          [T in K]
+        tau_ij  = exp( -A_ij / T )                  (their Eq. 7)
+
+  Table 2 values (10^4 * c is how they tabulate c):
+        A_1,3 (butanol->water):  a =  155.31,  b = 1.0822,  10^4 c = -43.711
+        A_3,1 (water->butanol):  a = -579.36,  b = 2.7517,  10^4 c =  -6.7700
+
+  Choupo's UNIQUAC reads exactly this A_ij(T) = a_ij + b_ij*T + c_ij*T^2 form
+  (a [K], b [-], c [1/K]); tau_ij = exp(-A_ij/T).  No fit, no tuning -- the
+  Table 2 numbers are transcribed directly below.  Direction is stated by NAME:
+  with (i=nButanol, j=water), the _ij slot is A_1,3 and the _ji slot is A_3,1.
+
+  STRUCTURAL r,q -- their Table 1 (p.72), value Magnussen et al. [10]:
+        1-butanol (1):  r = 3.9243   q = 3.668
+        water     (3):  r = 0.9200   q = 1.400
+  (carried in the case `rq {}` block; repeated here for the curator's audit.)
+\*---------------------------------------------------------------------------*/
+
+components  ( nButanol water );
+model       UNIQUAC;
+
+parameters
+{
+    i           nButanol;       // = component 1 (butanol) in Winkelman Table 2
+    j           water;          // = component 3 (water)   in Winkelman Table 2
+
+    // A_1,3 (butanol -> water):  A = 155.31 + 1.0822*T - 43.711e-4*T^2
+    a_ij        155.31;         // K
+    b_ij        1.0822;         // -
+    c_ij        -43.711e-4;     // 1/K   (Table 2: 10^4 c = -43.711)
+
+    // A_3,1 (water -> butanol):  A = -579.36 + 2.7517*T - 6.7700e-4*T^2
+    a_ji        -579.36;        // K
+    b_ji        2.7517;         // -
+    c_ji        -6.7700e-4;     // 1/K   (Table 2: 10^4 c = -6.7700)
+}
+
+provenance
+{
+    source        literature;
+    citation      "Winkelman, Kraai & Heeres, Fluid Phase Equilibria 284 (2009) 71-79, doi:10.1016/j.fluid.2009.06.013 -- Table 2 (p.73), binary 1-butanol(1)/water(3) UNIQUAC interaction parameters A_ij = a + b*T + c*T^2; structural r,q from their Table 1 (p.72), value Magnussen et al.";
+    fitData       "<not refit -- transcribed from Winkelman et al. Table 2>";
+    fitDate       "<literature, 2009>";
+    algorithm     "Marquardt two-step (their Section 3.3, objective Eqs. 8 then 9)";
+    chi2          "<not reported as chi2; deviation ~ data spread, see their Figs. 1-2>";
+    nDataPoints   0;
+    validityRange { Tmin 273; Tmax 363; note "K -- the binary mutual-solubility range correlated in Winkelman et al."; }
+    author        "Curated from the primary PDF (Literature/1-s2.0-S0378381209002362-main.pdf), verified vs Table 2 and Figs 1-2.";
+    notes         "LLE-specific set: reproduces the 1-butanol/water miscibility gap (butanol in water-rich ~1.7-2.0 mol%, water in butanol-rich ~48-55 mol%, their Figs 1-2). The quadratic c-term is essential -- at 320 K c*T^2 ~ -450 K, comparable to a. This is NOT a VLE set; for VLE of this pair use the DECHEMA NRTL (data/standards/binaryPairs/NRTL/nButanol-water.dat).";
+}

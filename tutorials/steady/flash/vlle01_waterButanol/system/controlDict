@@ -1,4 +1,4 @@
 application   choupoSolve;
-description   "VLLE flash of water + 1-butanol at 373 K, 1.013 bar -- honest-failure tutorial: cited DECHEMA VLE-fit NRTL carries NO LL gap, so vapour + ONE liquid, no liquid-liquid split (see README)";
+description   "Liquid-liquid flash of water + 1-butanol at 320 K, 1.013 bar -- the real miscibility gap from the cited Winkelman et al. (2009) UNIQUAC LLE fit: water-rich ~98.3 mol% water, butanol-rich ~46 mol% butanol (their Figs 1-2). See README.";
 
 verbosity     3;

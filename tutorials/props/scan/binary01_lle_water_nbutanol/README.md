@@ -1,76 +1,98 @@
-# binary01_lle_water_nbutanol — predictive UNIFAC misses the LLE gap (honest-failure tutorial)
+# binary01_lle_water_nbutanol — the water/1-butanol miscibility gap, read off g_mix (cited UNIQUAC)
 
-## The promise vs. the prediction
+## The promise and the prediction
 
 Water + 1-butanol (n-butanol) is *the* classic partially-miscible binary. At
 25 °C it splits into a water-rich liquid (~2 mol % butanol) and a butanol-rich
-liquid (~50 mol % butanol). So a `g_mix(x_water)` scan "should" show a clearly
-**non-convex** region: two binodal points sharing a **common tangent**, which a
-student reads the split straight off.
+liquid (~50 mol % butanol). A `g_mix(x_water)` scan should therefore show a
+clearly **non-convex** region: two binodal points sharing a **common tangent**,
+which a student reads the split straight off.
 
-Run it:
+## Run it
 
 ```bash
 runCase tutorials/props/scan/binary01_lle_water_nbutanol
 ```
 
-and the curve in `binaryLle.csv` is a **single smooth convex well — no common
-tangent, zero binodal points**. The operation says so aloud:
+and `binaryLle.csv` is a `g_mix(x1)` curve that **goes non-convex**, plus the
+**two binodal points** the liquid-liquid flash locates on it:
 
 ```
-[binaryLLE] single liquid at 298.15 K, 1 bar: the chosen activity model
-predicts MISCIBILITY (no liquid-liquid split) -- the g_mix curve stays convex.
+[binaryLLE] two liquid phases at 298.15 K, 1 bar: x1 = 0.980747 | 0.510186
 ```
 
-## Why — and why we leave it that way
+| binodal branch | x_water | x_butanol | what it is |
+|----------------|---------|-----------|------------|
+| water-rich     | 0.9807  | **0.0193**| ~1.9 mol % butanol in water |
+| butanol-rich   | 0.5102  | 0.4898    | ~49 mol % butanol (51 mol % water) |
 
-This scan uses **predictive UNIFAC** (Fredenslund–Jones–Prausnitz group
-contribution): γ is built from the components' functional groups
-(`water`; `nButanol` = 1×CH3 + 3×CH2 + 1×OH), with **no fitted binary
-parameters**. Predictive UNIFAC with the standard *VLE* group-interaction table
-**does not reproduce the water/1-butanol miscibility gap** — its `g^E` is not
-strong enough to make `g_mix(x)` non-convex here. (This is a known limitation;
-a separate **UNIFAC-LLE** parameter table, Magnussen, Rasmussen & Fredenslund,
-*Ind. Eng. Chem. Process Des. Dev.* **20** (1981) 331, was published precisely
-because the VLE table mis-predicts liquid-liquid equilibria.)
+## Predicted vs. Winkelman et al. (2009), Figs 1–2
 
-The Choupo credo is absolute: **sourced-and-cited, or honest-failure-as-lesson —
-nothing in between.** We do **not** swap in invented numbers to manufacture a
-gap. Predictive UNIFAC's convex curve, plus the engine's loud "no split" report,
-*is* the lesson: a predictive group method can completely miss a real
-miscibility gap, and the only honest cure is data — an LLE-specific fit.
+| quantity                         | this scan (298 K) | Winkelman Figs 1–2 |
+|----------------------------------|-------------------|--------------------|
+| butanol in the water-rich phase  | **1.93 mol %**    | ~1.9 mol % (Fig. 1) |
+| water in the butanol-rich phase  | **51.0 mol %**    | ~51 mol % (Fig. 2)  |
 
-## How a student would make the gap appear
+The agreement is essentially exact: the cited UNIQUAC fit reproduces the
+published mutual solubilities.
 
-Replace the predictive UNIFAC phases with an **LLE-regressed** activity model
-(NRTL or UNIQUAC) whose parameters were fitted to mutual-solubility / tie-line
-data, each cited per value — e.g.
+## The parameters (full provenance — no fabrication)
 
-- DECHEMA Chemistry Data Series, **Vol. V** ("Liquid–Liquid Equilibrium Data
-  Collection", J. M. Sørensen & W. Arlt, 1979–1980), water/1-butanol; or
-- Winkelman, Kraai & Heeres, *Fluid Phase Equilibria* **284** (2009) 71–79
-  (UNIQUAC fit to the binary mutual solubilities); or
-- the UNIFAC-LLE table (Magnussen et al. 1981) if a predictive route is wanted.
+This scan uses the **LLE-specific UNIQUAC** of
 
-With such a set the `g_mix(x)` curve goes non-convex and the scan emits the two
-binodal points. A correctly-splitting variant is intentionally **not** shipped
-with fabricated parameters; it awaits a curated, per-value-cited LLE set.
+- J.G.M. Winkelman, G.N. Kraai, H.J. Heeres, *"Binary, ternary and quaternary
+  liquid-liquid equilibria in 1-butanol, oleic acid, water and n-heptane
+  mixtures"*, **Fluid Phase Equilibria 284 (2009) 71–79**,
+  doi:10.1016/j.fluid.2009.06.013.
 
-> ⚠️ Note (also flagged in the operation): the water-rich binodal sits very near
-> the flash's `1e-4` simplex floor, so even a *correct* LLE model resolves that
-> branch only coarsely on this grid — a separate numerical caveat from the
-> modelling failure above.
+cited per value:
+
+- **Interaction parameters — their Table 2 (p.73)**, binary
+  1-butanol(1)/water(3), valid 273–363 K, with the quadratic temperature
+  correlation `A_ij(T) = a + b·T + c·T²` (Eq. 10), `τ_ij = exp(−A_ij/T)` (Eq. 7):
+  - `A_1,3` (butanol→water): a = 155.31, b = 1.0822, 10⁴·c = −43.711
+  - `A_3,1` (water→butanol): a = −579.36, b = 2.7517, 10⁴·c = −6.7700
+- **Structural r, q — their Table 1 (p.72)**: 1-butanol r = 3.9243, q = 3.668;
+  water r = 0.9200, q = 1.400.
+
+The same numbers live, fully provenanced, in
+`data/standards/binaryPairs/UNIQUAC/nButanol-water.dat`. The engine evaluates
+the full `a + b·T + c·T²` temperature dependence (the quadratic `c·T²` term is
+essential — at 320 K it is ~−450 K, comparable to `a`).
+
+## Why the flash feed is 20 mol % butanol, not 50 %
+
+The LL flash needs a feed *inside* the gap. For water/1-butanol the binodal is
+**asymmetric** — both branches sit below 50 mol % butanol — so an *equimolar*
+feed is OUTSIDE the gap and would be a single butanol-rich liquid. The op takes
+an optional `feed { water 0.80; }` (20 mol % butanol), squarely inside, and the
+flash then resolves both binodal points. The `g_mix(x1)` curve itself is swept
+across the full interior either way; only the flash that *finds* the tie-line
+needs an in-gap feed.
+
+## What changed from the honest-failure predecessor
+
+An earlier version of this scan used **predictive UNIFAC** (γ from the
+components' groups, no fitted pair). Predictive UNIFAC with the standard *VLE*
+group-interaction table does **not** reproduce the water/1-butanol gap — its
+`g^E` is too weak to make `g_mix(x)` non-convex — so the scan was a single
+convex well that reported "no split", kept as an honest lesson *pending* a cited
+LLE set. Winkelman et al. (2009) **is** that cited set, so the scan now shows
+the real common tangent. (The predictive-UNIFAC-misses-LLE failure mode is a
+genuine, separate lesson — UNIFAC-LLE tables, Magnussen et al. 1981, were
+published precisely because the VLE table mis-predicts LLE.)
 
 ## Self-containment
 
 Per the Choupo "cases are self-contained" credo, this case vendors its own
 component data in `constant/components/` (`water.dat`, `nButanol.dat`,
-byte-copied from `data/standards/` with the UNIFAC `groups{}` block UNIFAC reads,
-each carrying its source + sha256 header). The scan runs unchanged with the
-standard catalogue hidden.
+byte-copied from `data/standards/` with a source + sha256 header). UNIQUAC needs
+only the structural r,q (carried inline in `constant/thermoPackage`) plus the
+pure-component data here; the scan runs unchanged with the standard catalogue
+hidden.
 
 ## Companion case
 
-`tutorials/steady/flash/vlle01_waterButanol` shows the *same* lesson from the
-flash side: a **published DECHEMA VLE-fit NRTL** set that also carries no LL gap,
-so the VLLE flash finds vapour + a single liquid (no liquid-liquid split).
+`tutorials/steady/flash/vlle01_waterButanol` shows the *same* split from the
+flash side: a `phaseSet LL` IsothermalFlash with this cited Winkelman UNIQUAC
+set resolves the water-rich and butanol-rich liquids directly.

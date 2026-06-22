@@ -95,14 +95,36 @@ int PropertyScanBinary::run(const DictPtr& dict,
     }
 
     // (b) the two coexisting liquid compositions from ONE liquid-liquid flash
-    //     (PhaseSet::LL) at z = (0.5,0.5).  The two binodal points lie ON the
-    //     curve above and share its common tangent -- the engine, not a fit,
-    //     locates them.  A miscible system returns no split: reported honestly.
+    //     (PhaseSet::LL).  The two binodal points lie ON the curve above and
+    //     share its common tangent -- the engine, not a fit, locates them.  A
+    //     miscible system returns no split: reported honestly.
+    //
+    //     The flash FEED must lie INSIDE the miscibility gap or the lever rule
+    //     makes the split infeasible (a feed outside the binodal is a single
+    //     liquid).  Default is equimolar z = (0.5, 0.5); the case may override
+    //     it with an optional `feed { <comp> <x1>; }` to place the feed inside
+    //     an ASYMMETRIC gap (e.g. water/1-butanol, whose butanol-rich binodal
+    //     sits below 50 mol% butanol, so z = 0.5 is outside it).
+    scalar zFeed1 = 0.5;
+    if (dict->found("feed"))
+    {
+        auto feedDict = dict->subDict("feed");
+        const std::string c0 = thermo.comp(0).name();
+        const std::string c1 = thermo.comp(1).name();
+        if (feedDict->found(c0))
+            zFeed1 = feedDict->lookupScalar(c0);
+        else if (feedDict->found(c1))
+            zFeed1 = 1.0 - feedDict->lookupScalar(c1);
+        if (zFeed1 <= 0.0 || zFeed1 >= 1.0)
+            throw std::runtime_error("propertyScanBinary: feed composition for '"
+                + c0 + "' must be in (0,1); got " + std::to_string(zFeed1));
+    }
+
     FlashInput in;
     in.F = 1.0;
     in.T = T;
     in.P = P_Pa;        // FlashInput.P is in Pa (SI), not bar
-    in.z = sVector{ 0.5, 0.5 };
+    in.z = sVector{ zFeed1, 1.0 - zFeed1 };
 
     FlashOptions opts;
     opts.phaseSet  = PhaseSet::LL;

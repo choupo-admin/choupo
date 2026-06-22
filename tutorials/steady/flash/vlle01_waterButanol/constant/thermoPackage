@@ -1,42 +1,47 @@
 /*---------------------------------------------------------------------------*\
-  thermoPackage  --  water / 1-butanol, vapour + two candidate liquid phases.
+  thermoPackage  --  water / 1-butanol, two liquid phases for a LIQUID-LIQUID
+  flash with the cited Winkelman et al. (2009) UNIQUAC LLE parameters.
 
-  THE LESSON OF THIS CASE (read README.md):  water + 1-butanol is a TEXTBOOK
-  partially-miscible binary -- at 25 degC the two coexisting liquids are
-  ~2 mol% butanol (water-rich) and ~50 mol% butanol (organic-rich).  Yet the
-  PUBLISHED, VLE-regressed NRTL parameters loaded below predict COMPLETE
-  MISCIBILITY: the flash finds NO liquid-liquid split at any temperature.
+  THE LESSON OF THIS CASE (read README.md):  water + 1-butanol is the textbook
+  partially-miscible binary.  This UNIQUAC set is a LIQUID-LIQUID EQUILIBRIUM
+  fit, so the flash DOES find the real miscibility gap:
+      water-rich phase   ~98.3 mol% water  (~1.7 mol% butanol)
+      butanol-rich phase ~54   mol% water  (~46  mol% butanol)
+  matching Winkelman's Figs 1-2 at 320 K.
 
-  This is NOT a Choupo bug and NOT bad luck -- it is the well-known failure
-  mode that VLE-fitted interaction parameters do not, in general, reproduce
-  LLE.  This DECHEMA VLE set fits the water/1-butanol vapour-liquid data yet
-  has no miscibility gap.  Reproducing the gap requires an LLE-SPECIFIC
-  regression (e.g. DECHEMA Chemistry Data Series Vol. V, "Liquid-Liquid
-  Equilibrium Data Collection", Soerensen & Arlt, 1979-1980), which Choupo
-  does not yet carry for this pair.  See README.md for the full pedagogy and
-  the honest "no split found" outcome.
+  An LLE-specific regression is what it takes -- a VLE-fitted set (e.g. the
+  DECHEMA NRTL in data/standards/binaryPairs/NRTL/nButanol-water.dat) has no gap
+  and predicts complete miscibility.  Liquid-liquid equilibria are constrained
+  by a different region of g^E(x,T) than the vapour-liquid data.
 
-  PROVENANCE OF THE NRTL PARAMETERS BELOW
-  ---------------------------------------
-  These are REAL, cited values -- NOT hand-tuned.  Primary source:
+  PROVENANCE OF THE UNIQUAC PARAMETERS BELOW (cited per value -- NO fabrication)
+  ----------------------------------------------------------------------------
+    J.G.M. Winkelman, G.N. Kraai, H.J. Heeres,
+    "Binary, ternary and quaternary liquid-liquid equilibria in 1-butanol,
+     oleic acid, water and n-heptane mixtures",
+    Fluid Phase Equilibria 284 (2009) 71-79.  doi:10.1016/j.fluid.2009.06.013
 
-    DECHEMA Chemistry Data Series, Vol. I (Vapor-Liquid Equilibrium Data
-    Collection), Part 1a, p. 336 (Gmehling, Onken et al.), water/n-butanol
-    record, as compiled in the ChemSep database (H. Kooijman & R. Taylor,
-    Artistic-2.0 licence), file nrtl.ipd record 7732-18-5/71-36-3:
-        A(water->nButanol) = 2633.6951 cal/mol
-        A(nButanol->water) =  504.0381 cal/mol
-        alpha              =  0.4447
+  Binary 1-butanol(1)/water(3) interaction parameters -- their Table 2 (p.73),
+  valid 273-363 K, with the quadratic temperature correlation (their Eq. 10):
 
-  Converted EXACTLY to Choupo's tau_ij = a_ij + b_ij/T convention via
-  b_ij[K] = A_ij[cal/mol] / R, with R = 1.98720 cal/mol/K (no fit, no tuning):
-        b(nButanol->water) =  504.0381 / 1.98720 = 253.642 K
-        b(water->nButanol) = 2633.6951 / 1.98720 = 1325.33 K
+        A_ij(T) = a_ij + b_ij*T + c_ij*T^2          [T in K]
+        tau_ij  = exp( -A_ij / T )                  (their Eq. 7)
 
-  The same numbers live, fully provenanced, in
-  data/standards/binaryPairs/NRTL/nButanol-water.dat.  They are repeated inline
-  below so the case is self-contained (Choupo credo: a case carries all its
-  data in constant/).
+        A_1,3 (butanol->water):  a =  155.31,  b = 1.0822,  10^4 c = -43.711
+        A_3,1 (water->butanol):  a = -579.36,  b = 2.7517,  10^4 c =  -6.7700
+
+  Choupo's UNIQUAC reads exactly this a + b*T + c*T^2 form (a [K], b [-],
+  c [1/K]); with (i=nButanol, j=water) the _ij slot is A_1,3, the _ji slot
+  A_3,1.  The quadratic c-term is essential: at 320 K, c*T^2 ~ -450 K, the same
+  order as a -- dropping it would mis-place the gap.
+
+  Structural UNIQUAC r,q -- their Table 1 (p.72), value Magnussen et al. [10]:
+        1-butanol  r = 3.9243   q = 3.668
+        water      r = 0.9200   q = 1.400
+
+  These numbers are repeated inline here so the case is self-contained (Choupo
+  credo); they also live, fully provenanced, in
+  data/standards/binaryPairs/UNIQUAC/nButanol-water.dat.
 \*---------------------------------------------------------------------------*/
 
 components       ( water  nButanol );
@@ -44,47 +49,46 @@ components       ( water  nButanol );
 phases
 (
     {
-        name      vapor;
-        type      vapor;
-        eos
-        {
-            model       idealGas;
-        }
-    }
-
-    {
-        name      aqueous;
+        name      waterRich;
         type      liquid;
         activity
         {
-            model       NRTL;
-            // DECHEMA Vol. I/1a p.336 (ChemSep nrtl.ipd 7732-18-5/71-36-3),
-            // a VLE fit -- predicts MISCIBILITY (no LL gap).  See README.
+            model       UNIQUAC;
+            rq
+            {
+                water     { r 0.9200;  q 1.400; }   // Winkelman Table 1
+                nButanol  { r 3.9243;  q 3.668; }   // Winkelman Table 1
+            }
             pairs
             (
                 {
-                    i       nButanol;    j       water;
-                    a_ij    0.0;        b_ij    253.642;    // K
-                    a_ji    0.0;        b_ji    1325.33;    // K
-                    alpha   0.4447;
+                    i       nButanol;   j       water;
+                    // A_1,3 (butanol->water):  155.31 + 1.0822 T - 43.711e-4 T^2
+                    a_ij    155.31;     b_ij    1.0822;    c_ij   -43.711e-4;
+                    // A_3,1 (water->butanol): -579.36 + 2.7517 T -  6.7700e-4 T^2
+                    a_ji    -579.36;    b_ji    2.7517;    c_ji    -6.7700e-4;
                 }
             );
         }
     }
 
     {
-        name      organic;
+        name      butanolRich;
         type      liquid;
         activity
         {
-            model       NRTL;
+            model       UNIQUAC;
+            rq
+            {
+                water     { r 0.9200;  q 1.400; }
+                nButanol  { r 3.9243;  q 3.668; }
+            }
             pairs
             (
                 {
-                    i       nButanol;    j       water;
-                    a_ij    0.0;        b_ij    253.642;    // K
-                    a_ji    0.0;        b_ji    1325.33;    // K
-                    alpha   0.4447;
+                    i       nButanol;   j       water;
+                    a_ij    155.31;     b_ij    1.0822;    c_ij   -43.711e-4;
+                    a_ji    -579.36;    b_ji    2.7517;    c_ji    -6.7700e-4;
                 }
             );
         }

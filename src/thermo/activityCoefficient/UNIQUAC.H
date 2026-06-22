@@ -62,8 +62,10 @@ Description
             pairs
             (
                 { i ethanol; j water; a_ij -2.4936; a_ji 756.9477; }
-                // a_ij in KELVIN; tau_ij = exp(-a_ij/T).  T-dependence via the
-                // optional b_ij:  a_eff = a_ij + b_ij*T  (most sets use a only).
+                // a_ij in KELVIN; tau_ij = exp(-A_ij(T)/T).  Full T-dependence
+                // A_ij(T) = a_ij + b_ij*T + c_ij*T^2 via the optional b_ij [-]
+                // and c_ij [1/K] (most sets use a only; T-correlated LLE sets
+                // such as Winkelman et al. FPE 284 (2009) need b and c).
             );
         }
 
@@ -99,12 +101,16 @@ private:
     std::vector<scalar> r_;       // pure-component volume parameters
     std::vector<scalar> q_;       // pure-component surface-area parameters
 
-    // tau_ij = exp( -(aMat_ij + bMat_ij * T) / T ).  a in K, b dimensionless.
+    // tau_ij = exp( -A_ij(T) / T ),  A_ij(T) = aMat_ij + bMat_ij*T + cMat_ij*T^2.
+    //   a_ij [K], b_ij [-], c_ij [1/K].  The quadratic c-term carries the
+    //   T-dependence of T-correlated sets such as Winkelman et al. (2009).
     std::vector<scalar> aMat_;    // a_ij [K]
     std::vector<scalar> bMat_;    // b_ij [-]
+    std::vector<scalar> cMat_;    // c_ij [1/K]
 
     scalar a(std::size_t i, std::size_t j) const { return aMat_[i*n_ + j]; }
     scalar b(std::size_t i, std::size_t j) const { return bMat_[i*n_ + j]; }
+    scalar c(std::size_t i, std::size_t j) const { return cMat_[i*n_ + j]; }
 };
 
 } // namespace Choupo

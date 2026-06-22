@@ -1,18 +1,20 @@
-/*  Binary liquid-liquid teaching map — water / 1-butanol at 25 C.
+/*  Binary liquid-liquid teaching map -- water / 1-butanol at 25 C.
 
-    HONEST-FAILURE TUTORIAL (read README.md).  Water/1-butanol is the classic
-    partial-miscibility binary, so the student expects the g_mix(x1) curve to
-    show a NON-convex region with a common tangent (two binodal points), read
-    straight off the diagram.
+    The molar Gibbs energy of mixing g_mix(x1) swept across composition PLUS the
+    two coexisting liquid compositions from ONE liquid-liquid IsothermalFlash
+    (PhaseSet::LL).  The two binodal points lie on the g_mix curve and share its
+    common tangent -- the student reads the split straight off the diagram.
 
-    But this scan uses PREDICTIVE UNIFAC (gamma from the components' groups, no
-    fitted pair).  Predictive UNIFAC MISSES this LLE gap: it returns one convex
-    g_mix well, so the liquid-liquid flash finds NO split and the CSV is a single
-    smooth curve with ZERO binodal points.  The op announces this aloud
-    ("predicts MISCIBILITY ... the g_mix curve stays convex").  That absence IS
-    the lesson -- see README.md for why, and for the LLE-specific parameters that
-    would open the gap.  Run-only smoke (the CSV is a teaching curve, not pinned
-    KPIs). */
+    gamma comes from the CITED Winkelman et al. (2009) UNIQUAC LLE set (Table 2;
+    structural r,q from Table 1), so the g_mix curve goes NON-CONVEX and the
+    flash emits the real water/1-butanol binodal: ~1.9 mol% butanol in the
+    water-rich phase and ~49 mol% butanol in the butanol-rich phase (matching
+    their Figs 1-2 at 298 K).  See README.md.
+
+    The flash feed is set to z(water) = 0.80 (20 mol% butanol), INSIDE the
+    asymmetric gap; an equimolar feed would lie outside it (both binodal
+    branches sit below 50 mol% butanol).  Run-only smoke (the CSV is a teaching
+    curve, not pinned KPIs). */
 application   choupoProps;
-description   "Binary g_mix(x) scan, water/1-butanol at 298.15 K -- honest-failure tutorial: predictive UNIFAC misses the LLE gap (convex curve, no split). See README.";
+description   "Binary LLE g_mix + common-tangent (water/1-butanol) at 298.15 K via propertyScanBinary, cited Winkelman 2009 UNIQUAC";
 verbosity     2;
