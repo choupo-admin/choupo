@@ -1,8 +1,10 @@
 /*---------------------------------------------------------------------------*\
   Water-gas shift reactor at 800 K, 1 bar.
       CO + water  <->  CO2 + H2
-  Equimolar feed.  Expected CO conversion ~ 60 % from independent
-  thermo-table calculation (Smith, Van Ness, Abbott Table 13.4).
+  Equimolar feed.  The Gibbs-minimisation reactor gives CO conversion
+  ~ 67 % (CO 0.50 -> 0.164 mole fraction at equilibrium; CO2 = H2 = 0.336),
+  consistent with the independent K(800 K) calculation in Smith, Van Ness,
+  Abbott (Table 13.4).
 \*---------------------------------------------------------------------------*/
 
 streams

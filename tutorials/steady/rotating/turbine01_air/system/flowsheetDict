@@ -3,7 +3,7 @@
   =============
 
   The mirror of compressor01.  Hot compressed air (10 bar, 900 K) drives
-  an adiabatic turbine; the shaft extracts 30 kW with isentropic
+  an adiabatic turbine; the shaft extracts 10 kW with isentropic
   efficiency 0.85.
 
   Hardware (the only things you specify):
@@ -11,16 +11,17 @@
       eta     =  0.85       isentropic efficiency
 
   Sizing note: at 1 mol/s and 900 K inlet, the enthalpy available
-  down to ambient bounds the extractable work to ~15 kW.  10 kW
-  expands the gas to ~1.25 bar (ratio ~8); asking for 30 kW would
-  drive the isentropic discharge below 0 K --- physically impossible,
-  and the solver says so.
+  down to ambient bounds the extractable work to ~15 kW.  The 10 kW
+  asked for here expands the gas to ~1.32 bar (ratio ~7.6); asking for
+  much more (e.g. 30 kW) would drive the isentropic discharge below 0 K
+  --- physically impossible, and the solver says so.
 
-  RESULTS the simulator computes:
-      P_out        the discharge pressure the gas expands to
-      T_out        the (real) exhaust temperature
-      ratio        P_in / P_out (expansion ratio)
-      W_generated  +30 kW (what the shaft delivers to the grid)
+  RESULTS the simulator computes (this run):
+      P_out        ~1.32 bar   the discharge pressure the gas expands to
+      T_out        ~583 K      the (real) exhaust temperature
+      T_out_isen   ~524 K      the ideal (isentropic) discharge T
+      ratio        ~7.59       P_in / P_out (expansion ratio)
+      W_generated  +10 kW      what the shaft delivers to the grid
 
   Per the credo, P_out is a RESULT.  If the turbine must exhaust at a
   fixed back-pressure (a condenser, the atmosphere), wrap the case in

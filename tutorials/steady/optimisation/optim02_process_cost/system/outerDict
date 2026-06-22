@@ -8,23 +8,35 @@
                           (credo-pure: hardware, not outlet T)
 
   Pedagogical note: this case uses only CAPEX (purchased + bare-module
-  + total-module cost via Guthrie correlations).  Without OPEX (energy
-  cost, raw-material throughput, by-product disposal), the optimum is
-  expected to drive both variables to their *lower* bounds — smaller
-  reactor cheaper, smaller temperature step cheaper.  The point of the
-  exercise is to verify:
+  + total-module cost via Guthrie correlations).  The optimum is NOT the
+  lower corner one might naively expect.  Nelder-Mead (8 moves) lands at:
+
+      reactor.V_R = 0.008070 m^3   (INTERIOR, not on a bound)
+      heater.Q    = 500 W          (driven hard to its UPPER bound)
+      objective   = 9.346728e+05 EUR
+
+  Why higher duty is cheaper here: the dominant cost is the heat exchanger
+  (~916 k of ~935 k total), whose area A = Q/(U*LMTD) = Q/6000 gives only
+  ~0.083 m^2 at Q = 500 W -- two orders of magnitude BELOW the Turton
+  correlation's valid range (A in [10, 1000] m^2).  In that extrapolated
+  tail the quadratic K3*(log10 A)^2 term makes a SMALLER area MORE
+  expensive, so the simplex pushes Q up to grow A and slide down the cost
+  curve.  This optimum is therefore partly an artifact of extrapolating the
+  HX correlation below Smin -- a deliberate teaching point: cost models bite
+  outside their validity range.  The exercise verifies:
 
       1. the OptimizationDriver wires correctly to the post-processing
          chain (sizing + costing) so that result.costs is populated
          before extracting the objective;
-      2. the Nelder-Mead simplex contracts cleanly against the active
-         box-constraint;
-      3. the student observes that CAPEX-only optimisation is degenerate
-         and that *interesting* trade-offs require operational cost
-         (utility + raw-material) terms — motivating the future
-         CostingModel extension to include OPEX.
+      2. the Nelder-Mead simplex contracts cleanly and parks one variable
+         on an active box-constraint (Q at its upper bound) while the other
+         lands in the interior -- a mixed optimum, not a degenerate corner;
+      3. the student reads the validity range off a cost correlation and
+         sees why OPEX terms (utility + raw-material) are needed for a
+         physically meaningful trade-off -- motivating a CostingModel OPEX
+         extension.
 
-  The case takes ~25 evaluations to converge with simplexInit 0.15.
+  The case converges in 8 simplex moves with simplexInit 0.15.
 \*---------------------------------------------------------------------------*/
 
 type    optimization;

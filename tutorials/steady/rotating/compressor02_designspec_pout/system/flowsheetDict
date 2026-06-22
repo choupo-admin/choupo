@@ -11,8 +11,9 @@
   This is the rotating-equipment analogue of sizing an evaporator's
   area to hit a product concentration.
 
-  Converges to W_shaft ~ 9.1 kW (slightly below compressor01's 10 kW,
-  which over-shot to 8.9 bar).
+  Converges to W_shaft ~ 9.36 kW (slightly below compressor01's 10 kW,
+  which over-shot to 8.90 bar).  At the solution T_out ~ 612 K (339 degC)
+  and W_isen ~ 7.02 kW (eta * W_shaft, eta = 0.75).
 \*---------------------------------------------------------------------------*/
 
 variables

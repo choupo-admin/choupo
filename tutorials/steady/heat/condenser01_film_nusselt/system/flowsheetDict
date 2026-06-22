@@ -17,7 +17,13 @@
 
       steam (saturated vapour, 1 bar, vf = 1)
         -> condenser (model geometry: NusseltFilm + cooling-water film)
-        -> condensate (saturated / wet liquid)   + Q (RESULT)
+        -> condensate (two-phase, vf ~ 0.53)   + Q (RESULT)
+
+  PARTIAL CONDENSATION: with this tube area the duty Q ~ -528 kW removes
+  only part of the latent heat, so the outlet is NOT fully condensed --- it
+  leaves at the dome as a wet two-phase stream, vf ~ 0.53 (about 47 % of the
+  vapour condensed) at Tsat.  Fully condensing it would need more area; here
+  the area is fixed and the outlet quality is the result.
 
   Method (glass-box):
     * h_cond : Nusselt film, horizontal tube, coefficient 0.729

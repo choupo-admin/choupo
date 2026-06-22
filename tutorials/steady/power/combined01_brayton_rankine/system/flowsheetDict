@@ -11,20 +11,24 @@
 
       Pre-mixed combustion air (N2/O2/CH4, 8 bar, 600 K)
         -> gibbsCombustor (T 1300 K, P 8 bar)
-        -> flueGasHot
+        -> flueGasHot      (8 bar, 1300 K)
         -> gasTurbine (-600 kW, eta 0.85)
-        -> gasTurbExhaust  (1.1 bar, ~880 K)
+        -> gasTurbExhaust  (~4.0 bar, ~1131 K)
         -> HRSG hot side ----- counter ----- HRSG cold side (steam)
-        -> gasFlueWarm                          ^
+        -> gasFlueWarm     (~4.0 bar, ~1051 K)   ^
                                                 |
                                           steamFeed (5 bar, 400 K)
                                                 |
                                                 v
-                                        heatedSteam (~700 K)
+                                        heatedSteam (5 bar, ~1131 K)
                                                 v
                                         steamTurbine (-50 kW, eta 0.85)
                                                 v
-                                        steamExhaust  -> steamCooler -> condensate
+                                        steamExhaust (~2.6 bar, ~1011 K)
+                                                -> steamCooler -> condensate
+
+  (T/P annotations above are this run's results; gas-only Rankine has no
+   phase change, so the steam side heats to nearly the gas-exhaust T.)
 
   Shaft routing (the v0.0.44 electricLoad unit):
       gasTurbine.shaft   --wire-->   gasGenerator (electricLoad, eta 0.97)

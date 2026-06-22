@@ -1,6 +1,15 @@
 /* recovery (LEAF) -- distillation that recovers the ethanol antisolvent.
    Its OWN model lives here: NRTL (ethanol-water azeotrope), overriding the
-   plant eNRTL.  Its OWN pair data lives in recovery/constant/binaryPairs/. */
+   plant eNRTL.  Its OWN pair data lives in recovery/constant/binaryPairs/.
+
+   HONEST NOTE ON THE NAME: the `recoveredEthanol` distillate is NOT pure
+   ethanol.  At 1 atm the ethanol-water minimum-boiling azeotrope (~89 mol%
+   ethanol) caps the top purity, so this stream is recovered at ~81 mol%
+   ethanol / ~19 mol% water in the converged plant -- an "ethanol-rich"
+   antisolvent recycle, not anhydrous ethanol.  That is exactly the point of
+   using NRTL here: a simple ideal model would falsely predict you can
+   distil to pure ethanol.  Breaking the azeotrope would need an extra step
+   (molecular sieve, pressure swing, entrainer) not modelled in this case. */
 type        distillationColumn;
 model       simultaneous;
 operation   { nStages 20;  feedStage 10;  refluxRatio 2.0;  distillateRate 85 kmol/h;  feedQuality 1.0;  P 1.01325 bar; }

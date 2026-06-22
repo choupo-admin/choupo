@@ -11,9 +11,14 @@
 
   Pedagogical point: for a project using water transport in a non-trivial
   T window (e.g. 25-90 °C for a heated reactor), the student should know
-  WHICH correlation he is committing to.  This case shows the disagreement
-  is small at room T (~3 %) but grows at higher T (~10 % at 360 K).
-  Validate against the textbook value: µ_water @ 298 K ≈ 8.9 × 10⁻⁴ Pa·s.
+  WHICH correlation he is committing to.  Both correlations give viscosity
+  FALLING with temperature (the physical trend): ~1.3-1.4 mPa·s near 280 K
+  down to ~0.32 mPa·s at 360 K.  This case shows the two models disagree
+  MOST at the cold end (~6 % at 280 K), are within ~2 % at room T, and
+  agree BEST at the hot end (~1 % at 360 K) --- the 2-parameter Andrade fit
+  drifts where it is extrapolated coolest.  Validate against the textbook
+  value: µ_water @ 298 K ≈ 8.9 × 10⁻⁴ Pa·s --- Vogel reads 8.93 × 10⁻⁴
+  (essentially on it), Andrade 9.09 × 10⁻⁴ (~2 % high).
 \*---------------------------------------------------------------------------*/
 
 operations

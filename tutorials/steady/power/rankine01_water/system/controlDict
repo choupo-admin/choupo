@@ -1,5 +1,5 @@
 application   choupoSolve;
-description   "Rankine steam cycle: pump -> boiler -> turbine -> condenser";
+description   "Simplified gas-phase Rankine: superheated steam -> turbine (-10 kW) -> cooler (gas-only, no phase change)";
 
 verbosity     3;
 

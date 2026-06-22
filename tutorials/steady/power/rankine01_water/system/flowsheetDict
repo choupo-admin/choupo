@@ -14,25 +14,33 @@
 
   For the closed Rankine demonstration here:
 
-      feedSteam (superheated, 5 bar, 800 K)
-        -> steamTurbine (-300 kW, eta 0.85)  : expand to 0.5 bar
-        -> cooler        (heater, Q < 0)      : pre-cool the exhaust
-        -> exhaust (vapour, 0.5 bar, ~350 K)
+      feedSteam (superheated, 5 bar, 800 K, 1 mol/s)
+        -> steamTurbine (W_shaft -10 kW, eta 0.85)
+        -> exhaust (vapour, ~0.53 bar, ~531 K)
+        -> cooler (heater, Q -8 kW)
 
   Shaft routing (the new electricLoad unit, v0.0.44):
       steamTurbine.shaft  ----wire---->  generator (electricLoad, eta 0.97)
 
-  Hand check:
-    1 mol/s of steam, ideal-gas Cp ~ 35 J/(mol·K)
-    Turbine extracts 300 kW => 300000 / 35 ~ 8570 K isen drop?  No,
-    that's absurd; the actual w_isen = 300000 / 0.85 = 353 kJ/mol;
-    means T drop ~ 353000 / 35 ~ 10 K... isentropic expansion ratio
-    (P_out / P_in)^((gamma-1)/gamma) needs gamma ~ 1.32 for steam,
-    ratio (T2/T1) = (P2/P1)^0.24, with P_ratio = 0.1, T_ratio ~ 0.575
-    => T2_isen ~ 800 * 0.575 ~ 460 K; w_isen = 35 * (800-460) ~ 11.9 kJ/mol
-    => W_isen at 1 mol/s = 11.9 kW => W_real = 0.85 * 11.9 = 10.1 kW.
-    Specifying 300 kW for turbine is OVER-spec for these conditions ---
-    the solver will infer the necessary expansion ratio.
+  What the turbine produces (this run):
+      W_generated  = 10 kW          (the shaft delivers this; W_isen
+                                      would be 11.765 kW at eta = 1)
+      P_out        = 0.528 bar       (a RESULT --- the gas expands here)
+      T_out        = 530.9 K (258 degC)
+      T_out_isen   = 480.9 K         (ideal isentropic discharge)
+      expansion ratio = 9.47
+
+  W_shaft = -10 kW is the realistic specification for 1 mol/s of steam at
+  this 5 -> ~0.5 bar expansion (an early draft over-specified -300 kW,
+  which would have demanded a physically absurd expansion).
+
+  KNOWN ISSUE (this case aborts at the cooler --- leave it for the
+  multi-phase fix): the turbine exhaust at 0.528 bar has Tsat = 355.5 K,
+  so cooling it with Q = -8 kW drives T_out to ~300 K, crossing the
+  saturation dome.  A sensible-only `heater` cannot cross the dome and
+  the solver correctly refuses (it asks for a phaseChanger/condenser).
+  Closing this leg needs the multi-phase Boiler/Condenser unit op on the
+  v0.0.45 roadmap; until then the case stops at the cooler by design.
 \*---------------------------------------------------------------------------*/
 
 variables

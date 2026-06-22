@@ -1,4 +1,4 @@
 application   choupoSolve;
-description   "Adiabatic gas turbine: extract 30 kW from hot air, eta 0.85 --- P_out / T_out are RESULTS";
+description   "Adiabatic gas turbine: extract 10 kW from hot air, eta 0.85 --- P_out / T_out are RESULTS";
 
 verbosity     3;

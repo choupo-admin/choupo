@@ -8,17 +8,23 @@
   pretty Z curves of one EoS at a time.
 
   System: pure CO2 at T = 310 K (just above its critical temperature
-  Tc = 304.13 K), pressure swept from 1 bar to 100 bar.  Near-critical
-  CO2 is where cubic EoS fail in characteristic ways:
+  Tc = 304.13 K), pressure swept from 1 bar to 100 bar.  Near the
+  critical pressure (Pc = 7.38 MPa) the compressibility plunges as the
+  fluid turns liquid-like; the three curves read (at P = 73.7 bar, the
+  swept point nearest Pc):
 
-    * idealGas: Z = 1 always (textbook reference).
-    * SRK     : ~0.75 around the critical pressure (under-predicts liquid-
-                 like density, but better than ideal).
-    * PR      : ~0.72 around the critical pressure, also a published value;
-                 systematically lower Z than SRK (more attraction).
-    * NIST    : the *experimental* value near the critical point is ~0.49
-                 (both cubics fundamentally too high --- the well-known
-                 limitation of cubics right at Tc).
+    * idealGas: Z = 1 always (textbook reference; ignores attraction).
+    * SRK     : Z = 0.538 at Pc.
+    * PR      : Z = 0.509 at Pc --- systematically lower than SRK (more
+                 attraction), and essentially on the experimental value.
+    * NIST    : the *experimental* Z near the critical point is ~0.49.
+
+  The lesson: at and just above Tc, BOTH cubics track CO2 well --- PR sits
+  almost exactly on the ~0.49 datum and SRK is only ~0.05 high.  This is
+  a regime where cubic EoS are at their best, not their worst.  Both Z
+  curves keep falling past Pc to a shallow minimum (SRK ~0.30, PR ~0.275
+  near 98 bar) before rising again; the SRK-vs-PR gap is the diagnostic a
+  student should read off the overlay.
 
   Each operation overrides the global thermoPackage with a different EoS
   via the `thermo {}` per-op block.  The three CSVs are independent, so
