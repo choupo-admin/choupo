@@ -1,0 +1,1 @@
+golden-fail: the sprayDryer drying regression (H2) plus a stale golden byte-identical to v1's despite a different topology; re-record from v2's OWN correct run after the op is fixed. See TUTORIAL-QA-2026-06-22.md (H2, H7).

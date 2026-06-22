@@ -1,0 +1,1 @@
+golden-fail: DryerVapour.F = 0.001554 vs golden 0.002113 (~26% off) -- the H2 spray-dryer drying regression; re-record from a correct run after the sprayDryer op is fixed. See TUTORIAL-QA-2026-06-22.md (H2, H7).

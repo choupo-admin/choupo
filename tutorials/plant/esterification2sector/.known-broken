@@ -1,0 +1,1 @@
+founder-WIP: SEPARATION/flash has a bare pressure scalar (P 1.01325; parsed as ~0 Pa) so K-values explode and the flash sends 100% to vapour; REACTION/reactor is unwired (no boundary). Needs P 1.01325 bar + wiring. See TUTORIAL-QA-2026-06-22.md (H5).
