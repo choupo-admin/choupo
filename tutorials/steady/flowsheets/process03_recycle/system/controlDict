@@ -3,6 +3,6 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description   "Recycle loop with Wegstein acceleration on the tear stream";
+description   "Recycle loop: the tear stream is solved by Newton (5 iters, |r|2~5e-6)";
 
 verbosity     3;

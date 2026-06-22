@@ -1,3 +1,3 @@
 application   choupoProps;
-description   "THE FLAGSHIP: Davies vs Pitzer-HMW on a standard-seawater RO concentrate, recovery scanned r = 0 -> 0.80 (I climbs ~0.7 -> ~3.5 mol/kg). The SAME feed runs TWICE via two scalingScan ops -- activityModel davies; and activityModel pitzer; -- so the gypsum/calcite SI curves, the per-ion gamma_Ca2+ / gamma_SO4-2 mechanism, and the recovery-at-gypsum-onset all FORK visibly past I ~ 1. Davies is announced-untrustworthy beyond I ~ 0.5; Pitzer (HMW, valid to I ~ 6 for seawater, credentialed by pitzer_seawater_verify + pitzer_calcite_brine) is the quantitative answer. The engineering decision -- at what recovery does gypsum scale? -- flips on the activity model.";
+description   "Davies vs Pitzer-HMW on a seawater RO concentrate: gypsum/calcite SI vs recovery from the same feed under two activity models (full narrative in propsDict).";
 verbosity     3;

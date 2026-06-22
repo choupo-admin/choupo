@@ -6,6 +6,15 @@
   by name from data/standards/electrolyte/NaCl.dat (cited: Pitzer & Mayorga
   1973).  Open pitzer_nacl.csv: gamma_pm dips to ~0.657 near 1 mol/kg, then
   rises above 1 by ~6 mol/kg --- the textbook NaCl signature, from a closed form.
+
+  NOTE on the two L_phi columns: pitzer_nacl.csv reports L_phi_fit and
+  L_phi_anchored, and they are IDENTICAL in every row.  That is illustrative,
+  not a coincidence: the relative apparent molar enthalpy L_phi here is
+  derived from the same anchored tau(T) and is calorimetrically UNCALIBRATED
+  (no separate fit to heat-of-dilution data yet), so the "fit" column simply
+  reproduces the "anchored" one.  Calibrating L_phi against Parker, NSRDS-NBS 2
+  (1965) is the intended next step; until then treat the two columns as one.
+  The gamma_pm / phi / a_w values are physically sound and need no caveat.
 \*---------------------------------------------------------------------------*/
 operations
 (

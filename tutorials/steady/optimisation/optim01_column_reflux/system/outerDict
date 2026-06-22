@@ -13,9 +13,17 @@
   R rises but V grows with R via V = (R+1)·D); the trade-off is the
   product purity floor.  In this tutorial we do not impose a purity
   constraint — the student observes that, without it, Nelder-Mead
-  drives R to the floor and feedStage toward the middle of the
-  column.  A purity constraint would require a penalty term added to
-  the objective (left as an exercise / future v0.18 SQP wrapper).
+  drives R to the floor (R = 3, V_strip = 0.0556 kmol/s).
+
+  IMPORTANT — feedStage is an INACTIVE variable here.  With D fixed by
+  the spec, the objective V_strip = (R+1)·D depends ONLY on R; feedStage
+  does NOT enter it, so the simplex never converges feedStage to anything
+  meaningful — it simply FLOATS (it drifts to ~9.8 in this run with no
+  effect on fBest).  It is kept in the variable list to show that an
+  optimiser will happily carry a variable the objective is insensitive
+  to.  To make feedStage matter you would add a purity-penalty term to
+  the objective (so the feed location changes the achievable purity) —
+  left as an exercise / future v0.18 SQP wrapper.
 \*---------------------------------------------------------------------------*/
 
 type    optimization;

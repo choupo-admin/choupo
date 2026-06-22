@@ -32,7 +32,7 @@ When the simulator builds the NRTL model and discovers there are no
 inline pairs in `thermoPackage`, it falls back to file lookup:
 
 1. **Case-local** -- `<case>/constant/binaryPairs/NRTL/ethanol-water.dat` ← used here
-2. **Standards**  -- `$OPE_HOME/data/standards/binaryPairs/NRTL/ethanol-water.dat`
+2. **Standards**  -- `$CHOUPO_HOME/data/standards/binaryPairs/NRTL/ethanol-water.dat`
 
 In this case the local file exists, so it wins. If you delete the local
 file, the run still succeeds because the standards file is the same
@@ -41,8 +41,8 @@ DECHEMA set.
 ## Running
 
 ```bash
-runCase tutorials/process04_research_workflow
-less  tutorials/process04_research_workflow/log.choupoSolve
+runCase tutorials/steady/flowsheets/process04_research_workflow
+less  tutorials/steady/flowsheets/process04_research_workflow/log.choupoSolve
 ```
 
 The result is numerically identical to `flash02_ethanol_water` (same
@@ -50,13 +50,14 @@ NRTL parameters; just a different way of supplying them).
 
 ## What this prepares you for
 
-The next step is the parameter-estimation workflow:
+The next step is the parameter-estimation workflow -- fitting those NRTL
+parameters to experimental VLE data instead of inheriting them:
 
 ```bash
-./choupoSolve tutorials/fitNRTL01_ethanol_water
+runCase tutorials/steady/optimisation/fitNRTL01_ethanol_water
 ```
 
-That tutorial drives the `fitBinaryPair` outer driver: hand-rolled
+That tutorial fits the ethanol-water NRTL pair by hand-rolled
 Levenberg-Marquardt against experimental VLE data, with the inner
 simulator pass providing T_bubble per data row.  A proposal is written
 to
@@ -69,3 +70,8 @@ The proposal is dormant until you do
        constant/binaryPairs/NRTL/ethanol-water.dat
 
 That's the "promote" step. Human decides, never the simulator silently.
+
+> Note: the canonical estimation engine going forward is `fitParameters`
+> under `choupoProps` (a property-level fit with the same propose-then-promote
+> discipline); the standalone `fitBinaryPair` outer driver used by the
+> fitNRTL01 case is being retired in its favour.

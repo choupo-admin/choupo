@@ -61,13 +61,16 @@ Four keywords (plus optional `maxIter`, `tolerance`, `fdStep`,
 ## Running
 
 ```bash
-runCase tutorials/fitNRTL01_ethanol_water
-less   tutorials/fitNRTL01_ethanol_water/log.choupoSolve
+runCase tutorials/steady/optimisation/fitNRTL01_ethanol_water
+less   tutorials/steady/optimisation/fitNRTL01_ethanol_water/log.choupoSolve
 ```
 
 ## Reading the output
 
-After the run header you get:
+After the run header you get (the iteration trace below is **illustrative** --
+it shows the SHAPE of an LM run, accept/reject and λ adaptation; the actual run
+converges to **chi² = 1.0426, RMS = 0.3079 K** with fitted a_ij = 9.328,
+b_ij = -3609.18):
 
 ```
 =========================  fitBinaryPair  =========================
@@ -105,21 +108,29 @@ And finally the proposal-file location:
   proposal written to: constant/binaryPairs/NRTL/ethanol-water.fit-2026-05-16.dat
 ```
 
+The fitted pair (a_ij = 9.33, b_ij = -3609 K) lands well away from the DECHEMA
+initials (a_ij = -0.80, b_ij = 246 K). That is expected for an isobaric
+1-atm-only fit on 11 points -- a_ij and b_ij of one direction are strongly
+correlated (you trade a constant against a 1/T slope over a narrow T span), so
+many (a, b) combinations give a near-identical T_bubble fit. Judge the fit by
+the RMS (0.31 K, excellent) AND by the identifiability diagnostics, not by how
+close the parameters sit to the literature values.
+
 ## Promoting a fit (the "human-in-the-loop" step)
 
 The simulator **never** silently overwrites the active parameter set.
 Promote a proposal explicitly:
 
 ```bash
-cd tutorials/fitNRTL01_ethanol_water/constant/binaryPairs/NRTL
-diff ethanol-water.fit-2026-05-16.dat ../../../../../data/standards/binaryPairs/NRTL/ethanol-water.dat
+cd tutorials/steady/optimisation/fitNRTL01_ethanol_water/constant/binaryPairs/NRTL
+diff ethanol-water.fit-2026-05-16.dat "$CHOUPO_HOME/data/standards/binaryPairs/NRTL/ethanol-water.dat"
 mv ethanol-water.fit-2026-05-16.dat ethanol-water.dat
 ```
 
 Once an unsuffixed `ethanol-water.dat` exists in the case-local
 `constant/binaryPairs/NRTL/`, the next run uses it — the case-local
 file wins over the standards file (see
-`tutorials/process04_research_workflow/README.md` for the lookup-order
+`tutorials/steady/flowsheets/process04_research_workflow/README.md` for the lookup-order
 pattern).
 
 ## Things to try

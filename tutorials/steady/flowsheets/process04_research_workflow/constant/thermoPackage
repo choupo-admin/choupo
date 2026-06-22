@@ -6,7 +6,7 @@
 
       1. inline `pairs ( ... )` in this dict           --  not present
       2. <case>/constant/binaryPairs/NRTL/ethanol-water.dat  --  PRESENT
-      3. $OPE_HOME/data/standards/binaryPairs/NRTL/ethanol-water.dat
+      3. $CHOUPO_HOME/data/standards/binaryPairs/NRTL/ethanol-water.dat
 
 The case-local file wins. Open it to see the parameters this case uses.
 \*---------------------------------------------------------------------------*/

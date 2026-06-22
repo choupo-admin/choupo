@@ -3,8 +3,9 @@
 
   Water + 1-butanol at 25 °C.  This system has a well-known liquid-liquid
   miscibility gap below 125.5 °C (upper critical solution temperature).
-  Equimolar feed → splits into a water-rich phase (~95 % water) and a
-  butanol-rich phase (~50 % water).
+  A 70/30 water/nButanol feed (inside the gap) → splits into a water-rich
+  (aqueous) phase ~98 mol% water and a butanol-rich (organic) phase
+  ~59 mol% nButanol / 41 mol% water.
 
   Demonstrates:
     * `phases (...)` syntax with TWO liquid phases

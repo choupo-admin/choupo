@@ -1,3 +1,16 @@
+/*  ILLUSTRATIVE / SYNTHETIC DATA.  compA / compB / compC are NOT real
+    species: they are artificial components (case-local constant/components/
+    + inline NRTL pairs in thermoPackage) deliberately tuned to guarantee a
+    ternary VLLE region, so this case exercises the propertyScanTernary
+    classifier on a known-3-phase map.  Architecture (see thermoPackage):
+    A and B mutually immiscible (LL gap on the A-B axis), C a volatile bridge
+    soluble in both liquids.  At 350 K, 1 bar the equimolar feed gives
+    vapour rich in C, L_alpha rich in A, L_beta rich in B.
+
+    Expected map (14 intervals/edge, 78 nodes): VLLE 36, LL 29, VL 0,
+    1-phase 13, 22 tie-lines, 0 failures.  The point to SEE: a healthy
+    spread of 3-phase (VLLE) and LL nodes with zero solver failures —
+    the classifier resolves the engineered gap node-by-node. */
 operations
 (
     {

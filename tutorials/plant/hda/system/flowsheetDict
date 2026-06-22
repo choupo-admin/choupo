@@ -18,10 +18,13 @@
   Everything is at 35 bar so the recycles return at reactor pressure (the Mixer
   takes min-P).  The furnace is lumped into the isothermal reactor (operation.T
   900 K) -- the engine's heater is duty-specified, not T-target.  The benzene
-  product carries a few % light ends: the trace H2/CH4 in the flash liquid are
-  non-keys lighter than benzene, so the FUG shortcut sends them to the distillate
-  (quantitatively approximate; the shortcut needs no rigorous liquid enthalpy, so
-  unlike a Wang-Henke column it does not choke on a gas in the liquid).
+  product is ~89 mol% benzene but carries a non-trivial ~10% CH4 (plus ~0.2% H2
+  and ~0.3% toluene): the light non-keys dissolved in the flash liquid are
+  lighter than benzene, so the FUG shortcut sends them all to the distillate.
+  A real plant would put a stabiliser / light-ends column upstream of the
+  product spec to strip that ~10% methane; the shortcut here is quantitatively
+  approximate (it needs no rigorous liquid enthalpy, so unlike a Wang-Henke
+  column it does not choke on a gas in the liquid).
 \*---------------------------------------------------------------------------*/
 
 units

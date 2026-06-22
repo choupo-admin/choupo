@@ -36,10 +36,16 @@
   recorded, bulk + wall.
 
   THE STORY (locked by the golden master):
-    - module 1, low concentrate I: LSI(wall) and the rigorous SI_calcite(wall)
-      AGREE to within a few hundredths -- the index is VALIDATED at low I;
-    - the deepest module, high wall I: LSI(wall) over-predicts the rigorous
-      activity SI_calcite(wall) by a visible margin -- the gap (LSI - SI)
+    - This is already a SEAWATER concentrate (bulk I ~ 0.68 mol/kg at module 1,
+      far above the I -> 0 regime where LSI == SI), so the empirical index
+      OVER-PREDICTS calcite saturation at EVERY module, including the first:
+      at module 1 LSI(wall) = +0.98 vs rigorous SI_calcite(wall) = +0.20
+      (gap ~ 0.78); LSI(bulk) = +0.56 vs SI(bulk) = -0.28 (gap ~ 0.84).  At
+      this ionic strength there is no point where index and activity-SI agree
+      to hundredths -- to SEE that limit you must drop to a brackish / low-I
+      feed (the index family is only validated there).
+    - the gap widens further into the vessel: at the deepest module LSI(wall)
+      over-predicts the rigorous SI_calcite(wall) by ~ 0.78 -- the gap (LSI - SI)
       printed in the audit footer is the headline number.  Stiff-Davis pulls
       PART of the way back toward the rigorous SI (its empirical brine K), but
       not all the way -- it is still a chart fit, not the real gammas.

@@ -18,6 +18,12 @@ engine; HERE your job is this case.
   (the unit op reads it).  Say what you changed; the change is a visible dict diff.
 
 ## Intent (this case) -- keep this updated as the project develops
-- **Goal:** <what this case is for>
-- **Decisions + why:** <e.g. NRTL for ethanol-water because ideal misses the azeotrope>
-- **Pending / in curation:** <what is still open>
+- **Goal:** The canonical "SEE, then DECIDE" props case. Ethanol/water T-x-y at
+  1 atm with two model curves (ideal Raoult vs NRTL) overlaid on the measured
+  VLE data, so the student picks the model from evidence, not from a badge.
+- **Decisions + why:** NRTL for ethanol-water because the ideal (Raoult) model
+  draws a smooth lens with no azeotrope, while the run shows the real
+  minimum-boiling azeotrope at x ~ 0.88 ethanol / T ~ 351.3 K (~78.1 C);
+  the experimental points fall on the NRTL curve, not the ideal one.
+- **Pending / in curation:** none -- the three model scans (ideal, NRTL,
+  UNIFAC) and the experimental overlay all run; the lesson is the overlay.

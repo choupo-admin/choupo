@@ -6,11 +6,15 @@
   Coefficients live in data/standards/components/NH3.dat (PROVISIONAL — a
   2-point Andrade fit; see that file's provenance block).
 
-  Validation anchor: mu_NH3(liquid) @ 239.85 K (normal b.p., -33.3 degC)
-  is approx 0.255 mPa.s.  The Andrade curve here should pass through that
-  point (the cross-check in NH3.dat).  Ammonia is liquid only under pressure
-  in this T window; viscosity_liquid is a pure-T correlation, so the state P
-  is immaterial to the value.
+  Validation anchor: mu_NH3(liquid) @ 239.85 K (normal b.p., -33.3 degC) is
+  approx 0.255 mPa.s.  This 2-point PROVISIONAL Andrade fit gives ~0.277 mPa.s
+  at 240 K -- about 9% ABOVE the anchor, i.e. it does NOT yet pass through the
+  cross-check point.  That gap is the honest state of a provisional fit (see
+  the provenance block in NH3.dat); refitting against more low-T data would
+  close it.  Note this case scans a SINGLE method (Andrade) -- it is a
+  single-correlation curve, not a multi-method comparison.  Ammonia is liquid
+  only under pressure in this T window; viscosity_liquid is a pure-T
+  correlation, so the state P is immaterial to the value.
 \*---------------------------------------------------------------------------*/
 
 operations
