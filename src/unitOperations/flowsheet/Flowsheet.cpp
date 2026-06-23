@@ -701,11 +701,26 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
     for (const auto& child : children)
     {
         DictPtr cd;
-        const std::string folderDict = folderPath + child + "/system/flowsheetDict";
-        if (std::filesystem::exists(folderDict)) cd = Dictionary::fromFile(folderDict);
-        else if (dict->found(child))             cd = dict->subDict(child);
+        // DUAL-READER (fractal folder discipline).  A child node carries its
+        // flowsheetDict in one of two places, tried in this order:
+        //   (1) <child>/flowsheetDict        -- the LEAN layout: the dict rises
+        //       to the node root, no sparse per-node system/ wrapper, so each
+        //       branch is still an independently-runnable case (its dict + the
+        //       inherited constant/ + controlDict via the cascade).  This is the
+        //       ChemicalPlantTutorial pilot's layout.
+        //   (2) <child>/system/flowsheetDict -- the original layout, KEPT for
+        //       backwards-compat: the other fractal cases (esterification2sector,
+        //       twoSectorDemo) load UNCHANGED via this fallback.
+        // The two are never both present for a given node; if neither exists the
+        // child must be an inline block in the parent dict.
+        const std::string leanDict   = folderPath + child + "/flowsheetDict";
+        const std::string systemDict = folderPath + child + "/system/flowsheetDict";
+        if      (std::filesystem::exists(leanDict))   cd = Dictionary::fromFile(leanDict);
+        else if (std::filesystem::exists(systemDict)) cd = Dictionary::fromFile(systemDict);
+        else if (dict->found(child))                  cd = dict->subDict(child);
         else throw std::runtime_error("Flowsheet: child '" + child
-            + "' has neither a folder (" + folderDict + ") nor an inline block");
+            + "' has neither a folder (" + leanDict + " or " + systemDict
+            + ") nor an inline block");
 
         auto cb = cd->subDict("boundary");
         auto inlets = cb->lookupWordList("inlets");
@@ -2030,6 +2045,16 @@ int Flowsheet::solve(const DictPtr& dict,
                     solverDict_, reactionsDict_, dryingKineticsDict_, crystallisationDict_,
                     verbosity, unitIdx++, /*quiet=*/false);
         }
+        // Solution-directory tap for a TEAR-FREE flowsheet: there is no recycle
+        // loop, so the single pass IS the converged answer --- emit it as the
+        // lone instant 0 (pseudo-time 0, residual 0, converged).  This makes a
+        // feed-forward branch (e.g. CONCENTRATION run standalone: a double-effect
+        // evaporator + crystalliser, no recycle) write its own instant in place,
+        // exactly like a recycle case writes its march.  Empty `tears` => no
+        // tear flags, the per-branch bucketing still applies.
+        if (onInstant_)
+            onInstant_(0, "singlePass", 0.0, /*converged=*/true,
+                       streams_, tears, topology_);
     }
     // ===================  Recycle outer loop  ===========================
     else

@@ -310,7 +310,11 @@ void UtilityAllocationReport::run(const DictPtr& dict, const ReportContext& ctx)
         if (r.allocated) { byUtil[r.utility].first += r.kg_s; byUtil[r.utility].second += r.eur_h; }
 
     // ---- CSV --------------------------------------------------------------
-    std::ofstream csv(ctx.reportsDir / "utilityAllocation.csv");
+    //  Default layout: the file sits directly in reports/ (legacySub "");
+    //  postProcessing layout: postProcessing/utilityAllocation/<n>/.
+    const std::filesystem::path uaDir = ctx.outDir("utilityAllocation", "");
+    std::filesystem::create_directories(uaDir);
+    std::ofstream csv(uaDir / "utilityAllocation.csv");
     csv << "unit,port,duty_kW,process_T_K,tier,utility,massflow_kg_s,load_MW,cost_eur_h\n";
     for (const auto& r : rows)
         csv << r.unit << ',' << r.port << ',' << r.duty_kW << ',' << r.T << ',' << r.tier << ','

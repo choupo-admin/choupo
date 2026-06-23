@@ -69,7 +69,7 @@ void ProfilesReport::run(const DictPtr& dict, const ReportContext& ctx)
             nrows = std::max(nrows, prof.columns.at(c).size());
 
         const std::filesystem::path dir =
-            ctx.reportsDir / "unitOperations" / unit;
+            ctx.outDir("profiles", "unitOperations") / unit;
         std::filesystem::create_directories(dir);
 
         std::ofstream f(dir / "profile.csv");

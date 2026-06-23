@@ -118,7 +118,7 @@ void ComputedReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         rows.push_back({key, expr, unit, si, disp});
     }
 
-    const std::filesystem::path dir = ctx.reportsDir / "computed";
+    const std::filesystem::path dir = ctx.outDir("computed", "computed");
     std::filesystem::create_directories(dir);
     const std::filesystem::path path = dir / "values.csv";
     std::ofstream f(path);

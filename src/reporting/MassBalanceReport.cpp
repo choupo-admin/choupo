@@ -47,7 +47,7 @@ void MassBalanceReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     const auto& comps = ctx.result.componentNames;
     const std::size_t n = comps.size();
 
-    const std::filesystem::path dir = ctx.reportsDir / "balances";
+    const std::filesystem::path dir = ctx.outDir("massBalance", "balances");
     std::filesystem::create_directories(dir);
 
     // ---- Global per-component balance (feeds in, products out) ----------

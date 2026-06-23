@@ -49,7 +49,7 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
     };
 
     const auto& comps = ctx.result.componentNames;
-    const std::filesystem::path dir = ctx.reportsDir / "streams";
+    const std::filesystem::path dir = ctx.outDir("streamTable", "streams");
     std::filesystem::create_directories(dir);
     const std::filesystem::path path = dir / "streamTable.csv";
     std::ofstream f(path);

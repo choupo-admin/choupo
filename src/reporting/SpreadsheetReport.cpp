@@ -363,7 +363,11 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
         ++extraSheets;
     }
 
-    const std::filesystem::path path = ctx.reportsDir / outFile;
+    // Default layout: the .ods sits directly in reports/ (legacySub "");
+    // postProcessing layout: postProcessing/spreadsheet/<n>/<outFile>.
+    const std::filesystem::path sdir = ctx.outDir("spreadsheet", "");
+    std::filesystem::create_directories(sdir);
+    const std::filesystem::path path = sdir / outFile;
     ods.save(path.string());
 
     if (ctx.verbosity >= 2)

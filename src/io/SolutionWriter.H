@@ -53,13 +53,35 @@ Description
     exists.  An instant dir has neither, so the case runs correctly with
     `0/ 1/ 2/ 3/` sitting beside the sector folders.
 
-    THE PAYLOAD `<n>/streams`: a self-describing dict the engine's own tokenizer
+    PER-BRANCH instants (CHT-faithful, fractal).  The flowsheet is fractal: each
+    SECTOR (a top-level child of the plant) is an independently-analysable region.
+    So an instant is written PER BRANCH, like a conjugate-heat-transfer mesh
+    where each region carries its own field plus the boundary/interface faces it
+    shares with the neighbour region:
+
+      - `<n>/streams`            -- the PLANT view: the external boundary streams
+                                    (feeds + products) and the INTER-SECTOR
+                                    interface streams (a face whose two sides live
+                                    in different sectors).  Single-segment units
+                                    (a leaf at the plant root, e.g. JuiceSplitter)
+                                    are plant residents, so their streams live here.
+      - `<n>/<sector>/streams`   -- one BRANCH's view: every stream that TOUCHES a
+                                    unit in that sector (its internal flows + its
+                                    boundary faces).  An INTER-SECTOR stream
+                                    appears on BOTH sides (in sector A's streams as
+                                    its outlet, in sector B's streams as its inlet)
+                                    AND in the plant `<n>/streams` -- the interface
+                                    is represented PER BRANCH, never a hidden global
+                                    side-channel ("information follows the streams").
+
+    THE PAYLOAD `streams`: a self-describing dict the engine's own tokenizer
     reads back verbatim (never JSON/YAML).  A Choupo stream IS the flux between
     two units --- exactly OpenFOAM's surfaceScalarField `phi`: stored ONCE per
     face, shared by the two owner/neighbour cells (units).  The file holds the
-    FACE-FLUXES; a shared (internal) stream is written ONCE and projected into
-    both touching units' byUnit/ports.  Units are 0-D cells (no internalField).
-    The file carries:
+    FACE-FLUXES; a shared (internal) stream is written ONCE per branch that
+    touches it and projected into each touching unit's byUnit/ports.  Units are
+    0-D cells (no internalField).  Each `streams` file (plant + per-sector)
+    carries:
       - the header (pseudoTime/converged/tearResidual/tolerance);
       - a read-only `topology{}` echo (tearStreams + connections) so the
         instant is self-describing without re-parsing the flowsheetDict tree
@@ -70,11 +92,13 @@ Description
       - the lossless body: T/P/vf/H + per-species `molarFlows { name kmol/s; }`
         (so F and z reconstruct without a Sigma z = 1 renormalisation) + solids.
 
-    PER-UNIT PROJECTION `<n>/byUnit/<dotted.unit>/` (gated by `byUnit`, default
-    true): a relative symlink `streams -> ../../streams` (the SINGLE source) and
-    a generated `ports` dict (inlets/outlets, each with its global dotted key +
-    bc role).  A stream shared by two units appears in BOTH ports lists but is
-    stored ONCE in `streams` --- the internal-face invariant, by structure.
+    PER-UNIT PROJECTION `byUnit/<dotted.unit>/` (gated by `byUnit`, default true):
+    a relative symlink `streams -> ../../streams` (the SINGLE source within that
+    branch) and a generated `ports` dict (inlets/outlets, each with its global
+    dotted key + bc role).  Each unit's projection lives UNDER ITS SECTOR
+    (`<n>/<sector>/byUnit/<unit>/`); a plant-root leaf's projection lives at
+    `<n>/byUnit/<unit>/`.  A stream shared by two units in the SAME sector appears
+    in BOTH ports lists but is stored ONCE in that sector's `streams`.
 
     DURABILITY (gated by `flushEach`, UNCHANGED from Slice 0): each instant is
     written to `<caseRoot>/.tmp_<it>/` (the streams payload + byUnit/ tree),
@@ -208,19 +232,52 @@ private:
 
     static const char* bcWord(Bc bc);
 
+    // The SECTOR a dotted unit name belongs to: the FIRST segment of a
+    // multi-segment name (`CONCENTRATION.Cryst` -> `CONCENTRATION`).  A
+    // single-segment name (`JuiceSplitter`) is a plant-root resident and has
+    // NO sector --- returns "" (it lives in the plant `<n>/streams`).
+    static std::string sectorOf(const std::string& dottedUnit);
+
+    // The set of sectors a STREAM touches: the sector of its producer (if any)
+    // plus the sector of every consumer.  A plant-root (single-segment) unit
+    // contributes "" (the plant level).  Built from the flattened units' ins/
+    // outs --- the engine's own connectivity, no new DOF logic.
+    std::set<std::string> sectorsTouching(
+        const std::string&             stream,
+        const std::vector<FlatUnit>&   units) const;
+
     // Render one stream as a parser-valid dict sub-block (text).
     std::string renderStream(const std::string&   name,
                              const ProcessStream&  s,
                              Bc                    bc) const;
 
-    // Render the read-only topology{} echo (tearStreams + connections).
+    // Render the read-only topology{} echo (tearStreams + connections),
+    // restricted to the units in `units` (so a per-sector instant echoes only
+    // that branch's slice of the mesh).
     std::string renderTopology(const std::vector<FlatUnit>&     units,
                                const std::vector<std::string>&  tears) const;
 
-    // Write the per-unit byUnit/<unit>/ projection under `instTmpDir`: one
-    // relative `streams -> ../../streams` symlink + a generated `ports` dict.
-    void writeByUnit(const std::string&                  instTmpDir,
-                     const std::vector<FlatUnit>&        units,
+    // Write ONE `streams` payload (header + topology{} echo + the streams whose
+    // names are in `keep`) to `dir/streams`, plus (if byUnit) the per-unit
+    // byUnit/<unit>/ projection for the units in `viewUnits`.  `dir` is a tmp
+    // directory that will be atomically published with the rest of the instant.
+    // `label` names the view ("plant" or a sector) for the header.  Returns
+    // false on a bad write (disk full / I/O error) so the caller can DISCARD
+    // the whole tmp instant rather than publish a partial one (D5).
+    bool writeStreamsFileChecked(const std::string&                          dir,
+                                 const std::string&                          label,
+                                 const SolutionInstantMeta&                  meta,
+                                 const std::map<std::string, ProcessStream>& streams,
+                                 const std::set<std::string>&                keep,
+                                 const std::vector<FlatUnit>&                viewUnits,
+                                 const std::vector<std::string>&             tears,
+                                 const std::map<std::string, Bc>&            roles) const;
+
+    // Write the per-unit byUnit/<unit>/ projection under `baseDir` (for the
+    // units in `viewUnits`): one relative `streams -> ../../streams` symlink +
+    // a generated `ports` dict.
+    void writeByUnit(const std::string&                  baseDir,
+                     const std::vector<FlatUnit>&        viewUnits,
                      const std::map<std::string, Bc>&    roles) const;
 
     void refreshLatestSymlink(int iteration) const;

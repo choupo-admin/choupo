@@ -45,7 +45,7 @@ void DesignReport::run(const DictPtr& dict, const ReportContext& ctx)
     auto sizer = PostProcessor::New("sizing", dict);
     sizer->run(ctx.result);
 
-    const std::filesystem::path dir = ctx.reportsDir / "design";
+    const std::filesystem::path dir = ctx.outDir("design", "design");
     std::filesystem::create_directories(dir);
     const std::filesystem::path path = dir / "sizing.csv";
     std::ofstream f(path);

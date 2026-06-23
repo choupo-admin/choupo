@@ -37,7 +37,7 @@ namespace Choupo {
 
 void EnergyStreamsReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
 {
-    const std::filesystem::path dir = ctx.reportsDir / "utilities";
+    const std::filesystem::path dir = ctx.outDir("energyStreams", "utilities");
     std::filesystem::create_directories(dir);
     const std::filesystem::path path = dir / "energyStreams.csv";
 

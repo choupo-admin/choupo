@@ -31,6 +31,11 @@ src/**/*.d
 tutorials/*/*/reports/
 # fractal plants nest sectors/units arbitrarily deep -> ignore reports/ at any depth
 tutorials/**/reports/
+# postProcessing/ is the CHT-faithful report tree (controlDict
+# `reportsLayout postProcessing;`): postProcessing/<report>/<instant>/...
+# Generated output, same status as reports/ -- ignore at any depth.
+tutorials/**/postProcessing/
+**/postProcessing/
 # Solution instants are run output (OpenFOAM-style per-iteration stream
 # snapshots, controlDict solutionControl{} block).  FAITHFUL to OpenFOAM, an
 # instant is a NUMBERED TIME DIRECTORY at the case root (0/ 1/ 2/ ... next to

@@ -44,7 +44,7 @@ void EconomicsReport::run(const DictPtr& dict, const ReportContext& ctx)
     auto coster = PostProcessor::New("costing", dict);
     coster->run(ctx.result);
 
-    const std::filesystem::path dir = ctx.reportsDir / "economics";
+    const std::filesystem::path dir = ctx.outDir("economics", "economics");
     std::filesystem::create_directories(dir);
     const std::filesystem::path path = dir / "costs.csv";
     std::ofstream f(path);

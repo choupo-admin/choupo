@@ -89,6 +89,8 @@ Description
 #include "unitOperations/reactor/gibbsMethod/GibbsMethod.H"
 #include "unitOperations/flowsheet/Flowsheet.H"
 
+#include <algorithm>
+#include <cctype>
 #include <filesystem>
 #include <iostream>
 #include <map>
@@ -373,7 +375,20 @@ try
         return rel;   // fall back to the local path (fromFile reports the error)
     };
 
-    auto flowsheetDict = Dictionary::fromFile("system/flowsheetDict");
+    // DUAL-READER (fractal folder discipline, mirrors Flowsheet's child loader).
+    // A case's flowsheetDict is in one of two places, tried in order:
+    //   (1) <caseRoot>/flowsheetDict        -- the LEAN layout (the dict at the
+    //       node root, no sparse system/ wrapper).  A branch of a fractal plant
+    //       (e.g. .../ChemicalPlantTutorial/CONCENTRATION) is then itself a
+    //       runnable case: open it directly and it solves with its own frozen
+    //       inlets, writing its OWN instants in place.
+    //   (2) <caseRoot>/system/flowsheetDict -- the original layout, KEPT for
+    //       backwards-compat (every flat tutorial + the composite ROOTs).
+    // The flowsheetDict is NEVER inherited from a parent (it IS the node), so
+    // there is no resolveUp here -- only this local two-place lookup.
+    const std::string flowsheetPath =
+        fs::exists("flowsheetDict") ? "flowsheetDict" : "system/flowsheetDict";
+    auto flowsheetDict = Dictionary::fromFile(flowsheetPath);
     auto controlDict   = Dictionary::fromFile(resolveUp("system/controlDict"));
     auto thermoDict    = Dictionary::fromFile(resolveUp("constant/thermoPackage"));
 
@@ -417,10 +432,19 @@ try
 
     // controlDict `reports {... }` block: chemical-engineering
     // report objects (streamTable, massBalance, energyBalance,...) that
-    // write CSV into the case's reports/ directory after a converged solve.
+    // write CSV into the case's report directory after a converged solve.
     DictPtr reportsDict;
     if (controlDict->found("reports"))
         reportsDict = controlDict->subDict("reports");
+
+    // Report-output layout.  DEFAULT `reports` => the original `reports/<kind>/`
+    // tree (every existing case keeps it unchanged).  Opt-in
+    // `reportsLayout postProcessing;` (the fractal-discipline pilot) => the
+    // CHT-faithful `postProcessing/<n>/<kind>/` tree, where <n> is the solved
+    // instant (the converged pseudo-time).  This keeps the derived reports OUT
+    // of the way of the instant `streams` field files and gitignores cleanly.
+    const std::string reportsLayout =
+        controlDict->lookupWordOrDefault("reportsLayout", "reports");
 
     // controlDict `solutionControl {... }` block (OpenFOAM-style solution
     // directory).  ABSENT => the feature is OFF and the run is byte-identical
@@ -501,10 +525,32 @@ try
         if (!reportsDict || !result.converged) return;
         ThermoPackage thermoForReports;
         thermoForReports.readFromDict(thermoDict, db);
-        const fs::path reportsDir = fs::current_path() / "reports";
+        const bool postProc = (reportsLayout == "postProcessing");
+        const fs::path reportsDir =
+            fs::current_path() / (postProc ? "postProcessing" : "reports");
         fs::create_directories(reportsDir);
+        // The solved instant <n> for the postProcessing/<report>/<n>/ tree:
+        // the highest-numbered instant dir at the case root (the converged
+        // pseudo-time), or 0 when solutionControl wrote no instants.
+        int instant = 0;
+        if (postProc)
+        {
+            std::error_code ec;
+            for (const auto& e : fs::directory_iterator(fs::current_path(), ec))
+            {
+                if (!e.is_directory()) continue;
+                const std::string nm = e.path().filename().string();
+                if (nm.empty() || !std::all_of(nm.begin(), nm.end(),
+                        [](char c){ return std::isdigit(static_cast<unsigned char>(c)); }))
+                    continue;
+                if (!fs::exists(e.path() / "streams")) continue;
+                try { instant = std::max(instant, std::stoi(nm)); }
+                catch (const std::exception&) {}
+            }
+        }
         ReportContext rctx{
-            result, thermoForReports, flowsheetDict, reportsDir, verbosity
+            result, thermoForReports, flowsheetDict, reportsDir, verbosity,
+            postProc, instant
         };
         if (verbosity >= 2)
             std::cout << "\nReports (-> " << reportsDir.string() << "):\n";

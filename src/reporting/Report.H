@@ -90,6 +90,32 @@ struct ReportContext
     DictPtr                  flowsheetDict;   // topology (units in/out)
     std::filesystem::path    reportsDir;      // case/reports/  (created)
     int                      verbosity = 3;
+
+    // ---- Output layout (fractal-discipline pilot) -------------------------
+    //  DEFAULT (postProcessing == false): the original `reports/<sub>/` tree;
+    //  every existing case keeps its exact paths (`reports/streams/...`,
+    //  `reports/balances/...`).  Opt-in (`reportsLayout postProcessing;` in
+    //  controlDict): the CHT-faithful `postProcessing/<report>/<instant>/`
+    //  tree (OpenFOAM functionObject convention), which keeps derived report
+    //  output OUT of the way of the instant `streams` field files --- so
+    //  "streams" stops being overloaded (the report's stream TABLE is now at
+    //  postProcessing/streamTable/<n>/streamTable.csv, never a `streams/` dir).
+    bool                     postProcessing = false;
+    int                      instant        = 0;   // the solved pseudo-time <n>
+
+    // Resolve a report's output directory.  `report` is the report's canonical
+    // name (e.g. "streamTable", "massBalance"); `legacySub` is the historical
+    // sub-folder under reports/ (e.g. "streams", "balances") --- preserved
+    // byte-for-byte in the default layout.  In the postProcessing layout the
+    // report-name + instant convention is used instead.  The directory is the
+    // caller's to create.
+    std::filesystem::path outDir(const std::string& report,
+                                 const std::string& legacySub) const
+    {
+        if (postProcessing)
+            return reportsDir / report / std::to_string(instant);
+        return reportsDir / legacySub;
+    }
 };
 
 class Report

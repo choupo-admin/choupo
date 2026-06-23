@@ -43,7 +43,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     const scalar Tref = dict->lookupScalarOrDefault("Tref", 298.15);
     const auto topo = reporting::readTopology(ctx.flowsheetDict);
 
-    const std::filesystem::path dir = ctx.reportsDir / "balances";
+    const std::filesystem::path dir = ctx.outDir("energyBalance", "balances");
     std::filesystem::create_directories(dir);
     const std::filesystem::path path = dir / "energyBalance_byUnit.csv";
     std::ofstream f(path);

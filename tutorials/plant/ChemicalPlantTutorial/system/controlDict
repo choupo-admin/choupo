@@ -17,6 +17,14 @@ verbosity     3;
 // drying.SD, ...).
 reports { streamTable {}  massBalance {}  energyBalance {}  utilities {}  spreadsheet {} }
 
+// Report-output layout: the CHT-faithful `postProcessing/<report>/<instant>/`
+// tree (OpenFOAM functionObject convention) instead of the legacy `reports/`.
+// This keeps the derived reports OUT of the way of the instant `streams` field
+// files: the stream TABLE is postProcessing/streamTable/<n>/streamTable.csv,
+// so "streams" no longer means two different things in the same case.  Default
+// (any other case) stays `reports/` -- this is the pilot opting in.
+reportsLayout postProcessing;
+
 // ---- Solution instants (OpenFOAM-style per-iteration stream snapshots) -------
 //  PILOT of the solution-directory discipline.  FAITHFUL to OpenFOAM, each
 //  retained recycle OUTER iteration ("pseudo-time") is a NUMBERED TIME

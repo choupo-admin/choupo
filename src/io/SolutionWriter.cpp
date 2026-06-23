@@ -159,6 +159,37 @@ std::map<std::string, SolutionWriter::Bc> SolutionWriter::classifyStreams(
     return roles;
 }
 
+// ---------------------------------------------------------------------------
+//  The SECTOR a dotted unit belongs to: the first dotted segment of a
+//  multi-segment name.  A single-segment name (a plant-root leaf) has none.
+// ---------------------------------------------------------------------------
+std::string SolutionWriter::sectorOf(const std::string& dottedUnit)
+{
+    const auto dot = dottedUnit.find('.');
+    if (dot == std::string::npos) return "";   // plant-root leaf -> no sector
+    return dottedUnit.substr(0, dot);
+}
+
+// ---------------------------------------------------------------------------
+//  Which sectors a STREAM touches: the sector of its producer (if any) plus
+//  the sector of every consumer.  A plant-root unit contributes "" (the empty
+//  sector = the plant level).  Reuses the flattened ins/outs connectivity.
+// ---------------------------------------------------------------------------
+std::set<std::string> SolutionWriter::sectorsTouching(
+    const std::string&            stream,
+    const std::vector<FlatUnit>&  units) const
+{
+    std::set<std::string> sectors;
+    for (const auto& u : units)
+    {
+        for (const auto& out : u.outs)
+            if (out == stream) sectors.insert(sectorOf(u.name));
+        for (const auto& in : u.ins)
+            if (in == stream)  sectors.insert(sectorOf(u.name));
+    }
+    return sectors;
+}
+
 const char* SolutionWriter::bcWord(Bc bc)
 {
     switch (bc)
@@ -256,6 +287,17 @@ std::string SolutionWriter::renderTopology(
         for (const auto& in  : u.ins)  consumersOf[in].push_back(u.name);
     }
 
+    // Restrict the echoed tear list to tears that actually touch THIS view's
+    // units (a per-sector echo names only the sector's own tears; the plant
+    // view names inter-sector / plant-root tears).  A stream is "touched" when
+    // it appears as some view-unit's in or out.
+    std::set<std::string> viewStreamNames;
+    for (const auto& u : units)
+    {
+        for (const auto& in  : u.ins)  viewStreamNames.insert(in);
+        for (const auto& out : u.outs) viewStreamNames.insert(out);
+    }
+
     std::ostringstream o;
     o << "// ---- TOPOLOGY this instant was solved on (read-only echo of the "
          "\"mesh\") ----\n"
@@ -263,7 +305,8 @@ std::string SolutionWriter::renderTopology(
          "//   the flowsheetDict.  Written by the engine, never hand-edited.\n";
     o << "topology\n{\n";
     o << "    tearStreams ( ";
-    for (const auto& t : tears) o << "\"" << t << "\" ";
+    for (const auto& t : tears)
+        if (viewStreamNames.count(t)) o << "\"" << t << "\" ";
     o << ");\n";
     o << "    connections                      // { from <unit|\"feed\"> ; via <stream> ; to <unit> ; }\n    (\n";
     for (const auto& u : units)
@@ -296,12 +339,12 @@ std::string SolutionWriter::renderTopology(
 //  symlinks survive the rename of the parent dir).
 // ---------------------------------------------------------------------------
 void SolutionWriter::writeByUnit(
-    const std::string&                instTmpDir,
-    const std::vector<FlatUnit>&      units,
+    const std::string&                baseDir,
+    const std::vector<FlatUnit>&      viewUnits,
     const std::map<std::string, Bc>&  roles) const
 {
     std::error_code ec;
-    const fs::path byUnit = fs::path(instTmpDir) / "byUnit";
+    const fs::path byUnit = fs::path(baseDir) / "byUnit";
     fs::create_directories(byUnit, ec);
 
     auto roleWord = [&](const std::string& g) -> std::string {
@@ -317,7 +360,7 @@ void SolutionWriter::writeByUnit(
         return "interior";
     };
 
-    for (const auto& u : units)
+    for (const auto& u : viewUnits)
     {
         const fs::path udir = byUnit / u.name;   // u.name is the dotted address
         fs::create_directories(udir, ec);
@@ -356,6 +399,83 @@ void SolutionWriter::writeByUnit(
 }
 
 // ---------------------------------------------------------------------------
+//  Write ONE view's `streams` payload (+ its byUnit/ projection) to `dir`.
+//  Used once per view (the plant + each sector).  Returns false on a bad write
+//  so the caller discards the whole instant (D5: never publish a partial one).
+// ---------------------------------------------------------------------------
+bool SolutionWriter::writeStreamsFileChecked(
+    const std::string&                          dir,
+    const std::string&                          label,
+    const SolutionInstantMeta&                  meta,
+    const std::map<std::string, ProcessStream>& streams,
+    const std::set<std::string>&                keep,
+    const std::vector<FlatUnit>&                viewUnits,
+    const std::vector<std::string>&             tears,
+    const std::map<std::string, Bc>&            roles) const
+{
+    std::ostringstream body;
+    body <<
+"/*--------------------------------*- Choupo -*----------------------------------*\\\n"
+"| Choupo " << CHOUPO_VERSION << "   solution instant   pseudoTime "
+         << meta.iteration << "  (recycle outer iteration)   view: " << label << "\n"
+"| solver: " << (meta.solver.empty() ? "recycle" : meta.solver)
+         << "   converged: " << (meta.converged ? "true" : "false") << "\n"
+"| tearResidual |r|2 = " << sci(meta.tearResidual)
+         << "   tol " << sci(meta.tolerance) << "\n"
+"| written: " << nowIso() << "\n"
+"| PER-BRANCH snapshot (fractal): this file is the '" << label << "' view.  The\n"
+"| plant view carries the boundary + inter-sector interface streams; a sector\n"
+"| view carries every stream touching one of its units.  An inter-sector face\n"
+"| appears on BOTH sides + in the plant view -- the interface IS the stream,\n"
+"| never a hidden global side-channel.  SI-canonical (T [K], P [Pa], molarFlows\n"
+"| [kmol/s]).  A stream IS the flux between two units (OpenFOAM surfaceField\n"
+"| phi): stored ONCE per view, projected per-unit in byUnit/.  Reads back via\n"
+"| the engine's own dict tokenizer (never JSON).\n"
+"\\*-----------------------------------------------------------------------------*/\n\n";
+
+    body << "pseudoTime      " << meta.iteration << ";\n";
+    body << "converged       " << (meta.converged ? "true" : "false") << ";\n";
+    body << "tearResidual    " << sci(meta.tearResidual) << ";\n";
+    body << "tolerance       " << sci(meta.tolerance) << ";\n";
+    body << "view            " << label << ";\n\n";
+
+    // Read-only topology{} echo, restricted to THIS view's units (its slice of
+    // the mesh) --- self-describing per branch.
+    body << renderTopology(viewUnits, tears) << "\n";
+
+    body << "streams\n{\n";
+    for (const auto& name : keep)
+    {
+        auto sit = streams.find(name);
+        if (sit == streams.end()) continue;
+        auto rit = roles.find(name);
+        body << renderStream(name, sit->second,
+                             rit != roles.end() ? rit->second : Bc::Interior);
+    }
+    body << "}\n";
+
+    std::error_code ec;
+    const fs::path file = fs::path(dir) / "streams";
+    {
+        std::ofstream f(file.string(), std::ios::out | std::ios::trunc);
+        f << body.str();
+        f.flush();
+        if (!f.good()) { f.close(); return false; }   // D5: bad write -> discard
+        f.close();
+    }
+    if (cfg_.flushEach)
+        fsyncPath(file, /*isDir=*/false);
+
+    // Per-unit byUnit/ projection for THIS view's units (gated).  Written into
+    // the same tmp dir so it publishes atomically; the relative `../../streams`
+    // symlink resolves to this view's streams once the parent dir is in place.
+    if (cfg_.byUnit && !viewUnits.empty())
+        writeByUnit(dir, viewUnits, roles);
+
+    return true;
+}
+
+// ---------------------------------------------------------------------------
 void SolutionWriter::writeInstant(
     const SolutionInstantMeta&                   meta,
     const std::map<std::string, ProcessStream>&  streams,
@@ -381,74 +501,77 @@ void SolutionWriter::writeInstant(
     const std::map<std::string, Bc> roles =
         classifyStreams(units, tearSet, streams);
 
-    // ---- Build the instant body (header + scalars + streams) ----------
-    std::ostringstream body;
-    body <<
-"/*--------------------------------*- Choupo -*----------------------------------*\\\n"
-"| Choupo " << CHOUPO_VERSION << "   solution instant   pseudoTime "
-         << meta.iteration << "  (recycle outer iteration)\n"
-"| solver: " << (meta.solver.empty() ? "recycle" : meta.solver)
-         << "   converged: " << (meta.converged ? "true" : "false") << "\n"
-"| tearResidual |r|2 = " << sci(meta.tearResidual)
-         << "   tol " << sci(meta.tolerance) << "\n"
-"| written: " << nowIso() << "\n"
-"| SNAPSHOT of the flowsheet stream registry at this iteration.  SI-canonical\n"
-"| (T [K], P [Pa], molarFlows [kmol/s]).  A stream IS the flux between two\n"
-"| units (OpenFOAM's surfaceField phi): stored ONCE here, projected per-unit\n"
-"| in byUnit/.  Tear inlets differ from computed outlets by |r| until\n"
-"| converged.  Reads back via the engine's own dict tokenizer (never JSON).\n"
-"\\*-----------------------------------------------------------------------------*/\n\n";
+    // ---- Bucket streams + units PER BRANCH (CHT-faithful, fractal) --------
+    //  Every stream is assigned to one or more "views":
+    //    - the PLANT view (the empty-sector key "") gets the boundary streams
+    //      (feed/product), the inter-sector interface streams (a face touching
+    //      >1 sector), and any stream touching a plant-root (single-segment)
+    //      unit;
+    //    - each SECTOR view gets every stream that touches a unit in it.
+    //  An inter-sector stream therefore lands in the plant view AND in EACH
+    //  sector it touches --- represented on both sides, never a hidden global
+    //  side-channel.  Units are bucketed by their own sector for the byUnit/
+    //  projection (a plant-root leaf projects under the plant view).
+    std::map<std::string, std::set<std::string>>  viewStreams;  // view -> stream names
+    std::map<std::string, std::vector<FlatUnit>>  viewUnits;    // view -> its units
+    std::set<std::string>                         sectorKeys;   // non-plant views
 
-    body << "pseudoTime      " << meta.iteration << ";\n";
-    body << "converged       " << (meta.converged ? "true" : "false") << ";\n";
-    body << "tearResidual    " << sci(meta.tearResidual) << ";\n";
-    body << "tolerance       " << sci(meta.tolerance) << ";\n\n";
+    for (const auto& u : units)
+        viewUnits[sectorOf(u.name)].push_back(u);
 
-    // Read-only topology{} echo (the "mesh" this instant was solved on).
-    body << renderTopology(units, tearList) << "\n";
-
-    body << "streams\n{\n";
     for (const auto& [name, s] : streams)
     {
-        auto rit = roles.find(name);
-        body << renderStream(name, s, rit != roles.end() ? rit->second : Bc::Interior);
-    }
-    body << "}\n";
+        (void)s;
+        std::set<std::string> touched = sectorsTouching(name, units);
+        // Sectors (non-empty keys) this stream touches.
+        std::set<std::string> namedSectors;
+        for (const auto& sec : touched) if (!sec.empty()) namedSectors.insert(sec);
 
-    // ---- Durable write: tmp file -> (fsync if flushEach) -> atomic rename ---
-    //  flushEach true : fsync the data before rename + fsync the case root after
-    //                   => power-loss durable.
-    //  flushEach false: skip the fsyncs (faster, abort-safe-only).
-    //  Either way the rename is atomic, so a restart never reads a half write.
-    const fs::path tmpFile = tmpDir / "streams";
-    {
-        std::ofstream f(tmpFile.string(), std::ios::out | std::ios::trunc);
-        f << body.str();
-        f.flush();
-        // D5 (no truncated-success): if the stream went bad mid-write (e.g.
-        // ENOSPC), DISCARD the .tmp and warn --- never publish a partial
-        // instant as if it converged.
-        if (!f.good())
+        // Every named sector it touches gets the stream in its own view.
+        for (const auto& sec : namedSectors)
         {
-            f.close();
-            fs::remove_all(tmpDir, ec);
-            std::cerr << "WARNING: solutionControl: write of instant "
-                      << meta.iteration << " failed (disk full / I/O error?)"
-                         " --- instant NOT published (kept the last good one).\n";
-            return;
+            viewStreams[sec].insert(name);
+            sectorKeys.insert(sec);
         }
-        f.close();   // hands the OS buffer off before rename
-    }
-    if (cfg_.flushEach)
-        fsyncPath(tmpFile, /*isDir=*/false);   // data on stable storage pre-rename
 
-    // ---- Per-unit byUnit/ projection (gated, written into the SAME tmp dir
-    //      so it publishes atomically with the streams payload) -------------
-    //  The relative symlinks (streams -> ../../streams) are valid the moment
-    //  the parent dir is renamed into place; we resolve them from instDir's
-    //  vantage, which the rename makes correct.
-    if (cfg_.byUnit)
-        writeByUnit(tmpDir.string(), units, roles);
+        // The PLANT view ("") gets the stream when it is a boundary face
+        // (feed/product role), an inter-sector interface (>1 named sector),
+        // a face touching a plant-root unit (the "" member of `touched`), or
+        // a stream that touches no unit at all (a rare boundary alias).
+        auto rit = roles.find(name);
+        const bool isBoundary = (rit != roles.end()
+                                 && (rit->second == Bc::Feed || rit->second == Bc::Product));
+        const bool isInterSector = (namedSectors.size() > 1);
+        const bool touchesPlantRoot = (touched.count("") > 0);
+        if (isBoundary || isInterSector || touchesPlantRoot || touched.empty())
+            viewStreams[""].insert(name);
+    }
+    // The plant view always exists (even an empty plant streams file documents
+    // the boundary), so a reader can rely on `<n>/streams` being present.
+    viewStreams.emplace("", std::set<std::string>{});
+
+    // ---- Write each view's `streams` (+ byUnit/) into the SAME tmp dir so the
+    //      whole instant publishes atomically with one rename ----------------
+    bool ok = true;
+    for (const auto& [view, keep] : viewStreams)
+    {
+        // Plant view -> tmpDir/streams ; sector view -> tmpDir/<sector>/streams.
+        const fs::path vdir = view.empty() ? tmpDir : (tmpDir / view);
+        fs::create_directories(vdir, ec);
+        const auto& vunits = viewUnits[view];   // [] is fine: empty for a view with no own units
+        const std::string label = view.empty() ? std::string("plant") : view;
+        if (!writeStreamsFileChecked(vdir.string(), label, meta, streams,
+                                     keep, vunits, tearList, roles))
+        { ok = false; break; }
+    }
+    if (!ok)
+    {
+        fs::remove_all(tmpDir, ec);
+        std::cerr << "WARNING: solutionControl: write of instant "
+                  << meta.iteration << " failed (disk full / I/O error?)"
+                     " --- instant NOT published (kept the last good one).\n";
+        return;
+    }
 
     // Atomic publish: remove any existing instant dir, then rename tmp -> it.
     fs::remove_all(instDir, ec);
@@ -605,35 +728,39 @@ int SolutionWriter::restartFromLatest(
     const int n = latestInstantNumber();
     if (n < 0) return -1;
 
-    const fs::path inst = fs::path(caseRoot_) / std::to_string(n) / "streams";
-    DictPtr d;
-    try { d = Dictionary::fromFile(inst.string()); }
-    catch (const std::exception&) { return -1; }
-    if (!d->found("streams")) return -1;
-
-    auto sblock = d->subDict("streams");
+    const fs::path instRoot = fs::path(caseRoot_) / std::to_string(n);
     std::set<std::string> tearSet(tears.begin(), tears.end());
+
+    // PER-BRANCH restart: the instant is fractal.  An intra-sector tear (e.g.
+    // FERMENTATION.Recycle) lives ONLY in its sector view <n>/<sector>/streams,
+    // not in the plant <n>/streams (which carries boundary + inter-sector faces).
+    // So we scan EVERY streams file in the instant --- the plant view plus each
+    // sector subdir --- and reseed each flagged tear ONCE (the first view that
+    // carries it; an inter-sector tear seen in two views is identical in both).
+    std::vector<fs::path> streamFiles;
+    if (fs::exists(instRoot / "streams")) streamFiles.push_back(instRoot / "streams");
+    std::error_code ecScan;
+    for (const auto& e : fs::directory_iterator(instRoot, ecScan))
+    {
+        if (!e.is_directory()) continue;
+        if (e.path().filename() == "byUnit") continue;  // not a sector
+        const fs::path sf = e.path() / "streams";
+        if (fs::exists(sf)) streamFiles.push_back(sf);
+    }
+    if (streamFiles.empty()) return -1;
 
     // R4 (truthful announcement): count what is ACTUALLY reseeded.  A named
     // tear in the file that no longer exists in the flowsheet (renamed unit,
     // edited topology) reseeds NOTHING --- we must say so, not pretend.
     int reseeded = 0;
+    std::set<std::string>    done;      // tears already reseeded (dedup across views)
     std::vector<std::string> missing;   // flagged-tear in file, absent in flowsheet
 
-    // Reseed ONLY the tear streams (the ones flagged tear true; in the file
-    // AND named in the current tear list).  Everything else keeps auto-init.
-    for (const auto& sname : sblock->keys())
+    // Reseed ONE flagged tear sub-dict into `streams`.  Returns true if it
+    // actually reseeded (false => the tear vanished from the flowsheet).
+    auto reseedOne = [&](const std::string& sname, const DictPtr& sd) -> bool
     {
-        if (!tearSet.count(sname)) continue;
-        auto sd = sblock->subDict(sname);
-        const bool flagged = (sd->lookupWordOrDefault("tear", "false") == "true");
-        if (!flagged) continue;
-        if (!streams.count(sname))    // a flagged tear that vanished from the flowsheet
-        {
-            missing.push_back(sname);
-            continue;
-        }
-
+        if (!streams.count(sname)) { missing.push_back(sname); return false; }
         ProcessStream& s = streams.at(sname);
         // Reconstruct F and z from the lossless per-species molarFlows.
         if (sd->found("molarFlows"))
@@ -656,21 +783,43 @@ int SolutionWriter::restartFromLatest(
         s.T  = sd->lookupScalarOrDefault("T",  s.T);
         s.P  = sd->lookupScalarOrDefault("P",  s.P);
         s.vf = sd->lookupScalarOrDefault("vf", s.vf);
-        ++reseeded;
+        return true;
+    };
+
+    // Reseed ONLY the tear streams (flagged tear true; in the file AND named in
+    // the current tear list).  Everything else keeps auto-init.
+    for (const auto& sfPath : streamFiles)
+    {
+        DictPtr d;
+        try { d = Dictionary::fromFile(sfPath.string()); }
+        catch (const std::exception&) { continue; }
+        if (!d->found("streams")) continue;
+        auto sblock = d->subDict("streams");
+        for (const auto& sname : sblock->keys())
+        {
+            if (!tearSet.count(sname) || done.count(sname)) continue;
+            auto sd = sblock->subDict(sname);
+            const bool flagged = (sd->lookupWordOrDefault("tear", "false") == "true");
+            if (!flagged) continue;
+            if (reseedOne(sname, sd)) { done.insert(sname); ++reseeded; }
+        }
     }
 
     // R4: announce the TRUTH about the reseed.
     std::cout << "  RESTART: reseeded " << reseeded << " of " << tears.size()
-              << " tear stream(s) from instant " << n << "/streams.\n";
+              << " tear stream(s) from instant " << n
+              << "/ (plant + per-sector streams).\n";
+    std::set<std::string> reported;
     for (const auto& m : missing)
-        std::cout << "  WARNING: tear '" << m << "' is flagged in the saved "
-                     "instant but no longer exists in the flowsheet --- NOT "
-                     "reseeded (topology changed since that write).\n";
+        if (reported.insert(m).second)
+            std::cout << "  WARNING: tear '" << m << "' is flagged in the saved "
+                         "instant but no longer exists in the flowsheet --- NOT "
+                         "reseeded (topology changed since that write).\n";
     if (reseeded == 0)
         std::cout << "  ERROR-LEVEL ADVISORY: restartFromLatest reseeded ZERO "
                      "tears --- the restart had NO effect; the solve proceeds "
-                     "from plain auto-init.  (No tear in instant " << n
-                  << "/streams matched a current tear stream.)\n";
+                     "from plain auto-init.  (No flagged tear in instant " << n
+                  << "/ matched a current tear stream.)\n";
     return n;
 }
 

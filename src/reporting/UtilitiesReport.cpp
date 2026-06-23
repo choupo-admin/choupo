@@ -58,7 +58,7 @@ scalar dutyOfUnit(const std::map<std::string, scalar>& kpis)
 
 void UtilitiesReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
 {
-    const std::filesystem::path dir = ctx.reportsDir / "utilities";
+    const std::filesystem::path dir = ctx.outDir("utilities", "utilities");
     std::filesystem::create_directories(dir);
     const std::filesystem::path path = dir / "consumption.csv";
 
