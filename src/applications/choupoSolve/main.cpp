@@ -65,6 +65,7 @@ Description
 #include "postProcessing/PostProcessor.H"
 #include "reporting/Report.H"
 #include "reporting/UtilityAllocationReport.H"
+#include "io/SolutionWriter.H"
 #include "thermo/Database.H"
 #include "thermo/SaturationCurves.H"
 #include "thermo/ThermoPackage.H"
@@ -90,9 +91,12 @@ Description
 
 #include <filesystem>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <stdexcept>
 #include <set>
 #include <string>
+#include <vector>
 
 using namespace Choupo;
 namespace fs = std::filesystem;
@@ -115,7 +119,8 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     const DictPtr&     thermoDict,
     const DictPtr&     solverDict,        // may be null
     const DictPtr&     reactionsDict,     // may be null
-    int                verbosity)
+    int                verbosity,
+    const SolutionControl* solutionCtl = nullptr)  // null => feature OFF
 {
     // Fresh advisory sink for this pass (so a sweep/optim gets per-pass
     // advisories, and the result carries this pass's).  Cleared BEFORE the
@@ -137,6 +142,57 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     flowsheet.setReactionsDict(reactionsDict);
     flowsheet.setDatabase     (&db);          // per-unit thermo overrides
     flowsheet.setThermoDict   (thermoDict);
+
+    // ---- Solution-directory (OpenFOAM-style per-iteration writer) ---------
+    //  Installed ONLY when controlDict carried `solutionControl{ write true; }`.
+    //  Absent => `solutionCtl == nullptr` => no hooks => byte-identical run.
+    //  The writer is built HERE because the flattened component names come
+    //  from the just-built thermo; it outlives solve() (stack-scoped).
+    std::unique_ptr<SolutionWriter> solWriter;
+    if (solutionCtl && solutionCtl->write)
+    {
+        std::vector<std::string> compNames;
+        compNames.reserve(thermo.n());
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            compNames.push_back(thermo.comp(i).name());
+        solWriter = std::make_unique<SolutionWriter>(
+            fs::current_path().string(), *solutionCtl, std::move(compNames));
+
+        const int interval = std::max(1, solutionCtl->writeInterval);
+        SolutionControl ctl = *solutionCtl;   // capture by value for the closure
+        // Recycle tolerance, for the instant header (read where the solver does).
+        const scalar recTol = flowsheetDict->lookupScalarOrDefault("recycleTol", 1.0e-5);
+
+        flowsheet.setInstantCallback(
+            [&solWriter, interval, recTol]
+            (int it, const char* solver, scalar residual, bool converged,
+             const std::map<std::string, ProcessStream>& streams,
+             const std::vector<std::string>& tears)
+            {
+                // Cadence: always write the seed and the final converged
+                // instant; otherwise every `writeInterval`-th iteration.
+                const bool isSeed   = (std::string(solver) == "seed");
+                const bool onCadence = (it % interval == 0);
+                if (!isSeed && !converged && !onCadence) return;
+                SolutionInstantMeta m;
+                m.iteration    = it;
+                m.solver       = solver;
+                m.tearResidual = residual;
+                m.tolerance    = recTol;
+                m.converged    = converged;
+                solWriter->writeInstant(m, streams, tears);
+            });
+
+        if (ctl.startFrom == "latestTime")
+            flowsheet.setRestartHook(
+                [&solWriter, &thermo]
+                (std::map<std::string, ProcessStream>& streams,
+                 const std::vector<std::string>& tears) -> int
+                {
+                    return solWriter->restartFromLatest(streams, tears, thermo);
+                });
+    }
+
     int rc = flowsheet.solve(flowsheetDict, thermo, verbosity);
 
     SimulationResult r;
@@ -365,6 +421,33 @@ try
     if (controlDict->found("reports"))
         reportsDict = controlDict->subDict("reports");
 
+    // controlDict `solutionControl {... }` block (OpenFOAM-style solution
+    // directory).  ABSENT => the feature is OFF and the run is byte-identical
+    // to before.  Present with `write true;` => durable per-recycle-iteration
+    // stream snapshots under solution/, opt-in restart, purge ring-buffer.
+    SolutionControl solutionCtl;            // defaults: write=false (OFF)
+    bool haveSolutionCtl = false;
+    if (controlDict->found("solutionControl"))
+    {
+        auto sc = controlDict->subDict("solutionControl");
+        solutionCtl.write =
+            (sc->lookupWordOrDefault("write", "false") == "true");
+        solutionCtl.writeInterval =
+            static_cast<int>(sc->lookupScalarOrDefault("writeInterval", 5));
+        solutionCtl.purgeWrite =
+            static_cast<int>(sc->lookupScalarOrDefault("purgeWrite", 3));
+        solutionCtl.startFrom =
+            sc->lookupWordOrDefault("startFrom", "startTime");
+        solutionCtl.flushEach =
+            (sc->lookupWordOrDefault("flushEach", "true") == "true");
+        haveSolutionCtl = solutionCtl.write;
+        if (solutionCtl.write)
+            std::cout << "solutionControl:   ON (write every "
+                      << solutionCtl.writeInterval << " iter, purgeWrite "
+                      << solutionCtl.purgeWrite << ", startFrom "
+                      << solutionCtl.startFrom << ") -> solution/\n";
+    }
+
     const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));
     const std::string application =
         controlDict->lookupWordOrDefault("application", "choupoSolve");
@@ -392,7 +475,8 @@ try
     // ---- Simulator functor reusable by outer driver --------------------
     auto simulate = [&](const DictPtr& flowDictForRun) {
         auto r = runSimulation(flowDictForRun, db, thermoDict,
-                               solverDict, reactionsDict, verbosity);
+                               solverDict, reactionsDict, verbosity,
+                               haveSolutionCtl ? &solutionCtl : nullptr);
         // Size plant utilities for every duty HERE, so BOTH the direct path and
         // the outer-driver passes carry it.  The outer driver (DesignSpec /
         // recycle / sweep) emits the result JSON itself and previously skipped

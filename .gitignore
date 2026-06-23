@@ -31,6 +31,10 @@ src/**/*.d
 tutorials/*/*/reports/
 # fractal plants nest sectors/units arbitrarily deep -> ignore reports/ at any depth
 tutorials/**/reports/
+# solution/ is run output (OpenFOAM-style per-iteration stream snapshots,
+# controlDict solutionControl{} block) -- gitignored at any depth.
+tutorials/**/solution/
+**/solution/
 # Solver-generated CSVs (sweep / optim / trajectory / propertyScan /
 # fit_history / parity / per-component property output) -- the filename
 # is user-defined in the dict so we match by location.  Recursive **

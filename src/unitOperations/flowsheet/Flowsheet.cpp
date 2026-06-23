@@ -2066,6 +2066,38 @@ int Flowsheet::solve(const DictPtr& dict,
             }
         };
 
+        // ---- Solution-directory: restart + seed (opt-in, default off) ----
+        //  The hooks are empty unless main.cpp installed them (solutionControl
+        //  write true;).  When empty, this whole block is two null-tests ---
+        //  zero behavioural change, byte-identical stdout.
+        //
+        //  Restart FIRST (reseeds the tear streams from solution/latest/streams
+        //  and resets the acceleration history --- it is NOT restored; the
+        //  recycle fixed point is unique to topology+feeds, so we converge to
+        //  the SAME answer along a possibly different path), then write 0/ as
+        //  the seed reflecting the (possibly resumed) tear state.
+        int itBase = 0;   // iteration offset; >0 after a restart
+        if (onRestart_)
+        {
+            const int resumed = onRestart_(streams_, tears);
+            if (resumed >= 0)
+            {
+                itBase = resumed;
+                std::cout << "  RESTART from solution/" << resumed
+                          << " -- tears reseeded from disk; acceleration history"
+                             " reset; iteration count resumes at " << resumed << ".\n";
+            }
+        }
+        if (onInstant_)
+            onInstant_(itBase, "seed", 0.0, false, streams_, tears);
+
+        // Final-instant state, set by whichever branch runs, emitted after the
+        // final logged sweep (the converged answer == the canonical result).
+        bool        finalConverged = false;
+        scalar      finalResidual  = 0.0;
+        int         finalIteration = itBase;
+        const char* finalSolver    = "recycle";
+
         if (recSolver == "Wegstein")
         {
             std::cout << "Recycle outer loop (Wegstein over "
@@ -2104,6 +2136,12 @@ int Flowsheet::solve(const DictPtr& dict,
                 if (!feedbackEnergy.empty())
                     std::cout << "   |dQ/Q|=" << std::scientific << std::setprecision(2) << eRel;
                 std::cout << "\n";
+                // Solution-directory tap: streams_ is in the post-sweep state
+                // for this outer iteration.  Cadence + final-always are decided
+                // by the installed callback (empty => no-op).
+                if (onInstant_)
+                    onInstant_(itBase + outerIt + 1, "wegstein", lastDelta,
+                               false, streams_, tears);
                 if (lastDelta < tearTol && eConv) { converged = true; ++outerIt; break; }
                 sVector x_next = accel.step(x, gx);
                 // announce: this is an ACCEPTED extrapolated step, so a clip
@@ -2120,6 +2158,10 @@ int Flowsheet::solve(const DictPtr& dict,
             else
                 std::cout << "WARNING: recycle did NOT converge in " << maxOuter
                           << " iterations (last |Δtear|2 = " << std::scientific << lastDelta << ").\n";
+            finalConverged = converged;
+            finalResidual  = lastDelta;
+            finalIteration = itBase + outerIt;
+            finalSolver    = "wegstein";
         }
         else   // Newton-on-tears  (the EO-flavoured step: r(x) = G(x) − x = 0)
         {
@@ -2214,6 +2256,18 @@ int Flowsheet::solve(const DictPtr& dict,
                 std::cout << "  " << std::setw(4) << tr.iteration
                           << "  " << std::scientific << std::setprecision(3)
                           << std::setw(11) << tr.normF << "\n";
+                // Solution-directory tap.  `tr.normF` describes the iterate
+                // `tr.x`; the last residual call inside newtonND left streams_
+                // at a line-search probe, NOT at tr.x.  Re-sync to tr.x so the
+                // written instant matches the reported residual (one extra
+                // sweep, only when the writer is installed).  Cadence/final are
+                // decided by the installed callback (empty => no-op).
+                if (onInstant_)
+                {
+                    residual(tr.x);   // place streams_ exactly at tr.x
+                    onInstant_(itBase + tr.iteration + 1, "newtonOnTears",
+                               tr.normF, false, streams_, tears);
+                }
             };
             auto res = solver::newtonND(residual, x0, ndo);
             unpackFlow(res.x, /*announce=*/true);   // accepted solution: clips here are real
@@ -2225,11 +2279,23 @@ int Flowsheet::solve(const DictPtr& dict,
             else
                 std::cout << "WARNING: recycle Newton did NOT converge in " << maxOuter
                           << " iterations (last |r|2 = " << std::scientific << res.residual << ").\n";
+            finalConverged = res.converged;
+            finalResidual  = res.residual;
+            finalIteration = itBase + res.iterations;
+            finalSolver    = "newtonOnTears";
         }
 
         // One final pass with full logging (common to both solvers).
         std::cout << "\n----- Final pass with full unit logging -----\n";
         sweep(/*quiet=*/false);
+
+        // Solution-directory: write the converged final instant (tagged
+        // converged true;).  This is the canonical result that feeds the JSON
+        // and reports/.  Always written (off-cadence is fine), so a restart
+        // and the answer are never confused with a mid-convergence snapshot.
+        if (onInstant_)
+            onInstant_(finalIteration, finalSolver, finalResidual,
+                       finalConverged, streams_, tears);
 
         // Author bounds vs the PHYSICAL converged values (Slice 2): the cage
         // shaped the search; here we check whether the physical solution

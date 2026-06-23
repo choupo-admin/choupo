@@ -94,8 +94,10 @@ Dictionary form:
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
 
+#include <functional>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 
@@ -119,6 +121,40 @@ public:
     // override MODELS.  Without them every unit uses the global thermo.
     void setDatabase  (const Database* db) { db_ = db; }
     void setThermoDict(DictPtr d)          { thermoDict_ = std::move(d); }
+
+    // ---- Solution-directory hook (OpenFOAM-style per-iteration writer) ----
+    //  An OPTIONAL callback, invoked once per recycle OUTER iteration with
+    //  `streams_` in the correct post-sweep state, plus a seed (0/) call
+    //  before the loop and a converged-final call after the last sweep.
+    //  Default empty => the feature is OFF and adds one null-test per
+    //  iteration, ZERO behavioural change.  The callback gets:
+    //    - iteration counter (pseudo-time)
+    //    - solver tag ("seed" | "wegstein" | "newtonOnTears")
+    //    - tear residual at this instant
+    //    - converged flag (true only for the final instant)
+    //    - the full stream registry (read-only snapshot)
+    //    - the tear-stream names (so the writer can flag them)
+    //  The writer lives OUTSIDE the Flowsheet (in main.cpp), so the engine
+    //  has no I/O policy baked in --- it only reports its state.
+    using InstantCallback = std::function<void(
+        int                                          iteration,
+        const char*                                  solver,
+        scalar                                       tearResidual,
+        bool                                         converged,
+        const std::map<std::string, ProcessStream>&  streams,
+        const std::vector<std::string>&              tears)>;
+    void setInstantCallback(InstantCallback cb) { onInstant_ = std::move(cb); }
+
+    // ---- Restart hook (Slice 1) -------------------------------------------
+    //  An OPTIONAL callback invoked AFTER tear auto-init and BEFORE the
+    //  recycle loop, with `streams_` mutable.  It reseeds the tear streams
+    //  from `solution/latest/streams` (reads the durable instant) and
+    //  returns the iteration number to resume from, or -1 if nothing to
+    //  resume.  Default empty => fresh start (today's behaviour).
+    using RestartHook = std::function<int(
+        std::map<std::string, ProcessStream>& streams,
+        const std::vector<std::string>&        tears)>;
+    void setRestartHook(RestartHook h) { onRestart_ = std::move(h); }
 
     int solve(const DictPtr& dict,
               const ThermoPackage& thermo,
@@ -186,6 +222,10 @@ private:
     const Database*                                        db_ = nullptr;
     DictPtr                                                thermoDict_;
     std::map<std::string, std::unique_ptr<ThermoPackage>>  unitThermo_;
+
+    // Solution-directory hooks (default empty => feature OFF, zero change).
+    InstantCallback                                        onInstant_;
+    RestartHook                                            onRestart_;
 };
 
 } // namespace Choupo
