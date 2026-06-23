@@ -2082,10 +2082,13 @@ int Flowsheet::solve(const DictPtr& dict,
             const int resumed = onRestart_(streams_, tears);
             if (resumed >= 0)
             {
+                // The restart hook (restartFromLatest) has ALREADY announced
+                // the truthful reseed count / any missing tears; here we only
+                // state the bookkeeping it can't know (history reset + base).
                 itBase = resumed;
                 std::cout << "  RESTART from solution/" << resumed
-                          << " -- tears reseeded from disk; acceleration history"
-                             " reset; iteration count resumes at " << resumed << ".\n";
+                          << " -- acceleration history reset; iteration count"
+                             " resumes at " << resumed << ".\n";
             }
         }
         if (onInstant_)
@@ -2293,9 +2296,20 @@ int Flowsheet::solve(const DictPtr& dict,
         // converged true;).  This is the canonical result that feeds the JSON
         // and reports/.  Always written (off-cadence is fine), so a restart
         // and the answer are never confused with a mid-convergence snapshot.
+        //
+        // R3 (pseudo-time must advance): when the recycle converged in ZERO
+        // outer iterations (a restart whose seed was already the fixed point),
+        // finalIteration == itBase == the seed instant's number.  Writing the
+        // final there would OVERWRITE the seed (remove_all+rename) and `latest`
+        // would never advance, so repeated restarts would stall.  Bump the
+        // final by one so each restart cleanly advances (and is idempotent).
         if (onInstant_)
-            onInstant_(finalIteration, finalSolver, finalResidual,
+        {
+            const int finalInstNum =
+                (finalIteration == itBase) ? itBase + 1 : finalIteration;
+            onInstant_(finalInstNum, finalSolver, finalResidual,
                        finalConverged, streams_, tears);
+        }
 
         // Author bounds vs the PHYSICAL converged values (Slice 2): the cage
         // shaped the search; here we check whether the physical solution

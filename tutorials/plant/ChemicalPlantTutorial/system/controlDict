@@ -22,8 +22,9 @@ reports { streamTable {}  massBalance {}  energyBalance {}  utilities {}  spread
 //  iteration ("pseudo-time") is written as one plain Choupo dict under
 //  solution/<it>/streams (gitignored, run output).  `ls solution/` is the
 //  convergence history at a glance; every instant reads back through the
-//  engine's own dict tokenizer.  Durable: each instant is written via an
-//  atomic rename, so it survives an abort mid-recycle.
+//  engine's own dict tokenizer.  Each instant is published via an atomic
+//  rename, so a restart never reads a half write; with `flushEach true` the
+//  data + directory are fsync'd, so an instant also survives a power loss.
 //
 //  ABSENT this whole block => the feature is OFF and the run is byte-identical
 //  to before.  This is the ONLY case that opts in.
@@ -33,5 +34,6 @@ solutionControl
     writeInterval   5;             // write every N recycle outer iterations (+ 0 and final)
     purgeWrite      3;             // keep last N numbered instants (+ 0/ and converged)
     startFrom       startTime;     // startTime (fresh) | latestTime (restart from solution/latest)
-    flushEach       true;          // flush+close each instant (abort-survival)
+    flushEach       true;          // true: fsync data+dir => power-loss durable.
+                                   //   false: skip fsync (faster, abort-safe only).
 }

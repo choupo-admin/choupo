@@ -45,13 +45,28 @@ Description
     streams are flagged `tear true;` in-line and listed in `tearStreams`, so
     a restart reseeds exactly those.
 
-    DURABILITY (the abort-survival contract): each instant is written to
-    `solution/<it>/.tmp/streams`, flushed + closed, then the directory is
-    rename()'d atomically into `solution/<it>/`.  A restart therefore never
-    reads a half-written instant.  One line per instant is appended (and
-    flushed) to `solution/solution.log`.  A `latest` symlink tracks the
-    newest instant; `purgeWrite` keeps only the last N numbered instants
-    (0/ and the converged final are always retained).
+    DURABILITY (gated by `flushEach`): each instant is written to
+    `solution/.tmp_<it>/streams`, then the directory is rename()'d atomically
+    into `solution/<it>/`.  What "atomic" buys depends on `flushEach`:
+
+      flushEach true  (default): the temp file's data is fsync()'d before the
+        rename, and the parent `solution/` directory is fsync()'d after the
+        rename.  An instant published this way survives BOTH a process abort
+        (kill -9) AND a power loss / kernel panic --- on recovery the directory
+        entry is either absent or fully present with its data on stable storage
+        (no ext4 rename-without-fsync zero-length-file trap).
+
+      flushEach false: the fsyncs are skipped (faster).  The rename is still
+        atomic w.r.t. the running kernel, so the instant survives a process
+        abort (kill -9) --- a restart never reads a half-written instant.  It is
+        NOT power-loss durable (a crash may lose or truncate the most recent
+        instant), which is the honest trade for the speed.
+
+    A restart therefore never reads a half-written instant in either mode.  One
+    line per instant is appended to `solution/solution.log` (fsync'd too when
+    flushEach is true).  A `latest` symlink tracks the newest instant;
+    `purgeWrite` keeps only the last N numbered instants (0/ and the converged
+    final are always retained).
 
     The whole mechanism is opt-in: absent `solutionControl{}` in controlDict
     => the callback is never installed => zero behavioural change.
@@ -113,12 +128,16 @@ public:
 
     // ---- Restart (Slice 1) --------------------------------------------
     //  Read `solution/<n>/streams` for the highest numbered instant n (the
-    //  `latest` target) and return ITS iteration number.  The reseeded tear
-    //  streams are written back into `streams` (only the entries flagged
-    //  `tear true;` in the file AND present in `tears`).  Non-tear streams
-    //  are left untouched (they keep normal auto-init).  Returns -1 (and
-    //  leaves `streams` untouched) if no instant is available to restart
-    //  from.  Loud by design --- the caller announces the reseed.
+    //  `latest` target) and reseed the tear streams flagged `tear true;` in the
+    //  file AND present in `tears`.  Non-tear streams are left untouched (they
+    //  keep normal auto-init).  Returns ITS iteration number, or -1 (leaving
+    //  `streams` untouched) if no instant is available to restart from.
+    //
+    //  TRUTHFUL by design (no silent crutch): this method announces the COUNT
+    //  of tears actually reseeded, and on its own warns loudly for every named
+    //  tear in the file that no longer exists in the flowsheet.  If ZERO tears
+    //  reseeded it emits an error-level advisory --- the restart did nothing,
+    //  the caller's "resumed" line must not pretend otherwise.
     int restartFromLatest(std::map<std::string, ProcessStream>& streams,
                           const std::vector<std::string>&        tears,
                           const ThermoPackage&                   thermo) const;

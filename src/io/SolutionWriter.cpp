@@ -42,9 +42,31 @@ License
 #include <set>
 #include <sstream>
 
+#if !defined(_WIN32)
+#  include <fcntl.h>       // open, O_RDONLY
+#  include <unistd.h>      // fsync, close
+#endif
+
 namespace fs = std::filesystem;
 
 namespace Choupo {
+
+// Power-loss durability primitive (POSIX): fsync the given path.  `isDir`
+// opens it O_DIRECTORY so the directory entry itself is flushed (the second
+// half of the rename-without-fsync fix).  A no-op on Windows / on failure ---
+// we degrade to abort-survival-only rather than abort the run for a sync error.
+static void fsyncPath(const fs::path& p, bool isDir)
+{
+#if defined(_WIN32)
+    (void)p; (void)isDir;
+#else
+    const int flags = O_RDONLY | (isDir ? O_DIRECTORY : 0);
+    const int fd = ::open(p.c_str(), flags);
+    if (fd < 0) return;
+    ::fsync(fd);
+    ::close(fd);
+#endif
+}
 
 // Full round-trippable precision for SI scalars (17 sig-figs = exact double).
 static std::string sci(scalar v)
@@ -74,6 +96,19 @@ SolutionWriter::SolutionWriter(std::string caseDir,
     : cfg_(cfg), compNames_(std::move(compNames))
 {
     solutionDir_ = (fs::path(caseDir) / "solution").string();
+
+    // D3 (reap litter): a prior run aborted mid-write leaves an orphan
+    // `.tmp_<it>` (or `.tmp_*`) dir under solution/.  It is never published
+    // (no rename happened), so it is pure garbage --- sweep it on construction
+    // so the tree is clean before the first write and `ls solution/` is honest.
+    std::error_code ec;
+    if (fs::exists(solutionDir_, ec))
+        for (const auto& e : fs::directory_iterator(solutionDir_, ec))
+        {
+            const std::string nm = e.path().filename().string();
+            if (nm.rfind(".tmp_", 0) == 0)
+                fs::remove_all(e.path(), ec);
+        }
 }
 
 // ---------------------------------------------------------------------------
@@ -182,14 +217,32 @@ void SolutionWriter::writeInstant(
         body << renderStream(name, s, tearSet.count(name) > 0);
     body << "}\n";
 
-    // ---- Durable write: tmp file, flush+close, atomic rename ----------
+    // ---- Durable write: tmp file -> (fsync if flushEach) -> atomic rename ---
+    //  flushEach true : fsync the data before rename + fsync solution/ after
+    //                   => power-loss durable.
+    //  flushEach false: skip the fsyncs (faster, abort-safe-only).
+    //  Either way the rename is atomic, so a restart never reads a half write.
+    const fs::path tmpFile = tmpDir / "streams";
     {
-        std::ofstream f((tmpDir / "streams").string(),
-                        std::ios::out | std::ios::trunc);
+        std::ofstream f(tmpFile.string(), std::ios::out | std::ios::trunc);
         f << body.str();
         f.flush();
-        f.close();   // ensures the OS buffer is handed off before rename
+        // D5 (no truncated-success): if the stream went bad mid-write (e.g.
+        // ENOSPC), DISCARD the .tmp and warn --- never publish a partial
+        // instant as if it converged.
+        if (!f.good())
+        {
+            f.close();
+            fs::remove_all(tmpDir, ec);
+            std::cerr << "WARNING: solutionControl: write of instant "
+                      << meta.iteration << " failed (disk full / I/O error?)"
+                         " --- instant NOT published (kept the last good one).\n";
+            return;
+        }
+        f.close();   // hands the OS buffer off before rename
     }
+    if (cfg_.flushEach)
+        fsyncPath(tmpFile, /*isDir=*/false);   // data on stable storage pre-rename
 
     // Atomic publish: remove any existing instant dir, then rename tmp -> it.
     fs::remove_all(instDir, ec);
@@ -199,10 +252,15 @@ void SolutionWriter::writeInstant(
         // Rename can fail across exotic filesystems; fall back to a copy so we
         // never silently lose the instant.
         fs::create_directories(instDir, ec);
-        fs::copy_file(tmpDir / "streams", instDir / "streams",
+        fs::copy_file(tmpFile, instDir / "streams",
                       fs::copy_options::overwrite_existing, ec);
         fs::remove_all(tmpDir, ec);
     }
+
+    // D1 second half: fsync the parent directory so the new entry survives a
+    // power loss (the rename's metadata must reach stable storage too).
+    if (cfg_.flushEach)
+        fsyncPath(solutionDir_, /*isDir=*/true);
 
     appendLog(meta);
     refreshLatestSymlink(meta.iteration);
@@ -221,14 +279,27 @@ void SolutionWriter::appendLog(const SolutionInstantMeta& meta) const
     std::ofstream f(logp.string(), std::ios::out | std::ios::app);
     if (needHeader)
         f << "# Choupo solution log --- one line per written instant.\n"
-             "# iteration  converged  tearResidual          solver        written\n";
-    f << std::left << std::setw(11) << meta.iteration
+             "# the FINAL converged instant is marked [*]; a mid-convergence row\n"
+             "# may carry the SAME iteration number as a later [*] row --- the [*]\n"
+             "# row is the canonical answer for that number.\n"
+             "# iteration  converged  tearResidual              solver           written\n";
+    // D4 (unambiguous log): tag the converged final row so it can never be
+    // confused with a mid-convergence row that happens to share its number.
+    // sci() can be 24 chars (17 sig-figs scientific) --- setw(26) + an explicit
+    // two-space gap so the residual never collides with the solver column.
+    f << std::left
+      << std::setw(4)  << (meta.converged ? "[*]" : "")
+      << std::setw(11) << meta.iteration
       << std::setw(11) << (meta.converged ? "true" : "false")
-      << std::setw(22) << sci(meta.tearResidual)
-      << std::setw(14) << (meta.solver.empty() ? "recycle" : meta.solver)
+      << std::setw(26) << sci(meta.tearResidual) << "  "
+      << std::setw(15) << (meta.solver.empty() ? "recycle" : meta.solver) << "  "
       << nowIso() << "\n";
     f.flush();
     f.close();
+    // D1: a durable instant means a durable log line too (else a power loss
+    // could leave an instant on disk with no record of it).
+    if (cfg_.flushEach)
+        fsyncPath(logp, /*isDir=*/false);
 }
 
 // ---------------------------------------------------------------------------
@@ -265,7 +336,11 @@ void SolutionWriter::purgeOldInstants(int currentIteration,
         if (nm.empty() || !std::all_of(nm.begin(), nm.end(),
                                        [](char c){ return std::isdigit(static_cast<unsigned char>(c)); }))
             continue;
-        nums.push_back(std::stoi(nm));
+        // D6 (robustness): an all-digit name can still overflow int (e.g. a
+        // pathological 30-digit dir).  stoi would throw out_of_range and abort
+        // the run --- skip such names rather than crash.
+        try { nums.push_back(std::stoi(nm)); }
+        catch (const std::exception&) { continue; }
     }
     std::sort(nums.begin(), nums.end());
 
@@ -299,7 +374,9 @@ int SolutionWriter::latestInstantNumber() const
                                        [](char c){ return std::isdigit(static_cast<unsigned char>(c)); }))
             continue;
         if (!fs::exists(e.path() / "streams")) continue;
-        best = std::max(best, std::stoi(nm));
+        // D6 (robustness): guard the same overflow as purgeOldInstants.
+        try { best = std::max(best, std::stoi(nm)); }
+        catch (const std::exception&) { continue; }
     }
     return best;
 }
@@ -322,6 +399,12 @@ int SolutionWriter::restartFromLatest(
     auto sblock = d->subDict("streams");
     std::set<std::string> tearSet(tears.begin(), tears.end());
 
+    // R4 (truthful announcement): count what is ACTUALLY reseeded.  A named
+    // tear in the file that no longer exists in the flowsheet (renamed unit,
+    // edited topology) reseeds NOTHING --- we must say so, not pretend.
+    int reseeded = 0;
+    std::vector<std::string> missing;   // flagged-tear in file, absent in flowsheet
+
     // Reseed ONLY the tear streams (the ones flagged tear true; in the file
     // AND named in the current tear list).  Everything else keeps auto-init.
     for (const auto& sname : sblock->keys())
@@ -330,7 +413,11 @@ int SolutionWriter::restartFromLatest(
         auto sd = sblock->subDict(sname);
         const bool flagged = (sd->lookupWordOrDefault("tear", "false") == "true");
         if (!flagged) continue;
-        if (!streams.count(sname)) continue;   // unknown after re-flatten: skip
+        if (!streams.count(sname))    // a flagged tear that vanished from the flowsheet
+        {
+            missing.push_back(sname);
+            continue;
+        }
 
         ProcessStream& s = streams.at(sname);
         // Reconstruct F and z from the lossless per-species molarFlows.
@@ -354,7 +441,21 @@ int SolutionWriter::restartFromLatest(
         s.T  = sd->lookupScalarOrDefault("T",  s.T);
         s.P  = sd->lookupScalarOrDefault("P",  s.P);
         s.vf = sd->lookupScalarOrDefault("vf", s.vf);
+        ++reseeded;
     }
+
+    // R4: announce the TRUTH about the reseed.
+    std::cout << "  RESTART: reseeded " << reseeded << " of " << tears.size()
+              << " tear stream(s) from solution/" << n << "/streams.\n";
+    for (const auto& m : missing)
+        std::cout << "  WARNING: tear '" << m << "' is flagged in the saved "
+                     "instant but no longer exists in the flowsheet --- NOT "
+                     "reseeded (topology changed since that write).\n";
+    if (reseeded == 0)
+        std::cout << "  ERROR-LEVEL ADVISORY: restartFromLatest reseeded ZERO "
+                     "tears --- the restart had NO effect; the solve proceeds "
+                     "from plain auto-init.  (No tear in solution/" << n
+                  << "/streams matched a current tear stream.)\n";
     return n;
 }
 
