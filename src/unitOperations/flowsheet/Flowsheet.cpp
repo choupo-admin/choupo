@@ -2086,13 +2086,13 @@ int Flowsheet::solve(const DictPtr& dict,
                 // the truthful reseed count / any missing tears; here we only
                 // state the bookkeeping it can't know (history reset + base).
                 itBase = resumed;
-                std::cout << "  RESTART from solution/" << resumed
+                std::cout << "  RESTART from instant " << resumed
                           << " -- acceleration history reset; iteration count"
                              " resumes at " << resumed << ".\n";
             }
         }
         if (onInstant_)
-            onInstant_(itBase, "seed", 0.0, false, streams_, tears);
+            onInstant_(itBase, "seed", 0.0, false, streams_, tears, topology_);
 
         // Final-instant state, set by whichever branch runs, emitted after the
         // final logged sweep (the converged answer == the canonical result).
@@ -2144,7 +2144,7 @@ int Flowsheet::solve(const DictPtr& dict,
                 // by the installed callback (empty => no-op).
                 if (onInstant_)
                     onInstant_(itBase + outerIt + 1, "wegstein", lastDelta,
-                               false, streams_, tears);
+                               false, streams_, tears, topology_);
                 if (lastDelta < tearTol && eConv) { converged = true; ++outerIt; break; }
                 sVector x_next = accel.step(x, gx);
                 // announce: this is an ACCEPTED extrapolated step, so a clip
@@ -2269,7 +2269,7 @@ int Flowsheet::solve(const DictPtr& dict,
                 {
                     residual(tr.x);   // place streams_ exactly at tr.x
                     onInstant_(itBase + tr.iteration + 1, "newtonOnTears",
-                               tr.normF, false, streams_, tears);
+                               tr.normF, false, streams_, tears, topology_);
                 }
             };
             auto res = solver::newtonND(residual, x0, ndo);
@@ -2308,7 +2308,7 @@ int Flowsheet::solve(const DictPtr& dict,
             const int finalInstNum =
                 (finalIteration == itBase) ? itBase + 1 : finalIteration;
             onInstant_(finalInstNum, finalSolver, finalResidual,
-                       finalConverged, streams_, tears);
+                       finalConverged, streams_, tears, topology_);
         }
 
         // Author bounds vs the PHYSICAL converged values (Slice 2): the cage

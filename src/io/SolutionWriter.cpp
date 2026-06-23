@@ -95,20 +95,80 @@ SolutionWriter::SolutionWriter(std::string caseDir,
                                std::vector<std::string> compNames)
     : cfg_(cfg), compNames_(std::move(compNames))
 {
-    solutionDir_ = (fs::path(caseDir) / "solution").string();
+    // FAITHFUL to OpenFOAM: instants are TIME DIRECTORIES at the CASE ROOT
+    // (`0/ 1/ 2/ 3/`, next to constant/ system/ and the sector folders), not
+    // under a solution/ wrapper.  The log + latest symlink also live here.
+    caseRoot_ = fs::path(caseDir).string();
 
     // D3 (reap litter): a prior run aborted mid-write leaves an orphan
-    // `.tmp_<it>` (or `.tmp_*`) dir under solution/.  It is never published
+    // `.tmp_<it>` (or `.tmp_*`) dir at the case root.  It is never published
     // (no rename happened), so it is pure garbage --- sweep it on construction
-    // so the tree is clean before the first write and `ls solution/` is honest.
+    // so the tree is clean before the first write and `ls` is honest.  We touch
+    // ONLY our own `.tmp_*` litter, never the case's versioned folders.
     std::error_code ec;
-    if (fs::exists(solutionDir_, ec))
-        for (const auto& e : fs::directory_iterator(solutionDir_, ec))
+    if (fs::exists(caseRoot_, ec))
+        for (const auto& e : fs::directory_iterator(caseRoot_, ec))
         {
             const std::string nm = e.path().filename().string();
             if (nm.rfind(".tmp_", 0) == 0)
                 fs::remove_all(e.path(), ec);
         }
+}
+
+// True iff `nm` is a non-empty, purely-numeric directory name (an instant).
+static bool isNumericName(const std::string& nm)
+{
+    return !nm.empty()
+        && std::all_of(nm.begin(), nm.end(),
+                       [](char c){ return std::isdigit(static_cast<unsigned char>(c)); });
+}
+
+// ---------------------------------------------------------------------------
+//  Classify every stream into a boundary role from the flattened units'
+//  ins/outs (the resolved GLOBAL dotted keys = the registry keys) + the tear
+//  set.  A stream produced-but-never-consumed is a PRODUCT; consumed-but-
+//  never-produced is a FEED; both => INTERIOR; the tear set overrides all
+//  (an internal torn stream).  Reuses the engine's own connectivity, no new
+//  DOF logic.  A stream that does not touch any unit (rare boundary alias)
+//  stays Interior (no tag) --- we never invent a role we can't justify.
+// ---------------------------------------------------------------------------
+std::map<std::string, SolutionWriter::Bc> SolutionWriter::classifyStreams(
+    const std::vector<FlatUnit>&                 units,
+    const std::set<std::string>&                 tearSet,
+    const std::map<std::string, ProcessStream>&  streams) const
+{
+    std::set<std::string> produced;   // appears as some unit's output
+    std::set<std::string> consumed;   // appears as some unit's input
+    for (const auto& u : units)
+    {
+        for (const auto& in  : u.ins)  consumed.insert(in);
+        for (const auto& out : u.outs) produced.insert(out);
+    }
+
+    std::map<std::string, Bc> roles;
+    for (const auto& [name, s] : streams)
+    {
+        (void)s;
+        if (tearSet.count(name))                    roles[name] = Bc::Tear;
+        else if (consumed.count(name) && !produced.count(name))
+                                                    roles[name] = Bc::Feed;
+        else if (produced.count(name) && !consumed.count(name))
+                                                    roles[name] = Bc::Product;
+        else                                        roles[name] = Bc::Interior;
+    }
+    return roles;
+}
+
+const char* SolutionWriter::bcWord(Bc bc)
+{
+    switch (bc)
+    {
+        case Bc::Feed:     return "fixedValue";   // Dirichlet: the DOF you OWN
+        case Bc::Product:  return "computed";     // read off the producing unit
+        case Bc::Tear:     return "tear";         // internal torn (tear true;)
+        case Bc::Interior: return "";             // no tag
+    }
+    return "";
 }
 
 // ---------------------------------------------------------------------------
@@ -119,15 +179,23 @@ SolutionWriter::SolutionWriter(std::string caseDir,
 //  per-species flows to F and divides for z --- no Sigma z = 1 renormalise,
 //  no information lost).  T/P/vf/H are SI-canonical scalars; H is labelled
 //  informational (H is the conserved truth, T the model-dependent readout).
+//
+//  The `bc` tag is the stream's prescribed/computed status read off the
+//  topology: a feed is `bc fixedValue;` (Dirichlet), a product `bc computed;`,
+//  a tear keeps the original `tear true;`, an interior stream gets no tag.
 // ---------------------------------------------------------------------------
 std::string SolutionWriter::renderStream(const std::string&   name,
                                          const ProcessStream&  s,
-                                         bool                  isTear) const
+                                         Bc                    bc) const
 {
     std::ostringstream o;
     o << "    \"" << name << "\"\n    {\n";
-    if (isTear)
-        o << "        tear        true;             // restart reseeds this stream\n";
+    if (bc == Bc::Tear)
+        o << "        tear        true;             // INTERNAL torn stream; restart reseeds it\n";
+    else if (bc == Bc::Feed)
+        o << "        bc          fixedValue;       // FEED (Dirichlet) -- the DOF you own\n";
+    else if (bc == Bc::Product)
+        o << "        bc          computed;         // PRODUCT -- read off the producing unit\n";
     o << "        T           " << sci(s.T)  << ";   // K\n";
     o << "        P           " << sci(s.P)  << ";   // Pa\n";
     o << "        vf          " << sci(s.vf) << ";   // -\n";
@@ -166,16 +234,139 @@ std::string SolutionWriter::renderStream(const std::string&   name,
 }
 
 // ---------------------------------------------------------------------------
+//  The read-only topology{} echo: the tear streams + the flattened
+//  who-feeds-whom connections.  Reconstructed from the units' ins/outs --- a
+//  connection is "producer.out -> consumer.in" where both endpoints carry the
+//  same GLOBAL stream key (the shared face).  This makes the instant SELF-
+//  describing without re-parsing the flowsheetDict tree, and is exactly WHY
+//  the topology authoring source need not be moved.
+// ---------------------------------------------------------------------------
+std::string SolutionWriter::renderTopology(
+    const std::vector<FlatUnit>&     units,
+    const std::vector<std::string>&  tears) const
+{
+    // Map each global stream to its producer unit (the unit emitting it) and
+    // each consumer.  A feed has no producer (it enters from the boundary); a
+    // product has no consumer (it leaves to the boundary).
+    std::map<std::string, std::string>               producerOf;
+    std::map<std::string, std::vector<std::string>>  consumersOf;
+    for (const auto& u : units)
+    {
+        for (const auto& out : u.outs) producerOf[out] = u.name;
+        for (const auto& in  : u.ins)  consumersOf[in].push_back(u.name);
+    }
+
+    std::ostringstream o;
+    o << "// ---- TOPOLOGY this instant was solved on (read-only echo of the "
+         "\"mesh\") ----\n"
+         "//   The instant is SELF-DESCRIBING: who-feeds-whom without re-parsing\n"
+         "//   the flowsheetDict.  Written by the engine, never hand-edited.\n";
+    o << "topology\n{\n";
+    o << "    tearStreams ( ";
+    for (const auto& t : tears) o << "\"" << t << "\" ";
+    o << ");\n";
+    o << "    connections                      // { from <unit|\"feed\"> ; via <stream> ; to <unit> ; }\n    (\n";
+    for (const auto& u : units)
+        for (const auto& in : u.ins)
+        {
+            // The face `in` flows from its producer (or, with no producer, a
+            // boundary feed) into u.  ALL values are QUOTED so the dict reads
+            // back through the engine's own tokenizer (a bare `(feed)` would be
+            // mis-tokenised as a list, and a dotted unit name is fine quoted).
+            auto pit = producerOf.find(in);
+            const std::string from = (pit != producerOf.end())
+                                   ? ("\"" + pit->second + "\"")
+                                   : "\"feed\"";
+            o << "        { from " << std::left << std::setw(30) << (from + ";")
+              << " via " << std::setw(36) << ("\"" + in + "\";")
+              << " to \"" << u.name << "\"; }\n";
+        }
+    o << "    );\n}\n";
+    return o.str();
+}
+
+// ---------------------------------------------------------------------------
+//  The per-unit byUnit/<dotted.unit>/ projection.  For each flattened unit:
+//    - a relative symlink `streams -> ../../streams` (the SINGLE source);
+//    - a generated `ports` dict naming this unit's inlets/outlets by their
+//      GLOBAL dotted key + bc role.
+//  A stream shared by two units (an interior face) appears in BOTH units'
+//  ports lists but is stored ONCE in <n>/streams.  Written under the instant's
+//  TMP dir so it publishes atomically with the streams payload (relative
+//  symlinks survive the rename of the parent dir).
+// ---------------------------------------------------------------------------
+void SolutionWriter::writeByUnit(
+    const std::string&                instTmpDir,
+    const std::vector<FlatUnit>&      units,
+    const std::map<std::string, Bc>&  roles) const
+{
+    std::error_code ec;
+    const fs::path byUnit = fs::path(instTmpDir) / "byUnit";
+    fs::create_directories(byUnit, ec);
+
+    auto roleWord = [&](const std::string& g) -> std::string {
+        auto it = roles.find(g);
+        if (it == roles.end()) return "interior";
+        switch (it->second)
+        {
+            case Bc::Feed:     return "fixedValue";
+            case Bc::Product:  return "computed";
+            case Bc::Tear:     return "tear";
+            case Bc::Interior: return "interior";
+        }
+        return "interior";
+    };
+
+    for (const auto& u : units)
+    {
+        const fs::path udir = byUnit / u.name;   // u.name is the dotted address
+        fs::create_directories(udir, ec);
+
+        // (1) the single-source symlink: byUnit/<unit>/streams -> ../../streams
+        const fs::path link = udir / "streams";
+        fs::remove(link, ec);
+        fs::create_symlink("../../streams", link, ec);
+        // (a symlink-hostile filesystem just drops the convenience link; the
+        //  ports dict below still carries every global key as plain text.)
+
+        // (2) the ports dict: which global keys are this unit's in/outlets.
+        std::ostringstream p;
+        p << "// byUnit/" << u.name << "/ports --- this unit's slice of the\n"
+             "// single-source ../../streams face-flux field.  Each entry names\n"
+             "// the GLOBAL stream key + its bc role; an interior stream shared\n"
+             "// with the neighbour unit also appears in THAT unit's ports.\n";
+        p << "unit        \"" << u.name << "\";\n";
+        p << "type        " << (u.type.empty() ? "?" : u.type) << ";\n";
+        p << "streams     \"../../streams\";       // the single-source projection target\n";
+        p << "inlets\n{\n";
+        for (std::size_t i = 0; i < u.ins.size(); ++i)
+            p << "    port" << i << " { global \"" << u.ins[i] << "\"; bc "
+              << roleWord(u.ins[i]) << "; }\n";
+        p << "}\n";
+        p << "outlets\n{\n";
+        for (std::size_t i = 0; i < u.outs.size(); ++i)
+            p << "    port" << i << " { global \"" << u.outs[i] << "\"; bc "
+              << roleWord(u.outs[i]) << "; }\n";
+        p << "}\n";
+
+        std::ofstream f((udir / "ports").string(), std::ios::out | std::ios::trunc);
+        f << p.str();
+        f.close();
+    }
+}
+
+// ---------------------------------------------------------------------------
 void SolutionWriter::writeInstant(
     const SolutionInstantMeta&                   meta,
     const std::map<std::string, ProcessStream>&  streams,
-    const std::vector<std::string>&              tears)
+    const std::vector<std::string>&              tears,
+    const std::vector<FlatUnit>&                 units)
 {
     std::error_code ec;
-    fs::create_directories(solutionDir_, ec);
+    fs::create_directories(caseRoot_, ec);
 
-    const fs::path instDir = fs::path(solutionDir_) / std::to_string(meta.iteration);
-    const fs::path tmpDir  = fs::path(solutionDir_)
+    const fs::path instDir = fs::path(caseRoot_) / std::to_string(meta.iteration);
+    const fs::path tmpDir  = fs::path(caseRoot_)
                            / (".tmp_" + std::to_string(meta.iteration));
 
     // Clean any stale tmp from a previous aborted write of THIS instant.
@@ -183,6 +374,12 @@ void SolutionWriter::writeInstant(
     fs::create_directories(tmpDir, ec);
 
     std::vector<std::string> tearList(tears.begin(), tears.end());
+    std::set<std::string> tearSet(tearList.begin(), tearList.end());
+
+    // Classify every stream into a bc role (feed/product/tear/interior) from
+    // the flattened topology --- mechanical, reuses the engine's connectivity.
+    const std::map<std::string, Bc> roles =
+        classifyStreams(units, tearSet, streams);
 
     // ---- Build the instant body (header + scalars + streams) ----------
     std::ostringstream body;
@@ -196,29 +393,30 @@ void SolutionWriter::writeInstant(
          << "   tol " << sci(meta.tolerance) << "\n"
 "| written: " << nowIso() << "\n"
 "| SNAPSHOT of the flowsheet stream registry at this iteration.  SI-canonical\n"
-"| (T [K], P [Pa], molarFlows [kmol/s]).  Tear inlets differ from computed\n"
-"| outlets by |r| until converged.  Reads back via the engine's own dict\n"
-"| tokenizer (never JSON/YAML).\n"
+"| (T [K], P [Pa], molarFlows [kmol/s]).  A stream IS the flux between two\n"
+"| units (OpenFOAM's surfaceField phi): stored ONCE here, projected per-unit\n"
+"| in byUnit/.  Tear inlets differ from computed outlets by |r| until\n"
+"| converged.  Reads back via the engine's own dict tokenizer (never JSON).\n"
 "\\*-----------------------------------------------------------------------------*/\n\n";
 
     body << "pseudoTime      " << meta.iteration << ";\n";
     body << "converged       " << (meta.converged ? "true" : "false") << ";\n";
     body << "tearResidual    " << sci(meta.tearResidual) << ";\n";
-    body << "tolerance       " << sci(meta.tolerance) << ";\n";
+    body << "tolerance       " << sci(meta.tolerance) << ";\n\n";
 
-    body << "tearStreams     ( ";
-    for (const auto& t : tearList) body << "\"" << t << "\" ";
-    body << ");\n\n";
-
-    std::set<std::string> tearSet(tearList.begin(), tearList.end());
+    // Read-only topology{} echo (the "mesh" this instant was solved on).
+    body << renderTopology(units, tearList) << "\n";
 
     body << "streams\n{\n";
     for (const auto& [name, s] : streams)
-        body << renderStream(name, s, tearSet.count(name) > 0);
+    {
+        auto rit = roles.find(name);
+        body << renderStream(name, s, rit != roles.end() ? rit->second : Bc::Interior);
+    }
     body << "}\n";
 
     // ---- Durable write: tmp file -> (fsync if flushEach) -> atomic rename ---
-    //  flushEach true : fsync the data before rename + fsync solution/ after
+    //  flushEach true : fsync the data before rename + fsync the case root after
     //                   => power-loss durable.
     //  flushEach false: skip the fsyncs (faster, abort-safe-only).
     //  Either way the rename is atomic, so a restart never reads a half write.
@@ -244,23 +442,34 @@ void SolutionWriter::writeInstant(
     if (cfg_.flushEach)
         fsyncPath(tmpFile, /*isDir=*/false);   // data on stable storage pre-rename
 
+    // ---- Per-unit byUnit/ projection (gated, written into the SAME tmp dir
+    //      so it publishes atomically with the streams payload) -------------
+    //  The relative symlinks (streams -> ../../streams) are valid the moment
+    //  the parent dir is renamed into place; we resolve them from instDir's
+    //  vantage, which the rename makes correct.
+    if (cfg_.byUnit)
+        writeByUnit(tmpDir.string(), units, roles);
+
     // Atomic publish: remove any existing instant dir, then rename tmp -> it.
     fs::remove_all(instDir, ec);
     fs::rename(tmpDir, instDir, ec);
     if (ec)
     {
-        // Rename can fail across exotic filesystems; fall back to a copy so we
-        // never silently lose the instant.
-        fs::create_directories(instDir, ec);
-        fs::copy_file(tmpFile, instDir / "streams",
-                      fs::copy_options::overwrite_existing, ec);
+        // Rename can fail across exotic filesystems; fall back to a recursive
+        // copy so we never silently lose the instant (streams + byUnit/).  The
+        // relative byUnit symlinks copy as symlinks (copy_symlinks), staying
+        // valid because the ../../streams target moves with them.
+        fs::remove_all(instDir, ec);
+        fs::copy(tmpDir, instDir,
+                 fs::copy_options::recursive | fs::copy_options::copy_symlinks
+                     | fs::copy_options::overwrite_existing, ec);
         fs::remove_all(tmpDir, ec);
     }
 
     // D1 second half: fsync the parent directory so the new entry survives a
     // power loss (the rename's metadata must reach stable storage too).
     if (cfg_.flushEach)
-        fsyncPath(solutionDir_, /*isDir=*/true);
+        fsyncPath(caseRoot_, /*isDir=*/true);
 
     appendLog(meta);
     refreshLatestSymlink(meta.iteration);
@@ -274,7 +483,7 @@ void SolutionWriter::writeInstant(
 // ---------------------------------------------------------------------------
 void SolutionWriter::appendLog(const SolutionInstantMeta& meta) const
 {
-    const fs::path logp = fs::path(solutionDir_) / "solution.log";
+    const fs::path logp = fs::path(caseRoot_) / "solution.log";
     const bool needHeader = !fs::exists(logp);
     std::ofstream f(logp.string(), std::ios::out | std::ios::app);
     if (needHeader)
@@ -305,7 +514,7 @@ void SolutionWriter::appendLog(const SolutionInstantMeta& meta) const
 // ---------------------------------------------------------------------------
 void SolutionWriter::refreshLatestSymlink(int iteration) const
 {
-    const fs::path link = fs::path(solutionDir_) / "latest";
+    const fs::path link = fs::path(caseRoot_) / "latest";
     std::error_code ec;
     fs::remove(link, ec);
     // Relative target so the tree stays portable if the case is moved.
@@ -313,8 +522,9 @@ void SolutionWriter::refreshLatestSymlink(int iteration) const
     if (ec)
     {
         // Filesystems without symlink support: drop a plain marker file so
-        // `latest` is still discoverable (restart also scans numbered dirs).
-        std::ofstream f((fs::path(solutionDir_) / "latest.txt").string(),
+        // `latest` is still discoverable (restart also scans numbered dirs by
+        // max-number, so this marker is purely a human convenience).
+        std::ofstream f((fs::path(caseRoot_) / "latest.txt").string(),
                         std::ios::out | std::ios::trunc);
         f << iteration << "\n";
     }
@@ -326,16 +536,18 @@ void SolutionWriter::purgeOldInstants(int currentIteration,
 {
     if (cfg_.purgeWrite <= 0) return;   // 0 => keep all
 
-    // Collect existing numbered instant dirs.
+    // Collect existing numbered instant dirs.  We iterate the CASE ROOT, which
+    // also holds the versioned sector folders (names), constant/, system/, and
+    // the case's .cho / dicts --- so the all-digit filter is load-bearing: ONLY
+    // purely-numeric directories are ours to manage.  A sector named e.g.
+    // CONCENTRATION is never numeric, so it can never be purged.
     std::vector<int> nums;
     std::error_code ec;
-    for (const auto& e : fs::directory_iterator(solutionDir_, ec))
+    for (const auto& e : fs::directory_iterator(caseRoot_, ec))
     {
         if (!e.is_directory()) continue;
         const std::string nm = e.path().filename().string();
-        if (nm.empty() || !std::all_of(nm.begin(), nm.end(),
-                                       [](char c){ return std::isdigit(static_cast<unsigned char>(c)); }))
-            continue;
+        if (!isNumericName(nm)) continue;
         // D6 (robustness): an all-digit name can still overflow int (e.g. a
         // pathological 30-digit dir).  stoi would throw out_of_range and abort
         // the run --- skip such names rather than crash.
@@ -357,22 +569,25 @@ void SolutionWriter::purgeOldInstants(int currentIteration,
     }
     for (int n : nums)
         if (!keepSet.count(n))
-            fs::remove_all(fs::path(solutionDir_) / std::to_string(n), ec);
+            fs::remove_all(fs::path(caseRoot_) / std::to_string(n), ec);
 }
 
 // ---------------------------------------------------------------------------
 int SolutionWriter::latestInstantNumber() const
 {
+    // OpenFOAM `latestTime` style: the highest-numbered instant dir at the case
+    // root that actually carries a `streams` payload.  The all-digit + streams
+    // filter means sector folders / constant/ / system/ are never candidates,
+    // and a half-written (payload-less) dir is skipped.  This is the source of
+    // truth for restart even when the `latest` symlink is missing.
     std::error_code ec;
-    if (!fs::exists(solutionDir_, ec)) return -1;
+    if (!fs::exists(caseRoot_, ec)) return -1;
     int best = -1;
-    for (const auto& e : fs::directory_iterator(solutionDir_, ec))
+    for (const auto& e : fs::directory_iterator(caseRoot_, ec))
     {
         if (!e.is_directory()) continue;
         const std::string nm = e.path().filename().string();
-        if (nm.empty() || !std::all_of(nm.begin(), nm.end(),
-                                       [](char c){ return std::isdigit(static_cast<unsigned char>(c)); }))
-            continue;
+        if (!isNumericName(nm)) continue;
         if (!fs::exists(e.path() / "streams")) continue;
         // D6 (robustness): guard the same overflow as purgeOldInstants.
         try { best = std::max(best, std::stoi(nm)); }
@@ -390,7 +605,7 @@ int SolutionWriter::restartFromLatest(
     const int n = latestInstantNumber();
     if (n < 0) return -1;
 
-    const fs::path inst = fs::path(solutionDir_) / std::to_string(n) / "streams";
+    const fs::path inst = fs::path(caseRoot_) / std::to_string(n) / "streams";
     DictPtr d;
     try { d = Dictionary::fromFile(inst.string()); }
     catch (const std::exception&) { return -1; }
@@ -446,7 +661,7 @@ int SolutionWriter::restartFromLatest(
 
     // R4: announce the TRUTH about the reseed.
     std::cout << "  RESTART: reseeded " << reseeded << " of " << tears.size()
-              << " tear stream(s) from solution/" << n << "/streams.\n";
+              << " tear stream(s) from instant " << n << "/streams.\n";
     for (const auto& m : missing)
         std::cout << "  WARNING: tear '" << m << "' is flagged in the saved "
                      "instant but no longer exists in the flowsheet --- NOT "
@@ -454,7 +669,7 @@ int SolutionWriter::restartFromLatest(
     if (reseeded == 0)
         std::cout << "  ERROR-LEVEL ADVISORY: restartFromLatest reseeded ZERO "
                      "tears --- the restart had NO effect; the solve proceeds "
-                     "from plain auto-init.  (No tear in solution/" << n
+                     "from plain auto-init.  (No tear in instant " << n
                   << "/streams matched a current tear stream.)\n";
     return n;
 }

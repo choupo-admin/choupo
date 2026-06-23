@@ -134,6 +134,11 @@ public:
     //    - converged flag (true only for the final instant)
     //    - the full stream registry (read-only snapshot)
     //    - the tear-stream names (so the writer can flag them)
+    //    - the FLATTENED unit interface (FlatUnit: name/type/ins/outs), so the
+    //      writer can echo the topology{} (who-feeds-whom) and project the
+    //      shared face-fluxes into each unit's byUnit/ports view.  A stream is
+    //      the flux between two units --- OpenFOAM's surfaceScalarField `phi`,
+    //      stored ONCE per face and projected into the owner/neighbour cells.
     //  The writer lives OUTSIDE the Flowsheet (in main.cpp), so the engine
     //  has no I/O policy baked in --- it only reports its state.
     using InstantCallback = std::function<void(
@@ -142,7 +147,8 @@ public:
         scalar                                       tearResidual,
         bool                                         converged,
         const std::map<std::string, ProcessStream>&  streams,
-        const std::vector<std::string>&              tears)>;
+        const std::vector<std::string>&              tears,
+        const std::vector<FlatUnit>&                 units)>;
     void setInstantCallback(InstantCallback cb) { onInstant_ = std::move(cb); }
 
     // ---- Restart hook (Slice 1) -------------------------------------------

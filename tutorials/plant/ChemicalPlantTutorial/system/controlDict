@@ -17,14 +17,32 @@ verbosity     3;
 // drying.SD, ...).
 reports { streamTable {}  massBalance {}  energyBalance {}  utilities {}  spreadsheet {} }
 
-// ---- Solution directory (OpenFOAM-style per-iteration stream snapshots) -----
-//  PILOT of the solution-directory discipline.  Each retained recycle OUTER
-//  iteration ("pseudo-time") is written as one plain Choupo dict under
-//  solution/<it>/streams (gitignored, run output).  `ls solution/` is the
-//  convergence history at a glance; every instant reads back through the
-//  engine's own dict tokenizer.  Each instant is published via an atomic
-//  rename, so a restart never reads a half write; with `flushEach true` the
-//  data + directory are fsync'd, so an instant also survives a power loss.
+// ---- Solution instants (OpenFOAM-style per-iteration stream snapshots) -------
+//  PILOT of the solution-directory discipline.  FAITHFUL to OpenFOAM, each
+//  retained recycle OUTER iteration ("pseudo-time") is a NUMBERED TIME
+//  DIRECTORY at THIS case root (0/ 1/ 2/ 3/, right next to constant/ system/
+//  and the sector folders CONCENTRATION/ DRYING/ FERMENTATION/ JuiceSplitter/
+//  -- "the time speaks for itself").  These instant dirs are gitignored run
+//  output; `ls` shows the convergence history at a glance.  The loader is NOT
+//  confused by them: it loads only the DECLARED `children (...)` that carry a
+//  system/flowsheetDict, never a numeric dir.
+//
+//  Inside each <n>/:
+//    streams    -- the global field file.  A stream IS the flux between two
+//                  units (OpenFOAM's surfaceField phi): stored ONCE here.
+//                  Carries a read-only topology{} echo (who-feeds-whom), a
+//                  per-stream bc tag (fixedValue feed / computed product /
+//                  tear true), and the lossless T/P/vf/H + molarFlows body.
+//                  Reads back through the engine's own dict tokenizer.
+//    byUnit/<dotted.unit>/ -- per-unit projection: a `streams -> ../../streams`
+//                  symlink (single source) + a `ports` dict naming this unit's
+//                  inlets/outlets by global key + bc role.  A shared interior
+//                  stream appears in BOTH touching units' ports but is stored
+//                  ONCE in streams.
+//  `latest` symlinks the newest instant; `solution.log` (case root) is the
+//  one-line-per-instant index.  Each instant publishes via an atomic rename,
+//  so a restart never reads a half write; with flushEach it is power-loss
+//  durable.  Restart finds "latest" by max instant number (OpenFOAM style).
 //
 //  ABSENT this whole block => the feature is OFF and the run is byte-identical
 //  to before.  This is the ONLY case that opts in.
@@ -33,7 +51,8 @@ solutionControl
     write           true;          // MASTER opt-in.  Absent / false => zero change.
     writeInterval   1;             // EVERY iteration (this is a demo pilot; use 5+ on heavy cases)
     purgeWrite      3;             // keep last N numbered instants (+ 0/ and converged)
-    startFrom       startTime;     // startTime (fresh) | latestTime (restart from solution/latest)
+    startFrom       startTime;     // startTime (fresh) | latestTime (restart from the latest instant)
     flushEach       true;          // true: fsync data+dir => power-loss durable.
                                    //   false: skip fsync (faster, abort-safe only).
+    byUnit          true;          // write the per-unit byUnit/<unit>/ projection (symlink + ports)
 }

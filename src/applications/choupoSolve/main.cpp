@@ -167,7 +167,8 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
             [&solWriter, interval, recTol]
             (int it, const char* solver, scalar residual, bool converged,
              const std::map<std::string, ProcessStream>& streams,
-             const std::vector<std::string>& tears)
+             const std::vector<std::string>& tears,
+             const std::vector<FlatUnit>& units)
             {
                 // Cadence: always write the seed and the final converged
                 // instant; otherwise every `writeInterval`-th iteration.
@@ -180,7 +181,7 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
                 m.tearResidual = residual;
                 m.tolerance    = recTol;
                 m.converged    = converged;
-                solWriter->writeInstant(m, streams, tears);
+                solWriter->writeInstant(m, streams, tears, units);
             });
 
         if (ctl.startFrom == "latestTime")
@@ -424,7 +425,9 @@ try
     // controlDict `solutionControl {... }` block (OpenFOAM-style solution
     // directory).  ABSENT => the feature is OFF and the run is byte-identical
     // to before.  Present with `write true;` => durable per-recycle-iteration
-    // stream snapshots under solution/, opt-in restart, purge ring-buffer.
+    // stream snapshots in NUMBERED TIME DIRECTORIES at the case root (0/ 1/ ...
+    // next to constant/ system/ and the sector folders), opt-in restart, purge
+    // ring-buffer, + a per-unit byUnit/ projection.
     SolutionControl solutionCtl;            // defaults: write=false (OFF)
     bool haveSolutionCtl = false;
     if (controlDict->found("solutionControl"))
@@ -440,12 +443,16 @@ try
             sc->lookupWordOrDefault("startFrom", "startTime");
         solutionCtl.flushEach =
             (sc->lookupWordOrDefault("flushEach", "true") == "true");
+        solutionCtl.byUnit =
+            (sc->lookupWordOrDefault("byUnit", "true") == "true");
         haveSolutionCtl = solutionCtl.write;
         if (solutionCtl.write)
             std::cout << "solutionControl:   ON (write every "
                       << solutionCtl.writeInterval << " iter, purgeWrite "
                       << solutionCtl.purgeWrite << ", startFrom "
-                      << solutionCtl.startFrom << ") -> solution/\n";
+                      << solutionCtl.startFrom << ", byUnit "
+                      << (solutionCtl.byUnit ? "true" : "false")
+                      << ") -> instant dirs at the case root\n";
     }
 
     const int verbosity = static_cast<int>(controlDict->lookupScalarOrDefault("verbosity", 3));

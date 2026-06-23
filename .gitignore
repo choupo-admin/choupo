@@ -31,9 +31,26 @@ src/**/*.d
 tutorials/*/*/reports/
 # fractal plants nest sectors/units arbitrarily deep -> ignore reports/ at any depth
 tutorials/**/reports/
-# solution/ is run output (OpenFOAM-style per-iteration stream snapshots,
-# controlDict solutionControl{} block) -- gitignored at any depth.
-tutorials/**/solution/
+# Solution instants are run output (OpenFOAM-style per-iteration stream
+# snapshots, controlDict solutionControl{} block).  FAITHFUL to OpenFOAM, an
+# instant is a NUMBERED TIME DIRECTORY at the case root (0/ 1/ 2/ ... next to
+# constant/ system/ and the fractal sector folders) -- NOT under a solution/
+# wrapper.  We ignore purely-numeric directories (the instants) WITHOUT
+# touching sector folders, which always have alphabetic names.  No tracked
+# path anywhere in the repo has a purely-numeric directory component, so this
+# is safe across all cases; the per-digit-count patterns below match a
+# numeric dir at any depth.
+**/[0-9]/
+**/[0-9][0-9]/
+**/[0-9][0-9][0-9]/
+**/[0-9][0-9][0-9][0-9]/
+**/[0-9][0-9][0-9][0-9][0-9]/
+**/[0-9][0-9][0-9][0-9][0-9][0-9]/
+# the solution log + latest convenience symlink/marker live at the case root
+**/solution.log
+**/latest
+**/latest.txt
+# legacy: the prior Slice-0 layout wrote a solution/ wrapper -- keep ignoring it
 **/solution/
 # Solver-generated CSVs (sweep / optim / trajectory / propertyScan /
 # fit_history / parity / per-component property output) -- the filename
