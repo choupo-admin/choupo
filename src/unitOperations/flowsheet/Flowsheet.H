@@ -194,6 +194,19 @@ public:
     const std::map<std::string, std::vector<scalar>>& unitResiduals() const
     { return unitResiduals_; }
 
+    // GLOBAL recycle-closure residuals, one entry per OUTER recycle iteration
+    // (the same physical, feed-normalised mass / energy tear imbalance that
+    // feeds the CLI residual plot via residuals.dat -- see computeTearImbalance
+    // in Flowsheet.cpp).  Empty for a tear-free flowsheet (no recycle loop).
+    // These march to ~0 alongside the dimensionless tear residual and are
+    // surfaced as two named curves in SimulationResult.convergence so the GUI
+    // convergence plot draws the mass / energy closure, not just per-unit
+    // inner residuals.  Reused (not recomputed) from the recycle loop.
+    const std::vector<scalar>& globalMassResiduals() const
+    { return globalMassResiduals_; }
+    const std::vector<scalar>& globalEnergyResiduals() const
+    { return globalEnergyResiduals_; }
+
     // 1-D internal profile (axial sweep / stage table) for units that
     // expose one.  Used by the GUI's profile plot.
     const std::map<std::string, UnitProfile>& unitProfiles() const
@@ -226,6 +239,9 @@ private:
     std::vector<EnergyWire>                                energyWires_;
     std::map<std::string, std::map<std::string, scalar>>   unitKpis_;
     std::map<std::string, std::vector<scalar>>             unitResiduals_;
+    // GLOBAL recycle-closure residual history (one per outer iteration).
+    std::vector<scalar>                                    globalMassResiduals_;
+    std::vector<scalar>                                    globalEnergyResiduals_;
     std::map<std::string, UnitProfile>                     unitProfiles_;
     DictPtr solverDict_;
     DictPtr reactionsDict_;

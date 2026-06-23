@@ -112,6 +112,41 @@ describe("extractStructured", () => {
     expect("emptyOne" in out.kpis).toBe(false);
   });
 
+  it("maps the convergence object -> curves, including the GLOBAL mass/energy curves", () => {
+    // The recycle loop emits two GLOBAL closure curves alongside the per-unit
+    // inner residuals; both must survive the map -> ConvergenceCurve[] shaping
+    // generically (they are not special-cased anywhere).
+    const payload = {
+      version: 1,
+      converged: true,
+      components: [],
+      streams: {},
+      kpis: {},
+      convergence: {
+        "reactor (Newton)": [1.18e-2, 8.42e-4, 4.1e-6],
+        "Mass balance (global)": [3.0e-2, 5.0e-4, 7.0e-8],
+        "Energy balance (global)": [2.1e-2, 3.3e-4, 9.0e-8],
+        emptyOne: [],   // empty -> dropped
+      },
+    };
+    const log = `${BEGIN_MARK}\n${JSON.stringify(payload)}\n${END_MARK}\n`;
+    const out = extractStructured(log, emptyCase);
+
+    const labels = out.convergence.map((c) => c.label);
+    // Empty curve dropped; the rest present (sorted alphabetically by label).
+    expect(labels).not.toContain("emptyOne");
+    expect(labels).toContain("Mass balance (global)");
+    expect(labels).toContain("Energy balance (global)");
+    expect(labels).toContain("reactor (Newton)");
+
+    const mass = out.convergence.find((c) => c.label === "Mass balance (global)");
+    const energy = out.convergence.find((c) => c.label === "Energy balance (global)");
+    expect(mass?.residuals).toEqual([3.0e-2, 5.0e-4, 7.0e-8]);
+    expect(energy?.residuals).toEqual([2.1e-2, 3.3e-4, 9.0e-8]);
+    // The closure residual marches toward ~0 (last << first).
+    expect(mass!.residuals[mass!.residuals.length - 1]!).toBeLessThan(mass!.residuals[0]!);
+  });
+
   it("extracts per-operation fit diagnostics, dropping non-finite values", () => {
     const payload = {
       version: 1,

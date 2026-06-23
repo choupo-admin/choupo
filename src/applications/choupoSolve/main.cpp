@@ -208,6 +208,16 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
     r.energyWires = flowsheet.energyWires();
     r.modelBoundaries = flowsheet.modelBoundaries();
     r.convergence = flowsheet.unitResiduals();
+    // GLOBAL recycle-closure curves: the same physical, feed-normalised mass /
+    // energy tear residuals the CLI plot reads from residuals.dat, surfaced as
+    // two named convergence curves so the GUI's convergence plot draws the
+    // global mass/energy closure alongside the per-unit inner residuals.  Empty
+    // for a tear-free flowsheet (no recycle loop) -> the GUI silently drops
+    // empty curves, so only recycle cases gain the two extra lines.
+    if (!flowsheet.globalMassResiduals().empty())
+        r.convergence["Mass balance (global)"] = flowsheet.globalMassResiduals();
+    if (!flowsheet.globalEnergyResiduals().empty())
+        r.convergence["Energy balance (global)"] = flowsheet.globalEnergyResiduals();
     r.profiles    = flowsheet.unitProfiles();
     r.converged   = (rc == 0);
     r.advisories  = AdvisoryLog::instance().entries();   // drain this pass's advisories

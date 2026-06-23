@@ -1938,6 +1938,8 @@ int Flowsheet::solve(const DictPtr& dict,
     topology_.clear();
     unitKpis_.clear();
     unitResiduals_.clear();
+    globalMassResiduals_.clear();
+    globalEnergyResiduals_.clear();
     unitProfiles_.clear();
 
     // ---- Seed the stream registry --------------------------------------
@@ -2238,15 +2240,16 @@ int Flowsheet::solve(const DictPtr& dict,
         // ---- Feed-normalisers for the physical residual plot --------------
         //  Computed ONCE from the frozen feeds (tears excluded), used to turn
         //  each iteration's tear mass/energy mismatch into a dimensionless,
-        //  plant-relative residual.  Only when the instant writer is installed
-        //  (solutionControl on) -- skipped entirely otherwise, so the recycle
-        //  loop is byte-for-byte unchanged when the feature is off.
-        FeedScales feedScales;
-        if (onInstant_)
-        {
-            const std::set<std::string> feedTearSet(tears.begin(), tears.end());
-            feedScales = computeFeedScales(streams_, topology_, feedTearSet, thermo);
-        }
+        //  plant-relative residual.  Computed whenever there is a recycle loop:
+        //  the GLOBAL mass / energy closure residuals are accumulated every
+        //  outer iteration (globalMassResiduals_ / globalEnergyResiduals_) so
+        //  the GUI convergence plot can draw them WITHOUT the solution-directory
+        //  writer being installed -- the same physical residual the CLI plot
+        //  reads from residuals.dat.  The cost is one tear-stream enthalpy/mass
+        //  comparison per outer iteration (no extra sweep).
+        const std::set<std::string> feedTearSet(tears.begin(), tears.end());
+        const FeedScales feedScales =
+            computeFeedScales(streams_, topology_, feedTearSet, thermo);
 
         // ---- Solution-directory: restart + seed (opt-in, default off) ----
         //  The hooks are empty unless main.cpp installed them (solutionControl
@@ -2304,18 +2307,17 @@ int Flowsheet::solve(const DictPtr& dict,
             {
                 // Snapshot the ASSUMED tear streams (pre-sweep) so the physical
                 // mass/energy imbalance can compare computed-vs-assumed below.
-                // Only when the writer is installed (solutionControl on); else
-                // this is skipped entirely => zero cost when the feature is off.
+                // Always taken: the GLOBAL closure residual feeds the GUI plot,
+                // not just the (opt-in) solution-directory writer.
                 std::map<std::string, ProcessStream> assumedTears;
-                if (onInstant_)
-                    for (const auto& t : tears) assumedTears[t] = streams_.at(t);
+                for (const auto& t : tears) assumedTears[t] = streams_.at(t);
                 sweep(/*quiet=*/true);
                 sVector gx = packTears(tears, streams_);
                 lastDelta = normL2(gx, x);
-                TearImbalance imb;
-                if (onInstant_)
-                    imb = computeTearImbalance(
-                        assumedTears, streams_, tears, thermo, feedScales);
+                const TearImbalance imb = computeTearImbalance(
+                    assumedTears, streams_, tears, thermo, feedScales);
+                globalMassResiduals_.push_back(imb.mass);
+                globalEnergyResiduals_.push_back(imb.energy);
                 // Energy-tear convergence: RELATIVE (duties are ~1e6 W, so an
                 // absolute L2 tol would never trip).
                 sVector curE = energyVec();
@@ -2454,45 +2456,50 @@ int Flowsheet::solve(const DictPtr& dict,
                 std::cout << "  " << std::setw(4) << tr.iteration
                           << "  " << std::scientific << std::setprecision(3)
                           << std::setw(11) << tr.normF << "\n";
-                // Solution-directory tap.  `tr.normF` describes the iterate
+                // GLOBAL closure residual.  `tr.normF` describes the iterate
                 // `tr.x`; the last residual call inside newtonND left streams_
-                // at a line-search probe, NOT at tr.x.  Re-sync to tr.x so the
-                // written instant matches the reported residual (one extra
-                // sweep, only when the writer is installed).  Cadence/final are
-                // decided by the installed callback (empty => no-op).
-                if (onInstant_)
+                // at a line-search probe, NOT at tr.x.  Re-sync to tr.x (one
+                // extra sweep) so the physical mass/energy imbalance compares
+                // the ASSUMED tear (tr.x) against its image G(tr.x), matching
+                // the reported residual.  Done EVERY outer iteration so the GUI
+                // convergence plot has the global curves even when the
+                // solution-directory writer is off; the writer (when installed)
+                // reuses the same imbalance.
+                residual(tr.x);   // place streams_ exactly at G(tr.x)
+                // Decode the ASSUMED tear streams from tr.x (same layout as
+                // packFlow: per tear, nc component flows then T) to measure
+                // the physical computed-vs-assumed mass/energy imbalance.
+                std::map<std::string, ProcessStream> assumedTears;
                 {
-                    residual(tr.x);   // place streams_ exactly at tr.x => G(x)
-                    // Decode the ASSUMED tear streams from tr.x (same layout as
-                    // packFlow: per tear, nc component flows then T) to measure
-                    // the physical computed-vs-assumed mass/energy imbalance.
-                    std::map<std::string, ProcessStream> assumedTears;
+                    std::size_t off = 0;
+                    for (const auto& name : tears)
                     {
-                        std::size_t off = 0;
-                        for (const auto& name : tears)
-                        {
-                            ProcessStream a = streams_.at(name);   // template (P, etc.)
-                            scalar F = 0.0; std::vector<scalar> Fi(nc);
-                            for (std::size_t i = 0; i < nc; ++i)
-                            { Fi[i] = std::max(tr.x[off++], 0.0); F += Fi[i]; }
-                            a.F = F;
-                            a.z.assign(nc, 0.0);
-                            for (std::size_t i = 0; i < nc; ++i)
-                                a.z[i] = (F > 0.0) ? Fi[i] / F : 0.0;
-                            a.T = tr.x[off++];
-                            // a.vf carries over from the template (computed) as
-                            // the phase proxy; computeTearImbalance recomputes
-                            // the enthalpy from (T,P,vf,z) consistently on both
-                            // sides, so we need not set a.H here.
-                            assumedTears[name] = a;
-                        }
+                        ProcessStream a = streams_.at(name);   // template (P, etc.)
+                        scalar F = 0.0; std::vector<scalar> Fi(nc);
+                        for (std::size_t i = 0; i < nc; ++i)
+                        { Fi[i] = std::max(tr.x[off++], 0.0); F += Fi[i]; }
+                        a.F = F;
+                        a.z.assign(nc, 0.0);
+                        for (std::size_t i = 0; i < nc; ++i)
+                            a.z[i] = (F > 0.0) ? Fi[i] / F : 0.0;
+                        a.T = tr.x[off++];
+                        // a.vf carries over from the template (computed) as
+                        // the phase proxy; computeTearImbalance recomputes
+                        // the enthalpy from (T,P,vf,z) consistently on both
+                        // sides, so we need not set a.H here.
+                        assumedTears[name] = a;
                     }
-                    const TearImbalance imb = computeTearImbalance(
-                        assumedTears, streams_, tears, thermo, feedScales);
+                }
+                const TearImbalance imb = computeTearImbalance(
+                    assumedTears, streams_, tears, thermo, feedScales);
+                globalMassResiduals_.push_back(imb.mass);
+                globalEnergyResiduals_.push_back(imb.energy);
+                // Solution-directory tap (cadence/final decided by the
+                // installed callback; empty => no-op).
+                if (onInstant_)
                     onInstant_(itBase + tr.iteration + 1, "newtonOnTears",
                                tr.normF, imb.mass, imb.energy,
                                false, streams_, tears, topology_);
-                }
             };
             auto res = solver::newtonND(residual, x0, ndo);
             unpackFlow(res.x, /*announce=*/true);   // accepted solution: clips here are real
@@ -2513,17 +2520,17 @@ int Flowsheet::solve(const DictPtr& dict,
         // One final pass with full logging (common to both solvers).
         std::cout << "\n----- Final pass with full unit logging -----\n";
         // Snapshot the converged tear streams so the FINAL instant's physical
-        // residuals reflect the (near-zero) mismatch of this last sweep (only
-        // when the writer is installed; skipped otherwise => no extra cost).
+        // residuals reflect the (near-zero) mismatch of this last sweep.  Taken
+        // always: the final point is the converged tail of the GUI plot's
+        // global mass/energy curves (and the writer reuses it when installed).
         std::map<std::string, ProcessStream> finalAssumedTears;
-        if (onInstant_)
-            for (const auto& t : tears)
-                if (streams_.count(t)) finalAssumedTears[t] = streams_.at(t);
+        for (const auto& t : tears)
+            if (streams_.count(t)) finalAssumedTears[t] = streams_.at(t);
         sweep(/*quiet=*/false);
-        TearImbalance finalImb;
-        if (onInstant_)
-            finalImb = computeTearImbalance(
-                finalAssumedTears, streams_, tears, thermo, feedScales);
+        const TearImbalance finalImb = computeTearImbalance(
+            finalAssumedTears, streams_, tears, thermo, feedScales);
+        globalMassResiduals_.push_back(finalImb.mass);
+        globalEnergyResiduals_.push_back(finalImb.energy);
 
         // Solution-directory: write the converged final instant (tagged
         // converged true;).  This is the canonical result that feeds the JSON
