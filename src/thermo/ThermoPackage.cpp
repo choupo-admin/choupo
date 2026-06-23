@@ -34,7 +34,9 @@ License
 #include "activityCoefficient/ElectrolyteActivity.H"
 #include "core/Constants.H"
 #include "henrysLaw/HenrysLawRegistry.H"
+#include "solution/SolutionRegistry.H"
 #include "propertyOps/DerivedClosures.H"   // closures::rackettVliq (liquid Vm)
+#include "core/Advisory.H"
 
 #include <cmath>
 #include <cstdio>
@@ -602,6 +604,56 @@ scalar ThermoPackage::H_real(scalar T, scalar P_Pa, const sVector& y) const
          + (eos_ ? eos_->H_residual(T, P_Pa, y) : 0.0);
 }
 
+// Default-solvent resolver for the aqueous-solution tier.  A DISSOLVED
+// molecular solute (nonvolatile, crystalline-Hf datum) whose heat of solution
+// lives in data/standards/solution/<solute>-<solvent>.dat sits one rung ABOVE
+// the crystal on the SAME elements floor:  h_aq = Hf_crystal + dHsoln + INTcp.
+// This resolves WHICH solvent the dHsoln is read for and returns dHsoln [J/mol]
+// (nullopt when the component is not such a solute).
+std::optional<scalar> ThermoPackage::dHsolnForSolute(std::size_t i) const
+{
+    if (i >= n()) return std::nullopt;
+    const Component& c = components_[i];
+
+    // Only a dissolved molecular solute with a CRYSTALLINE formation datum
+    // (gibbsFormation.phase solid) takes the aqueous rung.  Volatile species
+    // and liquid/gas-datum components are untouched (byte-identical path).
+    if (!c.isNonvolatile() || !c.hasGibbsData() || c.naturalPhase() != "solid")
+        return std::nullopt;
+
+    // Resolve the solvent.  The package's declared `solvent` wins; when none
+    // is named, DEFAULT to water and ANNOUNCE it (deduped, every run).
+    const bool   defaulted = solventName_.empty();
+    const std::string solvent = defaulted ? "water" : solventName_;
+
+    if (SolutionRegistry::has(c.name(), solvent))
+    {
+        const SolutionPair& sp = SolutionRegistry::byPair(c.name(), solvent);
+        if (defaulted)
+            if (AdvisoryLog::instance().add("thermo", "info", "solution",
+                    "dHsoln(" + c.name() + "): solvent not named -> DEFAULT = water; "
+                    "solution/" + c.name() + "-water.dat"
+                    + (sp.source().empty() ? "" : "  [" + sp.source() + "]")))
+                std::cerr << "[thermo] dHsoln(" << c.name()
+                          << "): solvent not named -> DEFAULT = water; "
+                          << "solution/" << c.name() << "-water.dat\n";
+        return sp.dHsoln();
+    }
+
+    // Off-default solvent named, but no matching pair -> FAIL WITH A REMEDY
+    // (never silently substitute the water number).
+    if (!defaulted)
+        throw std::runtime_error(
+            "dHsoln(" + c.name() + ") requested in solvent '" + solvent
+            + "'; only the standard solution/ pairs exist (e.g. "
+            + c.name() + "-water).  Provide solution/" + c.name() + "-"
+            + solvent + ".dat or set `solvent water;` explicitly.");
+
+    // Default solvent (water) but no sucrose-water-style entry: this solute
+    // simply has no curated heat of solution yet -> stays on the crystal rung.
+    return std::nullopt;
+}
+
 scalar ThermoPackage::H_liquid_formation(scalar T, const sVector& x) const
 {
     // Pure-fluid override (IF97 et al.): a phase effectively pure in a flagged
@@ -650,8 +702,37 @@ scalar ThermoPackage::H_liquid_formation(scalar T, const sVector& x) const
     }
     scalar h = 0.0;
     for (std::size_t i = 0; i < n(); ++i)
+    {
+        if (x[i] <= 0.0) continue;
+        // DISSOLVED-vs-CRYSTALLINE rung (aqueous-solution tier): a nonvolatile
+        // solute with a crystalline Hf datum and a solution/<solute>-<solvent>
+        // entry sits one rung ABOVE the crystal on the SAME elements floor:
+        //   h_aq(T) = Hf_crystal + dHsoln + INT_298^T cp_aq dT'
+        // (cp_aq from the solution/ entry when given, else the component's
+        // liquidHeatCapacity -- the dissolved-solute Cp).  This is what lets
+        // the elements datum LIVE for a sugar plant: sucrose has no ideal-gas
+        // Cp / Watson Hvap, so the h_pure_ig - Hvap leg would throw and the
+        // whole balance would silently fall back to the sensible datum (and
+        // miss the heat of crystallisation).  Volatile species are UNCHANGED.
+        if (auto dHsoln = dHsolnForSolute(i))
+        {
+            const Component& c = components_[i];
+            scalar cpAq;
+            if (SolutionRegistry::has(c.name(),
+                    solventName_.empty() ? "water" : solventName_)
+             && SolutionRegistry::byPair(c.name(),
+                    solventName_.empty() ? "water" : solventName_).hasCpAq())
+                cpAq = SolutionRegistry::byPair(c.name(),
+                    solventName_.empty() ? "water" : solventName_).cpAq()
+                    * (T - 298.15);
+            else
+                cpAq = c.hasCpLiquid() ? c.cpLiquid().H(T, 298.15) : 0.0;
+            h += x[i] * (c.Hf298() + *dHsoln + cpAq);
+            continue;
+        }
         h += x[i] * (components_[i].h_pure_ig(T)
                      - components_[i].Hvap_latent(T));
+    }
     // MOLECULAR twin (spec sec.8b): for a molecular mixture the symmetric
     // frame IS correct -- ideal mixing + H^E from the SAME G^E that gives the
     // VLE.  Gated exactly like the electrolyte branch: only when EVERY pair of

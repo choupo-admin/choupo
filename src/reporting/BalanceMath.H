@@ -121,20 +121,63 @@ inline std::optional<FlashSolution> streamSplit(const ProcessStream& s,
     return std::nullopt;
 }
 
+// Enthalpy [kW] carried by the CRYSTALLINE phase (the per-component molar
+// array s.s[], kmol/s) on the ELEMENTS datum: Σ s.s[i]·h°_i(solid, T) =
+// Σ s.s[i]·(Hf_crystal,i + ∫_298^T cp_solid,i dT').  This is the SAME solid
+// formation leg the crystalliser / Component use (h_formation(T,"solid")).
+// Without it the energy balance silently DROPS the crystals it just made --
+// the +677 kW non-closure on the sugar crystalliser -- even though the MASS
+// balance counts them (componentMassFlow reads s.s[] at :65).  Throws (->
+// caller falls back to sensible) only if a crystallising species lacks the
+// solid formation datum, which the elements datum genuinely cannot represent.
+inline scalar solidH_elements(const ProcessStream& s, const ThermoPackage& thermo)
+{
+    scalar h = 0.0;
+    for (std::size_t i = 0; i < s.s.size() && i < thermo.n(); ++i)
+        if (s.s[i] > 0.0)
+            h += s.s[i] * thermo.comp(i).h_formation(s.T, "solid");
+    return h;   // kW  (s.s [kmol/s] x h_formation [J/mol == kJ/kmol] = kW)
+}
+
+// Enthalpy [kW] of the crystalline phase on the SENSIBLE+latent datum
+// (per-component zero at Tref): Σ s.s[i]·∫_Tref^T cp_solid,i dT'.  Uses the
+// true solid Cp when the .dat carries a solidHeatCapacity{} block, else the
+// legacy Cp_liquid fallback (matches h_formation's cpSolidIntegral), else 0
+// for a Cp-less particulate.  The crystal mass was likewise dropped here
+// before -- harmless on the per-component-zero datum, but still incorrect.
+inline scalar solidH_sensible(const ProcessStream& s, const ThermoPackage& thermo,
+                              scalar Tref)
+{
+    scalar h = 0.0;
+    for (std::size_t i = 0; i < s.s.size() && i < thermo.n(); ++i)
+    {
+        if (s.s[i] <= 0.0) continue;
+        const auto& c = thermo.comp(i);
+        if      (c.hasCpSolid())  h += s.s[i] * c.cpSolid().H(s.T, Tref);
+        else if (c.hasCpLiquid()) h += s.s[i] * c.cpLiquid().H(s.T, Tref);
+    }
+    return h;
+}
+
 // ELEMENTS reference (carries Hf -> reaction heat shows up).  nullopt if
-// any component lacks gibbsFormation / Watson data.
+// any component lacks gibbsFormation / Watson data.  The fluid phase (s.z)
+// plus the crystalline phase (s.s[]) are BOTH counted so the balance closes
+// over the crystals exactly as the mass balance does.
 inline std::optional<scalar> streamH_elements(const ProcessStream& s,
                                               const ThermoPackage& thermo)
 {
     try {
+        scalar H;
         if (auto sp = streamSplit(s, thermo))
         {
             const scalar h =
                 (1.0 - sp->V_over_F) * thermo.H_stream_formation(s.T, s.P, 0.0, sp->x)
               +        sp->V_over_F  * thermo.H_stream_formation(s.T, s.P, 1.0, sp->y);
-            return s.F * h;
+            H = s.F * h;
         }
-        return s.F * thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
+        else
+            H = s.F * thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
+        return H + solidH_elements(s, thermo);
     }
     catch (const std::exception&) { return std::nullopt; }
 }
@@ -146,17 +189,22 @@ inline std::optional<scalar> streamH_sensible(const ProcessStream& s,
                                               scalar Tref)
 {
     try {
+        scalar H;
         if (auto sp = streamSplit(s, thermo))
         {
             const scalar h =
                 (1.0 - sp->V_over_F) * thermo.Hliquid(s.T, sp->x, Tref)
               +        sp->V_over_F  * thermo.Hvapour(s.T, sp->y, Tref);
-            return s.F * h;
+            H = s.F * h;
         }
-        const scalar h = (s.vf >= 0.5)
-            ? thermo.Hvapour(s.T, s.z, Tref)
-          : thermo.Hliquid(s.T, s.z, Tref);
-        return s.F * h;
+        else
+        {
+            const scalar h = (s.vf >= 0.5)
+                ? thermo.Hvapour(s.T, s.z, Tref)
+              : thermo.Hliquid(s.T, s.z, Tref);
+            H = s.F * h;
+        }
+        return H + solidH_sensible(s, thermo, Tref);
     } catch (const std::exception&) { return std::nullopt; }
 }
 

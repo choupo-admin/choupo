@@ -59,6 +59,7 @@ Description
 #include "streams/StreamMass.H"
 #include "materials/MaterialRegistry.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
+#include "thermo/solution/SolutionRegistry.H"
 #include "thermo/membrane/MembraneRegistry.H"
 #include "thermo/utility/UtilityCatalogue.H"
 #include "outerDriver/OuterDriver.H"
@@ -365,6 +366,8 @@ try
         MaterialRegistry::loadFrom(dataRoot.string());
         MembraneRegistry::loadFrom(dataRoot.string());
         HenrysLawRegistry::loadFrom(dataRoot.string());
+
+        SolutionRegistry::loadFrom(dataRoot.string());
         UtilityCatalogue::loadFrom(dataRoot.string());
     }
 

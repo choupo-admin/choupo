@@ -62,6 +62,7 @@ Description
 #include "core/DisplayUnits.H"
 #include "materials/MaterialRegistry.H"
 #include "thermo/henrysLaw/HenrysLawRegistry.H"
+#include "thermo/solution/SolutionRegistry.H"
 #include "thermo/utility/UtilityCatalogue.H"
 #include "thermo/Database.H"
 #include "thermo/ThermoPackage.H"
@@ -132,6 +133,8 @@ try
     {
         MaterialRegistry::loadFrom(dataRoot.string());
         HenrysLawRegistry::loadFrom(dataRoot.string());
+
+        SolutionRegistry::loadFrom(dataRoot.string());
         UtilityCatalogue::loadFrom(dataRoot.string());
     }
 

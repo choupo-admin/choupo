@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solution thermo: SUCROSE dissolved in liquid WATER (arity-2, the
+  aqueous-solution tier -- the molecular-solute sibling of the ionic
+  electrolyte/ions.dat reference).
+
+  This is PAIR data: a heat of solution is defined as `crystal -> species
+  dissolved in WATER`, so its definition names a second species and it lives
+  HERE, keyed by the (solute, solvent) pair -- never copied into sucrose.dat,
+  which references it BY NAME.  (Data-governance Golden Rule, arity-2.)
+
+  The engine reads dHsoln for the dissolved-vs-crystalline enthalpy rung:
+
+      h_aq(T) = Hf_crystal + dHsoln + INT_298^T cp_aq dT'
+
+  while the crystalline pool keeps the solid rung
+      h_solid(T) = Hf_crystal + INT_298^T cp_solid dT'    (from sucrose.dat)
+
+  so the heat of crystallisation EMERGES as h_solid - h_aq ~ -dHsoln from
+  this ONE sourced number (no second hand-entered dHcryst constant).
+\*---------------------------------------------------------------------------*/
+
+solute      sucrose;
+solvent     water;
+
+// Standard enthalpy of solution: crystalline sucrose -> aqueous, high
+// dilution, 298.15 K.  ENDOTHERMIC (positive): dissolving sugar cools the
+// solution.  Literature scatters 5.4..6.0 kJ/mol; the spread is the
+// final-molality endpoint (sucrose's last-stage relative apparent molar
+// enthalpy L_phi is non-negligible), NOT measurement noise -- this is the
+// high-dilution standard value.
+dHsoln      5400 J/mol;
+dHsoln_provenance
+{
+    origin   literature;
+    method   "Putnam & Kilday, J. Research NBS 91(4) (1986) 219-222 -- the SAME calorimetric study (NBS, public domain) cited in sucrose.dat for solidHeatCapacity 425.5 J/mol/K, so the crystal Cp and the heat of solution come from one study on one material.  Corroboration (secondary): Gucker, Pickard & Planck, JACS 61 (1939) 459; Goldberg & Tewari, J. Phys. Chem. Ref. Data 18 (1989) 809.";
+}
+
+// Aqueous (dissolved-solute) molar heat capacity.  Equal to sucrose's
+// liquidHeatCapacity (630 J/mol/K, Honig-tuned to reproduce the sugar-
+// industry mixture Cp(x) = 4.19 - 2.35 x kJ/kg/K) -- the SAME number the
+// evaporator/crystalliser already integrate for the dissolved solute, named
+// here so the aqueous rung is self-contained.
+Cp          630;            // J/(mol.K)  -- raw SI (the unit suffix `J/(mol.K)`
+                            // carries a `(` the dict tokenizer reads as a list,
+                            // so molar-heat-capacity values are written raw,
+                            // unit in this comment -- matches ions.dat cpAq and
+                            // every component solid/liquid Cp coefficient.
+Cp_provenance
+{
+    origin   literature;
+    method   "= sucrose liquidHeatCapacity (Honig sugar-industry correlation; Coulson & Richardson 6th ed. Ex. 14.4).  cp_aq for the dissolved solute on the aqueous rung.";
+}
+
+// Validity: high-dilution standard value at 298 K near 1 atm.  T-dependence
+// of dHsoln is NOT calibrated here (the heat of crystallisation reconciled
+// from this value is taken constant over the stable-crystal window).
+Trange      ( 280  330 );

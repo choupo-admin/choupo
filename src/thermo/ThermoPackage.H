@@ -71,6 +71,7 @@ Description
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -205,6 +206,19 @@ public:
 
     const std::vector<Component>& components() const { return components_; }
     const ActivityModel&    activity() const { return *activity_; }
+
+    // ---- Aqueous-solution tier (data/standards/solution/) ----------------
+    // Standard enthalpy of solution [J/mol] of a DISSOLVED molecular solute
+    // (crystal -> solvent, the dissolved-vs-crystalline rung), resolved
+    // through the package's default solvent.  Returns nullopt when component
+    // `i` is not a solution-tier dissolved solute (volatile species, or a
+    // solute with no solution/<solute>-<solvent>.dat entry).  ANNOUNCES the
+    // default-solvent resolution on first use (deduped); FAILS WITH A REMEDY
+    // if an off-default solvent is named but no matching pair exists (the
+    // no-silent-crutch credo, applied to solvents).  The crystalliser reads
+    // the SAME number so its duty and the elements-datum stream balance
+    // reconcile from one sourced value.
+    std::optional<scalar> dHsolnForSolute(std::size_t i) const;
 
     // Electrolyte (ionic) activity model.  It is just the activity model when an
     // electrolyte one (pitzer) was selected -- recovered by downcast over

@@ -224,8 +224,42 @@ static double crystHeatPerMol(const ThermoPackage& thermo, const SatState& sat,
                     + std::to_string(mMax) + " mol/kg **";
         return dHsolnInf + L2;
     }
-    source = sat.useElec ? "operation dHcryst constant (salt not calorimetrically fitted on this path)"
-                         : "solubility-curve dHcryst";
+    // NON-electrolyte (molecular-solute) path.  When the solute carries an
+    // aqueous-solution tier (solution/<solute>-<solvent>.dat), the heat of
+    // crystallisation EMERGES as the dissolution endotherm released on
+    // crystallising: dH_cryst = +dHsoln (dissolution sign).  This is the SAME
+    // sourced number the elements-datum stream balance reads through
+    // H_liquid_formation -- so the unit duty Q and the stream dH reconcile
+    // from one value, instead of the dHcryst placeholder (the `dHcryst 0.0;`
+    // that wrongly asserted athermal crystallisation).
+    if (!sat.useElec)
+    {
+        if (auto dHsoln = thermo.dHsolnForSolute(sat.iSolute))
+        {
+            // Heat RELEASED on crystallising at T_op = +dHsoln, PLUS the
+            // Cp-path correction (cp_aq - cp_solid)*(T_op - 298): the dissolved
+            // species reached T_op accumulating cp_aq from 298 K, while the
+            // crystal carries only cp_solid from 298 K, so crystallisation also
+            // releases that sensible-Cp difference.  This makes the unit duty
+            // EXACTLY reconcile with the elements-datum stream balance (which
+            // puts the crystal on the solid rung Hf + INT cp_solid and the
+            // dissolved solute on the aqueous rung Hf + dHsoln + INT cp_aq).
+            const Component& c = thermo.comp(sat.iSolute);
+            scalar cpCorr = 0.0;
+            if (c.hasCpSolid() && c.hasCpLiquid())
+            {
+                const scalar cpAq    = c.cpLiquid().Cp(T_op);   // dissolved-solute Cp
+                const scalar cpSolid = c.cpSolid().Cp(T_op);
+                cpCorr = (cpAq - cpSolid) * (T_op - 298.15);
+            }
+            source = "solution tier (dH_cryst = +dHsoln + (cp_aq-cp_solid)*(T-298), "
+                     "data/standards/solution/)";
+            return *dHsoln + cpCorr;
+        }
+        source = "solubility-curve dHcryst";
+        return dHcrystConstant;
+    }
+    source = "operation dHcryst constant (salt not calorimetrically fitted on this path)";
     return dHcrystConstant;
 }
 
