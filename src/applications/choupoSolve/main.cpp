@@ -418,9 +418,39 @@ try
     if (fs::exists("system/solverDict"))
         solverDict = Dictionary::fromFile("system/solverDict");
 
-    DictPtr reactionsDict;
-    if (fs::exists("constant/reactions"))
-        reactionsDict = Dictionary::fromFile("constant/reactions");
+    // reactions: the named-reaction library.  CASCADES UP the parent chain,
+    // SYMMETRICALLY with constant/thermoPackage and the component overlays --
+    // so a branch of a fractal plant run STANDALONE
+    // (./choupoSolve .../ChemicalPlantTutorial/FERMENTATION) still finds a
+    // reaction (e.g. sucroseToEthanol) declared at a HIGHER folder level.
+    // Before this, only thermo/components walked up and reactions did not, so
+    // the bare reference threw "reaction '<name>' not in constant/reactions".
+    // The cascade is LOUD: we record WHERE the file came from (LOCAL vs a named
+    // parent) and print it below -- never a silent find (no-silent-crutch).
+    DictPtr     reactionsDict;
+    std::string reactionsOrigin;          // "" = not present; else the path used
+    {
+        fs::path here = fs::current_path();
+        fs::path found;
+        fs::path p = here;
+        for (int up = 0; up < 6; ++up)
+        {
+            if (fs::exists(p / "constant/reactions")) { found = p / "constant/reactions"; break; }
+            if (!p.has_parent_path()) break;
+            p = p.parent_path();
+        }
+        if (!found.empty())
+        {
+            reactionsDict = Dictionary::fromFile(found.string());
+            // Describe the origin relative to the run dir: LOCAL when it sits at
+            // this node, otherwise "inherited from <parent>/constant/reactions".
+            const fs::path owner = found.parent_path().parent_path();  // dir holding constant/
+            reactionsOrigin = (owner == here)
+                ? "LOCAL (constant/reactions)"
+                : ("inherited from " + owner.filename().string()
+                   + "/constant/reactions");
+        }
+    }
 
     DictPtr outerDict;
     if (fs::exists("system/outerDict"))
@@ -500,7 +530,7 @@ try
               << "\nsolverDict:        "
               << (solverDict ? "loaded" : "not present (built-in defaults)")
               << "\nreactions library: "
-              << (reactionsDict ? "loaded" : "not present")
+              << (reactionsDict ? ("loaded — " + reactionsOrigin) : "not present")
               << "\n";
 
     // ---- Simulator functor reusable by outer driver --------------------

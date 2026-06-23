@@ -829,12 +829,32 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 bool resolved = false;
                 if (std::holds_alternative<std::string>(rv))
                 {
-                    const std::string rp = folderPath + child + "/constant/reactions";
-                    if (std::filesystem::exists(rp))
+                    const std::string rn = std::get<std::string>(rv);
+                    // Walk UP from the unit's own folder through its parent
+                    // composites (the sector, then the plant root), taking the
+                    // FIRST constant/reactions that defines this reaction.  This
+                    // mirrors the thermoPackage / component-overlay cascade: a
+                    // reaction declared at the SECTOR that owns it
+                    // (e.g. FERMENTATION/constant/reactions -> sucroseToEthanol)
+                    // is found by the leaf unit below it during a whole-plant
+                    // run -- not only when it sits in the unit's own folder.
+                    std::filesystem::path node =
+                        std::filesystem::path(folderPath + child);
+                    for (int up = 0; up < 6 && !resolved; ++up)
                     {
-                        auto rlib = Dictionary::fromFile(rp);
-                        const std::string rn = std::get<std::string>(rv);
-                        if (rlib->found(rn)) { u->insert("reaction", rlib->entryValue(rn)); resolved = true; }
+                        const std::filesystem::path rp = node / "constant" / "reactions";
+                        if (std::filesystem::exists(rp))
+                        {
+                            auto rlib = Dictionary::fromFile(rp.string());
+                            if (rlib->found(rn))
+                            {
+                                u->insert("reaction", rlib->entryValue(rn));
+                                resolved = true;
+                                break;
+                            }
+                        }
+                        if (!node.has_parent_path() || node.parent_path() == node) break;
+                        node = node.parent_path();
                     }
                 }
                 if (!resolved) u->insert("reaction", rv);  // bare name -> global library

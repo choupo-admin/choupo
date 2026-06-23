@@ -427,6 +427,35 @@ for case_dir in "${CASES[@]}"; do
     fi
 done
 
+# --- standalone-branch regression (lean-fractal promise) ------------------
+#  The lean fractal layout PROMISES that any branch of a composite plant can be
+#  run on its OWN (./choupoSolve <plant>/<BRANCH>) with its inlets frozen.  The
+#  thermoPackage + component overlays already cascaded UP for a standalone
+#  branch, but the REACTIONS library did NOT -- so FERMENTATION run alone threw
+#  "reaction 'sucroseToEthanol' not in constant/reactions" (forum Finding D).
+#  This guard pins the fix: the pilot branch must run alone, EXIT 0, AND
+#  ANNOUNCE where its reactions came from (the loud, non-silent cascade).  It is
+#  pilot-scoped (only on the full sweep) -- a general standalone-branch sweep
+#  would be too broad while the fractal layout is still a pilot.
+if [ "$#" -eq 0 ]; then
+    branch="tutorials/plant/ChemicalPlantTutorial/FERMENTATION"
+    if [ -f "$branch/flowsheetDict" ]; then
+        sb_out=$("$ROOT/choupoSolve" "$branch" 2>&1); sb_rc=$?
+        sb_announced=0
+        printf '%s\n' "$sb_out" | grep -qE 'reactions library: loaded — (inherited from|LOCAL)' \
+            && sb_announced=1
+        if [ "$sb_rc" -eq 0 ] && [ "$sb_announced" -eq 1 ]; then
+            printf "PASS  %-40s  (runs alone; reactions cascade announced)\n" \
+                "standalone-branch:FERMENTATION"
+            pass=$((pass+1))
+        else
+            printf "FAIL  %-40s  (exit %s; announced=%s)\n" \
+                "standalone-branch:FERMENTATION" "$sb_rc" "$sb_announced"
+            fail=$((fail+1))
+        fi
+    fi
+fi
+
 echo "--------------------------------------------------------------------"
 # The known-broken and expected-fail cases are NAMED, not just counted -- the
 # breakage stays visible in the summary, never masked as green.
