@@ -1763,6 +1763,130 @@ scalar normL2(const sVector& a, const sVector& b)
     return std::sqrt(s);
 }
 
+// ---------------------------------------------------------------------------
+//   Physical, feed-normalised tear residuals (mass + energy)
+// ---------------------------------------------------------------------------
+//   The scaled L2 tear residual |r|2 (relative to per-tear flow/T scales) is the
+//   number the Newton/Wegstein solvers converge on, but it mixes flows and
+//   temperatures into one dimensionless figure.  For the convergence PLOT we
+//   want two PHYSICAL curves a student recognises: the recycle MASS imbalance
+//   and the recycle ENERGY imbalance, each normalised by a plant-inlet scale so
+//   it is dimensionless and O(1) at the start, marching to ~0 at convergence.
+//
+//   For a torn stream the SM sweep computes G(x) from the assumed x.  The tear
+//   mismatch on that stream is (computed - assumed).  Summed over tears and
+//   normalised:
+//     massResidual   = Sigma_tears |Fmass_computed - Fmass_assumed| / Mfeed
+//     energyResidual = Sigma_tears |Hdot_computed   - Hdot_assumed| / Efeed
+//   where Hdot = F * H_stream(T,P,vf,z) is the stream enthalpy FLOW
+//   (kmol/s * J/mol).  The per-stream `.H` field is NOT maintained during the
+//   recycle sweeps (Flowsheet fills it only AFTER convergence), so the enthalpy
+//   is recomputed HERE from (T,P,vf,z) via the SAME per-natural-phase formation-
+//   reference call on both sides -- the absolute datum cancels in the difference
+//   anyway, but using one consistent evaluator keeps the residual honest.
+//
+//   The normalisers (a STABLE, non-zero scale -- see computeFeedScales) are the
+//   total plant-inlet mass flow and a representative inlet energy scale; the
+//   ratios are therefore the imbalance as a FRACTION of what enters the plant.
+struct TearImbalance
+{
+    scalar mass   = 0.0;   // normalised mass imbalance   [-]
+    scalar energy = 0.0;   // normalised energy imbalance [-]
+};
+
+// The plant-inlet normalisers.  Feeds are the Dirichlet streams: consumed by a
+// unit but produced by none (and carrying flow).  massScale = sum of feed mass
+// flows.  energyScale is built to be STABLE and NON-ZERO regardless of the
+// enthalpy reference: it is the larger of (a) the absolute feed enthalpy flow
+// sum and (b) a temperature-driven floor  Mfeed_molar * R * Tmean  (an
+// ideal-gas-ish energy scale ~ n*R*T).  Choosing the max guards the degenerate
+// case where the feed enthalpies happen to sum to ~0 by the reference choice
+// (e.g. all feeds at the datum T) -- there the R*T floor keeps the denominator
+// physically meaningful instead of exploding the ratio.
+struct FeedScales { scalar mass = 1.0; scalar energy = 1.0; };
+
+FeedScales computeFeedScales(const std::map<std::string, ProcessStream>& streams,
+                             const std::vector<FlatUnit>&                units,
+                             const std::set<std::string>&                tearSet,
+                             const ThermoPackage&                        thermo)
+{
+    // Produced set: any stream that is an OUTLET of some unit.
+    std::set<std::string> produced;
+    for (const auto& u : units)
+        for (const auto& o : u.outs) produced.insert(o);
+
+    scalar mFeed = 0.0;       // total feed mass flow            [kg/s]
+    scalar eFeedAbs = 0.0;    // |sum of feed enthalpy flows|    [W-basis]
+    scalar molarFeed = 0.0;   // total feed molar flow           [kmol/s]
+    scalar tAcc = 0.0; std::size_t nT = 0;
+
+    for (const auto& [name, s] : streams)
+    {
+        if (tearSet.count(name)) continue;          // a tear is not a feed
+        if (produced.count(name)) continue;          // produced => interior/product
+        if (s.F <= 0.0) continue;                    // empty placeholder
+        mFeed     += F_mass(s, thermo);
+        // Feed enthalpy flow from (T,P,vf,z) -- the stream `.H` is not yet
+        // populated when this runs (pre-recycle), so recompute it here.  Use the
+        // per-natural-phase H_stream (handles solutes; see computeTearImbalance).
+        scalar h = 0.0;
+        try { h = thermo.H_stream(s.T, s.P, s.vf, s.z); }
+        catch (const std::exception&) { h = 0.0; }
+        eFeedAbs  += s.F * h;                          // kmol/s * J/mol
+        molarFeed += s.F;
+        tAcc += s.T; ++nT;
+    }
+
+    FeedScales fs;
+    fs.mass = std::max(mFeed, 1.0e-12);              // never divide by zero
+    const scalar Tmean = (nT > 0) ? tAcc / static_cast<scalar>(nT) : 298.15;
+    // n*R*T floor: R = 8.314 J/(mol K); molarFeed in kmol/s -> *1 keeps the
+    // SAME kmol/s * J/mol basis as F*H above (units consistent within the ratio).
+    const scalar rtFloor = std::max(molarFeed, 1.0e-12) * 8.314 * Tmean;
+    fs.energy = std::max(std::abs(eFeedAbs), rtFloor);
+    fs.energy = std::max(fs.energy, 1.0e-12);
+    return fs;
+}
+
+// Compare the COMPUTED tear streams (post-sweep, in `computed`) against the
+// ASSUMED ones (the pre-sweep snapshot in `assumed`) and return the physical,
+// feed-normalised mass & energy imbalance.  Both maps must hold every tear.
+TearImbalance computeTearImbalance(
+    const std::map<std::string, ProcessStream>& assumed,
+    const std::map<std::string, ProcessStream>& computed,
+    const std::vector<std::string>&             tears,
+    const ThermoPackage&                        thermo,
+    const FeedScales&                           fs)
+{
+    // Enthalpy FLOW [kmol/s * J/mol] from (T,P,vf,z) at the formation datum.
+    // Recomputed here because the stream `.H` is unpopulated mid-recycle.  Use
+    // the per-natural-phase H_stream (the SAME call Flowsheet uses to fill the
+    // converged stream H), NOT the strict ideal-gas H_stream_formation: the
+    // latter THROWS for a solute like sucrose that carries no idealGasHeatCapacity
+    // block (it has no gas phase).  H_stream lets each species contribute from
+    // its own tabulated phase, so a sucrose-bearing recycle yields a real number.
+    // A thermo failure (rare, ill-posed probe) contributes 0 to that tear's
+    // energy term rather than aborting the residual.
+    auto hDot = [&](const ProcessStream& s) -> scalar {
+        try { return s.F * thermo.H_stream(s.T, s.P, s.vf, s.z); }
+        catch (const std::exception&) { return 0.0; }
+    };
+    scalar dMass = 0.0, dEnergy = 0.0;
+    for (const auto& t : tears)
+    {
+        auto ia = assumed.find(t), ic = computed.find(t);
+        if (ia == assumed.end() || ic == computed.end()) continue;
+        const ProcessStream& a = ia->second;
+        const ProcessStream& c = ic->second;
+        dMass   += std::abs(F_mass(c, thermo) - F_mass(a, thermo));
+        dEnergy += std::abs(hDot(c) - hDot(a));
+    }
+    TearImbalance r;
+    r.mass   = dMass   / fs.mass;
+    r.energy = dEnergy / fs.energy;
+    return r;
+}
+
 } // anonymous namespace
 
 // ===========================================================================
@@ -2073,8 +2197,8 @@ int Flowsheet::solve(const DictPtr& dict,
         // exactly like a recycle case writes its march.  Empty `tears` => no
         // tear flags, the per-branch bucketing still applies.
         if (onInstant_)
-            onInstant_(0, "singlePass", 0.0, /*converged=*/true,
-                       streams_, tears, topology_);
+            onInstant_(0, "singlePass", 0.0, /*mass=*/0.0, /*energy=*/0.0,
+                       /*converged=*/true, streams_, tears, topology_);
     }
     // ===================  Recycle outer loop  ===========================
     else
@@ -2111,6 +2235,19 @@ int Flowsheet::solve(const DictPtr& dict,
             }
         };
 
+        // ---- Feed-normalisers for the physical residual plot --------------
+        //  Computed ONCE from the frozen feeds (tears excluded), used to turn
+        //  each iteration's tear mass/energy mismatch into a dimensionless,
+        //  plant-relative residual.  Only when the instant writer is installed
+        //  (solutionControl on) -- skipped entirely otherwise, so the recycle
+        //  loop is byte-for-byte unchanged when the feature is off.
+        FeedScales feedScales;
+        if (onInstant_)
+        {
+            const std::set<std::string> feedTearSet(tears.begin(), tears.end());
+            feedScales = computeFeedScales(streams_, topology_, feedTearSet, thermo);
+        }
+
         // ---- Solution-directory: restart + seed (opt-in, default off) ----
         //  The hooks are empty unless main.cpp installed them (solutionControl
         //  write true;).  When empty, this whole block is two null-tests ---
@@ -2137,7 +2274,8 @@ int Flowsheet::solve(const DictPtr& dict,
             }
         }
         if (onInstant_)
-            onInstant_(itBase, "seed", 0.0, false, streams_, tears, topology_);
+            onInstant_(itBase, "seed", 0.0, /*mass=*/0.0, /*energy=*/0.0,
+                       false, streams_, tears, topology_);
 
         // Final-instant state, set by whichever branch runs, emitted after the
         // final logged sweep (the converged answer == the canonical result).
@@ -2164,9 +2302,20 @@ int Flowsheet::solve(const DictPtr& dict,
             bool converged = false; int outerIt = 0; scalar lastDelta = 0.0;
             for (outerIt = 0; outerIt < maxOuter; ++outerIt)
             {
+                // Snapshot the ASSUMED tear streams (pre-sweep) so the physical
+                // mass/energy imbalance can compare computed-vs-assumed below.
+                // Only when the writer is installed (solutionControl on); else
+                // this is skipped entirely => zero cost when the feature is off.
+                std::map<std::string, ProcessStream> assumedTears;
+                if (onInstant_)
+                    for (const auto& t : tears) assumedTears[t] = streams_.at(t);
                 sweep(/*quiet=*/true);
                 sVector gx = packTears(tears, streams_);
                 lastDelta = normL2(gx, x);
+                TearImbalance imb;
+                if (onInstant_)
+                    imb = computeTearImbalance(
+                        assumedTears, streams_, tears, thermo, feedScales);
                 // Energy-tear convergence: RELATIVE (duties are ~1e6 W, so an
                 // absolute L2 tol would never trip).
                 sVector curE = energyVec();
@@ -2189,6 +2338,7 @@ int Flowsheet::solve(const DictPtr& dict,
                 // by the installed callback (empty => no-op).
                 if (onInstant_)
                     onInstant_(itBase + outerIt + 1, "wegstein", lastDelta,
+                               imb.mass, imb.energy,
                                false, streams_, tears, topology_);
                 if (lastDelta < tearTol && eConv) { converged = true; ++outerIt; break; }
                 sVector x_next = accel.step(x, gx);
@@ -2312,9 +2462,36 @@ int Flowsheet::solve(const DictPtr& dict,
                 // decided by the installed callback (empty => no-op).
                 if (onInstant_)
                 {
-                    residual(tr.x);   // place streams_ exactly at tr.x
+                    residual(tr.x);   // place streams_ exactly at tr.x => G(x)
+                    // Decode the ASSUMED tear streams from tr.x (same layout as
+                    // packFlow: per tear, nc component flows then T) to measure
+                    // the physical computed-vs-assumed mass/energy imbalance.
+                    std::map<std::string, ProcessStream> assumedTears;
+                    {
+                        std::size_t off = 0;
+                        for (const auto& name : tears)
+                        {
+                            ProcessStream a = streams_.at(name);   // template (P, etc.)
+                            scalar F = 0.0; std::vector<scalar> Fi(nc);
+                            for (std::size_t i = 0; i < nc; ++i)
+                            { Fi[i] = std::max(tr.x[off++], 0.0); F += Fi[i]; }
+                            a.F = F;
+                            a.z.assign(nc, 0.0);
+                            for (std::size_t i = 0; i < nc; ++i)
+                                a.z[i] = (F > 0.0) ? Fi[i] / F : 0.0;
+                            a.T = tr.x[off++];
+                            // a.vf carries over from the template (computed) as
+                            // the phase proxy; computeTearImbalance recomputes
+                            // the enthalpy from (T,P,vf,z) consistently on both
+                            // sides, so we need not set a.H here.
+                            assumedTears[name] = a;
+                        }
+                    }
+                    const TearImbalance imb = computeTearImbalance(
+                        assumedTears, streams_, tears, thermo, feedScales);
                     onInstant_(itBase + tr.iteration + 1, "newtonOnTears",
-                               tr.normF, false, streams_, tears, topology_);
+                               tr.normF, imb.mass, imb.energy,
+                               false, streams_, tears, topology_);
                 }
             };
             auto res = solver::newtonND(residual, x0, ndo);
@@ -2335,7 +2512,18 @@ int Flowsheet::solve(const DictPtr& dict,
 
         // One final pass with full logging (common to both solvers).
         std::cout << "\n----- Final pass with full unit logging -----\n";
+        // Snapshot the converged tear streams so the FINAL instant's physical
+        // residuals reflect the (near-zero) mismatch of this last sweep (only
+        // when the writer is installed; skipped otherwise => no extra cost).
+        std::map<std::string, ProcessStream> finalAssumedTears;
+        if (onInstant_)
+            for (const auto& t : tears)
+                if (streams_.count(t)) finalAssumedTears[t] = streams_.at(t);
         sweep(/*quiet=*/false);
+        TearImbalance finalImb;
+        if (onInstant_)
+            finalImb = computeTearImbalance(
+                finalAssumedTears, streams_, tears, thermo, feedScales);
 
         // Solution-directory: write the converged final instant (tagged
         // converged true;).  This is the canonical result that feeds the JSON
@@ -2353,6 +2541,7 @@ int Flowsheet::solve(const DictPtr& dict,
             const int finalInstNum =
                 (finalIteration == itBase) ? itBase + 1 : finalIteration;
             onInstant_(finalInstNum, finalSolver, finalResidual,
+                       finalImb.mass, finalImb.energy,
                        finalConverged, streams_, tears, topology_);
         }
 

@@ -151,6 +151,23 @@ if [ $rc -eq 0 ]; then
     else
         echo "  done.  Inspect with:  less $LOG"
     fi
+
+    # ---- Convergence-residual window (foamMonitor-style) -----------------
+    #  Pop up the live mass/energy residual plot AFTER the run, but ONLY when
+    #  it makes sense and can never block:
+    #    * the case enabled  solutionControl { write true; }  (residuals.dat exists),
+    #    * gnuplot is installed,
+    #    * we are in an interactive X/Wayland session ($DISPLAY / $WAYLAND_DISPLAY).
+    #  Launched in the BACKGROUND + detached so it stays open until the user
+    #  closes it and never holds up the shell.  The test harness (bin/runTests)
+    #  runs the binary directly, NOT through runCase, so it never reaches here.
+    if [ -z "${CHOUPO_NO_RESIDUAL_PLOT:-}" ] \
+       && [ -f "$CASE_ABS/residuals.dat" ] \
+       && command -v gnuplot >/dev/null 2>&1 \
+       && { [ -n "${DISPLAY:-}" ] || [ -n "${WAYLAND_DISPLAY:-}" ]; }; then
+        echo "  residuals: opening convergence plot (close the window when done)"
+        ( "$(dirname "$0")/residualPlot" "$CASE_ABS" >/dev/null 2>&1 & ) &
+    fi
 else
     echo "  FAILED (exit $rc) -- last 20 lines of log:" >&2
     tail -20 "$LOG" >&2

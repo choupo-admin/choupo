@@ -595,6 +595,7 @@ void SolutionWriter::writeInstant(
         fsyncPath(caseRoot_, /*isDir=*/true);
 
     appendLog(meta);
+    appendResiduals(meta);
     refreshLatestSymlink(meta.iteration);
 
     // Purge old numbered instants (always keep 0/ and the converged final).
@@ -632,6 +633,34 @@ void SolutionWriter::appendLog(const SolutionInstantMeta& meta) const
     // could leave an instant on disk with no record of it).
     if (cfg_.flushEach)
         fsyncPath(logp, /*isDir=*/false);
+}
+
+// ---------------------------------------------------------------------------
+//  The machine-readable residual table the convergence plot (bin/residualPlot)
+//  reads directly.  One whitespace-separated row per written instant; the
+//  header is a `#` comment line gnuplot skips.  Kept SEPARATE from the human
+//  solution.log so the plot never has to parse the fixed-width log columns.
+void SolutionWriter::appendResiduals(const SolutionInstantMeta& meta) const
+{
+    const fs::path datp = fs::path(caseRoot_) / "residuals.dat";
+    const bool needHeader = !fs::exists(datp);
+    std::ofstream f(datp.string(), std::ios::out | std::ios::app);
+    if (needHeader)
+        f << "# Choupo residuals --- one row per written instant.\n"
+             "# Physical, feed-normalised global tear residuals (mass + energy)\n"
+             "# alongside the scaled solver tear residual |r|2, for the\n"
+             "# convergence plot (bin/residualPlot).  The 'seed' instant has\n"
+             "# zero physical residuals (no sweep yet).\n"
+             "# iteration  massResidual  energyResidual  tearResidual  tolerance\n";
+    f << meta.iteration
+      << "  " << sci(meta.massResidual)
+      << "  " << sci(meta.energyResidual)
+      << "  " << sci(meta.tearResidual)
+      << "  " << sci(meta.tolerance) << "\n";
+    f.flush();
+    f.close();
+    if (cfg_.flushEach)
+        fsyncPath(datp, /*isDir=*/false);
 }
 
 // ---------------------------------------------------------------------------

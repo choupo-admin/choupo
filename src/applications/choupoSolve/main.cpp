@@ -167,7 +167,8 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
 
         flowsheet.setInstantCallback(
             [&solWriter, interval, recTol]
-            (int it, const char* solver, scalar residual, bool converged,
+            (int it, const char* solver, scalar residual,
+             scalar massResidual, scalar energyResidual, bool converged,
              const std::map<std::string, ProcessStream>& streams,
              const std::vector<std::string>& tears,
              const std::vector<FlatUnit>& units)
@@ -178,11 +179,13 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
                 const bool onCadence = (it % interval == 0);
                 if (!isSeed && !converged && !onCadence) return;
                 SolutionInstantMeta m;
-                m.iteration    = it;
-                m.solver       = solver;
-                m.tearResidual = residual;
-                m.tolerance    = recTol;
-                m.converged    = converged;
+                m.iteration      = it;
+                m.solver         = solver;
+                m.tearResidual   = residual;
+                m.massResidual   = massResidual;
+                m.energyResidual = energyResidual;
+                m.tolerance      = recTol;
+                m.converged      = converged;
                 solWriter->writeInstant(m, streams, tears, units);
             });
 

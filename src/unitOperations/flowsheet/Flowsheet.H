@@ -141,10 +141,18 @@ public:
     //      stored ONCE per face and projected into the owner/neighbour cells.
     //  The writer lives OUTSIDE the Flowsheet (in main.cpp), so the engine
     //  has no I/O policy baked in --- it only reports its state.
+    //  `massResidual` and `energyResidual` are the PHYSICAL, feed-normalised
+    //  global residuals of the tear closure at this iteration (the recycle
+    //  mass / energy imbalance divided by a plant-inlet scale --- see
+    //  computeTearImbalance() in Flowsheet.cpp).  They march to 0 alongside
+    //  the (scaled, dimensionless) `tearResidual`, and feed the convergence
+    //  residual plot.  Both are 0 for the "seed" instant (no sweep yet).
     using InstantCallback = std::function<void(
         int                                          iteration,
         const char*                                  solver,
         scalar                                       tearResidual,
+        scalar                                       massResidual,
+        scalar                                       energyResidual,
         bool                                         converged,
         const std::map<std::string, ProcessStream>&  streams,
         const std::vector<std::string>&              tears,

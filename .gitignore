@@ -55,6 +55,9 @@ tutorials/**/postProcessing/
 **/solution.log
 **/latest
 **/latest.txt
+# the convergence-residual table + any rendered plot (run output, like the log)
+**/residuals.dat
+**/residuals.png
 # legacy: the prior Slice-0 layout wrote a solution/ wrapper -- keep ignoring it
 **/solution/
 # Solver-generated CSVs (sweep / optim / trajectory / propertyScan /

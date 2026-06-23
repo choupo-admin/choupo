@@ -149,6 +149,11 @@ struct SolutionInstantMeta
     int         iteration  = 0;        // pseudo-time = recycle outer iteration
     std::string solver;                // "newtonOnTears" | "wegstein" | "seed"
     scalar      tearResidual = 0.0;    // |r|2 of the tear residual at this instant
+    // Physical, feed-normalised global residuals of the tear closure (see
+    // Flowsheet::computeTearImbalance).  Both march toward 0 with the recycle
+    // and feed the convergence residual plot; 0 for the "seed" instant.
+    scalar      massResidual   = 0.0;  // |dMass_tears| / Mfeed       [-]
+    scalar      energyResidual = 0.0;  // |dHdot_tears| / Efeed       [-]
     scalar      tolerance    = 0.0;    // the recycle tolerance (for the header)
     bool        converged    = false;  // true ONLY for the final converged instant
 };
@@ -284,6 +289,11 @@ private:
     void purgeOldInstants(int currentIteration,
                           const std::vector<int>& alwaysKeep) const;
     void appendLog(const SolutionInstantMeta& meta) const;
+    // Append one row to `<caseRoot>/residuals.dat` (the plot's data source):
+    //   columns  `iteration massResidual energyResidual tearResidual tolerance`.
+    // A whitespace-separated table gnuplot reads directly; the header line is a
+    // `#` comment so gnuplot skips it.  Written alongside the human solution.log.
+    void appendResiduals(const SolutionInstantMeta& meta) const;
 };
 
 } // namespace Choupo
