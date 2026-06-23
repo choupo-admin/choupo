@@ -43,6 +43,14 @@ solubility
 {
     // Solid-liquid equilibrium: c_sat(T) in kg sucrose / kg water,
     // polynomial in T[degC].  ~2.0 kg/kg at 20C, ~3.8 at 80C (literature order).
+    //
+    // SOLVENT = water, DECLARED (NOT "implied").  This block is strictly
+    // arity-2 (sucrose + water): it is sucrose-water SLE sitting in the
+    // component, a TOLERATED pre-tier legacy (no-forced-mass-migration credo),
+    // NOT a counterexample to the arity rule.  Going forward, new sucrose-water
+    // SOLUTION thermo (e.g. dHsoln) lands in data/standards/solution/
+    // sucrose-water.dat, referenced by name -- see docs/ai/data-doctrine.md
+    // sec.2.5.  The second species is NAMED here; nothing is implied.
     coefficients ( 1.79  0.0074  0.00022 );
     dHcryst      0.0;     // small for sucrose; neglected here
 }

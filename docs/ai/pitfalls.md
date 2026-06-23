@@ -222,7 +222,9 @@ sees the nonvolatile component flagged `nonvolatile true;` in its
 The same compound has different isotherms for different formulations
 (crystalline vs amorphous, food-grade vs technical,...).  Put it in
 the case as `<case>/constant/components/<name>.dat` — Database
-overlays it field-by-field over the standard.  (Property axiom 4.)
+overlays it **block-by-block** over the standard (you copy the whole
+`sorption{}` block; a lone-scalar overlay is the forbidden hidden
+hybrid — see `data-doctrine.md` §3).  (Property axiom 4.)
 
 ## Electrolyte speciation / precipitation
 

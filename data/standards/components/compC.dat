@@ -1,7 +1,13 @@
 /*---------------------------------------------------------------------------*\
-  Component: compC  -- synthetic component for VLLE algorithm audit.
-  Identical Antoine to compB and compC (Psat ≈ 0.5 bar at 350 K).
-  Pedagogically only --- not a real substance.
+  Component: compC  -- synthetic PSEUDO-component for VLLE algorithm audit.
+  Antoine giving Psat ≈ 0.5 bar at 350 K but with a smaller B-coefficient
+  than compB (a third audit partner, distinct from compA/compB).
+  Pedagogically only --- NOT A REAL SUBSTANCE (formula "C", CAS 00-00-0).
+
+  Carries NO gibbsFormation block ON PURPOSE: a fictitious species has no
+  elements and no real heat of formation -- the elements datum is undefined
+  for it.  A deliberate, correct absence (the VLLE audit runs no reactor),
+  NOT a curation oversight.
 \*---------------------------------------------------------------------------*/
 
 name        compC;

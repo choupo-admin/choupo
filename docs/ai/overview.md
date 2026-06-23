@@ -111,7 +111,9 @@ them in answers to users.
       moisture, anything depending on the amorphous/crystalline state
       / formulation / thermal history) live in the case as a
       **partial** `<case>/constant/components/<name>.dat`, which
-      OVERLAYS the standard catalogue entry field-by-field.
+      OVERLAYS the standard catalogue entry **block-by-block** (you
+      copy the whole reference-state block you refine, never a lone
+      scalar — `data-doctrine.md` §3).
 
    When you write a case, intrinsic data come from existing
    `data/standards/components/` entries (see `components.md`); only

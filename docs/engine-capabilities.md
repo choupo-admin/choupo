@@ -41,7 +41,9 @@
 4. SAMPLE-specific measured data (a particular powder's sorption
    isotherm or critical moisture) lives in the case under
    `constant/components/<name>.dat`, which `Database` overlays
-   field-by-field over the standard catalogue entry.
+   block-by-block over the standard catalogue entry (top-level-key
+   replacement of the whole reference-state block; see
+   `docs/ai/data-doctrine.md` §3).
 
 ### Four binaries by problem class (see `src/applications/`)
 

@@ -5,7 +5,23 @@ Inventory snapshot, regenerated from `data/standards/components/`.
 When composing a `thermoPackage`, pick component names from this list
 (case-sensitive).  Adding a new component is a project-level act, not
 a per-case one --- case-local overlays (axiom 4) can refine
-sample-specific fields but NOT MW / Tc / Pc.
+sample-specific **blocks** but NOT MW / Tc / Pc.
+
+The overlay merges **block-by-block** (top-level-key-by-key), NOT
+field-by-field inside a sub-dict: an overlay carrying `solid { rho_p 1610; }`
+replaces the **whole** `solid{}` block (the standard's `k_v` is lost, not
+deep-merged).  A reference-state block is the atomic unit of physical meaning;
+the curator MUST copy the whole block they refine.  A lone-scalar overlay is
+the forbidden **hidden hybrid** (it would silently mix a sample's `rho_p` with
+the catalogue's `k_v`).  See [`data-doctrine.md`](data-doctrine.md) §3.
+
+**Dissolved-solute / solution thermo is PAIR data, not a component field.**
+A property whose definition names a **solvent** — an "in-water" ΔH_soln, an
+aqueous Hf°, a solubility curve — is arity-2 and lives in a **catalogue**
+(`data/standards/solution/<solute>-<solvent>.dat` for molecular solutes;
+`data/standards/electrolyte/ions.dat` for the ∞-dilution ion tier), referenced
+by name, never copied into `<name>.dat`.  The solvent is always **named**, not
+implied (`data-doctrine.md` §2).
 
 *56 components currently shipped.*
 <!-- END-PROSE -->

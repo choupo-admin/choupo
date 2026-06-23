@@ -25,9 +25,16 @@ identity
 nonvolatile    true;                // never in the vapour (K = 0)
 dissociation   3;                   // van't Hoff factor (2:1 strong electrolyte)
 
+// FORMATION DATUM lives PER ION in electrolyte/ions.dat (Ca+2, Cl-; H+(aq)=0
+// convention, Wagman 1982), referenced BY NAME via the electrolyte{} block --
+// CaCl2 carries no component-level gibbsFormation block (arity-2; see
+// docs/ai/data-doctrine.md).  NOTE: in ions.dat Ca+2 carries hfAq + sAq but
+// its cpAq is still PENDING (flagged in ions.dat); Cl- is complete.  Source
+// Ca+2 cpAq from Wagman 1982 before a CaCl2 heat-of-solution balance is run.
+
 electrolyte
 {
-    cation     Ca;                  // -> electrolyte/ions.dat (z = +2)
+    cation     Ca;                  // -> electrolyte/ions.dat (z = +2; hfAq/sAq present, cpAq pending)
     anion      Cl;                  // -> electrolyte/ions.dat (z = -1); pairs.dat (Ca,Cl): Appelo 2014
     solubility 7.3;                 // m_sat [mol/kg water], 25 C -- RE-SOURCE (licence)
     provenance

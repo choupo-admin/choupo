@@ -134,6 +134,50 @@ equationOfState
 SRK + PR need each component's `Tc`, `Pc`, `omega` from the standard
 catalogue (every well-curated component ships them).
 
+### The three-tier model-parameter rule
+
+A model's parameter lives at the **highest tier where it is true** — the
+same arity test as the component glossary, asked of the *model* (*does the
+number require you to name the model?*).  See
+[`data-doctrine.md`](data-doctrine.md) §4.
+
+1. **Corresponding-states triad → stays on the component, untouched.**  Any
+   model that needs only `{Tc, Pc, ω}` (every cubic: SRK, PR, RK, a new
+   α-function) reads the triad off the component and derives its own
+   `a_c, b, m, α(T)` **in source**.  Adding such a model touches **zero data
+   files** (this is why adding PR after SRK touched no `.dat`).  Never
+   pre-bake `a_c` into a `.dat`.
+2. **Model-specific PURE parameters that cannot be generated → a
+   `model`-keyed `eosParameters{}` sub-block on the component**, read as a raw
+   sub-dict (exactly like the `liquidViscosity{}` pattern):
+   ```
+   // inside the component .dat — ADDITIVE; never disturbs the triad
+   eosParameters
+   {
+       PCSAFT { m 2.4653;  sigma 3.6478e-10;  epsilon_k 287.35;
+                provenance { origin regressed; method "Gross & Sadowski 2001 Table 1"; } }
+       // a future EOS adds its OWN key; SRK/PR appear in NO key (they read Tc,Pc,ω)
+   }
+   ```
+   Each factory reads its own sub-block by name and ignores the rest; one
+   molecule carries SRK + PR + PC-SAFT + the next EOS simultaneously, each
+   with its own `provenance{}`.  A model with **no** required block on a
+   component **fails with a remedy** ("PCSAFT needs m,sigma,epsilon_k for 'X';
+   fit them or pick SRK/PR which run off Tc,Pc,ω") — never a silent
+   corresponding-states fallback.
+3. **PAIR parameters (`k_ij` and friends) → a model-keyed catalogue**,
+   `data/standards/eos/<model>/binaryInteractions/<i>-<j>.dat`, mirroring
+   `binaryPairs/NRTL/<i>-<j>.dat`, with the always-permitted **inline**
+   override (`binaryInteractions ( … )`, shown above) staying first-class.
+
+The activity (`activityModel`) and transport branches follow the identical
+shape: corresponding-states-or-parameter-free where possible; a model-keyed
+sub-block on the component (`liquidViscosity{ Vogel{…} }` is the live
+precedent); a pair catalogue for interaction parameters
+(`binaryPairs/<model>/<i>-<j>.dat`).  One OpenFOAM-style model-selection
+scheme throughout — data with the component, called by name, model picked by
+the explicit factory.
+
 ## transport  (optional; for unit ops that need μ / k / D)
 
 ```
@@ -178,6 +222,51 @@ solvent  water;
 Used by:
 - absorber / stripper (Kvec consults Henry for the solute);
 - aqueous gas absorption (CO2, NH3, O2, H2S, SO2, CH4, Cl2, HCl in water all ship).
+
+### The aqueous solution tier + the default-solvent rule
+
+A solute property whose **definition names a solvent** — an "in-water"
+ΔH_soln, an aqueous Hf°, a solubility curve — is arity-2 PAIR data.  It does
+**not** go in the component `.dat`; it lives in a by-name catalogue tier:
+
+| Solute kind | Tier | Carries |
+|---|---|---|
+| **ions** (∞-dilution) | `data/standards/electrolyte/ions.dat` | `hfAq / sAq / cpAq` on the H⁺(aq)=0 convention (Wagman/NBS 1982) |
+| **molecular solutes** | `data/standards/solution/<solute>-<solvent>.dat` | ΔH_soln and other solution thermo, primary-cited |
+
+Water earns **one canonical, named, by-name aqueous reference tier** — never
+an *implied component slot*.  The package declares the default solvent once
+(`solvent water;`, as Henry's law already does).  When a solution property is
+needed and no solvent is named at the call site, the resolver uses the default
+**and announces it on every run**:
+
+```
+[thermo] solution property dHsoln(sucrose): solvent not named -> DEFAULT solvent = water
+         source: solution/sucrose-water.dat  [Putnam & Kilday 1986]  origin: literature
+```
+
+Off-default it **fails with a remedy** (the case solvent is ethanol but only
+`sucrose-water` exists → "provide solution/sucrose-ethanol.dat or accept
+water explicitly") — never a silent water substitution.  See
+[`data-doctrine.md`](data-doctrine.md) §2.
+
+### The fractal cascade — where a refined number goes
+
+A datum lives at the **highest level where it is TRUE**; a lower node only
+**overlays** it when the lower scope makes it *more true*.  The overlay merges
+**block-by-block** (top-level-key replacement of the whole reference-state
+block), never field-by-field.
+
+| Question about your number | Home |
+|---|---|
+| stands alone with one molecule (MW, Tc, ω, crystalline ΔH_f) | `data/standards/components/<name>.dat` |
+| names a second species (NRTL τ, Henry, Pitzer β, k_ij, ΔH_soln-in-water) | a catalogue, keyed by the pair, referenced by name |
+| a sample-specific refinement of a molecular block (this powder's sorption) | `<case>/constant/components/<name>.dat` overlay (whole block) |
+| a sample-specific pair/model-param refinement | `<case>/constant/<feature>/<pair>.dat` or an `eosParameters{}` overlay |
+| a RATE (kinetics) or GEOMETRY (PSD) — the molecule-in-a-machine | the operation's `constant/` (`crystallisation`, `dryingKinetics`, `reactions`); PSD is a **stream** attribute |
+
+Precedence, lowest → highest: `proposed < standard < case < sector < unit`.
+Full rule + the merge semantics: [`data-doctrine.md`](data-doctrine.md) §3.
 
 ## membrane (only for spiralWoundModule)
 

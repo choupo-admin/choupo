@@ -1,7 +1,13 @@
 /*---------------------------------------------------------------------------*\
-  Component: compA  -- synthetic component for VLLE algorithm audit.
+  Component: compA  -- synthetic PSEUDO-component for VLLE algorithm audit.
   Antoine tuned so Psat ≈ 5 bar at 350 K (the "very volatile" component
   that will preferentially go to vapour in the audit test).
+
+  NOT A REAL SUBSTANCE -- a numerical test stand-in (formula "A", CAS 00-00-0).
+  It carries NO gibbsFormation block ON PURPOSE: a fictitious species has no
+  elements and no real heat of formation, so the elements datum is undefined
+  for it.  This is a deliberate, correct absence (the VLLE audit runs no
+  reactor and no elements-datum energy balance), NOT a curation oversight.
 \*---------------------------------------------------------------------------*/
 
 name        compA;

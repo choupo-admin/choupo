@@ -23,8 +23,22 @@ MW             188.177;        // g/mol
 nonvolatile    true;
 dissociation   2;              // K+ + HC4H4O6-
 
+// FORMATION DATUM -- NOT a component-level gibbsFormation block by design.
+// KHT is a sparingly-soluble electrolyte (K+ + bitartrate HC4H4O6-).  Its
+// cation's aqueous thermodynamics live in the ion tier, electrolyte/ions.dat
+// (K+, z = +1), referenced BY NAME.  The bitartrate anion HC4H4O6- has NO
+// published Pitzer/eNRTL parameters and is INTENTIONALLY absent from the ion
+// tier (a deliberate gap, not an oversight) -- saturation is therefore carried
+// as the measured SLE solubility CURVE below, which already embeds the
+// dissociation.  See docs/ai/data-doctrine.md sec.2 (arity-2 lives in a tier;
+// where no tier datum exists the honest route is the measured curve).
+
 solubility
 {
+    // SOLVENT = water, DECLARED (sucrose-water / KHT-water SLE; never "implied").
+    //   This block is strictly arity-2 (solute + water); it is a tolerated
+    //   pre-tier legacy living in the component (no-forced-mass-migration).
+    //   New KHT-water solution thermo lands in data/standards/solution/.
     // c_sat(T) = a0 + a1 t + a2 t^2,  t in degC, kg KHT / kg water.
     // ~0.0034 at 5 C, ~0.0063 at 25 C, ~0.0147 at 50 C (rises ~10x over 0-80 C).
     coefficients ( 0.00321429  1.60714e-05  4.26786e-06 );

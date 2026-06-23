@@ -35,6 +35,12 @@ MW             58.44;          // g/mol  (= kg/kmol)
 nonvolatile    true;
 dissociation   2;              // van't Hoff factor for π = ν R T c
 
+// FORMATION DATUM lives PER ION in the aqueous infinite-dilution tier,
+// electrolyte/ions.dat (Na+, Cl-; H+(aq)=0 convention, Wagman 1982),
+// referenced BY NAME via the electrolyte{} block below -- NaCl carries no
+// component-level gibbsFormation block (arity-2; docs/ai/data-doctrine.md).
+// Both Na+ and Cl- DO carry the full hfAq/sAq/cpAq enthalpy tier in ions.dat.
+
 // Salt dissociation map for the electrolyte activity model (pitzer).  cation/anion
 // are ion NAMES into data/standards/electrolyte/{ions,pairs}.dat; solubility is the
 // measured saturation molality.  Intrinsic salt chemistry, declared ONCE -- a case
@@ -43,7 +49,7 @@ electrolyte
 {
     cation     Na;          // -> ions.dat (z = +1)
     anion      Cl;          // -> ions.dat (z = -1); pairs.dat (Na,Cl)
-    solubility 6.144;       // m_sat [mol/kg], 25 C
+    solubility 6.144;       // m_sat [mol/kg water], 25 C (solvent = water, declared)
     dissolutionEnthalpy 3880;  // J/mol; standard enthalpy of solution NaCl(s)->Na+(aq)+Cl-(aq),
                                //   +3.88 kJ/mol (Ksp(T) van't Hoff; small -> NaCl ~T-flat)
     provenance { solubility { origin measured; method "Pinho & Macedo, J. Chem. Eng. Data 50 (2005) 29 (aqueous, 25 C; primary)"; } }
