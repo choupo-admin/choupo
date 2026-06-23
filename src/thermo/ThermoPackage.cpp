@@ -552,7 +552,17 @@ scalar ThermoPackage::H_ig(scalar T, const sVector& y) const
 {
     scalar h = 0.0;
     for (std::size_t i = 0; i < n(); ++i)
+    {
+        // Skip absent components (y = 0).  h_pure_ig THROWS for a species with
+        // no idealGasHeatCapacity (a nonvolatile solute -- sucrose -- never in
+        // the vapour), and C++ evaluates h_pure_ig(T) BEFORE the multiply, so
+        // the *= 0 does not save us.  Without this guard the elements datum
+        // threw on every vapour-bearing unit and the balance silently fell to
+        // sensible -- the SAME guard Hliquid/Hvapour already carry.  One datum
+        // everywhere (elements, 25 C); no sensible fallback.
+        if (y[i] <= 0.0) continue;
         h += y[i] * components_[i].h_pure_ig(T);
+    }
     return h;
 }
 
