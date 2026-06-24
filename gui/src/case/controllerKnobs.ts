@@ -94,11 +94,69 @@ export interface ScheduleKnobs {
   schedule: ScheduleStep[];
 }
 
+/* ----------------------------- the SIGNAL layer --------------------------- */
+
+/** The forcing-function vocabulary (mirrors src/control/signal/Signals.{H,cpp}).
+ *  `sinusoidal` is the dict alias the engine accepts for `sine`. */
+export type SignalType = "step" | "staircase" | "ramp" | "pulse" | "sine";
+
+/** Which numeric parameters each signal type reads from its `signal {}` block.
+ *  These ARE the sliders -- one per knob, in the engine's own key spelling.
+ *  (staircase is the schedule list, edited as steps, not scalar sliders.)   */
+export const SIGNAL_PARAMS: { [K in SignalType]: readonly string[] } = {
+  step: ["mean", "step", "tStep"],
+  ramp: ["mean", "slope", "tStart", "tEnd"],
+  pulse: ["mean", "amplitude", "tStart", "width"],
+  sine: ["mean", "amplitude", "period", "phase", "tStart"],
+  staircase: [],
+};
+
+/** The disturbance/forcing controller (a Signal, or a legacy Schedule read as a
+ *  staircase signal).  Carries the signal TYPE, its current scalar params, the
+ *  indexed setScalarAtPath targets per param, and -- for a Schedule -- the step
+ *  train (so the markers + the staircase->Signal conversion both have it). */
+export interface SignalKnobs {
+  index: number;
+  name: string;
+  /** "Signal" (a `signal {}` block) or "Schedule" (a legacy staircase). */
+  kind: "Signal" | "Schedule";
+  /** The forcing shape.  A Schedule reads as "staircase". */
+  type: SignalType;
+  actuate?: { unit: string; mv: string };
+  /** Current numeric value of each scalar param the type uses. */
+  params: { [key: string]: number };
+  /** Indexed setScalarAtPath target for each scalar param (Signal kind only). */
+  targetPaths: { [key: string]: string };
+  /** The staircase step train (Schedule kind, or a `signal{ type staircase }`). */
+  schedule?: ScheduleStep[];
+}
+
 export interface ControllerLayer {
   /** The first PID controller, or null when none is present (gate the workspace). */
   pid: ControllerKnobs | null;
   /** Every Schedule controller (disturbance trains) for the chart markers. */
   schedules: ScheduleKnobs[];
+  /** The disturbance/forcing controller (Signal or legacy Schedule), or null. */
+  signal: SignalKnobs | null;
+}
+
+/** Sensible default value of a signal param when switching TO a type that the
+ *  current block does not yet carry (so the rewritten block is runnable).  Seeds
+ *  bias toward the inlet-T disturbance the ctrl tutorials force (mean ~320 K). */
+export function defaultSignalParam(type: SignalType, key: string, mean: number): number {
+  switch (key) {
+    case "mean":      return mean;
+    case "amplitude": return type === "pulse" ? 15 : 15;
+    case "step":      return -15;          // a 15 K cold step (deviation)
+    case "tStep":     return 700;
+    case "tStart":    return type === "sine" ? 0 : 700;
+    case "tEnd":      return 0;            // 0 => "no saturation" (omit on write)
+    case "slope":     return -0.02;        // K/s -- a slow cooling ramp
+    case "width":     return 300;          // s
+    case "period":    return 600;          // s
+    case "phase":     return 0;            // rad
+    default:          return 0;
+  }
 }
 
 /* ----------------------------- the identity ------------------------------- */
@@ -152,6 +210,59 @@ function portOf(v: JsonValue | undefined, keys: [string, string]): { unit: strin
   return undefined;
 }
 
+/** Normalise the engine's signal-type spelling (`sinusoidal` -> `sine`). */
+export function normaliseSignalType(t: string): SignalType {
+  const s = t.trim().toLowerCase();
+  if (s === "sinusoidal" || s === "sine") return "sine";
+  if (s === "step" || s === "staircase" || s === "ramp" || s === "pulse") return s;
+  return "step";
+}
+
+/** Read a Schedule controller's step train (shared by the schedule + signal lift). */
+function readSchedule(raw: { [k: string]: JsonValue }): ScheduleStep[] {
+  const sched = raw["schedule"];
+  const steps: ScheduleStep[] = [];
+  if (Array.isArray(sched)) {
+    for (const s of sched) {
+      if (!isObj(s)) continue;
+      const time = asNumber(s["time"]);
+      const value = asNumber(s["value"]);
+      if (time !== undefined && value !== undefined) steps.push({ time, value });
+    }
+  }
+  return steps;
+}
+
+/** Lift the `signal {}` block of a `type Signal` controller into a SignalKnobs. */
+function liftSignal(raw: { [k: string]: JsonValue }, index: number, name: string): SignalKnobs | null {
+  const sig = raw["signal"];
+  if (!isObj(sig)) return null;
+  const type = typeof sig["type"] === "string" ? normaliseSignalType(sig["type"] as string) : "step";
+  const params: { [key: string]: number } = {};
+  const targetPaths: { [key: string]: string } = {};
+  for (const key of SIGNAL_PARAMS[type]) {
+    const v = asNumber(sig[key]);
+    // `frequency` is the period twin; surface period either way.
+    if (v !== undefined) params[key] = v;
+    targetPaths[key] = `controllers[${index}].signal.${key}`;
+  }
+  // A sine authored with `frequency` instead of `period`: derive the period.
+  if (type === "sine" && params["period"] === undefined) {
+    const f = asNumber(sig["frequency"]);
+    if (f !== undefined && f > 0) {
+      params["period"] = 1 / f;
+      targetPaths["period"] = `controllers[${index}].signal.period`;
+    }
+  }
+  const actuate = portOf(raw["actuator"], ["unit", "mv"]);
+  return {
+    index, name, kind: "Signal", type,
+    actuate: actuate ? { unit: actuate.unit, mv: actuate.cv } : undefined,
+    params, targetPaths,
+    schedule: type === "staircase" ? readSchedule(sig) : undefined,
+  };
+}
+
 /**
  * Walk a flowsheet's `controllers (...)` list and lift the PID + Schedule
  * controllers.  Returns { pid: null } when there is no PID (the workspace gate).
@@ -159,11 +270,12 @@ function portOf(v: JsonValue | undefined, keys: [string, string]): { unit: strin
 export function collectControllerKnobs(
   flowsheetJson: JsonValue | undefined,
 ): ControllerLayer {
-  if (!isObj(flowsheetJson)) return { pid: null, schedules: [] };
+  if (!isObj(flowsheetJson)) return { pid: null, schedules: [], signal: null };
   const list = flowsheetJson["controllers"];
-  if (!Array.isArray(list)) return { pid: null, schedules: [] };
+  if (!Array.isArray(list)) return { pid: null, schedules: [], signal: null };
 
   let pid: ControllerKnobs | null = null;
+  let signal: SignalKnobs | null = null;
   const schedules: ScheduleKnobs[] = [];
 
   list.forEach((raw, index) => {
@@ -197,26 +309,27 @@ export function collectControllerKnobs(
         },
       };
     } else if (type === "Schedule") {
-      const sched = raw["schedule"];
-      const steps: ScheduleStep[] = [];
-      if (Array.isArray(sched)) {
-        for (const s of sched) {
-          if (!isObj(s)) continue;
-          const time = asNumber(s["time"]);
-          const value = asNumber(s["value"]);
-          if (time !== undefined && value !== undefined) steps.push({ time, value });
-        }
-      }
+      const steps = readSchedule(raw);
       const actuateRaw = portOf(raw["actuator"], ["unit", "mv"]);
-      schedules.push({
-        index, name,
-        actuate: actuateRaw ? { unit: actuateRaw.unit, mv: actuateRaw.cv } : undefined,
-        schedule: steps,
-      });
+      const actuate = actuateRaw ? { unit: actuateRaw.unit, mv: actuateRaw.cv } : undefined;
+      schedules.push({ index, name, actuate, schedule: steps });
+      // The FIRST Schedule is also the disturbance source (a staircase signal):
+      // the picker offers to convert it to a Signal, keeping the train as the
+      // staircase fallback.  Its scalar `mean` is the first step's value.
+      if (signal === null) {
+        signal = {
+          index, name, kind: "Schedule", type: "staircase", actuate,
+          params: { mean: steps[0]?.value ?? 0 },
+          targetPaths: {},
+          schedule: steps,
+        };
+      }
+    } else if (type === "Signal" && signal === null) {
+      signal = liftSignal(raw, index, name);
     }
   });
 
-  return { pid, schedules };
+  return { pid, schedules, signal };
 }
 
 /* ----------------------------- applyTuning -------------------------------- */
@@ -255,4 +368,166 @@ export function applyTuning(
   });
 
   return { ...flowsheetJson, controllers: nextList };
+}
+
+/* ----------------------------- applySignal -------------------------------- */
+
+/** The engine's dict spelling for a signal type (`sine` -> `sinusoidal`, the
+ *  spelling the tutorials author). */
+function engineSignalType(t: SignalType): string {
+  return t === "sine" ? "sinusoidal" : t;
+}
+
+/** Rebuild a `signal {}` sub-dict for a chosen type from a param bag.  Only the
+ *  keys the type uses are written (the engine rejects extras / over-spec, e.g.
+ *  sine wants `period` XOR `frequency`); a zero `tEnd` (== "no saturation") is
+ *  omitted so the ramp default holds. */
+function buildSignalBlock(
+  type: SignalType, params: { [k: string]: number }, mean: number,
+): { [k: string]: JsonValue } {
+  const block: { [k: string]: JsonValue } = { type: engineSignalType(type) };
+  for (const key of SIGNAL_PARAMS[type]) {
+    const v = params[key] ?? defaultSignalParam(type, key, mean);
+    if (key === "tEnd" && (!Number.isFinite(v) || v <= 0)) continue; // omit "no end"
+    block[key] = v;
+  }
+  return block;
+}
+
+/**
+ * Return a NEW flowsheet JSON with the disturbance controller's `signal {}`
+ * block patched (scalar param changes within the SAME type).  Pure clone-edit.
+ * For a legacy Schedule (kind "Schedule"), this is a no-op on its block unless
+ * the type has been converted -- use applySignalType for that.
+ */
+export function applySignal(
+  flowsheetJson: JsonValue,
+  knobs: SignalKnobs,
+  patch: { [key: string]: number },
+): JsonValue {
+  if (!isObj(flowsheetJson)) return flowsheetJson;
+  const list = flowsheetJson["controllers"];
+  if (!Array.isArray(list)) return flowsheetJson;
+
+  const nextList = list.map((raw, i) => {
+    if (i !== knobs.index || !isObj(raw)) return raw;
+    const sig = isObj(raw["signal"]) ? { ...(raw["signal"] as { [k: string]: JsonValue }) } : {};
+    for (const [k, v] of Object.entries(patch)) {
+      if (SIGNAL_PARAMS[knobs.type].includes(k)) sig[k] = v;
+    }
+    // A sine patched on `period` must drop any authored `frequency` twin (the
+    // engine cross-rejects both).
+    if (knobs.type === "sine" && patch["period"] !== undefined && "frequency" in sig) {
+      delete sig["frequency"];
+    }
+    return { ...raw, signal: sig };
+  });
+
+  return { ...flowsheetJson, controllers: nextList };
+}
+
+/**
+ * Return a NEW flowsheet JSON with the disturbance controller REWRITTEN as a
+ * `type Signal` with the chosen forcing TYPE and a fresh `signal {}` block.
+ * Converting a legacy `type Schedule` keeps its actuator + name (its staircase
+ * train is preserved when staying staircase, else replaced).  Pure clone-edit.
+ */
+export function applySignalType(
+  flowsheetJson: JsonValue,
+  knobs: SignalKnobs,
+  nextType: SignalType,
+  params: { [key: string]: number },
+): JsonValue {
+  if (!isObj(flowsheetJson)) return flowsheetJson;
+  const list = flowsheetJson["controllers"];
+  if (!Array.isArray(list)) return flowsheetJson;
+  const mean = params["mean"] ?? knobs.params["mean"] ?? 0;
+
+  const nextList = list.map((raw, i) => {
+    if (i !== knobs.index || !isObj(raw)) return raw;
+    const next: { [k: string]: JsonValue } = { ...raw, type: "Signal" };
+    if (nextType === "staircase") {
+      // Keep the staircase as a `signal { type staircase; schedule (...); }`.
+      const schedule = (knobs.schedule ?? []).map((s) => ({ time: s.time, value: s.value }));
+      next["signal"] = { type: "staircase", schedule: schedule as unknown as JsonValue };
+      delete next["schedule"]; // a converted Schedule no longer carries a top-level train
+    } else {
+      next["signal"] = buildSignalBlock(nextType, params, mean);
+      delete next["schedule"];
+    }
+    return next;
+  });
+
+  return { ...flowsheetJson, controllers: nextList };
+}
+
+/* ------------------------- the forced-response (Bode) --------------------- */
+
+/** One Bode point read off a forced sinusoidal response: the output amplitude,
+ *  the amplitude ratio in dB (20·log10(A_out/A_in)), and the phase lag. */
+export interface BodePoint {
+  /** Input (forcing) amplitude A_in. */
+  aIn: number;
+  /** Output (PV) amplitude A_out, half the steady peak-to-peak. */
+  aOut: number;
+  /** Amplitude ratio A_out / A_in (linear). */
+  ratio: number;
+  /** Amplitude ratio in decibels: 20·log10(ratio). */
+  ratioDb: number;
+  /** Forcing angular frequency omega = 2π/period [rad/s]. */
+  omega: number;
+  /** Phase lag of the PV behind the input [degrees], in [-180, 180]. */
+  phaseLagDeg: number;
+}
+
+/**
+ * Read ONE point of the closed loop's frequency response from a forced
+ * sinusoidal PV trace.  A_out is half the peak-to-peak of the PV over the LAST
+ * full period (the settled cycle, after the startup transient).  The phase lag
+ * is the time offset between the input sine's peak and the PV's peak in that
+ * window, wrapped to (-180, 180] degrees.  Pure -- no plotting.
+ *
+ *   aIn      forcing amplitude (the sine's `amplitude` param)
+ *   period   forcing period [s]
+ *   tStart   forcing onset [s] (the sine's phase origin)
+ *   phase    forcing phase [rad]
+ */
+export function bodePoint(
+  t: number[], pv: number[], aIn: number, period: number,
+  tStart = 0, phase = 0,
+): BodePoint | null {
+  if (t.length < 4 || pv.length !== t.length || !(period > 0)) return null;
+  const tEnd = t[t.length - 1]!;
+  // Settle window = the LAST full period of the trace (skip the transient).
+  const wStart = Math.max(tStart, tEnd - period);
+  const idx: number[] = [];
+  for (let i = 0; i < t.length; i++) if (t[i]! >= wStart - 1e-9) idx.push(i);
+  if (idx.length < 3) return null;
+
+  let pvMin = Infinity, pvMax = -Infinity, iMax = idx[0]!;
+  for (const i of idx) {
+    const y = pv[i]!;
+    if (y < pvMin) pvMin = y;
+    if (y > pvMax) { pvMax = y; iMax = i; }
+  }
+  const aOut = (pvMax - pvMin) / 2;
+  const omega = (2 * Math.PI) / period;
+
+  // The forcing input value(t) = mean + aIn·sin(2π(t-tStart)/period + phase);
+  // its peak is where the sine argument = π/2.  Find that input-peak time
+  // nearest the PV peak's window, then phase lag = (t_pvPeak - t_inPeak)·omega.
+  const tPvPeak = t[iMax]!;
+  // input peak times: arg = π/2 + 2πk  =>  t = tStart + (π/2 - phase)/omega + k·period
+  const base = tStart + (Math.PI / 2 - phase) / omega;
+  const k = Math.round((tPvPeak - base) / period);
+  const tInPeak = base + k * period;
+  let lagRad = (tPvPeak - tInPeak) * omega;
+  // wrap to (-π, π]; a positive lag means the PV peaks AFTER the input (a lag).
+  lagRad = ((lagRad % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+  // Convention: report phase LAG as a negative angle (output lags input).
+  const phaseLagDeg = (lagRad * 180) / Math.PI;
+
+  const ratio = aIn > 0 ? aOut / aIn : NaN;
+  const ratioDb = ratio > 0 ? 20 * Math.log10(ratio) : NaN;
+  return { aIn, aOut, ratio, ratioDb, omega, phaseLagDeg };
 }

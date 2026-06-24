@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  applySignal,
+  applySignalType,
   applyTuning,
+  bodePoint,
   collectControllerKnobs,
   interactingToParallel,
+  normaliseSignalType,
   parallelToInteracting,
 } from "../src/case/controllerKnobs.js";
 import type { JsonDict } from "../src/dict/index.js";
@@ -148,5 +152,269 @@ describe("applyTuning — patching the PID without mutating the input", () => {
     applyTuning(CTRL02, pid!, { kp: 99 });
     const orig = (CTRL02.controllers as JsonDict[])[1]!;
     expect((orig.gains as JsonDict).Kp).toBe(4.0); // unchanged
+  });
+});
+
+/* ======================= the disturbance picker ========================== */
+
+// ctrl06_sine_disturbance: a `type Signal` controller with a `sinusoidal`
+// signal{} block on T_in, FeedDist at index 0, the PID TC1 at index 1.
+const CTRL06: JsonDict = {
+  units: [{ name: "reactor", type: "dynamicCSTR" }],
+  controllers: [
+    {
+      name: "FeedDist",
+      type: "Signal",
+      actuator: { unit: "reactor", mv: "T_in" },
+      signal: {
+        type: "sinusoidal",
+        mean: 320.0, amplitude: 15.0, period: 600.0, phase: 0.0,
+      },
+    },
+    {
+      name: "TC1",
+      type: "PID",
+      measurement: { unit: "reactor", cv: "T" },
+      actuator: { unit: "reactor", mv: "T_jacket" },
+      setpoint: 350.0,
+      gains: { Kp: 4.0, Ki: 0.04, Kd: 0.0 },
+    },
+  ],
+};
+
+describe("normaliseSignalType — the engine `sinusoidal` alias", () => {
+  it("maps sinusoidal/sine to sine, keeps the rest, defaults unknown to step", () => {
+    expect(normaliseSignalType("sinusoidal")).toBe("sine");
+    expect(normaliseSignalType("Sine")).toBe("sine");
+    expect(normaliseSignalType("ramp")).toBe("ramp");
+    expect(normaliseSignalType("pulse")).toBe("pulse");
+    expect(normaliseSignalType("staircase")).toBe("staircase");
+    expect(normaliseSignalType("bogus")).toBe("step");
+  });
+});
+
+describe("collectControllerKnobs — the SIGNAL disturbance (per-type params)", () => {
+  it("lifts a sine Signal's signal{} block: type, params, indexed paths", () => {
+    const { signal } = collectControllerKnobs(CTRL06);
+    expect(signal).not.toBeNull();
+    expect(signal!.kind).toBe("Signal");
+    expect(signal!.type).toBe("sine");
+    expect(signal!.index).toBe(0);
+    expect(signal!.actuate).toEqual({ unit: "reactor", mv: "T_in" });
+    // sine params: mean / amplitude / period / phase (tStart absent => omitted)
+    expect(signal!.params).toMatchObject({ mean: 320, amplitude: 15, period: 600, phase: 0 });
+    expect(signal!.targetPaths.amplitude).toBe("controllers[0].signal.amplitude");
+    expect(signal!.targetPaths.period).toBe("controllers[0].signal.period");
+  });
+
+  it("derives the period when a sine is authored with `frequency`", () => {
+    const withFreq: JsonDict = {
+      controllers: [
+        { name: "D", type: "Signal", actuator: { unit: "r", mv: "T_in" },
+          signal: { type: "sine", mean: 320, amplitude: 10, frequency: 0.002 } },
+      ],
+    };
+    const { signal } = collectControllerKnobs(withFreq);
+    expect(signal!.params.period).toBeCloseTo(500, 6); // 1 / 0.002
+  });
+
+  it("reads a step Signal's params (mean / step / tStep)", () => {
+    const stepCase: JsonDict = {
+      controllers: [
+        { name: "D", type: "Signal", actuator: { unit: "r", mv: "T_in" },
+          signal: { type: "step", mean: 320, step: -15, tStep: 700 } },
+      ],
+    };
+    const { signal } = collectControllerKnobs(stepCase);
+    expect(signal!.type).toBe("step");
+    expect(signal!.params).toMatchObject({ mean: 320, step: -15, tStep: 700 });
+  });
+
+  it("reads a pulse Signal's params (mean / amplitude / tStart / width)", () => {
+    const pulseCase: JsonDict = {
+      controllers: [
+        { name: "D", type: "Signal", actuator: { unit: "r", mv: "T_in" },
+          signal: { type: "pulse", mean: 320, amplitude: 20, tStart: 500, width: 200 } },
+      ],
+    };
+    const { signal } = collectControllerKnobs(pulseCase);
+    expect(signal!.type).toBe("pulse");
+    expect(signal!.params).toMatchObject({ mean: 320, amplitude: 20, tStart: 500, width: 200 });
+  });
+
+  it("reads a ramp Signal's params (mean / slope / tStart)", () => {
+    const rampCase: JsonDict = {
+      controllers: [
+        { name: "D", type: "Signal", actuator: { unit: "r", mv: "T_in" },
+          signal: { type: "ramp", mean: 320, slope: -0.02, tStart: 100 } },
+      ],
+    };
+    const { signal } = collectControllerKnobs(rampCase);
+    expect(signal!.type).toBe("ramp");
+    expect(signal!.params).toMatchObject({ mean: 320, slope: -0.02, tStart: 100 });
+  });
+
+  it("reads a legacy Schedule as a staircase disturbance (the conversion seed)", () => {
+    const { signal } = collectControllerKnobs(CTRL02);
+    expect(signal!.kind).toBe("Schedule");
+    expect(signal!.type).toBe("staircase");
+    expect(signal!.actuate).toEqual({ unit: "reactor", mv: "T_in" });
+    expect(signal!.schedule).toEqual([
+      { time: 0, value: 320.0 },
+      { time: 700, value: 305.0 },
+      { time: 1300, value: 335.0 },
+    ]);
+  });
+
+  it("returns { signal: null } when there is no disturbance controller", () => {
+    const onlyPid: JsonDict = {
+      controllers: [{ name: "TC1", type: "PID", gains: { Kp: 1, Ki: 0, Kd: 0 } }],
+    };
+    expect(collectControllerKnobs(onlyPid).signal).toBeNull();
+  });
+});
+
+describe("applySignal / applySignalType — rewriting the signal{} block", () => {
+  it("applySignal patches a scalar param in place, without mutating the input", () => {
+    const { signal } = collectControllerKnobs(CTRL06);
+    const next = applySignal(CTRL06, signal!, { amplitude: 25 }) as JsonDict;
+    const sig = ((next.controllers as JsonDict[])[0]!.signal as JsonDict);
+    expect(sig.amplitude).toBe(25);
+    expect(sig.period).toBe(600); // untouched
+    // original unchanged
+    expect((((CTRL06.controllers as JsonDict[])[0]!.signal) as JsonDict).amplitude).toBe(15);
+  });
+
+  it("applySignal on `period` drops a stale `frequency` twin (engine cross-rejects)", () => {
+    const withFreq: JsonDict = {
+      controllers: [
+        { name: "D", type: "Signal", actuator: { unit: "r", mv: "T_in" },
+          signal: { type: "sine", mean: 320, amplitude: 10, frequency: 0.002 } },
+      ],
+    };
+    const { signal } = collectControllerKnobs(withFreq);
+    const next = applySignal(withFreq, signal!, { period: 400 }) as JsonDict;
+    const sig = ((next.controllers as JsonDict[])[0]!.signal as JsonDict);
+    expect(sig.period).toBe(400);
+    expect("frequency" in sig).toBe(false);
+  });
+
+  it("applySignalType rewrites the block to a NEW type (sine -> step)", () => {
+    const { signal } = collectControllerKnobs(CTRL06);
+    const next = applySignalType(CTRL06, signal!, "step",
+      { mean: 320, step: -15, tStep: 700 }) as JsonDict;
+    const ctl = (next.controllers as JsonDict[])[0]!;
+    expect(ctl.type).toBe("Signal");
+    const sig = ctl.signal as JsonDict;
+    expect(sig.type).toBe("step");
+    expect(sig.mean).toBe(320);
+    expect(sig.step).toBe(-15);
+    expect(sig.tStep).toBe(700);
+    expect("amplitude" in sig).toBe(false); // sine-only key dropped
+    expect("period" in sig).toBe(false);
+  });
+
+  it("applySignalType writes `sinusoidal` (the engine spelling) for a sine", () => {
+    const { signal } = collectControllerKnobs(CTRL06);
+    const next = applySignalType(CTRL06, signal!, "sine",
+      { mean: 320, amplitude: 15, period: 300, phase: 0 }) as JsonDict;
+    const sig = ((next.controllers as JsonDict[])[0]!.signal as JsonDict);
+    expect(sig.type).toBe("sinusoidal");
+    expect(sig.period).toBe(300);
+  });
+
+  it("applySignalType converts a legacy Schedule into a `type Signal` sine", () => {
+    const { signal } = collectControllerKnobs(CTRL02);
+    const next = applySignalType(CTRL02, signal!, "sine",
+      { mean: 320, amplitude: 15, period: 600, phase: 0 }) as JsonDict;
+    const ctl = (next.controllers as JsonDict[])[0]!;
+    expect(ctl.type).toBe("Signal");
+    expect("schedule" in ctl).toBe(false); // top-level train removed
+    const sig = ctl.signal as JsonDict;
+    expect(sig.type).toBe("sinusoidal");
+    expect(sig.amplitude).toBe(15);
+    // PID at index 1 untouched
+    expect((next.controllers as JsonDict[])[1]!.type).toBe("PID");
+  });
+
+  it("applySignalType keeps the staircase train when staying staircase", () => {
+    const { signal } = collectControllerKnobs(CTRL02);
+    const next = applySignalType(CTRL02, signal!, "staircase", { mean: 320 }) as JsonDict;
+    const sig = ((next.controllers as JsonDict[])[0]!.signal as JsonDict);
+    expect(sig.type).toBe("staircase");
+    expect(sig.schedule).toEqual([
+      { time: 0, value: 320.0 },
+      { time: 700, value: 305.0 },
+      { time: 1300, value: 335.0 },
+    ]);
+  });
+
+  it("applySignalType omits a zero `tEnd` for a ramp (== no saturation)", () => {
+    const rampCase: JsonDict = {
+      controllers: [
+        { name: "D", type: "Signal", actuator: { unit: "r", mv: "T_in" },
+          signal: { type: "ramp", mean: 320, slope: -0.02 } },
+      ],
+    };
+    const { signal } = collectControllerKnobs(rampCase);
+    const next = applySignalType(rampCase, signal!, "ramp",
+      { mean: 320, slope: -0.02, tStart: 100, tEnd: 0 }) as JsonDict;
+    const sig = ((next.controllers as JsonDict[])[0]!.signal as JsonDict);
+    expect("tEnd" in sig).toBe(false);
+    expect(sig.tStart).toBe(100);
+  });
+});
+
+/* ===================== the forced-response (Bode) math =================== */
+
+describe("bodePoint — reading one Bode point off a forced sine PV", () => {
+  // Build a synthetic STEADY forced response: PV = mean + Aout·sin(ωt - lag),
+  // a pure sine of the SAME period as the input, attenuated + phase-lagged.
+  function synth(
+    aOut: number, period: number, lagRad: number, tEnd: number, n = 2000,
+  ): { t: number[]; pv: number[] } {
+    const omega = (2 * Math.PI) / period;
+    const t: number[] = [];
+    const pv: number[] = [];
+    for (let i = 0; i <= n; i++) {
+      const ti = (tEnd * i) / n;
+      t.push(ti);
+      pv.push(350 + aOut * Math.sin(omega * ti - lagRad));
+    }
+    return { t, pv };
+  }
+
+  it("recovers A_out, the dB ratio and ω for an attenuated sine", () => {
+    const period = 600;
+    const { t, pv } = synth(3, period, 0, 3000);
+    const bp = bodePoint(t, pv, 15, period, 0, 0)!;
+    expect(bp).not.toBeNull();
+    expect(bp.aIn).toBe(15);
+    expect(bp.aOut).toBeCloseTo(3, 1);
+    expect(bp.ratio).toBeCloseTo(0.2, 1);             // 3/15
+    expect(bp.ratioDb).toBeCloseTo(20 * Math.log10(0.2), 0); // ≈ -13.98 dB
+    expect(bp.omega).toBeCloseTo((2 * Math.PI) / 600, 6);
+  });
+
+  it("reports a phase LAG when the output peak trails the input peak", () => {
+    const period = 600;
+    // a quarter-period lag = 90° behind the input.
+    const lag = Math.PI / 2;
+    const { t, pv } = synth(5, period, lag, 3000);
+    const bp = bodePoint(t, pv, 15, period, 0, 0)!;
+    // output peaks 90° after the input => phase lag ≈ -90° (output lags).
+    expect(Math.abs(bp.phaseLagDeg)).toBeCloseTo(90, 0);
+  });
+
+  it("returns null for a too-short / mismatched trace", () => {
+    expect(bodePoint([0, 1], [1, 2], 10, 0)).toBeNull();        // period 0
+    expect(bodePoint([0, 1, 2], [1, 2], 10, 600)).toBeNull();   // length mismatch
+    expect(bodePoint([0, 1], [1, 2], 10, 600)).toBeNull();      // < 4 samples
+  });
+
+  it("ratio is 0 dB at unity gain (A_out == A_in)", () => {
+    const { t, pv } = synth(10, 400, 0, 2000);
+    const bp = bodePoint(t, pv, 10, 400, 0, 0)!;
+    expect(bp.ratioDb).toBeCloseTo(0, 1);
   });
 });

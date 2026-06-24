@@ -58,8 +58,9 @@ import { resolveAdapter } from "../adapters/index.js";
 import type { RunResult, TrajectoryData } from "../adapters/SolverAdapter.js";
 import { withDisplayPrefs } from "../case/applyPrefs.js";
 import {
-  applyTuning, collectControllerKnobs, parallelToInteracting,
-  type ScheduleKnobs,
+  applySignalType, applyTuning, bodePoint, collectControllerKnobs,
+  defaultSignalParam, parallelToInteracting, SIGNAL_PARAMS,
+  type BodePoint, type ScheduleKnobs, type SignalKnobs, type SignalType,
 } from "../case/controllerKnobs.js";
 import {
   applyInitial, collectInitialKnobs, type InitialPatch,
@@ -101,6 +102,28 @@ interface IcTuning {
 const COLD_T0 = 300;
 const T0_RANGE: [number, number] = [290, 380];
 
+// The disturbance picker: the forcing-shape menu + per-param slider ranges.
+// Ranges are the felt-lesson spans for an inlet-T (mean ~320 K) disturbance.
+const SIGNAL_TYPE_OPTIONS: { label: string; value: SignalType }[] = [
+  { label: "Step", value: "step" },
+  { label: "Stair", value: "staircase" },
+  { label: "Ramp", value: "ramp" },
+  { label: "Pulse", value: "pulse" },
+  { label: "Sine", value: "sine" },
+];
+const SIGNAL_RANGE: { [k: string]: { min: number; max: number; step: number; label: string } } = {
+  mean:      { min: 280, max: 360, step: 1,    label: "mean [K]" },
+  amplitude: { min: 0,   max: 40,  step: 1,    label: "amplitude [K]" },
+  step:      { min: -40, max: 40,  step: 1,    label: "step Δ [K]" },
+  tStep:     { min: 0,   max: 2000, step: 50,  label: "t_step [s]" },
+  tStart:    { min: 0,   max: 2000, step: 50,  label: "t_start [s]" },
+  tEnd:      { min: 0,   max: 2000, step: 50,  label: "t_end [s] (0=∞)" },
+  slope:     { min: -0.2, max: 0.2, step: 0.005, label: "slope [K/s]" },
+  width:     { min: 10,  max: 1000, step: 10,  label: "width [s]" },
+  period:    { min: 60,  max: 2000, step: 20,  label: "period [s]" },
+  phase:     { min: 0,   max: 6.283, step: 0.05, label: "phase [rad]" },
+};
+
 export function ControlWorkspace() {
   const caseFiles = useStore((s) => s.caseFiles);
   const prefs = useStore((s) => s.displayPrefs);
@@ -109,6 +132,7 @@ export function ControlWorkspace() {
   const flowsheetJson = caseFiles.flowsheet;
   const layer = useMemo(() => collectControllerKnobs(flowsheetJson), [flowsheetJson]);
   const pid = layer.pid;
+  const sigKnobs: SignalKnobs | null = layer.signal;
   // The dynamic unit's initial-condition knobs (T0, V0, seed composition) --
   // null when the case has no dynamic-holdup unit with an initial{} block.
   const icKnobs = useMemo(() => collectInitialKnobs(flowsheetJson), [flowsheetJson]);
@@ -159,6 +183,38 @@ export function ControlWorkspace() {
   useEffect(() => { setCommittedIc(icBaseline); }, [icBaseline]);
   const [icPreset, setIcPreset] = useState<"cold" | "authored">("authored");
 
+  // --- disturbance-picker state (reset-on-close = component-local) ----------
+  // The forcing shape + the FULL param bag for whatever type is chosen.  Seeded
+  // from the authored signal; switching type fills missing params from defaults
+  // (keyed on the authored `mean` so an inlet-T disturbance stays near 320 K).
+  const sigType0 = sigKnobs?.type ?? "step";
+  const sigMean0 = sigKnobs?.params["mean"] ?? 320;
+  const sigParams0 = useMemo<{ [k: string]: number }>(() => {
+    const bag: { [k: string]: number } = {};
+    for (const t of SIGNAL_TYPE_OPTIONS) {
+      for (const key of SIGNAL_PARAMS[t.value]) {
+        if (bag[key] === undefined) {
+          bag[key] = sigKnobs?.params[key] ?? defaultSignalParam(t.value, key, sigMean0);
+        }
+      }
+    }
+    return bag;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sigKnobs, sigMean0]);
+  const [sigType, setSigType] = useState<SignalType>(sigType0);
+  const [sigParams, setSigParams] = useState<{ [k: string]: number }>(sigParams0);
+  // Has the disturbance been edited?  Until then we never rewrite the authored
+  // block (ctrl02's Schedule + ctrl06's sine stay byte-identical on disk).
+  const [sigDirty, setSigDirty] = useState(false);
+  useEffect(() => {
+    setSigType(sigType0);
+    setSigParams(sigParams0);
+    setSigDirty(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sigParams0, sigType0]);
+  const [committedSigType, setCommittedSigType] = useState<SignalType>(sigType0);
+  useEffect(() => { setCommittedSigType(sigType0); }, [sigType0]);
+
   // --- run plumbing (the WhatIf mechanism, whole case) ---------------------
   const [trace, setTrace] = useState<TrajectoryData | null>(
     seededResult?.trajectory ?? null,
@@ -201,7 +257,12 @@ export function ControlWorkspace() {
     return patch;
   }, [icKnobs, icComps]);
 
-  const buildFiles = useCallback((t: Tuning, it?: IcTuning): CaseFiles | null => {
+  // The disturbance override layered into a run: the chosen forcing type + param
+  // bag.  Undefined / not-dirty => leave the authored signal block untouched.
+  interface SigOverride { type: SignalType; params: { [k: string]: number }; dirty: boolean }
+
+  const buildFiles = useCallback(
+    (t: Tuning, it?: IcTuning, sg?: SigOverride): CaseFiles | null => {
     if (!flowsheetJson || !pid) return null;
     // Layer the IC patch UNDER the tuning patch so a gain change and a start
     // change compose in one run (applyInitial(applyTuning(...))).  Both are
@@ -209,8 +270,13 @@ export function ControlWorkspace() {
     let next = applyTuning(flowsheetJson, pid, t) as JsonDict;
     const icPatch = it && icKnobs ? icToPatch(it) : null;
     if (icPatch && icKnobs) next = applyInitial(next, icKnobs, icPatch) as JsonDict;
+    // The disturbance: only rewrite the signal block once the picker is touched
+    // (keeps the authored Schedule/Signal byte-identical until the student acts).
+    if (sg && sg.dirty && sigKnobs) {
+      next = applySignalType(next, sigKnobs, sg.type, sg.params) as JsonDict;
+    }
     return { ...caseFiles, flowsheet: next };
-  }, [flowsheetJson, pid, caseFiles, icKnobs, icToPatch]);
+  }, [flowsheetJson, pid, caseFiles, icKnobs, icToPatch, sigKnobs]);
 
   // The PV column key (for the ghost/metrics) -- resolve once per trace.
   const pvKey = useMemo(() => {
@@ -221,9 +287,10 @@ export function ControlWorkspace() {
       .find((k) => keys.includes(k)) ?? keys.find((k) => k.endsWith(".PV"));
   }, [trace, pid]);
 
-  const runLoop = useCallback(async (t: Tuning, it?: IcTuning) => {
+  const runLoop = useCallback(async (t: Tuning, it?: IcTuning, sg?: SigOverride) => {
     const itEff = it ?? ic;
-    const files = buildFiles(t, itEff);
+    const sgEff: SigOverride = sg ?? { type: sigType, params: sigParams, dirty: sigDirty };
+    const files = buildFiles(t, itEff, sgEff);
     if (!files || busy) return;
     // Snapshot the current trace as the ghost BEFORE the new run (so the
     // before/after is a visible pair, never a blank).
@@ -265,13 +332,14 @@ export function ControlWorkspace() {
       setTrace(result.trajectory);
       setCommitted(t);
       setCommittedIc(itEff);
+      setCommittedSigType(sgEff.type);
     } catch (e) {
       if (!abortRef.current?.signal.aborted) setRunError((e as Error).message);
     } finally {
       setBusy(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [buildFiles, busy, trace, pvKey, prefs, pid, committed, bandPct, ic]);
+  }, [buildFiles, busy, trace, pvKey, prefs, pid, committed, bandPct, ic, sigType, sigParams, sigDirty]);
 
   // Pin the current trace as a labelled snapshot (Kp=4 vs 12 vs 20 overlay).
   const pinCurrent = useCallback(() => {
@@ -338,10 +406,28 @@ export function ControlWorkspace() {
     });
   }, [ghost, committed.setpoint, bandPct, activeWindow]);
 
+  // --- the forced-response (Bode) readout (sine forcing only) --------------
+  // A_out = half the steady peak-to-peak of the PV over the last forcing period;
+  // ratio dB = 20·log10(A_out/A_in); phase lag from the input/output peak offset.
+  const bode = useMemo<BodePoint | null>(() => {
+    if (!trace || !pvKey || committedSigType !== "sine") return null;
+    const pv = trace.vars[pvKey];
+    if (!pv) return null;
+    const aIn = sigParams["amplitude"] ?? 0;
+    const period = sigParams["period"] ?? 0;
+    const tStart = sigParams["tStart"] ?? 0;
+    const phase = sigParams["phase"] ?? 0;
+    return bodePoint(trace.t, pv, aIn, period, tStart, phase);
+  }, [trace, pvKey, committedSigType, sigParams]);
+
   // --- the mutated controllers(...) [+ units initial{}] block text (Show dict)
   const dictText = useMemo(() => {
     if (!flowsheetJson || !pid) return "";
-    const patched = applyTuning(flowsheetJson, pid, committed) as JsonDict;
+    let patched = applyTuning(flowsheetJson, pid, committed) as JsonDict;
+    // Mirror the live disturbance into the dict text when the picker is dirty.
+    if (sigDirty && sigKnobs) {
+      patched = applySignalType(patched, sigKnobs, committedSigType, sigParams) as JsonDict;
+    }
     const controllers = patched["controllers"];
     // When an IC override is live, also render the mutated `units` block so the
     // student can copy BOTH the gains and the start back to disk.
@@ -359,7 +445,8 @@ export function ControlWorkspace() {
     } catch {
       return "(could not serialise the controllers block)";
     }
-  }, [flowsheetJson, pid, committed, committedIc, icKnobs, icBaseline, icToPatch]);
+  }, [flowsheetJson, pid, committed, committedIc, icKnobs, icBaseline, icToPatch,
+      sigDirty, sigKnobs, committedSigType, sigParams]);
 
   // --- the interacting-form twin (textbook lens) ---------------------------
   const twin = useMemo(() => parallelToInteracting(tuning.kp, tuning.ki, tuning.kd), [tuning]);
@@ -389,6 +476,14 @@ export function ControlWorkspace() {
     ...(ghost ? [{ label: "PV (prev)", t: ghost.t, pv: ghost.pv, iae: ghostMetrics?.iae, color: PLOT_COLORS.axis, opacity: 0.35 }] : []),
     ...pins,
   ];
+
+  // The forcing controller emits a `<name>.MV` column when it runs as a Signal:
+  // the authored `type Signal`, or a dirtied conversion to a non-staircase shape.
+  // Drawing that column under the PV shows the input wave the loop is rejecting.
+  const signalIsForcing = !!sigKnobs
+    && (sigKnobs.kind === "Signal" || (sigDirty && committedSigType !== "staircase"));
+  const signalName = signalIsForcing ? sigKnobs!.name : undefined;
+  const signalMv = signalIsForcing ? sigKnobs!.actuate?.mv : undefined;
 
   const railW = collapsed ? 0 : 260;
 
@@ -541,6 +636,65 @@ export function ControlWorkspace() {
                 </Box>
               )}
 
+              {/* ---- Disturbance picker rail group ---- */}
+              {sigKnobs && (
+                <Box style={{ borderTop: "1px dashed var(--mantine-color-dark-4)", paddingTop: 10 }}>
+                  <Group justify="space-between" align="center" mb={6}>
+                    <Text size="xs" tt="uppercase" fw={700} c="dimmed">Disturbance</Text>
+                    <Text size="9px" c="dimmed" ff="JetBrains Mono, monospace">
+                      {sigKnobs.actuate?.mv ?? "input"}
+                    </Text>
+                  </Group>
+                  <SegmentedControl
+                    fullWidth size="xs" mb={8}
+                    value={sigType}
+                    onChange={(v) => {
+                      const nt = v as SignalType;
+                      setSigType(nt);
+                      setSigDirty(true);
+                      void runLoop(tuning, ic, { type: nt, params: sigParams, dirty: true });
+                    }}
+                    data={SIGNAL_TYPE_OPTIONS}
+                  />
+                  {sigKnobs.kind === "Schedule" && sigType !== "staircase" && (
+                    <Text size="9px" c="yellow.5" mb={6}>
+                      converts the Schedule to a <code>type Signal</code> forcing.
+                    </Text>
+                  )}
+                  {sigType === "staircase" ? (
+                    <Text size="9px" c="dimmed" mb={4}>
+                      step train (edit the times/values in <code>system/flowsheetDict</code>);
+                      the markers above mirror it.
+                    </Text>
+                  ) : (
+                    SIGNAL_PARAMS[sigType].map((key) => {
+                      const r = SIGNAL_RANGE[key]!;
+                      return (
+                        <KnobSlider
+                          key={key}
+                          label={r.label}
+                          path={`controllers[${sigKnobs.index}].signal.${key}`}
+                          value={sigParams[key] ?? defaultSignalParam(sigType, key, sigMean0)}
+                          min={r.min} max={r.max} step={r.step}
+                          onPreview={(val) => setSigParams((p) => ({ ...p, [key]: val }))}
+                          onCommit={(val) => {
+                            const np = { ...sigParams, [key]: val };
+                            setSigParams(np);
+                            setSigDirty(true);
+                            void runLoop(tuning, ic, { type: sigType, params: np, dirty: true });
+                          }}
+                        />
+                      );
+                    })
+                  )}
+                  <Text size="9px" c="dimmed" mt={2}>
+                    {sigType === "sine"
+                      ? "inject a sinusoid → read A_out/A_in (dB) + phase lag below = one Bode point."
+                      : "the forcing wave is drawn under the PV on the plot."}
+                  </Text>
+                </Box>
+              )}
+
               <Button
                 size="compact-xs" variant="subtle"
                 onClick={() => setDictOpen((o) => !o)}
@@ -595,6 +749,8 @@ export function ControlWorkspace() {
                 ghosts={ghostsForPlot}
                 xRange={activeWindow}
                 showComposition={showComp}
+                signalName={signalName}
+                signalMv={signalMv}
               />
             </Box>
           ) : (
@@ -651,6 +807,40 @@ export function ControlWorkspace() {
           <Text size="10px" c="dimmed">
             window: {lens} [{activeWindow[0].toFixed(0)}–{activeWindow[1].toFixed(0)} s]
           </Text>
+        </Group>
+      )}
+
+      {/* ---- forcing readout strip (the Bode point for a sine) ---- */}
+      {signalIsForcing && committedSigType === "sine" && (
+        <Group
+          gap="md" px="sm" py={6} wrap="wrap"
+          style={{ borderTop: "1px solid var(--mantine-color-dark-5)", flex: "0 0 auto" }}
+        >
+          <Text size="10px" tt="uppercase" fw={700} c="grape.4">forcing — Bode point</Text>
+          {bode ? (
+            <>
+              <MetricCard label="A_in" value={`${bode.aIn.toFixed(1)} K`}
+                formula="The forcing sine's amplitude (the input swing)." />
+              <MetricCard label="A_out" value={`${bode.aOut.toFixed(2)} K`}
+                formula="Half the steady peak-to-peak of the PV over the last forcing period." />
+              <MetricCard label="A_out/A_in"
+                value={Number.isFinite(bode.ratioDb) ? `${bode.ratioDb.toFixed(1)} dB` : "—"}
+                formula="Amplitude ratio in decibels: 20·log10(A_out/A_in) — one Bode magnitude point." />
+              <MetricCard label="phase lag"
+                value={Number.isFinite(bode.phaseLagDeg) ? `${bode.phaseLagDeg.toFixed(0)}°` : "—"}
+                formula="Time offset between the input peak and the PV peak, in degrees of the forcing cycle." />
+              <MetricCard label="ω" value={`${bode.omega.toFixed(4)} rad/s`}
+                formula="Forcing angular frequency ω = 2π/period — the x of the Bode plot." />
+              <Text size="9px" c="dimmed" maw={220}>
+                sweep <code>period</code>, re-run, and you trace the closed loop’s
+                frequency response by hand.
+              </Text>
+            </>
+          ) : (
+            <Text size="10px" c="dimmed">
+              run a few periods of the sine to read the steady-cycle amplitude ratio.
+            </Text>
+          )}
         </Group>
       )}
     </Box>

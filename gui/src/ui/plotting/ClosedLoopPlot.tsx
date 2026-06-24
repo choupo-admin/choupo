@@ -85,6 +85,13 @@ export interface ClosedLoopPlotProps {
    *  on the left (moles) axis.  Off by default -- the closed-loop story is
    *  T(t); composition is the "did the disturbance corrupt my product" lens. */
   showComposition?: boolean;
+  /** The disturbance/forcing controller's name (a `type Signal`).  Its `<name>.MV`
+   *  column carries the forcing wave value(t) -- the engine's OWN forcing trace,
+   *  drawn on the secondary (T) axis so the student sees the input wave under the
+   *  PV response.  Schedule disturbances already ride via `schedules`. */
+  signalName?: string;
+  /** The actuated MV of the forcing signal (for the trace label, e.g. "T_in"). */
+  signalMv?: string;
 }
 
 /** Which trajectory column carries the PID's PV (controlled variable).  Tries,
@@ -132,16 +139,25 @@ function resolveCompKeys(traj: TrajectoryData): string[] {
 }
 
 export function ClosedLoopPlot(props: ClosedLoopPlotProps) {
-  const { trajectory, pid, schedules, ghosts, xRange, showComposition } = props;
+  const { trajectory, pid, schedules, ghosts, xRange, showComposition, signalName, signalMv } = props;
   const setpoint = props.setpoint ?? pid.setpoint;
   const bandFraction = props.bandFraction ?? 0.02;
 
   const pvKey = useMemo(() => resolvePvKey(trajectory, pid), [trajectory, pid]);
   const mvKey = useMemo(() => resolveMvKey(trajectory, pid), [trajectory, pid]);
+  // The forcing trace: a `type Signal` controller writes its forcing value(t)
+  // into `<name>.MV` (setpoint() == lastMV()).  Prefer that engine column; else
+  // fall back to a Schedule controller's MV (the staircase disturbance).
+  const sigKey = useMemo(() => {
+    if (!signalName) return undefined;
+    const k = `${signalName}.MV`;
+    return Object.keys(trajectory.vars).includes(k) ? k : undefined;
+  }, [trajectory, signalName]);
   // The inlet-T disturbance the Schedule controller drives -- a STREAM property
   // (the feed's temperature), drawn as a named band on the secondary (T) axis.
   const distKey = useMemo(
-    () => resolveDistKey(trajectory, schedules, mvKey), [trajectory, schedules, mvKey]);
+    () => sigKey ?? resolveDistKey(trajectory, schedules, mvKey),
+    [sigKey, trajectory, schedules, mvKey]);
   // Outlet composition (the objective): opt-in, on the left moles axis.
   const compKeys = useMemo(
     () => (showComposition ? resolveCompKeys(trajectory) : []), [trajectory, showComposition]);
@@ -158,8 +174,13 @@ export function ClosedLoopPlot(props: ClosedLoopPlotProps) {
   // property it is.  (The MV already rides right via mvVars below.)
   const mvVars = useMemo(
     () => [mvKey, distKey].filter((k): k is string => !!k), [mvKey, distKey]);
-  const renameVars = useMemo(
-    () => (distKey ? { [distKey]: "inlet T [K] — disturbance" } : undefined), [distKey]);
+  const renameVars = useMemo(() => {
+    if (!distKey) return undefined;
+    const label = sigKey
+      ? `forcing — ${signalMv ?? "input"} [K]`
+      : "inlet T [K] — disturbance";
+    return { [distKey]: label };
+  }, [distKey, sigKey, signalMv]);
 
   // The setpoint as a dashed reference line.
   const referenceLines: ReferenceLine[] = useMemo(
