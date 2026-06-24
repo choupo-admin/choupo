@@ -55,10 +55,12 @@ import { popOutCurrentPlot } from "./plotPopOut.js";
 import { CompositionPlot } from "./plotting/CompositionPlot.js";
 import { ConvergencePlot } from "./plotting/ConvergencePlot.js";
 import { ProfilePlot } from "./plotting/ProfilePlot.js";
+import { TimeScrubber } from "./plotting/TimeScrubber.js";
 import { TrajectoryPlot } from "./plotting/TrajectoryPlot.js";
 import { TxyPlot } from "./plotting/TxyPlot.js";
 
 type PlotKey =
+  | "scrubber"
   | "trajectory"
   | "composition"
   | "txy"
@@ -70,11 +72,14 @@ export function PlotsPanel() {
   const [view, setView] = useState<PlotKey>("composition");
 
   // When a new run lands, default to the most informative view:
-  //   - trajectory if the run produced a time-series (dynamic case)
+  //   - scrubber if the dynamic run wrote real-time instant dirs (the holdup
+  //     state per time -- the richest transient view)
+  //   - trajectory if it produced a time-series (dynamic case, no instant dirs)
   //   - composition otherwise
   useEffect(() => {
     if (!result) return;
-    if (result.trajectory) setView("trajectory");
+    if (result.instants) setView("scrubber");
+    else if (result.trajectory) setView("trajectory");
     else setView("composition");
   }, [result]);
 
@@ -90,6 +95,9 @@ export function PlotsPanel() {
 
   const activePlot = (
     <>
+      {view === "scrubber" && result.instants && (
+        <TimeScrubber instants={result.instants} trajectory={result.trajectory} />
+      )}
       {view === "trajectory" && result.trajectory && (
         <TrajectoryPlot data={result.trajectory} />
       )}
@@ -117,6 +125,11 @@ export function PlotsPanel() {
           value={view}
           onChange={(v) => setView(v as PlotKey)}
           data={[
+            {
+              label: "Scrubber",
+              value: "scrubber",
+              disabled: !result.instants,
+            },
             {
               label: "Trajectory",
               value: "trajectory",

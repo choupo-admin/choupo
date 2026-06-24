@@ -56,6 +56,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { fromJson, serialize } from "../dict/index.js";
+import { parseDynamicInstants } from "../case/dynamicInstants.js";
 import type { CaseFiles } from "../case/types.js";
 import type { JsonDict } from "../dict/index.js";
 import type {
@@ -82,12 +83,38 @@ import { WASM_WORKER_URL } from "./wasmModule.js";
 export const BEGIN_MARK = "<<<Choupo:result-begin>>>";
 export const END_MARK = "<<<Choupo:result-end>>>";
 
+/** The WASM binaries the GUI can dispatch to (one EXPORT_NAME each). */
+export type WasmBinary =
+  | "choupoSolve"
+  | "choupoBatch"
+  | "choupoCtrl"
+  | "choupoProps";
+
+/**
+ * Pick the WASM binary for a case's `controlDict.application` value.
+ *
+ * choupoBatch -> batch + recipes (transient)
+ * choupoCtrl  -> dynamic + control (transient)
+ * choupoProps -> property scans / fits
+ * anything else (incl. undefined / "choupoSolve") -> choupoSolve, so a case
+ * that omits `application` still runs the steady solver -- backwards compat.
+ *
+ * Exported pure so the dispatch is unit-testable without spawning a worker.
+ */
+export function selectBinary(app: unknown): WasmBinary {
+  if (app === "choupoBatch" || app === "choupoCtrl" || app === "choupoProps") {
+    return app;
+  }
+  return "choupoSolve";
+}
+
 type WorkerMessage =
   | { type: "log"; line: string }
   | { type: "done"; rc: number }
   | { type: "error"; message: string }
   | { type: "trajectory"; csv: string }
   | { type: "csvFiles"; files: { [relPath: string]: string } }
+  | { type: "instants"; files: { [relPath: string]: string } }
   | { type: "proposals"; files: { [relPath: string]: string } };
 
 export class WasmAdapter implements SolverAdapter {
@@ -100,6 +127,7 @@ export class WasmAdapter implements SolverAdapter {
       let log = "";
       let trajectoryCsv: string | null = null;
       let csvFiles: { [relPath: string]: string } | null = null;
+      let instantFiles: { [relPath: string]: string } | null = null;
       let proposals: { [relPath: string]: string } | null = null;
       const emit = (line: string) => {
         const chunk = line + "\n";
@@ -144,6 +172,10 @@ export class WasmAdapter implements SolverAdapter {
         if (csvFiles && Object.keys(csvFiles).length > 0) {
           result.csvFiles = csvFiles;
         }
+        if (instantFiles && Object.keys(instantFiles).length > 0) {
+          const parsed = parseDynamicInstants(instantFiles);
+          if (parsed) result.instants = parsed;
+        }
         if (proposals && Object.keys(proposals).length > 0) {
           result.proposals = proposals;
         }
@@ -171,6 +203,8 @@ export class WasmAdapter implements SolverAdapter {
           trajectoryCsv = msg.csv;
         } else if (msg.type === "csvFiles") {
           csvFiles = msg.files;
+        } else if (msg.type === "instants") {
+          instantFiles = msg.files;
         } else if (msg.type === "proposals") {
           proposals = msg.files;
         } else if (msg.type === "done") {
@@ -188,14 +222,9 @@ export class WasmAdapter implements SolverAdapter {
       };
 
       // Choose the right WASM binary based on the case's
-      // controlDict.application field.  Default to choupoSolve for
-      // backwards compatibility with cases that omit the field.
+      // controlDict.application field (binaryOverride wins for the Props view).
       const app = binaryOverride ?? caseFiles.controlDict["application"];
-      const binary =
-        app === "choupoBatch" || app === "choupoCtrl"
-          || app === "choupoProps"
-          ? app
-        : "choupoSolve";
+      const binary = selectBinary(app);
       emit(`[adapter] dispatching to ${binary} WASM`);
 
       worker.postMessage({

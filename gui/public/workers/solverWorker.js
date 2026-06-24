@@ -35,6 +35,8 @@
     worker -> main:  { type: "log",        line: string }
     worker -> main:  { type: "trajectory", csv:  string }              (legacy)
     worker -> main:  { type: "csvFiles",   files: { [relPath]: string } }
+    worker -> main:  { type: "instants",   files: { "<t>/internalState": string,
+                                                     "<t>/streams": string, ... } }
     worker -> main:  { type: "done",       rc:    number }
     worker -> main:  { type: "error",      message: string }
 \*---------------------------------------------------------------------------*/
@@ -193,7 +195,16 @@ self.addEventListener("message", async (e) => {
             try {
               const csvFiles = {};
               const proposals = {};   // *.estimate-*.dat written by estimateComponent
-              const walk = (dir) => {
+              // OpenFOAM-style real-time INSTANT files the dynamic binaries
+              // (choupoBatch / choupoCtrl) drop under <t>/ at the case root:
+              //   <t>/internalState   holdup truth (mole inventory, T, V, ...)
+              //   <t>/streams         instantaneous outlet faces (continuous)
+              // <t> is a single all-digit directory name.  We harvest these so
+              // the GUI can offer a TIME SCRUBBER over the transient (read-only
+              // harvest of a run output; the GUI never writes).
+              const instants = {};
+              const isNumericDir = (n) => /^[0-9]+(\.[0-9]+)?$/.test(n);
+              const walk = (dir, parentName) => {
                 const entries = Module.FS.readdir(dir);
                 for (const name of entries) {
                   if (name === "." || name === "..") continue;
@@ -201,7 +212,7 @@ self.addEventListener("message", async (e) => {
                   let st;
                   try { st = Module.FS.stat(path); } catch (_) { continue; }
                   if (Module.FS.isDir(st.mode)) {
-                    walk(path);
+                    walk(path, name);
                   } else if (name.endsWith(".csv") || /\.estimate-.*\.dat$/.test(name)) {
                     try {
                       const body = Module.FS.readFile(path, { encoding: "utf8" });
@@ -213,10 +224,28 @@ self.addEventListener("message", async (e) => {
                     } catch (_) {
                       /* ignore individual file failures */
                     }
+                  } else if ((name === "internalState" || name === "streams")
+                             && parentName && isNumericDir(parentName)) {
+                    try {
+                      const body = Module.FS.readFile(path, { encoding: "utf8" });
+                      // Key by "<t>/<file>" (case-root-relative) so the parser
+                      // groups files by their instant directory.
+                      instants[parentName + "/" + name] = body;
+                    } catch (_) {
+                      /* ignore individual file failures */
+                    }
                   }
                 }
               };
-              walk("/case");
+              walk("/case", null);
+
+              // Real-time instant files -> the time scrubber.  Carried on their
+              // own channel (not csvFiles) so the adapter parses them once.
+              if (Object.keys(instants).length > 0) {
+                log("[worker] collected " + Object.keys(instants).length
+                    + " dynamic instant file(s)");
+                self.postMessage({ type: "instants", files: instants });
+              }
 
               // Component proposal .dat files (estimateComponent promote) --
               // carried back so the GUI can preview + offer a download.  The

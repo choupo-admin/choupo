@@ -204,21 +204,25 @@ without re-validating.
 ### Build targets
 
 ```makefile
-make wasm-gui                   # DEFAULT: the GUI's two binaries -- choupoSolve + choupoProps
+make wasm-gui                   # the GUI bundle: ALL FOUR binaries
+                                #   (choupoSolve + choupoProps + choupoBatch + choupoCtrl)
+make wasm-steady-props          # FAST: just choupoSolve + choupoProps (the common src/ edit)
 make wasm-solve                 # steady-state binary alone (choupoSolve)
-make wasm                       # release -O2, build ALL FOUR binaries (only when asked)
+make wasm                       # release -O2, build ALL FOUR binaries (same set as wasm-gui)
 make wasm WASM_MODE=debug       # -O0 -g3, assertions on
 make wasm-clean                 # remove artifacts
 ```
 
-**Default rebuild is `make wasm-gui` = choupoSolve + choupoProps.**  The GUI
-uses exactly these two --- choupoSolve for steady flowsheets and choupoProps for
-the PropsView (property scans / fits); choupoBatch and choupoCtrl have NO GUI
-yet (hidden), so they are dead weight for normal GUI work.  The all-4 build is
-slow + concurrency-fragile (two concurrent `make wasm` clobber
-`gui/public/wasm/` --- never run two at once).  Use the full `make wasm` ONLY
-when batch/ctrl also need refreshing (Vítor: compile WASM for steady-state +
-props unless asked otherwise).
+**`make wasm-gui` now builds all FOUR binaries.**  The GUI dispatches by
+`controlDict.application`, so a transient case (`ctrl03` / `batch04`) needs
+choupoCtrl / choupoBatch present in `gui/public/wasm/` to run in-browser and
+offer the **time scrubber** (the holdup state per written instant).  The four:
+choupoSolve (steady flowsheets), choupoProps (the PropsView — property scans /
+fits), choupoBatch (batch + recipes), choupoCtrl (dynamic + control).  When you
+only touched choupoSolve / choupoProps and the dynamic binaries are already
+current, `make wasm-steady-props` is the fast path.  The build is
+concurrency-fragile (two concurrent `make wasm*` clobber `gui/public/wasm/` ---
+never run two at once; the four binaries build sequentially within one target).
 
 **IMPORTANT — rebuild WASM after adding/changing a unit op.**  The GUI runs the
 WASM build, which is SEPARATE from the native binary.  A new built-in (absorber,
@@ -233,15 +237,36 @@ with `make wasm-clean && make wasm`.
 embeds the engine sources directly into each `.wasm`.  Same sources, two link
 strategies.
 
-**Note:** `make wasm` produces three `.js`/`.wasm` pairs in `gui/public/wasm/`,
-one per binary (`choupoSolve`, `choupoBatch`, `choupoCtrl`).  Each has a
-uniquely-named factory function (`createChoupoSolve` / `createChoupoBatch` /
-`createChoupoCtrl`) so they can coexist in the same worker scope without
-clobbering globals.  The worker reads the case's `controlDict.application` field
-and loads the matching binary.  Each `src/applications/<bin>/` has a
-`wasmEntry.cpp` exporting `run_case(const char*)` that forwards to that binary's
-`main()`.  Total.wasm footprint is ~1.8 MB across the three (choupoSolve
-~860 KB, batch and ctrl each ~450 KB).
+**Note:** `make wasm` / `make wasm-gui` produce four `.js`/`.wasm` pairs in
+`gui/public/wasm/`, one per binary (`choupoSolve`, `choupoProps`, `choupoBatch`,
+`choupoCtrl`).  Each has a uniquely-named factory function (`createChoupoSolve`
+/ `createChoupoProps` / `createChoupoBatch` / `createChoupoCtrl`) so they can
+coexist in the same worker scope without clobbering globals.  The worker reads
+the case's `controlDict.application` field (via `selectBinary` in
+`WasmAdapter.ts`) and loads the matching binary.  Each `src/applications/<bin>/`
+has a `wasmEntry.cpp` exporting `run_case(const char*)` that forwards to that
+binary's `main()`.
+
+### Transient cases — the time scrubber
+
+A dynamic run (`choupoBatch` / `choupoCtrl`) with `solutionControl { write true; }`
+drops OpenFOAM-style real-time INSTANT directories at the case root: each written
+physical time `<t>/` carries `internalState` (the holdup truth — mole inventory,
+T, V, conversion) and, for continuous units, `streams` (the instantaneous outlet
+face).  In WASM these land in MEMFS.  The flow:
+
+1. `solverWorker.js` walks `/case` after the run and harvests every
+   `<t>/internalState` + `<t>/streams` (where `<t>` is an all-digit dir),
+   posting them on the `instants` channel.
+2. `WasmAdapter` parses them with `parseDynamicInstants` (`gui/src/case/
+   dynamicInstants.ts`) — reusing the engine's OWN dict tokenizer (`parse` +
+   `toJson`), never a regex — into `RunResult.instants`.
+3. `PlotsPanel` adds a **Scrubber** view (`TimeScrubber.tsx`): a slider over the
+   written times shows each unit's holdup card (T, V, inventory, extras + outlet
+   face) and a marked T(t) line, defaulting to this view when `instants` exist.
+
+`trajectory.csv` is still written + plotted (the **Trajectory** view); the
+scrubber is the richer per-instant state on top of it.
 
 Known bug: `make` alone defaults to `wasm` because `make/wasm.mk` is included
 before `all:` is declared in the top-level Makefile.  Use `make all` for the

@@ -35,6 +35,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { CaseFiles } from "../case/types.js";
+import type { DynamicInstants } from "../case/dynamicInstants.js";
 
 export interface StreamResult {
   name: string;
@@ -229,6 +230,12 @@ export interface RunResult {
   profiles?: UnitProfile[];
   txy?: TxyData;
   trajectory?: TrajectoryData;
+  /** OpenFOAM-style real-time INSTANTS harvested from MEMFS after a dynamic run
+   *  (choupoBatch / choupoCtrl with `solutionControl { write true; }`): the
+   *  per-time holdup state (mole inventory, T, V, conversion) + outlet faces.
+   *  Feeds the TIME SCRUBBER -- scrub a time, see the reactor's actual state at
+   *  that instant.  Absent for steady runs / solutionControl-off cases. */
+  instants?: DynamicInstants;
   /** Per-component molar mass (kg/kmol) emitted by the solver since
    *.  Lets the GUI derive mass fractions w_i locally
    *  (w_i = z_i * MW_i / Sigma_j z_j * MW_j). */

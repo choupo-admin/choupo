@@ -45,7 +45,7 @@ WASM_FLAGS_BASE := \
 	--embed-file data/standards@/data/standards \
 	--embed-file data/proposed@/data/proposed
 
-.PHONY: wasm wasm-gui wasm-solve wasm-clean
+.PHONY: wasm wasm-gui wasm-steady-props wasm-solve wasm-clean
 
 # Deferred (`=`, not `:=`) because wasm.mk is included BEFORE the
 # top-level Makefile defines SRCS.  Each binary's source list is:
@@ -67,11 +67,18 @@ WASM_PROPS_JS := $(WASM_DIR)/choupoProps.js
 
 wasm: $(WASM_SOLVE_JS) $(WASM_BATCH_JS) $(WASM_CTRL_JS) $(WASM_PROPS_JS)
 
-# The GUI's two binaries: choupoSolve (steady flowsheets) + choupoProps (the
-# PropsView: property scans / fits).  batch/ctrl have no GUI yet (hidden), so
-# this is the fast default rebuild after a src/ change.  Use plain `wasm` only
-# when batch/ctrl also need refreshing.
-wasm-gui: $(WASM_SOLVE_JS) $(WASM_PROPS_JS)
+# The GUI's FOUR binaries: choupoSolve (steady flowsheets) + choupoProps (the
+# PropsView) + choupoBatch (batch + recipes) + choupoCtrl (dynamic + control).
+# The GUI dispatches by controlDict.application, so all four must be present in
+# gui/public/wasm/ for a transient case (ctrl03 / batch04) to run in-browser
+# and offer the time scrubber.  Same set as `wasm`; the alias is kept because
+# the bin/ scripts + docs refer to it as THE GUI rebuild.
+wasm-gui: $(WASM_SOLVE_JS) $(WASM_PROPS_JS) $(WASM_BATCH_JS) $(WASM_CTRL_JS)
+
+# The steady + props pair alone -- the fast rebuild when only choupoSolve /
+# choupoProps changed (the common src/ edit) and the dynamic binaries are
+# already current in gui/public/wasm/.
+wasm-steady-props: $(WASM_SOLVE_JS) $(WASM_PROPS_JS)
 
 # Steady-state binary alone (choupoSolve only).
 wasm-solve: $(WASM_SOLVE_JS)
