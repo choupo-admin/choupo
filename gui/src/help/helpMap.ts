@@ -26,13 +26,22 @@ License
   selected unit's type, else the active workspace) to a guide + a PDF named
   destination, and opens the guide AT that section.
 
-  The anchors below are REAL `\label{...}` destinations in the LaTeX guides
-  (the preamble sets `destlabel=true`, so each `\label{ch:x}` becomes a PDF
-  named destination reachable via `theoryGuide.pdf#nameddest=ch:x`).  Only
-  labels that actually exist in the .tex are used here -- where a context has
-  no dedicated section, it maps to the CLOSEST real chapter and a comment says
-  so.  Do NOT add an anchor that the .tex does not define.
+  THE SINGLE SOURCE OF TRUTH IS THE TRACKED FILE `docs/help-index.json`.
+  This module is a thin, typed reader over it: it builds the lookup tables and
+  the deep-link URL, nothing more.  To add or move a help target, edit the
+  JSON -- not this file.
+
+  The anchors in that JSON are REAL `\label{...}` destinations in the LaTeX
+  guides (the preamble sets `destlabel=true`, so each `\label{ch:x}` becomes a
+  PDF named destination reachable via `theoryGuide.pdf#nameddest=ch:x`).  Only
+  labels that actually exist in a .tex are used -- where a context has no
+  dedicated section it maps to the CLOSEST real chapter.  Do NOT add an anchor
+  the .tex does not define (a CI check parses the JSON against the guides).
 \*---------------------------------------------------------------------------*/
+
+// The tracked index.  Imported as a JSON module (resolveJsonModule is on); the
+// bundler inlines it, so the GUI ships the map with no runtime fetch.
+import helpIndex from "../../../docs/help-index.json";
 
 export type GuideKey = "theory" | "user" | "props" | "developer";
 
@@ -40,75 +49,66 @@ export interface HelpTarget {
   guide: GuideKey;
   /** A PDF named destination (`\label` name).  Omitted => open at the top. */
   anchor?: string;
+  /** Human-readable section title (for the Help-topics panel). */
+  title?: string;
 }
 
-/** Unit-op `type` (the schema name) -> the guide section that derives it.
- *  Every anchor here is a verified `\label{ch:...}` in docs/theoryGuide.tex. */
-export const UNIT_HELP: Record<string, HelpTarget> = {
-  // Flash / phase equilibrium
-  adiabaticFlash: { guide: "theory", anchor: "ch:flash" },
-  isothermalFlash: { guide: "theory", anchor: "ch:flash" },
-  bubbleT: { guide: "theory", anchor: "ch:bubble-dew-ref" },
-  dewT: { guide: "theory", anchor: "ch:bubble-dew-ref" },
-  // Distillation / separation columns
-  distillationColumn: { guide: "theory", anchor: "ch:distillation" },
-  shortcutColumn: { guide: "theory", anchor: "ch:distillation" },
-  absorber: { guide: "theory", anchor: "ch:absorber" },
-  stripper: { guide: "theory", anchor: "ch:absorber" }, // shares the absorber chapter
-  extractor: { guide: "theory", anchor: "ch:extractor" },
-  // Reactors -> the gas-phase kinetics chapter (rates) + the reactor model
-  cstr: { guide: "theory", anchor: "ch:cstr" },
-  pfr: { guide: "theory", anchor: "ch:pfr" },
-  gibbsReactor: { guide: "theory", anchor: "ch:gibbs-reactor" },
-  // Crystallisation
-  crystalliser: { guide: "theory", anchor: "ch:crystalliser" },
-  // Heat
-  heater: { guide: "theory", anchor: "ch:heat" },
-  heatExchanger: { guide: "theory", anchor: "ch:hx-entu" },
-  evaporator: { guide: "theory", anchor: "ch:evap-mode2" },
-  // Rotating equipment
-  compressor: { guide: "theory", anchor: "ch:rotating" },
-  turbine: { guide: "theory", anchor: "ch:rotating" },
-  pump: { guide: "theory", anchor: "ch:rotating" },
-  // Drying
-  solidDryer: { guide: "theory", anchor: "ch:drying" },
-  sprayDryer: { guide: "theory", anchor: "ch:drying" },
-  // Solids separation
-  cyclone: { guide: "theory", anchor: "ch:solids-sep" },
-  bagFilter: { guide: "theory", anchor: "ch:solids-sep" },
-  gasSolidSplitter: { guide: "theory", anchor: "ch:solids-sep" },
-  // Simple ops (no dedicated section each -> the simple-ops chapter)
-  mixer: { guide: "theory", anchor: "ch:simple-ops" },
-  splitter: { guide: "theory", anchor: "ch:simple-ops" },
-  // Property ops -> criticals / property chapters (no per-op section)
-  propertyPoint: { guide: "theory", anchor: "ch:criticals" },
-  propertyScan1D: { guide: "theory", anchor: "ch:criticals" },
-  propertyScan2D: { guide: "theory", anchor: "ch:criticals" },
-  fitParameters: { guide: "props", anchor: "ch:pairs" },
-};
+/** One entry in the flat, panel-facing topics list. */
+export interface HelpTopic extends HelpTarget {
+  /** Lookup key (unit-op type, workspace name, or algorithm id). */
+  id: string;
+  /** Which bucket it came from -- groups the panel. */
+  group: "Unit operations" | "Workspaces" | "Algorithms & solvers";
+}
+
+interface RawTarget { guide: string; anchor?: string; title?: string }
+interface RawIndex {
+  guides: Record<GuideKey, string>;
+  default: RawTarget;
+  units: Record<string, RawTarget>;
+  workspaces: Record<string, RawTarget>;
+  algorithms: Record<string, RawTarget>;
+}
+const IDX = helpIndex as unknown as RawIndex;
+
+const toTarget = (r: RawTarget): HelpTarget => ({
+  guide: r.guide as GuideKey,
+  anchor: r.anchor,
+  title: r.title,
+});
+
+/** Unit-op `type` (the schema name) -> the guide section that derives it. */
+export const UNIT_HELP: Record<string, HelpTarget> = Object.fromEntries(
+  Object.entries(IDX.units).map(([k, v]) => [k, toTarget(v)]),
+);
 
 /** Active workspace -> the guide section that explains it. */
-export const WORKSPACE_HELP: Record<string, HelpTarget> = {
-  explore: { guide: "theory", anchor: "ch:criticals" }, // property exploration
-  props: { guide: "props", anchor: "ch:consistency-props" },
-  pinch: { guide: "theory", anchor: "ch:heat" }, // no ch:pinch -> heat chapter
-  streams: { guide: "theory", anchor: "ch:stream-as-state" },
-  variables: { guide: "user", anchor: "sec:outer" }, // outer drivers / sweep
-  plots: { guide: "user", anchor: "sec:gui" }, // no dedicated section -> GUI chapter
-  log: { guide: "user", anchor: "sec:troubleshoot" },
-  case: { guide: "user", anchor: "sec:gui" },
-  reports: { guide: "user", anchor: "sec:post" },
-};
+export const WORKSPACE_HELP: Record<string, HelpTarget> = Object.fromEntries(
+  Object.entries(IDX.workspaces).map(([k, v]) => [k, toTarget(v)]),
+);
+
+/** Algorithm / solver id -> the chapter that derives it (panel-only). */
+export const ALGORITHM_HELP: Record<string, HelpTarget> = Object.fromEntries(
+  Object.entries(IDX.algorithms).map(([k, v]) => [k, toTarget(v)]),
+);
 
 /** When nothing more specific applies. */
-export const DEFAULT_HELP: HelpTarget = { guide: "user", anchor: "sec:gui" };
+export const DEFAULT_HELP: HelpTarget = toTarget(IDX.default);
 
-const GUIDE_FILE: Record<GuideKey, string> = {
-  theory: "theoryGuide.pdf",
-  user: "userGuide.pdf",
-  props: "propsGuide.pdf",
-  developer: "developerGuide.pdf",
-};
+/** The whole index flattened for the Help-topics panel (viewer, not editor). */
+export const HELP_TOPICS: HelpTopic[] = [
+  ...Object.entries(IDX.units).map(
+    ([id, v]) => ({ id, group: "Unit operations" as const, ...toTarget(v) }),
+  ),
+  ...Object.entries(IDX.workspaces).map(
+    ([id, v]) => ({ id, group: "Workspaces" as const, ...toTarget(v) }),
+  ),
+  ...Object.entries(IDX.algorithms).map(
+    ([id, v]) => ({ id, group: "Algorithms & solvers" as const, ...toTarget(v) }),
+  ),
+];
+
+const GUIDE_FILE: Record<GuideKey, string> = IDX.guides;
 
 /** The browser URL that opens a guide at its section (PDF named destination). */
 export function helpUrl(target: HelpTarget, baseUrl: string): string {

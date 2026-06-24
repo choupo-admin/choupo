@@ -49,6 +49,7 @@ import { notifications } from "@mantine/notifications";
 
 import { useStore, reopenLastCase, lastCaseLabel, hasCaseOpen, isIsolatedTab, type WorkspaceKey } from "../state/store.js";
 import { resolveHelp, helpUrl } from "../help/helpMap.js";
+import { popOutHelpTopics } from "./helpTopicsPopOut.js";
 import { OpenTutorialModal } from "./OpenTutorialModal.js";
 import { NewCaseModal } from "./NewCaseModal.js";
 import { DuplicateCaseModal } from "./DuplicateCaseModal.js";
@@ -343,6 +344,14 @@ export function MenuBar() {
             }}
           >
             Help on current view
+          </Menu.Item>
+          {/* The full topic -> guide-section index (docs/help-index.json),
+              rendered as a deep-linking table of contents in a pop-out tab.
+              A viewer, not an editor: it only opens the guides. */}
+          <Menu.Item
+            onClick={() => popOutHelpTopics(import.meta.env.BASE_URL)}
+          >
+            Browse help topics…
           </Menu.Item>
           <Menu.Divider />
           {/* The four glass-box manuals, all built by docs/Makefile and copied
