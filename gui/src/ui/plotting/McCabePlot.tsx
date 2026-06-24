@@ -46,13 +46,20 @@ License
   because Constant Molar Overflow is assumed; y*(x) is the REAL model curve.
 \*---------------------------------------------------------------------------*/
 
-import { useMemo, useState } from "react";
-import { Alert, Badge, Box, Group, SegmentedControl, Slider, Stack, Switch, Text, Tooltip } from "@mantine/core";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ActionIcon, Alert, Badge, Box, Group, SegmentedControl, Slider, Stack, Switch, Text, Tooltip } from "@mantine/core";
+import { IconExternalLink } from "@tabler/icons-react";
 
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 import {
   buildMccabe, eqCurveFromTxyCsv, sweepReflux, type MccabeResult, type MccabeSpec,
 } from "../../case/mccabeThiele.js";
+
+// Past this container width the analyzer breathes into a two-column layout
+// (x-y square left, control rail right) — the popped-out full-window form.
+// Below it the single-column inline layout renders, so the inline Explorer
+// (a narrow half-width column) is byte-identical to today — zero regression.
+const WIDE_BREAKPOINT = 720;
 
 const Q_DETENTS = [
   { value: 1, label: "1 sat-liq" },
@@ -60,11 +67,32 @@ const Q_DETENTS = [
 ];
 
 export function McCabePlot(
-  { csv, compA, compB, P }: { csv: string; compA: string; compB: string; P: number },
+  { csv, compA, compB, P, onPopOut, allowWide = false }:
+  { csv: string; compA: string; compB: string; P: number; onPopOut?: () => void;
+    /** Permit the two-column wide layout (the popped-out full-window form).  The
+     *  inline Explorer leaves this false so it stays single-column — zero
+     *  regression — even when its VIEW region is itself wide. */
+    allowWide?: boolean },
 ) {
   // Read the engine's equilibrium curve y*(x) out of the T-x-y CSV.  This is
   // the ONLY bridge from physics — everything below is pure geometry.
   const curve = useMemo(() => eqCurveFromTxyCsv(csv, compA), [csv, compA]);
+
+  // Measure the container so the layout switches to two-column when wide (the
+  // popped-out full-window form) and stays single-column inline.  ONE component,
+  // an internal breakpoint renders both — no prop changes ripple out.
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [measuredWide, setMeasuredWide] = useState(false);
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!allowWide || !el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) setMeasuredWide(e.contentRect.width >= WIDE_BREAKPOINT);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [allowWide]);
+  const wide = allowWide && measuredWide;
 
   // SET values (the problem statement): a sharp split by default.
   const [xD, setXD] = useState(0.95);
@@ -102,14 +130,11 @@ export function McCabePlot(
   // approach-to-pinch: 0 (far) → 1 (at the cliff).  Fills + reddens.
   const approach = res.rMin > 1e-9 ? Math.max(0, Math.min(1, res.rMin / Math.max(effectiveR, res.rMin))) : 0;
 
-  return (
-    <Stack gap="sm" style={{ height: "100%" }}>
-      <Group justify="space-between" align="flex-start" wrap="nowrap">
-        <SegmentedControl size="xs" value={tab} onChange={(v) => setTab(v as "construction" | "sensitivity")}
-          data={[{ label: "Construction", value: "construction" }, { label: "Sensitivity N(R)", value: "sensitivity" }]} />
-        <ReadoutStrip res={res} effectiveR={effectiveR} />
-      </Group>
-
+  // The plot pane — banners + the x-y square (or the N(R) sensitivity plot).
+  // Wide: it takes the left ~60% and the square fills it; inline: it sits above
+  // the controls at flex:1.
+  const plotPane = (
+    <Stack gap="sm" style={{ flex: wide ? "1 1 60%" : "1 1 auto", minWidth: 0, minHeight: 0, height: "100%" }}>
       {/* THE banners — never a silent failure; the geometry of why is announced. */}
       {res.azeotrope && (
         <Alert color="orange" variant="light" title="Azeotrope — the staircase cannot cross y = x" py={6}>
@@ -135,69 +160,106 @@ export function McCabePlot(
           ? <ConstructionPlot curve={curve} res={res} spec={spec} compA={compA} compB={compB} P={P} />
           : <SensitivityPlot curve={curve} spec={spec} effectiveR={effectiveR} />}
       </Box>
+    </Stack>
+  );
 
+  // The control pane — the two live knobs (R, q), the approach bar, the SET
+  // specs, and the CMO honesty caption.  Wide: a right rail (~40%) with its own
+  // scroll so the minWidth:280 slider boxes finally breathe; inline: stacked
+  // below the plot exactly as before.
+  const controlsPane = (
+    <Stack gap={6} style={wide ? { flex: "0 0 38%", minWidth: 280, overflow: "auto", paddingLeft: 4 } : undefined}>
       {/* KNOBS — exactly the two whose consequence you feel, plus the binding. */}
-      <Stack gap={6}>
-        <Group gap="lg" align="center" wrap="wrap">
-          <Box style={{ minWidth: 280, flex: 1 }}>
-            <Group justify="space-between" gap={4}>
-              <Text size="xs" fw={600}>
-                {useFactor ? "R / R_min" : "Reflux ratio  R"} = {(useFactor ? R : effectiveR).toFixed(2)}
-              </Text>
-              <Tooltip label="bind the slider to R_min (× minimum reflux) instead of the absolute reflux ratio — '1.3× minimum' is often the better design lens" multiline w={260} withArrow>
-                <Switch size="xs" checked={useFactor} label="× R_min" onChange={(e) => setUseFactor(e.currentTarget.checked)}
-                  styles={{ label: { fontSize: 11 } }} />
-              </Tooltip>
-            </Group>
-            <Slider
-              value={R}
-              min={useFactor ? 1.0 : 0.1}
-              max={useFactor ? 5 : Math.max(8, res.rMin * 4)}
-              step={useFactor ? 0.02 : 0.05}
-              onChange={setR}
-              color={approach > 0.85 ? "red" : "accent"}
-              // the red R_min tick — you SEE how close to the cliff you are
-              marks={useFactor ? [{ value: 1, label: "R_min" }] : [{ value: res.rMin, label: "R_min" }]}
-              label={(v) => (useFactor ? `${v.toFixed(2)}×` : v.toFixed(2))}
-            />
-          </Box>
-          <Box style={{ minWidth: 220, flex: 1 }}>
-            <Text size="xs" fw={600}>Feed quality  q = {q.toFixed(2)} ({qRegime(q)})</Text>
-            <Slider value={q} min={-0.5} max={1.5} step={0.05} onChange={setQ} color="accent"
-              marks={Q_DETENTS} label={(v) => v.toFixed(2)} />
-          </Box>
-        </Group>
+      <Group gap="lg" align="center" wrap="wrap">
+        <Box style={{ minWidth: 280, flex: 1 }}>
+          <Group justify="space-between" gap={4}>
+            <Text size="xs" fw={600}>
+              {useFactor ? "R / R_min" : "Reflux ratio  R"} = {(useFactor ? R : effectiveR).toFixed(2)}
+            </Text>
+            <Tooltip label="bind the slider to R_min (× minimum reflux) instead of the absolute reflux ratio — '1.3× minimum' is often the better design lens" multiline w={260} withArrow>
+              <Switch size="xs" checked={useFactor} label="× R_min" onChange={(e) => setUseFactor(e.currentTarget.checked)}
+                styles={{ label: { fontSize: 11 } }} />
+            </Tooltip>
+          </Group>
+          <Slider
+            value={R}
+            min={useFactor ? 1.0 : 0.1}
+            max={useFactor ? 5 : Math.max(8, res.rMin * 4)}
+            step={useFactor ? 0.02 : 0.05}
+            onChange={setR}
+            color={approach > 0.85 ? "red" : "accent"}
+            // the red R_min tick — you SEE how close to the cliff you are
+            marks={useFactor ? [{ value: 1, label: "R_min" }] : [{ value: res.rMin, label: "R_min" }]}
+            label={(v) => (useFactor ? `${v.toFixed(2)}×` : v.toFixed(2))}
+          />
+        </Box>
+        <Box style={{ minWidth: 220, flex: 1 }}>
+          <Text size="xs" fw={600}>Feed quality  q = {q.toFixed(2)} ({qRegime(q)})</Text>
+          <Slider value={q} min={-0.5} max={1.5} step={0.05} onChange={setQ} color="accent"
+            marks={Q_DETENTS} label={(v) => v.toFixed(2)} />
+        </Box>
+      </Group>
 
-        {/* approach-to-pinch bar: fills and reddens as R → R_min */}
-        <Group gap="xs" align="center">
-          <Text size="xs" c="dimmed" w={120}>approach to pinch</Text>
-          <Box style={{ flex: 1, height: 8, borderRadius: 4, background: "rgba(128,128,128,0.18)", overflow: "hidden" }}>
-            <Box style={{ width: `${(approach * 100).toFixed(0)}%`, height: "100%",
-              background: approach > 0.85 ? "#ff5252" : approach > 0.6 ? "#ffb74d" : PLOT_COLORS.accent,
-              transition: "width 80ms linear" }} />
-          </Box>
-        </Group>
+      {/* approach-to-pinch bar: fills and reddens as R → R_min */}
+      <Group gap="xs" align="center">
+        <Text size="xs" c="dimmed" w={120}>approach to pinch</Text>
+        <Box style={{ flex: 1, height: 8, borderRadius: 4, background: "rgba(128,128,128,0.18)", overflow: "hidden" }}>
+          <Box style={{ width: `${(approach * 100).toFixed(0)}%`, height: "100%",
+            background: approach > 0.85 ? "#ff5252" : approach > 0.6 ? "#ffb74d" : PLOT_COLORS.accent,
+            transition: "width 80ms linear" }} />
+        </Box>
+      </Group>
 
-        {/* SET values — the problem statement (compact, not knobs) */}
-        <Group gap="lg" wrap="wrap">
-          <SetField label={`x_D (${compA})`} value={xD} onChange={(v) => setXD(clamp(v, xF + 0.01, 0.999))} />
-          <SetField label={`x_W (${compA})`} value={xW} onChange={(v) => setXW(clamp(v, 0.001, xF - 0.01))} />
-          <SetField label={`x_F (${compA})`} value={xF} onChange={(v) => setXF(clamp(v, xW + 0.01, xD - 0.01))} />
-          <Tooltip label="total condenser: the distillate is liquid of composition x_D (no equilibrium stage).  partial condenser: the condenser IS one equilibrium stage — the count goes up by exactly one." multiline w={280} withArrow>
-            <Switch size="xs" checked={!totalCondenser} label="partial condenser (+1 stage)"
-              onChange={(e) => setTotalCondenser(!e.currentTarget.checked)} styles={{ label: { fontSize: 11 } }} />
-          </Tooltip>
-        </Group>
+      {/* SET values — the problem statement (compact, not knobs) */}
+      <Group gap="lg" wrap="wrap">
+        <SetField label={`x_D (${compA})`} value={xD} onChange={(v) => setXD(clamp(v, xF + 0.01, 0.999))} />
+        <SetField label={`x_W (${compA})`} value={xW} onChange={(v) => setXW(clamp(v, 0.001, xF - 0.01))} />
+        <SetField label={`x_F (${compA})`} value={xF} onChange={(v) => setXF(clamp(v, xW + 0.01, xD - 0.01))} />
+        <Tooltip label="total condenser: the distillate is liquid of composition x_D (no equilibrium stage).  partial condenser: the condenser IS one equilibrium stage — the count goes up by exactly one." multiline w={280} withArrow>
+          <Switch size="xs" checked={!totalCondenser} label="partial condenser (+1 stage)"
+            onChange={(e) => setTotalCondenser(!e.currentTarget.checked)} styles={{ label: { fontSize: 11 } }} />
+        </Tooltip>
+      </Group>
 
-        {/* GLASS-BOX honesty caption — the single assumption, made visible. */}
-        <Text size="xs" c="dimmed">
-          Operating lines are STRAIGHT because Constant Molar Overflow (equimolar latent heats) is assumed;
-          the equilibrium curve y*(x) is the REAL model curve at this P — not a constant-α toy. For
-          energy-rigorous staging (CMO relaxed) the MESH <code>distillationColumn</code> is the truth; the
-          Fenske/Underwood closed forms in <code>shortcutColumn</code> are the matching shortcut anchors for
-          N_min / R_min.
-        </Text>
-      </Stack>
+      {/* GLASS-BOX honesty caption — the single assumption, made visible. */}
+      <Text size="xs" c="dimmed">
+        Operating lines are STRAIGHT because Constant Molar Overflow (equimolar latent heats) is assumed;
+        the equilibrium curve y*(x) is the REAL model curve at this P — not a constant-α toy. For
+        energy-rigorous staging (CMO relaxed) the MESH <code>distillationColumn</code> is the truth; the
+        Fenske/Underwood closed forms in <code>shortcutColumn</code> are the matching shortcut anchors for
+        N_min / R_min.
+      </Text>
+    </Stack>
+  );
+
+  return (
+    <Stack ref={wrapRef} gap="sm" style={{ height: "100%" }}>
+      <Group justify="space-between" align="flex-start" wrap="nowrap">
+        <SegmentedControl size="xs" value={tab} onChange={(v) => setTab(v as "construction" | "sensitivity")}
+          data={[{ label: "Construction", value: "construction" }, { label: "Sensitivity N(R)", value: "sensitivity" }]} />
+        <Group gap={6} wrap="nowrap" justify="flex-end" style={{ flex: 1, minWidth: 0 }}>
+          <ReadoutStrip res={res} effectiveR={effectiveR} />
+          {onPopOut && (
+            <Tooltip label="Open full-window in a new tab" withArrow>
+              <ActionIcon variant="default" size="md" aria-label="pop out McCabe-Thiele" onClick={onPopOut}>
+                <IconExternalLink size={15} />
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </Group>
+      </Group>
+
+      {wide ? (
+        <Group align="stretch" gap="md" wrap="nowrap" style={{ flex: 1, minHeight: 0 }}>
+          {plotPane}
+          {controlsPane}
+        </Group>
+      ) : (
+        <>
+          {plotPane}
+          {controlsPane}
+        </>
+      )}
     </Stack>
   );
 }

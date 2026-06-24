@@ -90,6 +90,11 @@ const PlotsWorkspace = lazy(() =>
 const InternalsView = lazy(() =>
   import("./InternalsView.js").then((m) => ({ default: m.InternalsView })),
 );
+// The McCabe-Thiele analyzer popped out full-window (?explore=mccabe&key=…) —
+// lazy so its Plotly chain stays out of the index chunk (same reason as above).
+const ExploreMccabeTab = lazy(() =>
+  import("./explore/ExploreMccabeTab.js").then((m) => ({ default: m.ExploreMccabeTab })),
+);
 
 export function AppShell() {
   // Derive page mode from caseFiles: props cases carry a propsDict
@@ -181,6 +186,18 @@ export function AppShell() {
     return (
       <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
         <InternalsView />
+      </Suspense>
+    );
+  }
+
+  // The McCabe-Thiele analyzer popped out full-window (?explore=mccabe&key=…):
+  // a real tab (gui-credo §4) that re-hydrates from its localStorage stash and
+  // refuses honestly when the stash is gone -- no flowsheet/menu shell.
+  if (typeof window !== "undefined"
+      && new URLSearchParams(window.location.search).get("explore") === "mccabe") {
+    return (
+      <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+        <ExploreMccabeTab />
       </Suspense>
     );
   }

@@ -24,7 +24,7 @@ import {
   ActionIcon, Alert, Badge, Box, Button, Chip, Code, Collapse, CopyButton, Group, Loader, NumberInput,
   Popover, Select, Stack, Switch, Text, Tooltip,
 } from "@mantine/core";
-import { IconAdjustmentsHorizontal, IconBook } from "@tabler/icons-react";
+import { IconAdjustmentsHorizontal, IconBook, IconExternalLink } from "@tabler/icons-react";
 
 import { resolveAdapter } from "../adapters/index.js";
 import { EXPLORE_OUTPUT, synthesizeExploreCase, type ExploreSpec } from "../case/exploreSynth.js";
@@ -37,6 +37,8 @@ import { BinaryLlePlot } from "./plotting/BinaryLlePlot.js";
 import { McCabePlot } from "./plotting/McCabePlot.js";
 import { CompoundBrowser } from "./explore/CompoundBrowser.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
+import { useRailWidth, type RailWidthHandle } from "./explore/useRailWidth.js";
+import { popOutExploreMccabe } from "./explore/exploreMccabePopOut.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
 import { type PlotKind, viewsFor } from "../case/exploreViews.js";
 import { hasPair } from "../case/pairsCatalogue.js";
@@ -256,6 +258,9 @@ function num(v: number | string, fallback: number): number {
 export function ExploreWorkspace() {
   const [selected, setSelected] = useState<string[]>([]);
   const [plotType, setPlotType] = useState<PlotKind>("scan");
+  // The resizable left-component-bar (Vítor's ask) — drag the right border,
+  // double-click to reset, persisted GLOBALLY.  See useRailWidth.ts.
+  const rail = useRailWidth();
   // scan controls
   const [property, setProperty] = useState("Psat");
   const [axisVar, setAxisVar] = useState<"T" | "P">("T");
@@ -416,6 +421,48 @@ export function ExploreWorkspace() {
 
   const active = PLOT_TYPES.find((p) => p.id === plotType) ?? PLOT_TYPES[0]!;
   const activeReason = reasonFor(active);
+
+  // The lenses that currently APPLY (single source: viewsFor).  Drives the
+  // strip grouping, the "what unlocks next" line, and the new-lens pulse.
+  const currentViews = useMemo(
+    () => viewsFor(selected, catalogue, localUnifac),
+    [selected, catalogue, localUnifac]);
+
+  // New-lens PULSE — when a lens NEWLY appears in the strip (diff the previous
+  // viewsFor set via a ref), give it a 600ms accent ring so the unlock is felt,
+  // not silent.  The single most important discoverability addition.
+  const prevViewsRef = useRef<Set<PlotKind>>(currentViews);
+  const [pulsing, setPulsing] = useState<Set<PlotKind>>(new Set());
+  useEffect(() => {
+    const prev = prevViewsRef.current;
+    const fresh = new Set<PlotKind>();
+    currentViews.forEach((v) => { if (!prev.has(v)) fresh.add(v); });
+    prevViewsRef.current = currentViews;
+    if (fresh.size === 0) return;
+    setPulsing(fresh);
+    const t = setTimeout(() => setPulsing(new Set()), 650);
+    return () => clearTimeout(t);
+  }, [currentViews]);
+
+  // "What unlocks next" — a structural fact (not a recommendation): what ONE
+  // more pick of each selection-class would materialise, diffed over the SAME
+  // exploreViews source.  States teaching ("two VLE compounds HAVE a McCabe
+  // diagram"), never an Aspen "recommended" nudge.
+  const unlockLine = useMemo<string | null>(() => {
+    if (selected.length === 0) return null;
+    const has = (n: string) => metaByName(n, catalogue);
+    const vleCount = selected.filter((c) => has(c)?.vleAble).length;
+    const allVle = selected.every((c) => has(c)?.vleAble);
+    const hasWater = selected.includes("water");
+    const hasElectrolyte = selected.some((c) => has(c)?.isElectrolyte);
+    if (selected.length === 1 && vleCount === 1)
+      return "+1 VLE compound → boiling envelope, γ(x), McCabe-Thiele";
+    if (selected.length === 2 && allVle && !currentViews.has("ternary"))
+      return "+1 VLE compound → ternary boiling surface";
+    if (hasWater && !hasElectrolyte && !currentViews.has("scaling"))
+      return "+ a dissolved salt (e.g. NaCl) → RO-scaling audit";
+    return null;
+  }, [selected, catalogue, currentViews]);
 
   const spec = useMemo<ExploreSpec>(() => {
     const composition: { [c: string]: number } = {};
@@ -903,7 +950,7 @@ export function ExploreWorkspace() {
   if (selected.length === 0) {
     return (
       <Box style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
-        <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} />
+        <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} rail={rail} unlockLine={unlockLine} />
         <EstimateForm opened={estimateOpen} onClose={() => setEstimateOpen(false)} prefillName={estimatePrefill} />
         <Box style={{ flex: 1, minWidth: 0, height: "100%", display: "flex",
           alignItems: "center", justifyContent: "center", padding: 24 }}>
@@ -924,27 +971,35 @@ export function ExploreWorkspace() {
 
   return (
     <Box style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
-      <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} />
+      <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} rail={rail} unlockLine={unlockLine} />
       <EstimateForm opened={estimateOpen} onClose={() => setEstimateOpen(false)} prefillName={estimatePrefill} />
 
-      {/* RIGHT — plot-type strip + controls + canvas */}
+      {/* RIGHT — the SET | LENS | VIEW reading rail (EXPLORER-ux-redesign §1).
+          LENS = the lens strip + the active lens's controls in their OWN scroll
+          (evacuated off the plot's vertical budget); VIEW = the plot at flex:1
+          with the run-honesty alerts pinned above it.  No wizard / Next gate —
+          all three regions stay live and re-flow reactively. */}
       <Box style={{ flex: 1, minWidth: 0, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        {/* Controls PINNED at the top — the plot-type strip + the unit bars stay
-            visible; only the plot/below scrolls (they no longer slide away). */}
-        <Box style={{ flex: "0 0 auto", padding: 16, paddingBottom: 8 }}>
+        {/* LENS — the strip + the active lens's controls, with their OWN scroll
+            (capped to ~45% so a dense control band can never starve the plot). */}
+        <Box style={{ flex: "0 1 auto", maxHeight: "45%", overflow: "auto", padding: 16, paddingBottom: 8 }}>
         <Stack gap="sm">
+          <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>STEP 2 · LENS</Text>
           {/* plot-type strip: only the views that APPLY to the current selection
               are shown -- a non-applicable view (steam tables for a non-water
               component, a binary plot for one compound, ...) DISAPPEARS rather
               than sitting greyed (Vitor 2026-06-15).  The currently-active view
               is kept even if it just became invalid, so the toggle never
-              vanishes under you -- it stays disabled with its reason. */}
+              vanishes under you -- it stays disabled with its reason.  A lens
+              that NEWLY materialises pulses for 600ms (the unlock, felt). */}
           <Group gap={6}>
             {PLOT_TYPES.filter((pt) => reasonFor(pt) === null || pt.id === plotType).map((pt) => {
               const reason = reasonFor(pt);
+              const pulse = pulsing.has(pt.id);
               const btn = (
                 <Button key={pt.id} size="xs" variant={pt.id === plotType ? "filled" : "default"}
-                  color="accent" disabled={!!reason} onClick={() => setPlotType(pt.id)}>
+                  color="accent" disabled={!!reason} onClick={() => setPlotType(pt.id)}
+                  className={pulse ? "choupo-lens-pulse" : undefined}>
                   {pt.label}
                 </Button>
               );
@@ -1216,7 +1271,6 @@ export function ExploreWorkspace() {
             )}
           </Group>
 
-          {pairNote && <Text size="xs" c="dimmed">{pairNote}</Text>}
           {skipped.length > 0 && (
             <Text size="xs" c="dimmed">No vapour pressure (curve not shown): {skipped.join(", ")}</Text>
           )}
@@ -1230,8 +1284,36 @@ export function ExploreWorkspace() {
                 : "Davies activity is quantitative to I ≈ 0.5 mol/kg"}
             </Text>
           )}
-          {/* The op's own honesty lines (e.g. Davies beyond trust range), lifted
-              off the run log so the Explorer never swallows them. */}
+        </Stack>
+        </Box>
+
+        {/* VIEW — the result: a STEP 3 header (with the ↗ pop-out), the run-level
+            honesty alerts pinned ABOVE, then the plot at flex:1 (no fixed-height
+            hack — it fills the remaining height for EVERY lens), then the method
+            chips + author/snippet. */}
+        <Box style={{ flex: 1, minWidth: 0, overflow: "auto", padding: 16, paddingTop: 8, display: "flex", flexDirection: "column" }}>
+        <Stack gap="sm" style={{ flex: 1, minHeight: 0 }}>
+          <Group justify="space-between" align="center" wrap="nowrap">
+            <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>STEP 3 · VIEW</Text>
+            {plotType === "mccabe" && csv && (
+              <Tooltip label="Open the McCabe-Thiele analyzer full-window in a new tab" withArrow>
+                <Button size="compact-xs" variant="subtle" color="accent"
+                  leftSection={<IconExternalLink size={13} />}
+                  onClick={() => popOutExploreMccabe({
+                    csv: dropCsvColumn(csv, "liquid_stable"),
+                    compA: selected[0] ?? "", compB: selected[1] ?? "",
+                    P: fixedP, model: activity,
+                  })}>
+                  Pop out
+                </Button>
+              </Tooltip>
+            )}
+          </Group>
+
+          {/* Run-level honesty — which γ pairs resolved / op advisories / the
+              ideal-mixing lie / the heteroazeotrope — pinned ABOVE the plot
+              (shared by txy/γ/McCabe), never squeezed into the plot's budget. */}
+          {pairNote && <Text size="xs" c="dimmed">{pairNote}</Text>}
           {opAdvisories.length > 0 && (
             <Alert color="yellow" variant="light" title="Solver advisory">
               {opAdvisories.map((a) => (<Text key={a} size="xs">{a}</Text>))}
@@ -1249,14 +1331,9 @@ export function ExploreWorkspace() {
           )}
           {err && <Alert color="red" variant="light">{err}</Alert>}
           {activeReason && <Alert color="yellow" variant="light" title="Cannot plot">{activeReason}</Alert>}
-        </Stack>
-        </Box>
 
-        {/* Scrollable body: the plot + method chips/spread + author/snippet. */}
-        <Box style={{ flex: 1, minWidth: 0, overflow: "auto", padding: 16, paddingTop: 8 }}>
-        <Stack gap="sm">
           {csv ? (
-            <Box style={{ height: plotType === "mccabe" ? 720 : 460, position: "relative" }}>
+            <Box style={{ flex: 1, minHeight: 360, position: "relative" }}>
               {plotType === "phase" ? (
                 <PurePhaseDiagram csv={csv} comp={selected[0] ?? ""}
                   tc={metaByName(selected[0] ?? "", catalogue)?.tc}
@@ -1270,6 +1347,8 @@ export function ExploreWorkspace() {
                 // The interactive McCabe-Thiele staircase over the engine's
                 // y_eq(x) (read out of the same T-x-y CSV) — R/q knobs re-walk
                 // the staircase in pure TS, no WASM re-solve.
+                // The ↗ pop-out trigger lives in the VIEW-region header above
+                // (one affordance, not two); the inline plot stays single-column.
                 <McCabePlot csv={dropCsvColumn(csv, "liquid_stable")}
                   compA={selected[0] ?? ""} compB={selected[1] ?? ""} P={fixedP} />
               ) : (
@@ -1367,9 +1446,15 @@ export function ExploreWorkspace() {
   );
 }
 
-/** The compound browser rail — shared by the empty state and the live view. */
+/** The compound browser rail (SET region) — shared by the empty state and the
+ *  live view.  The width is draggable (the 6px col-resize splitter over the
+ *  right border, reusing the AgentConsole pointer-capture idiom): clamp 200–460,
+ *  double-click → snap to 240, persisted to the single GLOBAL key
+ *  `choupo.explore.railWidth` (NOT case-keyed — the Explorer is a scratchpad
+ *  over the same catalogue regardless of the open case).  Explorer-only; never
+ *  an app-wide panel. */
 function LeftRail({
-  selected, onAdd, onRemove, vleContext = false, caseComponents, onEstimate,
+  selected, onAdd, onRemove, vleContext = false, caseComponents, onEstimate, rail, unlockLine,
 }: {
   selected: string[];
   onAdd: (n: string) => void;
@@ -1377,13 +1462,35 @@ function LeftRail({
   vleContext?: boolean;
   caseComponents: ComponentMeta[];
   onEstimate: (name: string) => void;
+  rail: RailWidthHandle;
+  unlockLine?: string | null;
 }) {
+  const [hover, setHover] = useState(false);
   return (
     <Box style={{
-      width: 240, flexShrink: 0, height: "100%", padding: 12, overflow: "hidden",
+      width: rail.width, flexShrink: 0, height: "100%", padding: 12, overflow: "hidden",
+      position: "relative",
       borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
     }}>
-      <CompoundBrowser selected={selected} onAdd={onAdd} onRemove={onRemove} vleContext={vleContext} caseComponents={caseComponents} onEstimate={onEstimate} />
+      <Text size="xs" fw={700} c="dimmed" mb={6} style={{ letterSpacing: 0.5 }}>STEP 1 · SET</Text>
+      <Box style={{ height: "calc(100% - 22px)" }}>
+        <CompoundBrowser selected={selected} onAdd={onAdd} onRemove={onRemove} vleContext={vleContext} caseComponents={caseComponents} onEstimate={onEstimate} unlockLine={unlockLine} />
+      </Box>
+      {/* 6px col-resize splitter over the rail's right border (drag to resize,
+          double-click to reset); the hover seam tints with the accent. */}
+      <Box
+        onPointerDown={rail.onPointerDown}
+        onDoubleClick={rail.reset}
+        onPointerEnter={() => setHover(true)}
+        onPointerLeave={() => setHover(false)}
+        title="drag to resize · double-click to reset"
+        style={{
+          position: "absolute", top: 0, right: -3, width: 6, height: "100%",
+          cursor: "ew-resize", zIndex: 5,
+          background: hover ? `color-mix(in srgb, ${PLOT_COLORS.accent} 30%, transparent)` : "transparent",
+          transition: "background 120ms",
+        }}
+      />
     </Box>
   );
 }

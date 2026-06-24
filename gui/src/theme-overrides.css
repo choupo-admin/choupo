@@ -34,3 +34,24 @@ License
 :root[data-mantine-color-scheme="light"] {
   --mantine-color-dimmed: var(--mantine-color-gray-9);
 }
+
+/* Property Explorer — the new-lens PULSE.  When a lens NEWLY materialises in the
+   LENS strip (the 2-VLE -> McCabe reveal, felt not buried), it slides in with a
+   brief 600ms accent ring so the unlock is visceral (EXPLORER-ux-redesign §4).
+   A pure CSS animation -- no JS frame loop. */
+@keyframes choupo-lens-pulse-kf {
+  0%   { box-shadow: 0 0 0 0 var(--mantine-color-accent-5, #4dabf7); }
+  70%  { box-shadow: 0 0 0 6px rgba(77, 171, 247, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(77, 171, 247, 0); }
+}
+.choupo-lens-pulse {
+  animation: choupo-lens-pulse-kf 600ms ease-out 1;
+}
+
+/* Property Explorer — compound-row hover.  A row currently gives no hover
+   feedback ("clicking does nothing visible" smell); a resting :hover background
+   makes the rail feel alive.  The picked (data-on) row keeps its accent-light
+   background and does NOT take the hover tint. */
+.choupo-compound-row:hover:not([data-on]) {
+  background: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+}

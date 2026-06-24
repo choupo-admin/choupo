@@ -37,8 +37,8 @@ License
 import { Alert, Box, Text } from "@mantine/core";
 import { IconClockX } from "@tabler/icons-react";
 
-export function ExpiredTabPanel({ kind }: { kind: "focus" | "internals" }) {
-  const what = kind === "focus" ? "mini-flowsheet" : "internals";
+export function ExpiredTabPanel({ kind }: { kind: "focus" | "internals" | "explore" }) {
+  const what = kind === "focus" ? "mini-flowsheet" : kind === "explore" ? "McCabe-Thiele" : "internals";
   return (
     <Box
       style={{
@@ -58,8 +58,9 @@ export function ExpiredTabPanel({ kind }: { kind: "focus" | "internals" }) {
       >
         <Text size="sm">
           Its data was stashed by the parent case and is gone (storage
-          cleared, or a different browser).  Reopen it from the parent
-          case — double-click the unit on the flowsheet.
+          cleared, or a different browser).  {kind === "explore"
+            ? "Reopen it from the Property Explorer — pick the two compounds, the McCabe-Thiele lens, and press “Pop out”."
+            : "Reopen it from the parent case — double-click the unit on the flowsheet."}
         </Text>
       </Alert>
     </Box>
