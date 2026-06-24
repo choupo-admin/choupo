@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- ethanol-pXylene
+  Promoted from the ChemSep DECHEMA set (Artistic-2.0). See provenance.
+\*---------------------------------------------------------------------------*/
+
+components ( ethanol pXylene );
+model       UNIQUAC;
+
+parameters
+{
+    i           ethanol;
+    j           pXylene;
+    a_ij        -32.1896;   // K
+    a_ji        334.268;   // K
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_ethanol_pXylene   -63.9673;   // CAS 64-17-5 -> 106-42-3
+    A_pXylene_ethanol   664.259;   // CAS 106-42-3 -> 64-17-5
+}
+
+provenance
+{
+    source        literature;
+    citation      "DECHEMA Chemistry Data Series (UNIQUAC interaction parameters, 1 atm VLE), as tabulated in the ChemSep v8.3 database (H. Kooijman & R. Taylor, Artistic-2.0)";
+    fitData       "<not refit>";
+    fitDate       "<literature>";
+    algorithm     "<not reported>";
+    chi2          "<not reported>";
+    nDataPoints   0;
+    validityRange { note "1 atm DECHEMA VLE; explicit T-range not captured on import"; }
+    author        "Imported from ChemSep via chemsep_to_choupo; promoted 2026-06-24 (binaryPairs audit, v0.9)";
+    notes         "Standard published DECHEMA values, NOT independently re-fit or per-value verified here. Loads and gives a sane T-x-y self-check (no NaN, physical activity coefficients). Glass-box caveat (CLAUDE.md): cross-check against your own VLE data before quantitative use. The raw cal/mol energies are kept in the source{} block above for audit.";
+}

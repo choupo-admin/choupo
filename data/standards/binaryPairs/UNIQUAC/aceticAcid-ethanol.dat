@@ -1,0 +1,36 @@
+/*---------------------------------------------------------------------------*\
+  UNIQUAC binary interaction parameters --- aceticAcid-ethanol
+  Promoted from the ChemSep DECHEMA set (Artistic-2.0). See provenance.
+\*---------------------------------------------------------------------------*/
+
+components ( aceticAcid ethanol );
+model       UNIQUAC;
+
+parameters
+{
+    i           aceticAcid;
+    j           ethanol;
+    a_ij        -43.747;   // K
+    a_ji        -12.7265;   // K
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_ethanol_aceticAcid   -25.2901;   // CAS 64-17-5 -> 64-19-7
+    A_aceticAcid_ethanol   -86.9343;   // CAS 64-19-7 -> 64-17-5
+}
+
+provenance
+{
+    source        literature;
+    citation      "DECHEMA Chemistry Data Series (UNIQUAC interaction parameters, 1 atm VLE), as tabulated in the ChemSep v8.3 database (H. Kooijman & R. Taylor, Artistic-2.0)";
+    fitData       "<not refit>";
+    fitDate       "<literature>";
+    algorithm     "<not reported>";
+    chi2          "<not reported>";
+    nDataPoints   0;
+    validityRange { note "1 atm DECHEMA VLE; explicit T-range not captured on import"; }
+    author        "Imported from ChemSep via chemsep_to_choupo; promoted 2026-06-24 (binaryPairs audit, v0.9)";
+    notes         "Standard published DECHEMA values, NOT independently re-fit or per-value verified here. Loads and gives a sane T-x-y self-check (no NaN, physical activity coefficients). Glass-box caveat (CLAUDE.md): cross-check against your own VLE data before quantitative use. The raw cal/mol energies are kept in the source{} block above for audit.";
+}

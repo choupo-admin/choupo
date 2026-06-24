@@ -1,0 +1,40 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- aceticAcid-methanol
+  Promoted from the ChemSep DECHEMA set (Artistic-2.0). See provenance.
+\*---------------------------------------------------------------------------*/
+
+components ( aceticAcid methanol );
+model       NRTL;
+
+parameters
+{
+    i           aceticAcid;
+    j           methanol;
+    a_ij        0.0;
+    b_ij        -109.262;   // K
+    a_ji        0.0;
+    b_ji        8.37684;   // K
+    alpha       0.3051;
+}
+
+source   // raw DECHEMA, for audit -- direction stated by NAME (no flip)
+{
+    units        cal/mol;
+    A_methanol_aceticAcid   16.6465;   // CAS 67-56-1 -> 64-19-7
+    A_aceticAcid_methanol   -217.1261;   // CAS 64-19-7 -> 67-56-1
+    alpha               0.3051;   // non-randomness (symmetric)
+}
+
+provenance
+{
+    source        literature;
+    citation      "DECHEMA Chemistry Data Series (NRTL interaction parameters, 1 atm VLE), as tabulated in the ChemSep v8.3 database (H. Kooijman & R. Taylor, Artistic-2.0)";
+    fitData       "<not refit>";
+    fitDate       "<literature>";
+    algorithm     "<not reported>";
+    chi2          "<not reported>";
+    nDataPoints   0;
+    validityRange { note "1 atm DECHEMA VLE; explicit T-range not captured on import"; }
+    author        "Imported from ChemSep via chemsep_to_choupo; promoted 2026-06-24 (binaryPairs audit, v0.9)";
+    notes         "Standard published DECHEMA values, NOT independently re-fit or per-value verified here. Loads and gives a sane T-x-y self-check (no NaN, physical activity coefficients). Glass-box caveat (CLAUDE.md): cross-check against your own VLE data before quantitative use. The raw cal/mol energies are kept in the source{} block above for audit.";
+}
