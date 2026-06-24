@@ -51,6 +51,15 @@ int PFR::solve(const DictPtr& dict,
     const scalar F_in_kmols = feedDict->lookupScalar("F",   Dims::molarFlow);
     const scalar T          = feedDict->lookupScalar("T",   Dims::temperature);
     const scalar V_R        = operDict->lookupScalar("V_R", Dims::volume);
+
+    // Inlet vapour fraction.  The flowsheet has already inferred the feed phase
+    // at its own (T, P, z) and supplies it here.  A reactor is NOT a phase-
+    // change device, so the product leaves in the SAME phase it entered: a gas-
+    // phase reaction fed superheated vapour must report a VAPOUR product, not a
+    // (silently liquid) vf = 0.  We inherit the inlet phase instead of asserting
+    // liquid; an isothermal continuation does not invent a phase boundary.
+    const scalar vf_in = feedDict->lookupScalarOrDefault("vf", 0.0);
+
     const int    nSteps  = static_cast<int>(operDict->lookupScalarOrDefault("nSteps", 100));
     const int    nWrite  = static_cast<int>(operDict->lookupScalarOrDefault("writeInterval", 0));
 
@@ -281,7 +290,7 @@ int PFR::solve(const DictPtr& dict,
     out.T    = T;
     out.P    = 0.0;        // pressure not tracked (set by flowsheet)
     out.z    = z_out;
-    out.vf   = 0.0;
+    out.vf   = vf_in;      // inherit the inlet phase (no phase change)
     produced_.push_back(out);
 
     // -- KPIs (published for outer drivers / post-processors) -------------
