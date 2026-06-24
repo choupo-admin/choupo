@@ -134,6 +134,14 @@ SolutionWriter::SolutionWriter(std::string caseDir,
             if (nm.rfind(".tmp_", 0) == 0)
                 fs::remove_all(e.path(), ec);
         }
+
+    // residuals.dat is a fresh per-RUN convergence log, not an ever-growing
+    // append across runs.  appendResiduals() opens in append mode, so a stale
+    // file from a previous run would stack old convergence blocks under the new
+    // one and the residual plot would draw ghost curves (and re-trigger the
+    // iteration-collision look).  Remove it on construction so each run starts
+    // clean; the first append rewrites the header.
+    fs::remove(fs::path(caseRoot_) / "residuals.dat", ec);
 }
 
 // True iff `nm` is a non-empty, purely-numeric directory name (an instant).

@@ -2399,7 +2399,12 @@ int Flowsheet::solve(const DictPtr& dict,
                           << " iterations (last |Δtear|2 = " << std::scientific << lastDelta << ").\n";
             finalConverged = converged;
             finalResidual  = lastDelta;
-            finalIteration = itBase + outerIt;
+            // The converged final instant is a SEPARATE point (its residual is
+            // the post-convergence sweep, not the last iterate's), so it takes
+            // the NEXT iteration number -- otherwise it collides with the last
+            // marched iteration (both would land on the same x and the residual
+            // plot shows two values at one iteration / a vertical plunge).
+            finalIteration = itBase + outerIt + 1;
             finalSolver    = "wegstein";
         }
         else   // Newton-on-tears  (the EO-flavoured step: r(x) = G(x) − x = 0)
@@ -2552,7 +2557,12 @@ int Flowsheet::solve(const DictPtr& dict,
                           << " iterations (last |r|2 = " << std::scientific << res.residual << ").\n";
             finalConverged = res.converged;
             finalResidual  = res.residual;
-            finalIteration = itBase + res.iterations;
+            // NEXT iteration number for the converged instant (see the Wegstein
+            // branch): the marched iterations wrote itBase+1 .. itBase+iters, so
+            // the final converged point is itBase+iters+1 -- never the same x as
+            // the last iterate (which caused two values at iteration N / the
+            // vertical drop in the residual plot).
+            finalIteration = itBase + res.iterations + 1;
             finalSolver    = "newtonOnTears";
         }
 
