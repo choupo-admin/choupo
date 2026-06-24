@@ -101,6 +101,10 @@ export interface TrajectoryPlotProps {
   filterVars?: string[];
   /** Force these columns onto the right (T/MV) axis. */
   mvVars?: string[];
+  /** Display-only trace renames (column key -> legend label).  Additive: an
+   *  unlisted column keeps its raw name.  Lets the Control Room relabel the
+   *  schedule controller's MV column as the inlet-T disturbance it really is. */
+  renameVars?: { [col: string]: string };
   title?: string;
 }
 
@@ -116,7 +120,7 @@ function classify(name: string, values: number[]): Side {
 }
 
 export function TrajectoryPlot(props: TrajectoryPlotProps) {
-  const { data, referenceLines, eventMarkers, band, ghost, filterVars, mvVars, title } = props;
+  const { data, referenceLines, eventMarkers, band, ghost, filterVars, mvVars, renameVars, title } = props;
   const names = Object.keys(data.vars).filter(
     (n) => !filterVars || filterVars.length === 0 || filterVars.includes(n),
   );
@@ -128,7 +132,8 @@ export function TrajectoryPlot(props: TrajectoryPlotProps) {
     const ys = data.vars[name]!;
     const side: Side = forceRight.has(name) ? "right" : classify(name, ys);
     const color = PLOT_COLORS.series[idx % PLOT_COLORS.series.length]!;
-    const trace = makeTrace(name, data.t, ys, color, side);
+    const label = renameVars?.[name] ?? name;
+    const trace = makeTrace(label, data.t, ys, color, side);
     (side === "left" ? tracesLeft : tracesRight).push(trace);
   });
 

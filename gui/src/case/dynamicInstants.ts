@@ -71,6 +71,15 @@ export interface InstantUnit {
   outletMolarFlows?: { [component: string]: number };
   /** Outlet temperature [K] (continuous units only). */
   outletT?: number;
+  /** Outlet vapour fraction [-] (continuous units only) -- drives the edge
+   *  phase colour at the scrubbed time. */
+  outletVf?: number;
+  /** Instantaneous INLET face (continuous units only): F_i [kmol/s].  Present
+   *  only once the engine writes a `<name>.feed` stream; absent on older runs,
+   *  in which case the GUI falls back to the nominal inlet{} from the dict. */
+  inletMolarFlows?: { [component: string]: number };
+  /** Inlet temperature [K] -- the disturbance a controller drives. */
+  inletT?: number;
 }
 
 /** The state of the whole flowsheet at one written physical time. */
@@ -167,13 +176,26 @@ function applyStreams(instant: DynamicInstant, text: string): void {
   for (const [sname, s] of Object.entries(streamsBlock as JsonDict)) {
     if (!s || typeof s !== "object" || Array.isArray(s)) continue;
     const sd = s as JsonDict;
-    const unitName = sname.endsWith(".out") ? sname.slice(0, -4) : sname;
+    // A unit's faces are written as "<name>.out" (outlet) and -- once the
+    // engine inlet-face slice lands -- "<name>.feed" (inlet, the driven
+    // disturbance).  Both map back to the owning unit; parse symmetrically.
+    const isFeed = sname.endsWith(".feed");
+    const unitName = isFeed
+      ? sname.slice(0, -5)
+      : sname.endsWith(".out") ? sname.slice(0, -4) : sname;
     const unit = instant.units.find((u) => u.name === unitName);
     if (!unit) continue;
     const flows = numericMap(sd["molarFlows"]);
-    if (Object.keys(flows).length > 0) unit.outletMolarFlows = flows;
-    const outT = asNum(sd["T"]);
-    if (outT !== undefined) unit.outletT = outT;
+    const faceT = asNum(sd["T"]);
+    if (isFeed) {
+      if (Object.keys(flows).length > 0) unit.inletMolarFlows = flows;
+      if (faceT !== undefined) unit.inletT = faceT;
+    } else {
+      if (Object.keys(flows).length > 0) unit.outletMolarFlows = flows;
+      if (faceT !== undefined) unit.outletT = faceT;
+      const vf = asNum(sd["vf"]);
+      if (vf !== undefined) unit.outletVf = vf;
+    }
   }
 }
 

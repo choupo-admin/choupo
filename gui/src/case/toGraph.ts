@@ -44,10 +44,11 @@ import type { Edge, Node } from "@xyflow/react";
 
 import { parse, toJson } from "../dict/index.js";
 import type { JsonDict, JsonValue } from "../dict/index.js";
+import { scalarToSI } from "../dict/scalarSI.js";
 import type { FlowsheetView, StreamSpec, UnitSpec } from "./types.js";
 // The duty/work unit-type sets — SHARED with UnitNode.tsx (single source of
 // truth), so the stub node + edge here always match the handle there.
-import { COLUMN_TYPES, HEAT_DUTY_TYPES, COOLING_DUTY_TYPES, POWER_DRAW_TYPES, PHASE_SPLIT_TYPES } from "./dutyTypes.js";
+import { COLUMN_TYPES, HEAT_DUTY_TYPES, COOLING_DUTY_TYPES, POWER_DRAW_TYPES, PHASE_SPLIT_TYPES, DYNAMIC_HOLDUP_TYPES } from "./dutyTypes.js";
 
 export interface FlowsheetGraph {
   nodes: Node[];
@@ -345,6 +346,35 @@ export function flowsheetToGraph(
     });
   }
 
+  // Jacket stub: a dynamicCSTR's heat-transfer jacket (operation.UA + T_jacket)
+  // is its energy boundary -- heat is a STREAM, never a Q= on the node.  Dock a
+  // utility stub keyed dutyPort:"jacket", tier from sign(T_jacket - T_initial)
+  // (jacket above the holdup => heating, below => cooling).  Only when UA > 0
+  // (no UA => an adiabatic vessel, no jacket).  T_jacket may be driven by a
+  // controller at run time; the live scrub overlay (slice 2) updates the tier.
+  for (const u of view.units) {
+    if (!DYNAMIC_HOLDUP_TYPES.has(u.type)) continue;
+    const op = u.operation as { [k: string]: JsonValue } | undefined;
+    const ua = scalarToSI(op?.["UA"]);
+    if (!(Number.isFinite(ua) && ua > 0)) continue;
+    const p = positions.get(u.name);
+    if (!p) continue;
+    const tJacket = scalarToSI(op?.["T_jacket"]);
+    // Holdup initial T (from the `initial{}` block) sets the pre-run tier sign.
+    const rawUnits = (flowsheet["units"] ?? []) as JsonDict[];
+    const rawUnit = Array.isArray(rawUnits)
+      ? rawUnits.find((ru) => String(ru["name"]) === u.name) : undefined;
+    const tInit = scalarToSI((rawUnit?.["initial"] as JsonDict | undefined)?.["T"]);
+    const heating = !(Number.isFinite(tJacket) && Number.isFinite(tInit) && tJacket < tInit);
+    nodes.push({
+      id: `duty:${u.name}:jacket`,
+      type: "streamTerminal",
+      data: { name: "jacket", role: "utility", dutyPort: "jacket", ownerUnit: u.name,
+              tier: heating ? "heating" : "cooling" },
+      position: { x: p.x + 35, y: heating ? p.y + 150 : p.y - 150 },
+    });
+  }
+
   // ⚡ Power stub: a pump / compressor MOTOR draws grid electricity (its W comes
   // from the grid when not wired), an electricLoad GENERATOR feeds it back.
   // The symmetric twin of the heat duty stub; value + €/h fill post-run from
@@ -492,6 +522,30 @@ export function flowsheetToGraph(
       source: `duty:${u.name}:Q`,
       target: `unit:${u.name}`,
       targetHandle: "Q",
+      type: "smoothstep",
+      animated: false,
+      style: {
+        stroke: heating ? "#e8590c" : "#22b8cf",
+        strokeWidth: 1.6,
+        strokeDasharray: "6 3",
+      },
+      data: { kind: "duty", tier: heating ? "heating" : "cooling" },
+    });
+  }
+
+  // Jacket-stub edges: the same dashed UTILITY edge for a dynamicCSTR's jacket.
+  // No dedicated target handle (the dynamic unit has stream handles only), so
+  // it lands on the nearest border; tier colour follows the pre-run sign of
+  // (T_jacket - T_initial).  Mirrors the heater/cooler duty edge.
+  for (const u of view.units) {
+    if (!DYNAMIC_HOLDUP_TYPES.has(u.type)) continue;
+    const stub = nodes.find((n) => n.id === `duty:${u.name}:jacket`);
+    if (!stub) continue;
+    const heating = (stub.data as { tier?: string }).tier !== "cooling";
+    edges.push({
+      id: `e:duty:${u.name}:jacket`,
+      source: `duty:${u.name}:jacket`,
+      target: `unit:${u.name}`,
       type: "smoothstep",
       animated: false,
       style: {
@@ -677,6 +731,42 @@ function readLeaf(flowsheet: JsonDict): FlowsheetView {
   };
 }
 
+// A dynamic continuous unit (dynamicCSTR) declares its feed in an `inlet{}`
+// sub-dict: F + T as unit-bearing scalars and a `molarComposition {...}`.
+// Project it to a display StreamSpec (SI numbers, normalised composition) so
+// the synthesised `<unit>.feed` terminal reads the real feed conditions
+// pre-run.  Scalars cross JSON as "<n> <unit>" strings; scalarToSI canonicalises.
+function feedSpecFromInlet(inlet: JsonValue | undefined): StreamSpec {
+  const spec: StreamSpec = { F: 0, T: 0, P: 0, composition: {} };
+  if (!inlet || typeof inlet !== "object" || Array.isArray(inlet)) return spec;
+  const blk = inlet as JsonDict;
+  const f = scalarToSI(blk["F"]);
+  if (Number.isFinite(f)) spec.F = f;
+  const t = scalarToSI(blk["T"]);
+  if (Number.isFinite(t)) spec.T = t;
+  const p = scalarToSI(blk["P"]);
+  if (Number.isFinite(p)) spec.P = p;
+  const comp = blk["molarComposition"] ?? blk["composition"];
+  if (comp && typeof comp === "object" && !Array.isArray(comp)) {
+    for (const [k, v] of Object.entries(comp as JsonDict)) {
+      const n = scalarToSI(v);
+      if (Number.isFinite(n)) spec.composition[k] = n;
+    }
+  }
+  return spec;
+}
+
+// Does a parsed unit declare its OWN material wiring (in/inputs/outputs)?  When
+// it does, the author is in control and the dynamic-holdup synthesis below
+// stays out of the way (purely additive).
+function hasExplicitStreams(u: JsonDict): boolean {
+  const has = (k: string) => {
+    const v = u[k];
+    return typeof v === "string" ? v.length > 0 : Array.isArray(v) && v.length > 0;
+  };
+  return has("in") || has("inputs") || has("outputs");
+}
+
 function readFlowsheet(
   flowsheet: JsonDict,
   rawFiles?: { [relPath: string]: string },
@@ -723,7 +813,34 @@ function readFlowsheet(
     };
   }
 
+  // Synthesised feed terminals for dynamic-holdup units (collected here,
+  // merged into `streams` after the unit pass).
+  const synthFeeds: { [name: string]: StreamSpec } = {};
+
   const units: UnitSpec[] = (unitsJson as JsonDict[]).map((u) => {
+    // A DYNAMIC continuous holdup unit (dynamicCSTR) carries an `inlet{}`
+    // block + an `operation{}` jacket instead of in/outputs -- so without
+    // this it renders as a lone box.  SYNTHESISE its feed + product streams
+    // from the sub-dicts already on disk: a `<name>.feed` terminal (read from
+    // inlet{}) and a `<name>.out` product (the name the engine writes in
+    // <t>/streams, so the live scrub overlay keys cleanly).  Additive: only
+    // when the unit declares no streams of its own.
+    const uname = String(u["name"]);
+    const utype = String(u["type"]);
+    if (DYNAMIC_HOLDUP_TYPES.has(utype)
+        && u["inlet"] !== undefined
+        && !hasExplicitStreams(u)) {
+      const feedName = `${uname}.feed`;
+      synthFeeds[feedName] = feedSpecFromInlet(u["inlet"]);
+      return {
+        name: uname,
+        type: utype,
+        in: [feedName],
+        outputs: [`${uname}.out`],
+        operation: (u["operation"] ?? {}) as JsonDict,
+        reaction: u["reaction"] !== undefined ? String(u["reaction"]) : undefined,
+      };
+    }
     // Multi-input units (mixer, evaporator with feed+steam,...) carry
     // `inputs (a b c );`; single-input units carry `in feed;`.  Either
     // form lands on UnitSpec.in --- the rest of the graph code already
@@ -757,6 +874,12 @@ function readFlowsheet(
           })),
     };
   });
+
+  // Merge synthesised dynamic-holdup feed specs (don't clobber an explicit
+  // `streams{}` entry of the same name, should one exist).
+  for (const [name, spec] of Object.entries(synthFeeds)) {
+    if (!(name in streams)) streams[name] = spec;
+  }
 
   const flatTears = new Set<string>(
     (flowsheet["tearStreams"] ?? []) as string[],

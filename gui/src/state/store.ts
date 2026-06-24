@@ -227,6 +227,12 @@ interface AppState {
    *  to apply the agent's edits; leaves the case marked "edited" for download. */
   applyCaseFiles: (files: CaseFiles) => void;
   selectNode: (id: string | null) => void;
+  /** TimeScrubber <-> FlowCanvas link: the instant index the scrubber sits on,
+   *  so dragging the slider ANIMATES the dynamic flowsheet (live flux on the
+   *  synthesised feed/product/jacket edges).  null = no scrub active (the
+   *  flowsheet shows its steady/nominal face). */
+  scrubIdx: number | null;
+  setScrubIdx: (idx: number | null) => void;
   togglePanel: (key: PanelKey) => void;
   /** Toggle a workspace: if it is already active, close it; if a
    *  different one is active, switch to this one. */
@@ -603,6 +609,9 @@ export const useStore = create<AppState>((set, get) => ({
 
   selectNode: (id) => set({ selectedNodeId: id }),
 
+  scrubIdx: null,
+  setScrubIdx: (idx) => set({ scrubIdx: idx }),
+
   togglePanel: (key) =>
     set((s) => ({ panels: {...s.panels, [key]: !s.panels[key] } })),
 
@@ -624,7 +633,7 @@ export const useStore = create<AppState>((set, get) => ({
   agentHeight: 360,
   setAgentHeight: (px) => set({ agentHeight: Math.max(140, Math.min(px, window.innerHeight - 80)) }),
 
-  startRun: () => set({ runStatus: "running", runLog: "", runResult: null }),
+  startRun: () => set({ runStatus: "running", runLog: "", runResult: null, scrubIdx: null }),
   appendLog: (chunk) => set((s) => ({ runLog: s.runLog + chunk })),
   finishRun: (result) => set({ runStatus: result.status, runResult: result }),
   markPropsRun: () =>

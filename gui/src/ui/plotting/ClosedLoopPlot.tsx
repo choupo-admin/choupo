@@ -81,6 +81,10 @@ export interface ClosedLoopPlotProps {
   ghosts?: PinnedRun[];
   /** Optional x-axis zoom (Track|Reject auto-zoom). */
   xRange?: [number, number];
+  /** Opt-in: also draw the reactor's OUTLET COMPOSITION (the control objective)
+   *  on the left (moles) axis.  Off by default -- the closed-loop story is
+   *  T(t); composition is the "did the disturbance corrupt my product" lens. */
+  showComposition?: boolean;
 }
 
 /** Which trajectory column carries the PID's PV (controlled variable).  Tries,
@@ -105,21 +109,57 @@ function resolveMvKey(traj: TrajectoryData, pid: ControllerKnobs): string | unde
   return keys.find((k) => k.endsWith(".MV"));
 }
 
+/** The DISTURBANCE column: a Schedule controller's MV mirrors the inlet-T it
+ *  drives (it has no PV).  Prefer the first schedule whose actuator is the
+ *  feed temperature; fall back to the first schedule's `<name>.MV`. */
+function resolveDistKey(
+  traj: TrajectoryData, schedules: ScheduleKnobs[], pidMvKey: string | undefined,
+): string | undefined {
+  const keys = Object.keys(traj.vars);
+  const tempActuated = schedules.find(
+    (s) => s.actuate && (s.actuate.mv === "T_in" || s.actuate.mv === "T"));
+  for (const s of [tempActuated, ...schedules].filter((x): x is ScheduleKnobs => !!x)) {
+    const k = `${s.name}.MV`;
+    if (keys.includes(k) && k !== pidMvKey) return k;
+  }
+  return undefined;
+}
+
+/** Outlet-composition columns (the control objective): mole / fraction traces
+ *  the trajectory already carries (n_<comp> or x_<comp>), for the opt-in lens. */
+function resolveCompKeys(traj: TrajectoryData): string[] {
+  return Object.keys(traj.vars).filter((k) => /(^|[._])(n_|x_)/.test(k));
+}
+
 export function ClosedLoopPlot(props: ClosedLoopPlotProps) {
-  const { trajectory, pid, schedules, ghosts, xRange } = props;
+  const { trajectory, pid, schedules, ghosts, xRange, showComposition } = props;
   const setpoint = props.setpoint ?? pid.setpoint;
   const bandFraction = props.bandFraction ?? 0.02;
 
   const pvKey = useMemo(() => resolvePvKey(trajectory, pid), [trajectory, pid]);
   const mvKey = useMemo(() => resolveMvKey(trajectory, pid), [trajectory, pid]);
+  // The inlet-T disturbance the Schedule controller drives -- a STREAM property
+  // (the feed's temperature), drawn as a named band on the secondary (T) axis.
+  const distKey = useMemo(
+    () => resolveDistKey(trajectory, schedules, mvKey), [trajectory, schedules, mvKey]);
+  // Outlet composition (the objective): opt-in, on the left moles axis.
+  const compKeys = useMemo(
+    () => (showComposition ? resolveCompKeys(trajectory) : []), [trajectory, showComposition]);
 
-  // Keep only PV + MV traces (drop the n_compA/compB mole columns -- the control
-  // story is T(t), not composition).  When PV/MV can't be resolved, fall back
-  // to showing everything so the plot is never blank.
+  // Keep PV + MV (+ the disturbance band, + opt-in composition).  The control
+  // story is T(t); without the opt-in the mole columns stay dropped.  When
+  // PV/MV can't be resolved, fall back to showing everything so it's never blank.
   const filterVars = useMemo(() => {
-    const keep = [pvKey, mvKey].filter((k): k is string => !!k);
+    const keep = [pvKey, mvKey, distKey, ...compKeys].filter((k): k is string => !!k);
     return keep.length > 0 ? keep : undefined;
-  }, [pvKey, mvKey]);
+  }, [pvKey, mvKey, distKey, compKeys]);
+
+  // Force the disturbance onto the right (T) axis and relabel it as the stream
+  // property it is.  (The MV already rides right via mvVars below.)
+  const mvVars = useMemo(
+    () => [mvKey, distKey].filter((k): k is string => !!k), [mvKey, distKey]);
+  const renameVars = useMemo(
+    () => (distKey ? { [distKey]: "inlet T [K] — disturbance" } : undefined), [distKey]);
 
   // The setpoint as a dashed reference line.
   const referenceLines: ReferenceLine[] = useMemo(
@@ -195,7 +235,8 @@ export function ClosedLoopPlot(props: ClosedLoopPlotProps) {
       data={view}
       title="Closed loop — T(t)"
       filterVars={filterVars}
-      mvVars={mvKey ? [mvKey] : undefined}
+      mvVars={mvVars.length > 0 ? mvVars : undefined}
+      renameVars={renameVars}
       referenceLines={referenceLines}
       eventMarkers={eventMarkers}
       band={{ y: setpoint, half: bandFraction * setpoint, label: `±${(bandFraction * 100).toFixed(0)}%` }}

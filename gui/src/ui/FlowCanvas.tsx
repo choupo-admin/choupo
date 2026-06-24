@@ -55,6 +55,8 @@ import { IconPlayerPlay, IconPlayerStop } from "@tabler/icons-react";
 import { IconX } from "@tabler/icons-react";
 
 import { flowsheetToGraph } from "../case/toGraph.js";
+import type { DynamicInstant } from "../case/dynamicInstants.js";
+import { collectControllerKnobs } from "../case/controllerKnobs.js";
 import { streamNumberResolver } from "../case/streamNumbering.js";
 import { boundaryForStream } from "../case/modelBoundary.js";
 import { localStreamNames, sliceHasContent, sliceRunResult } from "../case/resultSlice.js";
@@ -115,6 +117,16 @@ const NODE_TYPES = {
   streamTerminal: StreamTerminal,
 };
 
+// Phase + colour from a bare outlet vapour fraction (the engine's flash result
+// at a scrubbed instant).  vf is the AUTHORITATIVE phase signal (phase-colour-
+// is-semantic), so a non-zero flow is assumed (an instant face always carries
+// flow) and classifyPhase decides liquid / two-phase / vapour.
+function phaseColorFromVf(vf: number, scheme: "default" | "cvd-safe"):
+  { color: string; phase: PhaseKind } {
+  const phase = classifyPhase({ vf, F: 1, F_mass: 1 });
+  return { color: phaseColorFor(phase, scheme), phase };
+}
+
 // Custom edge types.  `tear` routes recycle back-edges below the node
 // row so they don't disappear behind same-row units.  `waypoint` is a
 // normal smoothstep whose bend can be dragged aside (topology fixed) to
@@ -124,7 +136,7 @@ const EDGE_TYPES = {
   waypoint: WaypointEdge,
 };
 
-export function FlowCanvas() {
+export function FlowCanvas({ scrubInstant }: { scrubInstant?: DynamicInstant } = {}) {
   const flowsheet = useStore((s) => s.caseFiles.flowsheet);
   const controlDict = useStore((s) => s.caseFiles.controlDict);
   const blank = useStore((s) => !hasCaseOpen(s.tutorialName));
@@ -193,20 +205,24 @@ export function FlowCanvas() {
       )}
       <Box style={{ flex: 1, minHeight: 0, position: "relative" }}>
         <ReactFlowProvider>
-          <CanvasInner flowsheet={flowsheet} />
+          <CanvasInner flowsheet={flowsheet} scrubInstant={scrubInstant} />
         </ReactFlowProvider>
       </Box>
     </Box>
   );
 }
 
-function CanvasInner({ flowsheet }: { flowsheet: import("../dict/index.js").JsonDict }) {
+function CanvasInner({ flowsheet, scrubInstant }: {
+  flowsheet: import("../dict/index.js").JsonDict;
+  scrubInstant?: DynamicInstant;
+}) {
   const rawFiles = useStore((s) => s.caseFiles.rawFiles);
   const selectNode = useStore((s) => s.selectNode);
   const selectedNodeId = useStore((s) => s.selectedNodeId);
   const tutorialName = useStore((s) => s.tutorialName);
   const runResult = useStore((s) => s.runResult);
   const runStatus = useStore((s) => s.runStatus);
+  const scrubIdx = useStore((s) => s.scrubIdx);
   const colorScheme = useStore((s) => s.displayPrefs.colorScheme);
   const colorMode = useStore((s) => s.displayPrefs.colorMode);
   const colorMap = useStore((s) => s.displayPrefs.colorMap);
@@ -270,6 +286,54 @@ function CanvasInner({ flowsheet }: { flowsheet: import("../dict/index.js").Json
 
   // Recompute graph whenever the case changes.
   const graph = useMemo(() => flowsheetToGraph(flowsheet, rawFiles), [flowsheet, rawFiles]);
+
+  // The dynamic instant the TimeScrubber sits on (prop wins; else the store's
+  // scrub index into the run's written instants).  When present, the canvas
+  // OVERLAYS its live stream faces on the synthesised feed/product edges so
+  // dragging the slider animates the flowsheet (slice 2).
+  const instants = runResult?.instants?.instants;
+  const liveInstant: DynamicInstant | undefined = useMemo(() => {
+    if (scrubInstant) return scrubInstant;
+    if (!instants || instants.length === 0 || scrubIdx == null) return undefined;
+    return instants[Math.min(Math.max(scrubIdx, 0), instants.length - 1)];
+  }, [scrubInstant, instants, scrubIdx]);
+
+  // Live stream overlay keyed by stream name (`<unit>.out` / `<unit>.feed`):
+  // T, vf, and total molar flow at the scrubbed instant.  The feed face falls
+  // back to the nominal inlet{} (handled downstream) when the engine has not
+  // yet written a `.feed` face -- tagged "(nominal — driven)" if a controller
+  // actuates the unit's T_in.  Phase colour comes from the outlet vf
+  // (phase-colour-is-semantic): the engine's flash result, never a heuristic.
+  const drivenInletUnits = useMemo(() => {
+    const out = new Set<string>();
+    const layer = collectControllerKnobs(flowsheet);
+    for (const s of layer.schedules)
+      if (s.actuate && (s.actuate.mv === "T_in" || s.actuate.mv === "T"))
+        out.add(s.actuate.unit);
+    if (layer.pid?.actuate && (layer.pid.actuate.mv === "T_in"))
+      out.add(layer.pid.actuate.unit);
+    return out;
+  }, [flowsheet]);
+
+  const scrubOverlay = useMemo(() => {
+    const map = new Map<string, { T?: number; vf?: number; F?: number; driven?: boolean; nominal?: boolean }>();
+    if (!liveInstant) return map;
+    for (const u of liveInstant.units) {
+      // Outlet face.
+      const outFlows = u.outletMolarFlows;
+      const outF = outFlows ? Object.values(outFlows).reduce((a, b) => a + (b ?? 0), 0) : undefined;
+      map.set(`${u.name}.out`, { T: u.outletT, vf: u.outletVf, F: outF });
+      // Inlet face: the real `.feed` face when the engine wrote one, else the
+      // nominal inlet (tagged driven when a controller moves it).
+      const inFlows = u.inletMolarFlows;
+      const inF = inFlows ? Object.values(inFlows).reduce((a, b) => a + (b ?? 0), 0) : undefined;
+      const hasLiveFeed = u.inletT !== undefined || inF !== undefined;
+      map.set(`${u.name}.feed`, hasLiveFeed
+        ? { T: u.inletT, F: inF }
+        : { driven: drivenInletUnits.has(u.name), nominal: true });
+    }
+    return map;
+  }, [liveInstant, drivenInletUnits]);
 
   // Which SHOW classes the case actually CONTAINS, so a chip that would toggle
   // nothing reads as disabled (a live control that does nothing is confusing).
@@ -599,6 +663,7 @@ function CanvasInner({ flowsheet }: { flowsheet: import("../dict/index.js").Json
         let phaseLabel: string | undefined;
         let phaseGlyph: string | undefined;
         let utilityCategory: string | undefined;
+        let feedDrivenTag = false;
         let resolved: { F: number; F_mass?: number; F_solid_mass?: number; F_solid?: number; T: number; P: number; vf?: number } | undefined;
         if (n.type === "streamTerminal" && n.id.startsWith("stream:") && phaseOf) {
           const label = n.id.slice("stream:".length);
@@ -615,6 +680,30 @@ function CanvasInner({ flowsheet }: { flowsheet: import("../dict/index.js").Json
           if (resultStreamOf) {
             const rs = resultStreamOf(label);
             if (rs) resolved = rs;
+          }
+          // Live scrub overlay (slice 2): at the scrubbed instant, the
+          // synthesised feed/product terminals read the engine's stream face
+          // (T, vf, total molar F).  This OVERRIDES the steady/nominal
+          // `resolved` so dragging the slider animates the flowsheet.  Phase
+          // colour follows the outlet vf (semantic), and a feed with no live
+          // `.feed` face yet keeps its nominal spec with a "(driven)" tag.
+          const ov = scrubOverlay.get(label);
+          if (ov) {
+            if (ov.T !== undefined || ov.F !== undefined || ov.vf !== undefined) {
+              resolved = {
+                F: ov.F ?? resolved?.F ?? 0,
+                T: ov.T ?? resolved?.T ?? 0,
+                P: resolved?.P ?? 0,
+                vf: ov.vf ?? resolved?.vf,
+              };
+              if (ov.vf !== undefined) {
+                const ps = phaseColorFromVf(ov.vf, colorScheme);
+                phaseColor = ps.color;
+                phaseLabel = PHASE_LABEL[ps.phase];
+                phaseGlyph = PHASE_GLYPH[ps.phase];
+              }
+            }
+            if (ov.driven) feedDrivenTag = true;
           }
         }
         // A utility terminal (FEED/PRODUCT box whose stream is a plant
@@ -676,6 +765,7 @@ function CanvasInner({ flowsheet }: { flowsheet: import("../dict/index.js").Json
                || (dport !== undefined && !show.utility),
           data: {...(n.data as object), drillable, phaseColor, phaseLabel, phaseGlyph,
                   utilityCategory, resolved, dutyKW, dutyUtility, dutyEurH,
+                  feedDrivenTag,
                   showNumbers: show.numbers,
                   // ABSOLUTE number (overrides toGraph's per-view local one).
                   streamNumber: numberOf((n.data as { name?: string }).name ?? ""),
@@ -684,7 +774,8 @@ function CanvasInner({ flowsheet }: { flowsheet: import("../dict/index.js").Json
         };
       }),
     [nodes, selectedNodeId, drillableSub, phaseOf, utilityOf, resultStreamOf, show,
-     handlePos, onHandleMove, onHandleReset, commitHandles, runResult, numberOf],
+     handlePos, onHandleMove, onHandleReset, commitHandles, runResult, numberOf,
+     scrubOverlay, colorScheme],
   );
 
   const styledEdges: Edge[] = useMemo(
@@ -711,10 +802,16 @@ function CanvasInner({ flowsheet }: { flowsheet: import("../dict/index.js").Json
         // it.  Selection is signalled through extra thickness + a halo
         // (SVG drop-shadow) only; the underlying stroke colour stays the
         // phase colour the simulator assigned.
+        // Live scrub overlay (slice 2): a synthesised dynamic edge (`<unit>.out`
+        // / `<unit>.feed`) has no steady run stream, so colour it by the
+        // scrubbed instant's outlet vf instead (phase-colour-is-semantic).
+        const ov = (!isEnergy && !isDuty && label) ? scrubOverlay.get(label) : undefined;
+        const ovColor = ov?.vf !== undefined
+          ? phaseColorFromVf(ov.vf, colorScheme).color : undefined;
         const color = (isEnergy || isDuty)
           ? (e.style as { stroke?: string } | undefined)?.stroke
               ?? "var(--mantine-color-accent-5)"
-          : ps?.color ?? "var(--mantine-color-accent-5)";
+          : ps?.color ?? ovColor ?? "var(--mantine-color-accent-5)";
         const baseWidth = ps && maxFlow > 0
           ? 1.0 + 5.0 * Math.sqrt(ps.totalFlow / maxFlow)
           : 1.5;
@@ -799,7 +896,7 @@ function CanvasInner({ flowsheet }: { flowsheet: import("../dict/index.js").Json
       }),
     [graph.edges, selectedStreamName, phaseOf, utilityOf, maxFlow, show,
      edgeCenters, onEdgeCenterChange, commitEdgeCenters, onEdgeCenterReset,
-     runResult, numberOf],
+     runResult, numberOf, scrubOverlay, colorScheme],
   );
 
   // Keyboard shortcuts.  Esc -> deselect; F -> fit view.  Mounted on window

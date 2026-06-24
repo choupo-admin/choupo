@@ -46,7 +46,7 @@ License
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton, Group,
+  ActionIcon, Alert, Badge, Box, Button, Chip, Code, Collapse, CopyButton, Group,
   Loader, SegmentedControl, Slider, Stack, Text, Tooltip,
 } from "@mantine/core";
 import {
@@ -61,6 +61,9 @@ import {
   applyTuning, collectControllerKnobs, parallelToInteracting,
   type ScheduleKnobs,
 } from "../case/controllerKnobs.js";
+import {
+  applyInitial, collectInitialKnobs, type InitialPatch,
+} from "../case/initialKnobs.js";
 import {
   controlMetrics, dampingColor, disturbanceWindows, type ControlMetrics,
 } from "../case/controlMetrics.js";
@@ -86,6 +89,18 @@ interface Tuning {
   setpoint: number;
 }
 
+// The initial-condition slice the IC rail drives: holdup start temperature and
+// the seed mole fraction of the first component (binary => 1-x0 on the second).
+interface IcTuning {
+  t0: number;
+  x0: number;
+}
+
+// A cold-start preset (a chilled vessel), so the SegmentedControl can offer a
+// one-click "cold" that visibly differs from the as-authored start.
+const COLD_T0 = 300;
+const T0_RANGE: [number, number] = [290, 380];
+
 export function ControlWorkspace() {
   const caseFiles = useStore((s) => s.caseFiles);
   const prefs = useStore((s) => s.displayPrefs);
@@ -94,6 +109,11 @@ export function ControlWorkspace() {
   const flowsheetJson = caseFiles.flowsheet;
   const layer = useMemo(() => collectControllerKnobs(flowsheetJson), [flowsheetJson]);
   const pid = layer.pid;
+  // The dynamic unit's initial-condition knobs (T0, V0, seed composition) --
+  // null when the case has no dynamic-holdup unit with an initial{} block.
+  const icKnobs = useMemo(() => collectInitialKnobs(flowsheetJson), [flowsheetJson]);
+  // The ordered component list of the seed composition (for the x0 slider).
+  const icComps = useMemo(() => Object.keys(icKnobs?.composition ?? {}), [icKnobs]);
 
   // --- collapsible rail ----------------------------------------------------
   const [collapsed, setCollapsed] = useState<boolean>(() => {
@@ -124,6 +144,21 @@ export function ControlWorkspace() {
   const [committed, setCommitted] = useState<Tuning>(baseline);
   useEffect(() => { setCommitted(baseline); }, [baseline]);
 
+  // --- initial-condition state (reset-on-close = component-local) -----------
+  // x0 = the seed mole fraction of the FIRST component (binary => the rest is
+  // 1-x0 on the second).  start = the preset selector (cold / as-authored).
+  const icBaseline = useMemo<IcTuning>(
+    () => (icKnobs
+      ? { t0: icKnobs.t0, x0: icComps.length > 0 ? (icKnobs.composition[icComps[0]!] ?? 1) : 1 }
+      : { t0: 0, x0: 1 }),
+    [icKnobs, icComps],
+  );
+  const [ic, setIc] = useState<IcTuning>(icBaseline);
+  useEffect(() => { setIc(icBaseline); }, [icBaseline]);
+  const [committedIc, setCommittedIc] = useState<IcTuning>(icBaseline);
+  useEffect(() => { setCommittedIc(icBaseline); }, [icBaseline]);
+  const [icPreset, setIcPreset] = useState<"cold" | "authored">("authored");
+
   // --- run plumbing (the WhatIf mechanism, whole case) ---------------------
   const [trace, setTrace] = useState<TrajectoryData | null>(
     seededResult?.trajectory ?? null,
@@ -140,12 +175,42 @@ export function ControlWorkspace() {
   const [bandPct, setBandPct] = useState<2 | 5>(2);
   const [lens, setLens] = useState<"track" | "reject">("reject");
   const [dictOpen, setDictOpen] = useState(false);
+  // Opt-in outlet-composition overlay (the control objective): off by default,
+  // honouring the one-primary-surface chrome credo (the story is T(t)).
+  const [showComp, setShowComp] = useState(false);
 
-  const buildFiles = useCallback((t: Tuning): CaseFiles | null => {
+  // Turn an IcTuning (T0 + the first component's mole fraction) into the
+  // InitialPatch applyInitial wants: T0 + the FULL seed composition.  Binary
+  // systems split the remainder onto the second component (1-x0); N>2 keeps the
+  // other authored fractions, renormalised so the set sums to 1 (honest).
+  const icToPatch = useCallback((it: IcTuning): InitialPatch | null => {
+    if (!icKnobs) return null;
+    const patch: InitialPatch = { t0: it.t0 };
+    if (icComps.length >= 2) {
+      const first = icComps[0]!;
+      const x0 = Math.min(Math.max(it.x0, 0), 1);
+      const rest = icComps.slice(1);
+      const restSum = rest.reduce((a, c) => a + (icKnobs.composition[c] ?? 0), 0);
+      const comp: { [k: string]: number } = { [first]: x0 };
+      for (const c of rest) {
+        comp[c] = restSum > 0 ? (1 - x0) * ((icKnobs.composition[c] ?? 0) / restSum)
+                              : (1 - x0) / rest.length;
+      }
+      patch.composition = comp;
+    }
+    return patch;
+  }, [icKnobs, icComps]);
+
+  const buildFiles = useCallback((t: Tuning, it?: IcTuning): CaseFiles | null => {
     if (!flowsheetJson || !pid) return null;
-    const next = applyTuning(flowsheetJson, pid, t) as JsonDict;
+    // Layer the IC patch UNDER the tuning patch so a gain change and a start
+    // change compose in one run (applyInitial(applyTuning(...))).  Both are
+    // pure clone-and-mutate; nothing writes to disk.
+    let next = applyTuning(flowsheetJson, pid, t) as JsonDict;
+    const icPatch = it && icKnobs ? icToPatch(it) : null;
+    if (icPatch && icKnobs) next = applyInitial(next, icKnobs, icPatch) as JsonDict;
     return { ...caseFiles, flowsheet: next };
-  }, [flowsheetJson, pid, caseFiles]);
+  }, [flowsheetJson, pid, caseFiles, icKnobs, icToPatch]);
 
   // The PV column key (for the ghost/metrics) -- resolve once per trace.
   const pvKey = useMemo(() => {
@@ -156,8 +221,9 @@ export function ControlWorkspace() {
       .find((k) => keys.includes(k)) ?? keys.find((k) => k.endsWith(".PV"));
   }, [trace, pid]);
 
-  const runLoop = useCallback(async (t: Tuning) => {
-    const files = buildFiles(t);
+  const runLoop = useCallback(async (t: Tuning, it?: IcTuning) => {
+    const itEff = it ?? ic;
+    const files = buildFiles(t, itEff);
     if (!files || busy) return;
     // Snapshot the current trace as the ghost BEFORE the new run (so the
     // before/after is a visible pair, never a blank).
@@ -198,13 +264,14 @@ export function ControlWorkspace() {
       }
       setTrace(result.trajectory);
       setCommitted(t);
+      setCommittedIc(itEff);
     } catch (e) {
       if (!abortRef.current?.signal.aborted) setRunError((e as Error).message);
     } finally {
       setBusy(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [buildFiles, busy, trace, pvKey, prefs, pid, committed, bandPct]);
+  }, [buildFiles, busy, trace, pvKey, prefs, pid, committed, bandPct, ic]);
 
   // Pin the current trace as a labelled snapshot (Kp=4 vs 12 vs 20 overlay).
   const pinCurrent = useCallback(() => {
@@ -214,12 +281,18 @@ export function ControlWorkspace() {
     const m = controlMetrics(trace.t, pv, {
       reference: committed.setpoint, bandHalf: (bandPct / 100) * committed.setpoint,
     });
-    const label = `Kp=${committed.kp} Ki=${committed.ki}`;
+    // Enrich the label with the START when it differs from as-authored, so a
+    // three-pin overlay reads "cold vs as-authored, same gains" = the
+    // IC-sensitivity picture.
+    let label = `Kp=${committed.kp} Ki=${committed.ki}`;
+    if (icKnobs && Math.abs(committedIc.t0 - icBaseline.t0) > 0.5) {
+      label += `  ·  T0=${committedIc.t0.toFixed(0)}${committedIc.t0 <= COLD_T0 ? " cold" : ""}`;
+    }
     setPins((p) => [
       ...p.slice(-3),
       { label, t: trace.t, pv, iae: m.iae, color: PIN_COLORS[p.length % PIN_COLORS.length], opacity: 0.5 },
     ]);
-  }, [trace, pvKey, pid, committed, bandPct]);
+  }, [trace, pvKey, pid, committed, committedIc, icKnobs, icBaseline, bandPct]);
 
   // --- metrics + windows ---------------------------------------------------
   const schedules: ScheduleKnobs[] = layer.schedules;
@@ -265,17 +338,28 @@ export function ControlWorkspace() {
     });
   }, [ghost, committed.setpoint, bandPct, activeWindow]);
 
-  // --- the mutated controllers(...) block text (Show dict) -----------------
+  // --- the mutated controllers(...) [+ units initial{}] block text (Show dict)
   const dictText = useMemo(() => {
     if (!flowsheetJson || !pid) return "";
     const patched = applyTuning(flowsheetJson, pid, committed) as JsonDict;
     const controllers = patched["controllers"];
+    // When an IC override is live, also render the mutated `units` block so the
+    // student can copy BOTH the gains and the start back to disk.
+    const icActive = icKnobs && (
+      Math.abs(committedIc.t0 - icBaseline.t0) > 1e-6
+      || Math.abs(committedIc.x0 - icBaseline.x0) > 1e-9);
+    const icPatch = icActive && icKnobs ? icToPatch(committedIc) : null;
+    const withIc = icPatch && icKnobs
+      ? applyInitial(patched, icKnobs, icPatch) as JsonDict : patched;
+    const block: JsonDict = icActive
+      ? { units: withIc["units"] ?? [], controllers: controllers ?? [] }
+      : { controllers: controllers ?? [] };
     try {
-      return serialize(fromJson({ controllers } as JsonDict, "flowsheetDict"));
+      return serialize(fromJson(block, "flowsheetDict"));
     } catch {
       return "(could not serialise the controllers block)";
     }
-  }, [flowsheetJson, pid, committed]);
+  }, [flowsheetJson, pid, committed, committedIc, icKnobs, icBaseline, icToPatch]);
 
   // --- the interacting-form twin (textbook lens) ---------------------------
   const twin = useMemo(() => parallelToInteracting(tuning.kp, tuning.ki, tuning.kd), [tuning]);
@@ -349,6 +433,11 @@ export function ControlWorkspace() {
           onChange={(v) => setBandPct(Number(v) as 2 | 5)}
           data={[{ label: "±2%", value: "2" }, { label: "±5%", value: "5" }]}
         />
+        <Tooltip label="Overlay the reactor outlet composition (the control objective) on the moles axis." withArrow multiline w={240}>
+          <Chip size="xs" radius="sm" color="grape" checked={showComp} onChange={setShowComp}>
+            composition
+          </Chip>
+        </Tooltip>
         {busy && <Loader size="xs" color="accent" />}
       </Group>
 
@@ -415,6 +504,43 @@ export function ControlWorkspace() {
                 <Text size="9px" c="dimmed" mt={2}>τI = Kp/Ki · τD = Kd/Kp</Text>
               </Box>
 
+              {/* ---- Initial conditions rail group ---- */}
+              {icKnobs && (
+                <Box style={{ borderTop: "1px dashed var(--mantine-color-dark-4)", paddingTop: 10 }}>
+                  <Text size="xs" tt="uppercase" fw={700} c="dimmed" mb={6}>Initial state</Text>
+                  <SegmentedControl
+                    fullWidth size="xs" mb={8}
+                    value={icPreset}
+                    onChange={(v) => {
+                      const p = v as "cold" | "authored";
+                      setIcPreset(p);
+                      const t0 = p === "cold" ? COLD_T0 : icBaseline.t0;
+                      const next = { ...ic, t0 };
+                      setIc(next);
+                      void runLoop(tuning, next);
+                    }}
+                    data={[{ label: "cold", value: "cold" }, { label: "as-authored", value: "authored" }]}
+                  />
+                  <KnobSlider
+                    label="T₀ [K]" path={icKnobs.targetPaths.t0}
+                    value={ic.t0} min={T0_RANGE[0]} max={T0_RANGE[1]} step={0.5}
+                    onPreview={(v) => setIc((s) => ({ ...s, t0: v }))}
+                    onCommit={(v) => void runLoop(tuning, { ...ic, t0: v })}
+                  />
+                  {icComps.length >= 2 && (
+                    <KnobSlider
+                      label={`x₀(${icComps[0]})`} path={icKnobs.targetPaths.composition}
+                      value={ic.x0} min={0} max={1} step={0.01}
+                      onPreview={(v) => setIc((s) => ({ ...s, x0: v }))}
+                      onCommit={(v) => void runLoop(tuning, { ...ic, x0: v })}
+                    />
+                  )}
+                  <Text size="9px" c="dimmed" mt={2}>
+                    same attractor, different transient — overlays the start’s effect
+                  </Text>
+                </Box>
+              )}
+
               <Button
                 size="compact-xs" variant="subtle"
                 onClick={() => setDictOpen((o) => !o)}
@@ -468,6 +594,7 @@ export function ControlWorkspace() {
                 bandFraction={bandPct / 100}
                 ghosts={ghostsForPlot}
                 xRange={activeWindow}
+                showComposition={showComp}
               />
             </Box>
           ) : (

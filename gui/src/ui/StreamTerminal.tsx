@@ -81,10 +81,15 @@ interface StreamTerminalData {
    *  (e.g. "DRYING/ExhaustClean") shown as a subordinate "from ..." line so
    *  the rename is visible, never silent. */
   streamOrigin?: string;
+  /** A dynamic feed whose T_in is actuated by a controller, scrubbed to an
+   *  instant the engine has NOT yet given a live `.feed` face: the shown
+   *  conditions are the NOMINAL inlet{} the disturbance drives -- tag it
+   *  honestly (no silent crutch) so the student knows the value is driven. */
+  feedDrivenTag?: boolean;
   /** Distillation duty stub: "reboiler" (heating, docks at the column's
    *  base) or "condenser" (cooling, top).  dutyKW is filled post-run from
    *  the column's Q_reboiler_kW / Q_condenser_kW KPI. */
-  dutyPort?: "reboiler" | "condenser" | "Q" | "power";
+  dutyPort?: "reboiler" | "condenser" | "Q" | "power" | "jacket";
   tier?: "heating" | "cooling" | "power";
   dutyKW?: number;
   /** Utility named explicitly on the column port (operation.<port>.utility).
@@ -100,7 +105,7 @@ interface StreamTerminalData {
 
 export function StreamTerminal({ data, selected }: NodeProps) {
   const { name, role, stream, phaseColor, phaseLabel, phaseGlyph, utilityCategory, resolved,
-          streamNumber, showNumbers, streamOrigin,
+          streamNumber, showNumbers, streamOrigin, feedDrivenTag,
           dutyPort, tier, dutyKW, utilityName, dutyUtility, dutyEurH } =
     data as StreamTerminalData;
   const prefs = useStore((s) => s.displayPrefs);
@@ -253,6 +258,12 @@ export function StreamTerminal({ data, selected }: NodeProps) {
         {streamOrigin && (
           <Text size="10px" c="dimmed" ff="monospace" style={{ letterSpacing: 0.2 }}>
             from {streamOrigin}
+          </Text>
+        )}
+        {feedDrivenTag && (
+          <Text size="10px" ff="monospace"
+                style={{ color: "var(--mantine-color-yellow-4)", letterSpacing: 0.2 }}>
+            nominal — driven
           </Text>
         )}
         {(stream || resolved) && (

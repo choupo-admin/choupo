@@ -40,10 +40,11 @@ License
 \*---------------------------------------------------------------------------*/
 
 import { Badge, Box, Group, Slider, Stack, Table, Text } from "@mantine/core";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { DynamicInstants, InstantUnit } from "../../case/dynamicInstants.js";
 import type { TrajectoryData } from "../../adapters/SolverAdapter.js";
+import { useStore } from "../../state/store.js";
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 
 const fmt = (n: number): string =>
@@ -211,10 +212,22 @@ export function TimeScrubber({
   const n = instants.instants.length;
   const [idx, setIdx] = useState(0);
 
-  // A fresh run resets to the first instant.
+  // Publish the scrubbed index to the store so the dynamic flowsheet (FlowCanvas)
+  // animates over time in lock-step with this slider.  The scrubber owns the
+  // index; the canvas merely reads it.  Cleared on unmount so leaving the
+  // scrubber returns the flowsheet to its nominal face.
+  const setScrubIdx = useStore((s) => s.setScrubIdx);
+  const onScrub = useCallback((v: number) => {
+    setIdx(v);
+    setScrubIdx(v);
+  }, [setScrubIdx]);
+
+  // A fresh run resets to the first instant (and syncs the canvas).
   useEffect(() => {
     setIdx(0);
-  }, [instants]);
+    setScrubIdx(0);
+  }, [instants, setScrubIdx]);
+  useEffect(() => () => setScrubIdx(null), [setScrubIdx]);
 
   const safeIdx = Math.min(idx, n - 1);
   const current = instants.instants[safeIdx]!;
@@ -251,7 +264,7 @@ export function TimeScrubber({
         max={Math.max(0, n - 1)}
         step={1}
         value={safeIdx}
-        onChange={setIdx}
+        onChange={onScrub}
         marks={marks}
         label={(v) => `${instants.instants[v]?.t ?? ""} s`}
         color="cyan"
