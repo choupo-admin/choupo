@@ -44,37 +44,28 @@ void ScheduleController::initialise(const DictPtr&      ctrlDict,
         throw std::runtime_error("ScheduleController '" + name_ + "':"
             " actuator.unit '" + actUnitName + "' not found");
 
-    auto schedList = ctrlDict->lookupDictList("schedule");
-    if (schedList.empty())
-        throw std::runtime_error("ScheduleController '" + name_ + "':"
-            " schedule list is empty");
-
-    entries_.clear();
-    entries_.reserve(schedList.size());
-    for (const auto& e : schedList)
+    // Delegate the staircase parse + math to StaircaseSignal (it reads the
+    // SAME `schedule (...)` list and applies the identical ZOH walk, so the
+    // emitted step train is byte-for-byte the legacy one).  An empty list
+    // throws inside StaircaseSignal::initialise; wrap the message so the
+    // controller name is still surfaced.
+    try
     {
-        const scalar t = e->lookupScalar("time");
-        const scalar v = e->lookupScalar("value");
-        entries_.emplace_back(t, v);
+        staircase_.initialise(ctrlDict);
     }
-    std::sort(entries_.begin(), entries_.end(),
-              [](const auto& a, const auto& b) { return a.first < b.first; });
+    catch (const std::exception& e)
+    {
+        throw std::runtime_error("ScheduleController '" + name_ + "': "
+            + e.what());
+    }
 
-    // Prime the actuator with the first schedule entry whose time has
-    // already elapsed at t = 0 (typically the entry at time 0 itself).
-    // Done in update() — keep initialise side-effect free.
-    lastMV_ = entries_.front().second;
+    // Prime: the value at t = 0 (the front entry, identical to before).
+    lastMV_ = staircase_.value(0.0);
 }
 
 void ScheduleController::update(scalar t, scalar /*dt*/)
 {
-    // Walk the (sorted) schedule, pick the latest entry with time <= t.
-    scalar val = entries_.front().second;
-    for (const auto& [tk, v] : entries_)
-    {
-        if (tk <= t + 1.0e-12) val = v;
-        else                    break;
-    }
+    const scalar val = staircase_.value(t);
     lastMV_ = val;
     actUnit_->setMV(mvKey_, val);
 }

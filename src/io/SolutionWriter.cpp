@@ -799,9 +799,10 @@ void SolutionWriter::writeDynamicInstant(
     // ---- streams: the instantaneous outlet faces (continuous units) -------
     //  Reuses the steady streams-file SHAPE (header + a `streams{}` block of
     //  per-stream T/P/vf + molarFlows) so the SAME dict reader parses it back.
-    bool anyOutlet = false;
-    for (const auto& u : units) if (u.hasOutlet) { anyOutlet = true; break; }
-    if (anyOutlet)
+    bool anyFace = false;
+    for (const auto& u : units)
+        if (u.hasOutlet || u.hasInlet) { anyFace = true; break; }
+    if (anyFace)
     {
         std::ostringstream sb;
         sb <<
@@ -814,24 +815,40 @@ void SolutionWriter::writeDynamicInstant(
 "\\*-----------------------------------------------------------------------------*/\n\n";
         sb << "time            " << sci(t) << ";\n";
         sb << "streams\n{\n";
-        for (const auto& u : units)
+        // Render one face (a feed `<unit>.feed` or an outlet `<unit>.out`) as a
+        // self-describing stream block --- SAME shape the steady path uses so the
+        // dict reader parses both back.  `bc inlet;` for the Dirichlet feed face,
+        // `bc computed;` for the produced outlet face.
+        auto renderFace = [&](const std::string& sname, const char* bc,
+                              const char* note, scalar F, scalar T_, scalar P_,
+                              const std::vector<scalar>& z)
         {
-            if (!u.hasOutlet) continue;
-            const std::string sname = u.name + ".out";
             sb << "    \"" << sname << "\"\n    {\n";
-            sb << "        bc          computed;         // PRODUCT -- the unit's instantaneous outlet\n";
-            sb << "        T           " << sci(u.outT) << ";   // K\n";
-            sb << "        P           " << sci(u.outP) << ";   // Pa\n";
-            sb << "        vf          " << sci(0.0)    << ";   // - (liquid holdup outlet)\n";
+            sb << "        bc          " << bc << ";" << note << "\n";
+            sb << "        T           " << sci(T_) << ";   // K\n";
+            sb << "        P           " << sci(P_) << ";   // Pa\n";
+            sb << "        vf          " << sci(0.0) << ";   // - (liquid holdup face)\n";
             sb << "        molarFlows                        // kmol/s per species\n        {\n";
             for (std::size_t i = 0; i < compNames_.size(); ++i)
             {
-                const scalar zi = (i < u.outZ.size()) ? u.outZ[i] : 0.0;
+                const scalar zi = (i < z.size()) ? z[i] : 0.0;
                 sb << "            " << std::left << std::setw(16) << compNames_[i]
-                   << " " << sci(u.outF * zi) << ";\n";
+                   << " " << sci(F * zi) << ";\n";
             }
             sb << "        }\n";
             sb << "    }\n";
+        };
+        for (const auto& u : units)
+        {
+            // Feed face first (it enters), then the produced outlet face.
+            if (u.hasInlet)
+                renderFace(u.name + ".feed", "inlet",
+                           "            // FEED -- the unit's instantaneous inlet face",
+                           u.inF, u.inT, u.inP, u.inZ);
+            if (u.hasOutlet)
+                renderFace(u.name + ".out", "computed",
+                           "         // PRODUCT -- the unit's instantaneous outlet",
+                           u.outF, u.outT, u.outP, u.outZ);
         }
         sb << "}\n";
 

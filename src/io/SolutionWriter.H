@@ -198,6 +198,14 @@ struct DynamicUnitSnapshot
     scalar                                        outT = 0;     // K
     scalar                                        outP = 0;     // Pa
     std::vector<scalar>                           outZ;         // mole fractions
+    // Optional instantaneous INLET (feed) face --- symmetric to the outlet,
+    // so the GUI's live flux overlay shows BOTH faces and the student SEES
+    // accumulation (inlet flux != outlet flux when dn/dt != 0).
+    bool                                          hasInlet = false;
+    scalar                                        inF = 0;      // kmol/s
+    scalar                                        inT = 0;      // K
+    scalar                                        inP = 0;      // Pa
+    std::vector<scalar>                           inZ;          // mole fractions
     // Free-form extra scalars (conversion, supersaturation, controller MV...)
     // captured verbatim so a time shows the FULL state at that t.
     std::vector<std::pair<std::string, scalar>>   extras;

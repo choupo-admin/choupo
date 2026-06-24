@@ -32,6 +32,7 @@ License
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -109,6 +110,122 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
             throw std::runtime_error("DynamicCSTR: component '"
                 + thermo.comp(i).name() + "' has no liquidHeatCapacity"
                 " entry in its.dat file (needed for the energy balance)");
+
+    // ---- start: explicit (default) vs steadyState seed ----------------
+    //  ABSENT or `explicit`  => t=0 is the literal `initial{}` above
+    //                           (byte-identical to every existing case).
+    //  `steadyState`         => t=0 is SEEDED from the steady solution of the
+    //                           holdup ODE at the declared feed/UA/T_jacket
+    //                           (dn/dt = 0, dT/dt = 0).  Computed + PRINTED,
+    //                           never a fabricated constant (no silent crutch).
+    const std::string start =
+        initDict->lookupWordOrDefault("start", "explicit");
+    if (start == "steadyState" || start == "steady")
+    {
+        std::cout << "  DynamicCSTR '" << name_
+                  << "': start = STEADY-STATE seed (from the holdup ODE at"
+                     " the declared feed/UA/T_jacket)\n"
+                  << "    explicit initial{} (T0=" << T_
+                  << " K) used only as the relaxation guess.\n";
+        seedFromSteady();
+    }
+    else if (start == "explicit")
+    {
+        std::cout << "  DynamicCSTR '" << name_
+                  << "': start = explicit initial{}  (T0=" << T_ << " K)\n";
+    }
+    else
+        throw std::runtime_error("DynamicCSTR '" + name_ + "': unknown"
+            " initial.start '" + start + "' (expected `explicit` or"
+            " `steadyState`)");
+}
+
+// ---------------------------------------------------------------------------
+//  seedFromSteady():  relax the holdup ODE (dn/dt = f, dT/dt = f) to its steady
+//  fixed point with the CURRENT feed / UA / T_jacket HELD, and adopt that
+//  (n_i, T) as the t=0 state.  Glass-box: it integrates the SAME RK4 step() the
+//  run uses (one code path, no second physics) until the state stops changing,
+//  then announces the seeded operating point (no silent crutch).
+//
+//  THE STEP SIZE is the subtlety.  The reactor's SLOWEST mode is its residence
+//  time tau_res = n_tot / F_in (often hours), but its FASTEST mode is the
+//  thermal/jacket relaxation tau_T ~ (n*Cp) / (F*Cp + UA/1000) (often seconds).
+//  An explicit RK4 step is stable only when dt is a fraction of the FAST mode,
+//  so dt is sized off tau_T (NOT tau_res --- using tau_res/200 overshoots the
+//  fast thermal mode and the relaxation diverges).  The horizon is then many
+//  slow-mode residence times so the composition fully equilibrates.
+// ---------------------------------------------------------------------------
+void DynamicCSTR::seedFromSteady()
+{
+    const std::size_t N = n_.size();
+
+    scalar nTot = 0.0; for (auto v : n_) nTot += v;
+
+    // Heat capacities at the current T (kJ/K and kJ/(K) per mole-rate term).
+    scalar CpTot = 0.0, CpInAvg = 0.0;
+    for (std::size_t i = 0; i < N; ++i)
+    {
+        const scalar cp = thermo_->comp(i).cpLiquid().Cp(T_);
+        CpTot   += n_[i]   * cp;
+        CpInAvg += z_in_[i] * cp;
+    }
+    // Fast (thermal) time constant: (n*Cp) / (F*Cp_in + UA/1000).
+    const scalar thermalDenom = F_in_ * CpInAvg + UA_ / 1000.0;
+    const scalar tauT = (thermalDenom > 1.0e-30 && CpTot > 1.0e-30)
+                      ? CpTot / thermalDenom : 1.0;
+    // Slow (residence) time constant.
+    const scalar tauRes = (F_in_ > 1.0e-30) ? nTot / F_in_ : tauT;
+
+    const scalar dt = std::max<scalar>(tauT / 20.0, 1.0e-6);  // fraction of FAST mode
+    // Horizon: enough slow-mode times to equilibrate composition, capped.
+    const scalar horizon = std::max<scalar>(20.0 * tauRes, 200.0 * tauT);
+    const std::size_t maxSteps =
+        std::min<std::size_t>(static_cast<std::size_t>(horizon / dt) + 1, 5000000);
+
+    sVector prev(N + 1);
+    for (std::size_t it = 0; it < maxSteps; ++it)
+    {
+        for (std::size_t i = 0; i < N; ++i) prev[i] = n_[i];
+        prev[N] = T_;
+
+        step(0.0, dt);                 // the SAME RK4 the run uses --- one path
+
+        if (!std::isfinite(T_))        // diverged (no stable open-loop SS)
+        {
+            std::cout << "    WARNING: steady-state seed DIVERGED (the open-loop"
+                      << " reactor has no stable attractor at this jacket) ---"
+                      << " keeping the explicit initial{}.\n";
+            for (std::size_t i = 0; i < N; ++i) n_[i] = prev[i];
+            T_ = prev[N];
+            return;
+        }
+
+        scalar maxRel = 0.0;
+        for (std::size_t i = 0; i < N; ++i)
+        {
+            const scalar d = std::abs(n_[i] - prev[i]);
+            maxRel = std::max(maxRel, d / std::max<scalar>(std::abs(prev[i]), 1.0e-12));
+        }
+        maxRel = std::max(maxRel,
+            std::abs(T_ - prev[N]) / std::max<scalar>(std::abs(prev[N]), 1.0));
+
+        if (maxRel < 1.0e-11)
+        {
+            scalar nt = 0.0; for (auto v : n_) nt += v;
+            std::cout << "    seeded steady state reached after " << (it + 1)
+                      << " relaxation steps (dt=" << dt << " s):  T0=" << T_ << " K";
+            for (std::size_t i = 0; i < N; ++i)
+                if (nt > 0.0)
+                    std::cout << "  x_" << thermo_->comp(i).name() << "="
+                              << n_[i] / nt;
+            std::cout << "\n";
+            return;
+        }
+    }
+    std::cout << "    note: steady-state seed reached the relaxation horizon ("
+              << maxSteps << " steps) without a tight fixed point --- using the"
+              << " last relaxed state (T0=" << T_ << " K) as an approximate"
+              << " operating point.\n";
 }
 
 // -----------------------------------------------------------------------
@@ -262,6 +379,18 @@ ContinuousStream DynamicCSTR::outletStream() const
     for (auto v : n_) nTot += v;
     if (nTot > 0)
         for (std::size_t i = 0; i < n_.size(); ++i) s.z[i] = n_[i] / nTot;
+    return s;
+}
+
+ContinuousStream DynamicCSTR::inletStream() const
+{
+    // The instantaneous FEED face: F_in/T_in/P/z_in held at the current MV
+    // state.  Mirror of outletStream() --- a read-only projection, no physics.
+    ContinuousStream s;
+    s.F = F_in_;
+    s.T = T_in_;
+    s.P = P_;
+    s.z = z_in_;
     return s;
 }
 

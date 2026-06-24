@@ -26,48 +26,51 @@ License
     Required legal notices:  see NOTICE
 -------------------------------------------------------------------------------
 Class
-    Choupo::ScheduleController
+    Choupo::SignalController
 
 Description
-    Open-loop "controller" that writes a MV from a piecewise-constant
-    time schedule.  Pedagogically a degenerate case of Controller ---
-    the measurement port is ignored entirely --- but it slots cleanly
-    into the same plumbing, which lets cases inject disturbances,
-    setpoint changes, or fixed time-varying inputs without inventing a
-    second event mechanism.
+    The GENERALISED open-loop "controller": it owns a `Signal` (step,
+    staircase, ramp, pulse, sine) and at each sample writes signal.value(t)
+    into a named MV of a unit --- exactly like ScheduleController, but with
+    the WHOLE forcing-function vocabulary instead of only the staircase.
 
-    Dict format:
+    It reads NO measurement (open loop): `lastCV()` is 0, while `lastMV()`
+    and `setpoint()` both mirror the forcing value (so the SP/MV columns of
+    the trajectory CSV show the injected signal --- ready to plot against
+    the closed-loop PV).
 
-        type         Schedule;
-        actuator     { unit reactor;  mv T_in; }
-        schedule
-        (
-            { time 0;    value 320.0; }
-            { time 400;  value 310.0; }      // step disturbance at t = 400 s
-            { time 800;  value 330.0; }      // another step at t = 800 s
-        );
+    Dict format (file-first):
 
-    Times must be ascending.  At each `update()` the controller scans
-    the schedule and writes the value of the latest entry whose time
-    has already elapsed.
+        {
+            name      FeedDist;
+            type      Signal;
+            actuator  { unit reactor;  mv T_in; }      // (or `target T_in;`)
+            signal
+            {
+                type        sinusoidal;
+                mean        320 K;
+                amplitude   15 K;
+                period      600 s;
+            }
+        }
 
-    No PV reading, no integration, no gains.  The "lastCV" reported in
-    the trajectory CSV is NaN, "lastMV" is the most recently written
-    value, and "setpoint" mirrors lastMV (so the SP column shows the
-    same step train --- useful for plotting).
+    ScheduleController is RETAINED (legacy `type Schedule; schedule(...)`),
+    now delegating to StaircaseSignal so both spellings share one math.
+
+    Explicit factory, registered as "Signal" in Controller::registerBuiltins.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
 
 #include "Controller.H"
-#include "signal/Signals.H"
+#include "signal/Signal.H"
 
 namespace Choupo {
 
-class ScheduleController : public Controller
+class SignalController : public Controller
 {
 public:
-    ScheduleController() = default;
+    SignalController() = default;
 
     const std::string& type() const override { return type_; }
 
@@ -76,22 +79,17 @@ public:
 
     void update(scalar t, scalar dt) override;
 
-    scalar lastCV()   const override { return 0.0; }  // unused
+    scalar lastCV()   const override { return 0.0; }   // open loop, no PV
     scalar lastMV()   const override { return lastMV_; }
     scalar setpoint() const override { return lastMV_; }
 
 private:
-    inline static const std::string type_ = "Schedule";
+    inline static const std::string type_ = "Signal";
 
-    DynamicUnitOperation*  actUnit_ = nullptr;
-    std::string            mvKey_;
-
-    // The staircase math now lives in StaircaseSignal --- ScheduleController
-    // is a thin backward-compat shell that delegates to it (ONE source of
-    // truth for the ZOH-over-a-list step train, so legacy `type Schedule;`
-    // cases stay byte-identical).
-    StaircaseSignal        staircase_;
-    scalar                 lastMV_ = 0.0;
+    DynamicUnitOperation*    actUnit_ = nullptr;
+    std::string              mvKey_;
+    std::unique_ptr<Signal>  signal_;
+    scalar                   lastMV_ = 0.0;
 };
 
 } // namespace Choupo

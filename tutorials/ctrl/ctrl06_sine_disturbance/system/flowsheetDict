@@ -1,0 +1,109 @@
+/*---------------------------------------------------------------------------*\
+  ctrl06_sine_disturbance  --  the FREQUENCY-RESPONSE seed.
+
+  Same DynamicCSTR as ctrl01/ctrl02 (compA -> compB, mild exotherm, jacket
+  heat transfer) and the same PID temperature controller.  The NEW ingredient
+  is the disturbance: instead of the step train of ctrl02's `Schedule`
+  controller, a `Signal` controller injects a SINUSOID into the inlet
+  temperature T_in:
+
+        T_in(t) = 320 + 15 * sin(2*pi*t / 600)   [K]
+
+                  mean = 320 K
+                  amplitude = 15 K
+                  period = 600 s   (f = 1/600 = 1.667e-3 Hz, omega = 0.01047 rad/s)
+
+  The PID controller has no foreknowledge of the forcing --- it only sees
+  T_reactor drift sinusoidally away from the 350 K setpoint and works the
+  jacket to compensate.  After the first ~period the reactor temperature
+  settles into a FORCED SINUSOIDAL RESPONSE: same period as the input, but
+  ATTENUATED (the closed loop rejects most of the swing) and PHASE-LAGGED.
+
+  THE LESSON (Seborg/Edgar/Mellichamp/Doyle, Ch. 13-14 frequency response):
+  read the output/input amplitude ratio [dB] and the phase lag [deg] off the
+  steady-cycling trajectory, and you have ONE POINT of a Bode plot.  Sweep the
+  `period` (edit one number below), re-run, and you trace the closed loop's
+  frequency response by trial-and-error --- the differentiator.
+
+  Backward-compatible by construction: ctrl02's `type Schedule; schedule(...)`
+  staircase still works unchanged; this case swaps it for the more general
+  `type Signal; signal { type sinusoidal; ... }`.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+        initial
+        {
+            // start steadyState;   // <- uncomment to seed t=0 from the steady
+            //                          operating point (isolate the forced
+            //                          response from the startup transient)
+            T            320.0 K;
+            P            1.013 bar;
+            V            0.001;
+            totalMoles   0.012;
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        inlet
+        {
+            F            5.0e-5 kmol/h;
+            T            320.0 K;             // initial; the Signal controller drives it
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        operation
+        {
+            UA           50.0;
+            T_jacket     320.0 K;
+        }
+
+        reaction    compA_to_compB;
+    }
+);
+
+controllers
+(
+    {
+        name         FeedDist;
+        type         Signal;
+
+        actuator     { unit reactor;  mv T_in; }
+
+        signal
+        {
+            type        sinusoidal;        // step | staircase | ramp | pulse | sinusoidal
+            mean        320.0 K;
+            amplitude   15.0 K;
+            period      600.0 s;           // OR `frequency <Hz>;` (not both)
+            phase       0.0;
+        }
+    }
+
+    {
+        name         TC1;
+        type         PID;
+
+        measurement  { unit reactor;  cv T; }
+        actuator     { unit reactor;  mv T_jacket; }
+
+        setpoint     350.0;
+
+        gains
+        {
+            Kp       4.0;
+            Ki       0.04;
+            Kd       0.0;
+        }
+
+        output
+        {
+            min      280.0;
+            max      420.0;
+            bias     320.0;
+        }
+    }
+);

@@ -57,6 +57,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "control/Controller.H"
+#include "control/signal/Signal.H"
 #include "core/Banner.H"
 #include "core/Dictionary.H"
 #include "core/DisplayUnits.H"
@@ -117,6 +118,7 @@ try
     Phase             ::registerBuiltins();
     HeatTransferCorrelation::registerBuiltins();
     DynamicUnitOperation::registerBuiltins();
+    Signal            ::registerBuiltins();   // forcing-function vocabulary
     Controller        ::registerBuiltins();
 
     const std::string caseDir = (argc > 1) ? argv[1] : ".";
@@ -373,6 +375,30 @@ try
                 snap.outT      = out.T;
                 snap.outP      = out.P;
                 snap.outZ.assign(out.z.begin(), out.z.end());
+
+                // Instantaneous FEED face (symmetric): F_in/T_in/P/z_in.  When
+                // the unit exposes one, the live overlay shows BOTH faces and
+                // the student SEES accumulation (in flux != out flux).
+                if (u->hasInlet())
+                {
+                    const ContinuousStream in = u->inletStream();
+                    snap.hasInlet = true;
+                    snap.inF      = in.F;
+                    snap.inT      = in.T;
+                    snap.inP      = in.P;
+                    snap.inZ.assign(in.z.begin(), in.z.end());
+                }
+
+                // Jacket coolant temperature as a per-unit extra (where the
+                // unit exposes it as a CV) --- so the instant's internalState
+                // records the jacket the controller is driving.
+                {
+                    const auto cvs = u->availableCVs();
+                    if (std::find(cvs.begin(), cvs.end(), std::string("T_jacket"))
+                            != cvs.end())
+                        snap.extras.emplace_back("T_jacket", u->getCV("T_jacket"));
+                }
+
                 snaps.push_back(std::move(snap));
             }
             solWriter->writeDynamicInstant(t, "ctrl", snaps);

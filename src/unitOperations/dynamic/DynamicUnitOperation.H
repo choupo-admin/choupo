@@ -120,6 +120,15 @@ public:
     // Outlet stream.  Sampled at the unit's current internal state.
     virtual ContinuousStream outletStream() const = 0;
 
+    // Inlet (feed) face.  Symmetric to outletStream() --- the instantaneous
+    // FEED flux entering the unit at the current MV state (F_in, T_in, P, z_in
+    // for a continuous unit).  Default: the unit has NO inlet face (a closed
+    // batch vessel, or a unit that does not model a feed), so the writer skips
+    // it.  ZERO new physics --- a read-only projection of the inlet the unit
+    // already holds.  `hasInlet` lets a unit opt in without forcing one.
+    virtual bool             hasInlet() const { return false; }
+    virtual ContinuousStream inletStream() const { return {}; }
+
     // ---- Manipulated / Controlled Variables (the controller API) -----
     //   MV: a controller writes a numeric value into a named knob.
     //   CV: a controller reads a numeric value from a named measurement.

@@ -96,6 +96,9 @@ public:
 
     ContinuousStream outletStream() const override;
 
+    bool             hasInlet()    const override { return true; }
+    ContinuousStream inletStream() const override;
+
     void   setMV(const std::string& key, scalar value) override;
     scalar getCV(const std::string& key) const override;
 
@@ -153,6 +156,11 @@ private:
 
     // packed = (n_0..n_{N-1}, T)  → dydt of same packing
     sVector derivatives_(const sVector& packed) const;
+
+    // Relax the holdup ODE to its steady fixed point at the current feed /
+    // UA / T_jacket and adopt that (n_i, T) as the t=0 state.  Used by
+    // `initial { start steadyState; }`.  Announces the seeded operating point.
+    void seedFromSteady();
 };
 
 } // namespace Choupo

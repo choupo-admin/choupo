@@ -1,0 +1,25 @@
+application   choupoCtrl;
+description   "Forced SINUSOIDAL inlet-T disturbance: T_in = 320 + 15 sin(2 pi t / 600).  The PID chases a moving target -> the reactor temperature settles into a forced sinusoidal response (attenuated + phase-lagged).  Sweep the period to build a one-point Bode by trial-and-error (the frequency-response seed).";
+
+verbosity     3;
+
+// ---- Time integration ----
+//   3000 s = five full disturbance periods (600 s each): the first ~1 period
+//   is the transient, the rest is the steady-cycling forced response from
+//   which the output amplitude ratio + phase lag are read.
+startTime       0;        // s
+endTime         3000;     // s
+deltaT          1.0;      // s
+writeInterval   5;        // s   (fine enough to resolve the 600 s sinusoid)
+
+// ---- solutionControl: OpenFOAM-style transient solution directories ----
+//   ON so the feed face carries the LIVE sinusoidal T_in and the outlet face
+//   carries the forced reactor-T response --- scrub the slider to watch the
+//   flowsheet animate the input/output sinusoids (input on the feed edge,
+//   attenuated+lagged output on the product edge).  Remove this block for a
+//   byte-identical plain trajectory.csv-only run.
+solutionControl
+{
+    write           true;
+    flushEach       true;
+}

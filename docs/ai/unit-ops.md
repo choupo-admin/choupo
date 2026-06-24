@@ -715,9 +715,49 @@ controllers
     }
 );
 ```
-Two controller types: `PID` (clamping anti-windup, derivative-on-PV)
-and `schedule` (open-loop piecewise constant — for disturbance
-injection).
+Controller types: `PID` (clamping anti-windup, derivative-on-PV),
+`Schedule` (open-loop piecewise constant — for step-disturbance
+injection), and `Signal` (open-loop, the FULL forcing-function
+vocabulary).
+
+A `Signal` controller owns a `signal { type ...; }` block and writes
+`signal.value(t)` to its actuator MV at each sample.  The signal types:
+
+| `type` | params | shape |
+|---|---|---|
+| `step` | mean, step, tStep | `t<tStep ? mean : mean+step` |
+| `staircase` (alias `schedule`) | `schedule( {time .. value ..} … )` | ZOH staircase (the `Schedule` math) |
+| `ramp` | mean, slope, tStart, [tEnd] | linear ramp, optional saturation |
+| `pulse` | mean, amplitude, tStart, width | rectangular pulse |
+| `sine` (alias `sinusoidal`) | mean, amplitude, period XOR frequency, [phase], [tStart] | `mean + amplitude·sin(2π(t−tStart)/period + phase)` |
+
+```
+{
+    name      FeedDist;
+    type      Signal;
+    actuator  { unit reactor;  mv T_in; }
+    signal    { type sinusoidal;  mean 320 K;  amplitude 15 K;  period 600 s; }
+}
+```
+
+Inject a sinusoid on an inlet, watch the PID chase the moving target →
+the **forced sinusoidal response** (attenuated + phase-lagged); sweep
+the `period` to build a one-point Bode by trial-and-error
+(`ctrl06_sine_disturbance`).  `Schedule` stays a first-class spelling
+(it delegates to the `staircase` signal, so legacy cases are unchanged).
+
+The dynamic unit also exposes its **feed face** alongside its outlet:
+when `solutionControl { write true; }` is on, each `<t>/streams` carries
+both `<unit>.feed` (`bc inlet;`) and `<unit>.out` (`bc computed;`), and
+`<t>/internalState` records the controller-driven jacket as a per-unit
+extra — so the live overlay shows input and output flux at once
+(accumulation is visible when in-flux ≠ out-flux).
+
+A dynamic unit can also SEED its t=0 from the steady operating point:
+add `start steadyState;` inside its `initial{}` block.  The engine
+relaxes the holdup ODE at the declared feed/UA/jacket to its fixed point
+and PRINTS the seeded `(T0, x_i)` (default `start explicit;` keeps the
+literal `initial{}` — byte-identical to every existing case).
 
 # choupoProps (property evaluations)
 

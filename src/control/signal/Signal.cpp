@@ -26,40 +26,38 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "Controller.H"
-#include "PIDController.H"
-#include "ScheduleController.H"
-#include "SignalController.H"
+#include "Signal.H"
+#include "Signals.H"
 
 #include <stdexcept>
 
 namespace Choupo {
 
-std::map<std::string, Controller::Factory>& Controller::registry()
+std::map<std::string, Signal::Factory>& Signal::registry()
 {
     static std::map<std::string, Factory> r;
     return r;
 }
 
-void Controller::registerType(const std::string& name, Factory f)
+void Signal::registerType(const std::string& name, Factory f)
 {
     registry()[name] = std::move(f);
 }
 
-std::unique_ptr<Controller> Controller::New(const std::string& type)
+std::unique_ptr<Signal> Signal::New(const std::string& type)
 {
     auto it = registry().find(type);
     if (it == registry().end())
     {
         std::string avail;
         for (const auto& kv : registry()) avail += " " + kv.first;
-        throw std::runtime_error("Controller::New: unknown type '" + type
+        throw std::runtime_error("Signal::New: unknown type '" + type
             + "'.  Registered:" + (avail.empty() ? " (none yet)" : avail));
     }
     return it->second();
 }
 
-std::vector<std::string> Controller::availableTypes()
+std::vector<std::string> Signal::availableTypes()
 {
     std::vector<std::string> v;
     v.reserve(registry().size());
@@ -67,19 +65,31 @@ std::vector<std::string> Controller::availableTypes()
     return v;
 }
 
-void Controller::registerBuiltins()
+void Signal::registerBuiltins()
 {
-    registerType("PID",
-        []() -> std::unique_ptr<Controller>
-        { return std::make_unique<PIDController>(); });
+    registerType("step",
+        []() -> std::unique_ptr<Signal> { return std::make_unique<StepSignal>(); });
 
-    registerType("Schedule",
-        []() -> std::unique_ptr<Controller>
-        { return std::make_unique<ScheduleController>(); });
+    // The staircase has two spellings (`staircase` and the legacy `schedule`),
+    // both the ZOH-over-a-list math --- so `type schedule;` inside a signal{}
+    // block reads identically to the historic top-level Schedule controller.
+    registerType("staircase",
+        []() -> std::unique_ptr<Signal> { return std::make_unique<StaircaseSignal>(); });
+    registerType("schedule",
+        []() -> std::unique_ptr<Signal> { return std::make_unique<StaircaseSignal>(); });
 
-    registerType("Signal",
-        []() -> std::unique_ptr<Controller>
-        { return std::make_unique<SignalController>(); });
+    registerType("ramp",
+        []() -> std::unique_ptr<Signal> { return std::make_unique<RampSignal>(); });
+
+    registerType("pulse",
+        []() -> std::unique_ptr<Signal> { return std::make_unique<PulseSignal>(); });
+
+    // `sine` and `sinusoidal` are the same generator (the dict in the design
+    // spells it `sinusoidal`; `sine` is the short form).
+    registerType("sine",
+        []() -> std::unique_ptr<Signal> { return std::make_unique<SineSignal>(); });
+    registerType("sinusoidal",
+        []() -> std::unique_ptr<Signal> { return std::make_unique<SineSignal>(); });
 }
 
 } // namespace Choupo
