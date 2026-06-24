@@ -5,6 +5,61 @@ All notable changes to **Choupo** are documented here.  The format follows
 [Semantic Versioning](https://semver.org/) (pre-1.0: minor bumps may carry
 breaking changes).
 
+## [v0.9.0] — 2026-06-24
+
+The pre-1.0 consolidation release: the energy ledger closes across the board,
+the dynamic/control story is now interactive end-to-end, the Property Explorer
+grows a family of graphical analyzers, and the data catalogue nearly doubles
+after a rigorous audit.  Gated by a release-QA storm (11 MIT-student case
+validators + 10 MIT-professor data auditors): **199 PASS / 0 FAIL**, zero
+blockers.
+
+### Added
+- **Dynamic + control, interactive in the browser** — all four binaries
+  (`choupoSolve`/`Props`/`Ctrl`/`Batch`) build to WASM; `choupoBatch`/`choupoCtrl`
+  write OpenFOAM-style real-time instant directories, harvested into a
+  **TimeScrubber** that animates the transient.
+- **The Control Room** — a live PID-tuning bench: watch a temperature signal
+  oscillate, turn Kp/Ki/Kd, see IAE/overshoot/settling, with a **disturbance
+  picker** (step/staircase/ramp/pulse/sine via sliders) and a one-point Bode
+  read-out for the sinusoid.  Backed by an explicit **Signal forcing hierarchy**.
+- **Opt-in adaptive time-stepping** (Rosenbrock23 local-error control, the ODE
+  analogue of a Courant limit) for `choupoBatch`/`choupoCtrl`.
+- **Graphical operating-line analyzers in the Explorer** — McCabe-Thiele
+  (interactive R/q staircase over the real y*(x)) and the **binary flash**
+  (tie-line + lever rule), both pure-TS redraws over the engine's VLE curve.
+- **Property Explorer redesign** — chrome-minimal (collapsible rail, single
+  toolbar, fixed-origin plot); SET·LENS·VIEW.
+- **theoryGuide** grew 16 → 88 figures (a 6-domain figure campaign).
+
+### Fixed
+- **The energy ledger closes.** ChemicalPlantTutorial to 0.55% on the elements
+  datum (crystals + heat-of-solution rung); the combined-cycle plant
+  **70% → −0.05%** (the Gibbs combustor + turbine duties now reach the boundary
+  CSV, and the global sweep no longer double-counts); isothermal CSTR emits its
+  reaction duty (**process05 8.6% → 0.006%**).  Rankine/compressor-turbine cases
+  close too.
+- **ctrl feed-rate unit typo** `kmol/h → kmol/s` across all six ctrl tutorials —
+  a 240-HOUR residence time had frozen the chemistry and made disturbances
+  invisible (the reactor moved 0.02 K).
+- **Reactor product phase** — CSTR/PFR now inherit the inlet phase instead of
+  defaulting to liquid (WGS products were mislabelled liquid at 600 K, corrupting
+  the enthalpy).
+- **Swept cases show stream values in the GUI** — the SweepDriver now emits a
+  representative result so the flowsheet draws (was blank `— K — Pa`).
+- **Tutorial headers** that asserted a result the run didn't deliver
+  (evaporator "50%" → 82%, Dowtherm "530 K" → 623 K, ctrl01 window).
+
+### Data
+- **150 entries promoted** `/proposed` → `/standards` after a 10-professor
+  audit: **43 components** (CoolProp reference-EOS skeletons + curated
+  literature, primary-cited, VLE-validated) + **107 binary pairs** (NRTL/UNIQUAC/
+  Wilson, zero golden-master movement).  **0 mechanisms** — every synthetic /
+  no-grant / unvalidated kinetic set held back.  126 rejected on
+  provenance/physics; catalogue audit (identity + unique-CAS + no-ESTIMATE) clean.
+- **Data-governance doctrine** ratified (ARITY→SCOPE→KIND; primary-source per
+  value; `docs/ai/data-doctrine.md`).
+
 ## [v0.3.0] — 2026-06-22
 
 A large release: new capabilities plus a point-by-point QA pass (an MIT-student
