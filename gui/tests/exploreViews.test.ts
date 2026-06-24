@@ -20,6 +20,17 @@ describe("Explore view relevance — only physically-meaningful views are offere
     expect(v.has("scaling")).toBe(false);
   });
 
+  it("benzene+toluene (organic-mixture): McCabe-Thiele offered (a binary VLE pair)", () => {
+    const v = views(["benzene", "toluene"]);
+    expect(v.has("txy")).toBe(true);
+    expect(v.has("mccabe")).toBe(true);   // shares the T-x-y front door
+  });
+
+  it("mccabe is GATED to a binary — never for 1 or 3 components", () => {
+    expect(views(["benzene"]).has("mccabe")).toBe(false);              // pure
+    expect(views(["benzene", "toluene", "water"]).has("mccabe")).toBe(false); // ternary
+  });
+
   it("water+NaCl (aqueous-electrolyte): scaling, NEVER a VLE T-x-y", () => {
     expect(classifySelection(["water", "NaCl"], CATALOGUE)).toBe("aqueous-electrolyte");
     const v = views(["water", "NaCl"]);
