@@ -74,6 +74,7 @@ Description
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "unitOperations/batch/BatchUnitOperation.H"
+#include "io/SolutionWriter.H"
 
 #include <algorithm>
 #include <filesystem>
@@ -172,6 +173,24 @@ try
               << "reactions library: "
               << (reactionsDict ? "loaded" : "not present")
               << "\n\n";
+
+    // ---- solutionControl: OpenFOAM-style REAL-TIME instant directories ----
+    //  ABSENT block => OFF: the run is byte-identical (trajectory.csv only).
+    //  Present with `write true;` => each write step also drops a `<t>/` time
+    //  directory (`0/ 0.5/ 1/ ...`, the time IS the folder name) holding each
+    //  vessel's holdup internalState.  trajectory.csv is ALWAYS still written.
+    SolutionControl solutionCtl;            // defaults: write=false (OFF)
+    if (controlDict->found("solutionControl"))
+    {
+        auto sc = controlDict->subDict("solutionControl");
+        solutionCtl.write =
+            (sc->lookupWordOrDefault("write", "false") == "true");
+        solutionCtl.flushEach =
+            (sc->lookupWordOrDefault("flushEach", "true") == "true");
+        if (solutionCtl.write)
+            std::cout << "solutionControl:   ON -> real-time instant dirs "
+                         "(0/ <t>/ ...) at the case root, every writeInterval\n\n";
+    }
 
     // ---- Build thermo package ----------------------------------------
     ThermoPackage thermo;
@@ -296,6 +315,20 @@ try
         std::cout << "\n";
     }
 
+    // ---- solutionControl writer (opt-in) -----------------------------
+    //  The instant directory IS the real physical time (seconds).  Component
+    //  names label each vessel's holdup inventory in <t>/internalState.
+    std::unique_ptr<SolutionWriter> solWriter;
+    if (solutionCtl.write)
+    {
+        std::vector<std::string> compNames;
+        compNames.reserve(thermo.n());
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            compNames.push_back(thermo.comp(i).name());
+        solWriter = std::make_unique<SolutionWriter>(
+            fs::current_path().string(), solutionCtl, std::move(compNames));
+    }
+
     // ---- Trajectory CSV: header --------------------------------------
     std::ofstream csv("trajectory.csv");
     if (!csv)
@@ -322,6 +355,28 @@ try
             for (const auto& [k, v] : unit->trajectoryExtras())
                 csv << "," << v;
         csv << "\n";
+
+        // OpenFOAM-style real-time instant: each vessel's HOLDUP state at t.
+        // A batch vessel is a closed 0-D cell -> internalState only (no outlet).
+        if (solWriter)
+        {
+            std::vector<DynamicUnitSnapshot> snaps;
+            snaps.reserve(units.size());
+            for (const auto& unit : units)
+            {
+                const auto& s = unit->state();
+                DynamicUnitSnapshot snap;
+                snap.name  = unit->name();
+                snap.type  = unit->type();
+                snap.T     = s.T;
+                snap.P     = s.P;          // already canonical SI (Pa)
+                snap.V     = s.V;
+                snap.moles.assign(s.n.begin(), s.n.end());
+                snap.extras = unit->trajectoryExtras();
+                snaps.push_back(std::move(snap));
+            }
+            solWriter->writeDynamicInstant(t, "batch", snaps);
+        }
     };
 
     // ---- Time loop ---------------------------------------------------

@@ -1,0 +1,23 @@
+application   choupoCtrl;
+description   "PID disturbance rejection with OpenFOAM-style real-time instant dirs: T_in steps down (700 s) then up (1300 s); scrub 0/ 40/ 80/ ... s to watch the PID track the 350 K setpoint and the jacket MV move";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         2000;     // s
+deltaT          1.0;      // s
+writeInterval   40;       // s   (one time directory every 40 s -> 0/ 40/ ... 2000/)
+
+// ---- solutionControl: OpenFOAM-style transient solution directories ----
+//   The instant directory IS the real physical time (seconds).  Each
+//   `<t>/internalState` holds the reactor HOLDUP (mole inventory, T) plus the
+//   controller-driven jacket temperature; each `<t>/streams` holds the
+//   instantaneous outlet face.  Scrub across the two disturbance steps (700 s,
+//   1300 s) to SEE the PID hold T at the 350 K setpoint.  trajectory.csv is
+//   STILL written; remove this block for a byte-identical plain run.
+solutionControl
+{
+    write           true;
+    flushEach       true;
+}

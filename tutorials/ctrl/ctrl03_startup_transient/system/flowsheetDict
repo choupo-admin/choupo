@@ -1,0 +1,60 @@
+/*---------------------------------------------------------------------------*\
+  ctrl03_startup_transient  --  OPEN-LOOP CSTR start-up.
+
+  Process:
+      A continuous CSTR (first-order compA -> compB, mild exotherm) is
+      CHARGED cold (320 K, pure compA) and then left to run with NO
+      controller.  The jacket sits at a fixed 320 K.  From the cold start
+      the reactor warms a little from the reaction exotherm, the feed/
+      outlet convection competes, and (T, composition) relax to the
+      natural open-loop steady state over ~ several residence times.
+
+  What this tutorial shows:
+      The OpenFOAM-style transient solution directories.  With
+      `solutionControl { write true; }` in controlDict, the case root
+      fills with REAL-TIME directories `0/ 50/ 100/ ... 1000/`.  Each
+      `<t>/internalState` is the reactor HOLDUP at that instant; each
+      `<t>/streams` is the instantaneous outlet face.  Scrub the times
+      and you watch T(t) and the inventory march to steady state --- the
+      same way you scrub a CFD transient in ParaView.
+
+  To compare CLOSED-LOOP control, see ctrl01_cstr_temp_control (a PID
+  drives T to a 350 K setpoint) and ctrl05_disturbance_transient (a PID
+  rejecting a feed-temperature disturbance), both also writing time dirs.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        dynamicCSTR;
+
+        initial
+        {
+            T            320.0 K;            // K  cold start
+            P            1.013 bar;
+            V            0.001;            // m³   (1 L)
+            totalMoles   0.012;             // kmol  (≈ 12 kmol/m³ liquid charge)
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        inlet
+        {
+            F            5.0e-5 kmol/h;           // kmol/s
+            T            320.0 K;            // K   (cool feed)
+            molarComposition  { compA 1.0;  compB 0.0; }
+        }
+
+        operation
+        {
+            UA           50.0;             // W/K   (jacket coupling)
+            T_jacket     320.0 K;            // K     fixed (no controller)
+        }
+
+        reaction    compA_to_compB;
+    }
+);
+
+// No `controllers` block --- this is the OPEN-LOOP start-up.  The reactor
+// runs with the fixed 320 K jacket above and relaxes to its natural
+// steady state, captured in the real-time instant directories.

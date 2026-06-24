@@ -82,6 +82,7 @@ Description
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "unitOperations/dynamic/DynamicUnitOperation.H"
+#include "io/SolutionWriter.H"
 
 #include <algorithm>
 #include <filesystem>
@@ -177,6 +178,23 @@ try
               << (reactionsDict ? "loaded" : "not present")
               << "\n\n";
 
+    // ---- solutionControl: OpenFOAM-style REAL-TIME instant directories ----
+    //  ABSENT block => OFF: the run is byte-identical (trajectory.csv only).
+    //  Present with `write true;` => each write step also drops a `<t>/` time
+    //  directory holding each unit's holdup internalState + outlet stream.
+    SolutionControl solutionCtl;            // defaults: write=false (OFF)
+    if (controlDict->found("solutionControl"))
+    {
+        auto sc = controlDict->subDict("solutionControl");
+        solutionCtl.write =
+            (sc->lookupWordOrDefault("write", "false") == "true");
+        solutionCtl.flushEach =
+            (sc->lookupWordOrDefault("flushEach", "true") == "true");
+        if (solutionCtl.write)
+            std::cout << "solutionControl:   ON -> real-time instant dirs "
+                         "(0/ <t>/ ...) at the case root, every writeInterval\n\n";
+    }
+
     ThermoPackage thermo;
     thermo.readFromDict(thermoDict, db);
 
@@ -240,6 +258,20 @@ try
     }
     std::cout << "\n";
 
+    // ---- solutionControl writer (opt-in) -----------------------------
+    //  The instant directory IS the real physical time (seconds).  Each unit
+    //  contributes its HOLDUP internalState + an instantaneous outlet face.
+    std::unique_ptr<SolutionWriter> solWriter;
+    if (solutionCtl.write)
+    {
+        std::vector<std::string> compNames;
+        compNames.reserve(thermo.n());
+        for (std::size_t i = 0; i < thermo.n(); ++i)
+            compNames.push_back(thermo.comp(i).name());
+        solWriter = std::make_unique<SolutionWriter>(
+            fs::current_path().string(), solutionCtl, std::move(compNames));
+    }
+
     // ---- Trajectory CSV header --------------------------------------
     std::ofstream csv("trajectory.csv");
     if (!csv)
@@ -265,6 +297,50 @@ try
                 << "," << c->lastCV()
                 << "," << c->lastMV();
         csv << "\n";
+
+        // OpenFOAM-style real-time instant: each unit's HOLDUP state at t.
+        // The state vector is labelled (n_<comp>... , T, ...); n_<comp> entries
+        // map to the holdup inventory, T to temperature, the rest to extras.
+        // The unit's instantaneous outletStream() is the outlet face.
+        if (solWriter)
+        {
+            std::vector<DynamicUnitSnapshot> snaps;
+            snaps.reserve(units.size());
+            for (const auto& u : units)
+            {
+                const auto labels = u->stateLabels();
+                const auto vals   = u->stateVector();
+                DynamicUnitSnapshot snap;
+                snap.name = u->name();
+                snap.type = u->type();
+                snap.moles.assign(thermo.n(), 0.0);
+                for (std::size_t i = 0; i < labels.size() && i < vals.size(); ++i)
+                {
+                    const std::string& lbl = labels[i];
+                    if (lbl == "T") { snap.T = vals[i]; continue; }
+                    if (lbl.rfind("n_", 0) == 0)
+                    {
+                        const std::size_t ci = thermo.indexOf(lbl.substr(2));
+                        if (ci < snap.moles.size()) { snap.moles[ci] = vals[i]; continue; }
+                    }
+                    // Anything else (a controller MV mirror, a level, ...) is a
+                    // verbatim extra so the instant captures the FULL state.
+                    snap.extras.emplace_back(lbl, vals[i]);
+                }
+                // Instantaneous outlet face (continuous unit): F/T/P/z.  The
+                // dict parser already converted `P ... bar;` to canonical SI
+                // (Pa) at load, so outletStream().P is in Pa --- no rescale.
+                const ContinuousStream out = u->outletStream();
+                snap.P         = out.P;
+                snap.hasOutlet = true;
+                snap.outF      = out.F;
+                snap.outT      = out.T;
+                snap.outP      = out.P;
+                snap.outZ.assign(out.z.begin(), out.z.end());
+                snaps.push_back(std::move(snap));
+            }
+            solWriter->writeDynamicInstant(t, "ctrl", snaps);
+        }
     };
 
     // ---- Time loop ---------------------------------------------------

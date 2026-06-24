@@ -51,6 +51,15 @@ tutorials/**/postProcessing/
 **/[0-9][0-9][0-9][0-9]/
 **/[0-9][0-9][0-9][0-9][0-9]/
 **/[0-9][0-9][0-9][0-9][0-9][0-9]/
+# The DYNAMIC binaries (choupoBatch / choupoCtrl) name the instant directory
+# after the REAL physical time in seconds; a fractional deltaT writes a dir
+# like `0.5/` or `10.25/` (trailing zeros trimmed, OpenFOAM style).  Ignore any
+# directory whose name is a number with a decimal point -- still purely numeric,
+# never a tracked path.
+**/[0-9].[0-9]*/
+**/[0-9][0-9].[0-9]*/
+**/[0-9][0-9][0-9].[0-9]*/
+**/[0-9][0-9][0-9][0-9].[0-9]*/
 # the solution log + latest convenience symlink/marker live at the case root
 **/solution.log
 **/latest

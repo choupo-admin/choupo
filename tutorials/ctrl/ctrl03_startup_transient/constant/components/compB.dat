@@ -1,0 +1,47 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/compB.dat
+// sha256   99d3f25d0ad348d348b85c91d4cc9756de86e83d024be6708787e9622b47e86e
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*---------------------------------------------------------------------------*\
+  Component: compB  -- synthetic component for VLLE algorithm audit.
+  Identical Antoine to compB and compC (Psat ≈ 0.5 bar at 350 K).
+  Pedagogically only --- not a real substance.
+\*---------------------------------------------------------------------------*/
+
+name        compB;
+formula     B;
+CAS         00-00-0;
+
+MW          50.0;
+Tc          550.0;
+Pc          40.0;
+omega       0.20;
+Tb          355.0;
+HvapTb      35000;
+Vliq        1.0e-4;
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (4.0   1700.0   -30.0);   // log10 P_bar = A - B/(T + C)
+    Trange        (300  400);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (80.0   0.0   0.0   0.0);
+    Trange        (200  500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (120.0);
+    Trange        (300  400);
+}

@@ -1,0 +1,24 @@
+application   choupoBatch;
+description   "Adiabatic batch esterification with OpenFOAM-style REAL-TIME instant dirs: watch conversion climb 0 -> ~0.9 and T runaway 320 -> ~445 K by scrubbing 0/ 30/ 60/ ... s";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;        // s
+endTime         600;      // s   (10 min --- induction + runaway + plateau)
+deltaT          0.5;      // s
+writeInterval   30;       // s   (one time directory every 30 s -> 0/ 30/ 60/ ... 600/)
+
+// ---- solutionControl: OpenFOAM-style transient solution directories ----
+//   The instant directory IS the real physical time (seconds), exactly like
+//   an OpenFOAM transient case: `0/ 30/ 60/ ... 600/` appear at the case
+//   root.  Each `<t>/internalState` holds the reactor's HOLDUP state at that
+//   instant --- mole inventory n_i [kmol], T [K], V [m^3] + the per-unit
+//   extras (here the conversion).  Open `300/internalState` and you see the
+//   reactor exactly as it was at t = 300 s.  trajectory.csv is STILL written.
+//   Remove this block and the run is byte-identical to the plain batch case.
+solutionControl
+{
+    write           true;
+    flushEach       true;     // power-loss durable (fsync each instant)
+}

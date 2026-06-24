@@ -171,6 +171,38 @@ struct SolutionControl
     bool        byUnit        = true;        // write the per-unit byUnit/<unit>/ projection
 };
 
+// -------------------------------------------------------------------------
+//  DYNAMIC instant payload (choupoBatch / choupoCtrl).  Where the steady
+//  solver's instant is the recycle outer iteration (a pseudo-time march to
+//  the tear fixed point), a dynamic instant directory IS the REAL physical
+//  TIME (`0/ 0.5/ 1/ 10.5/ ...`).  A batch/dynamic unit is a 0-D HOLDUP cell:
+//  its truth is the internal STATE (mole inventory n_i, T, V), not a face
+//  flux.  So each unit contributes a `DynamicUnitSnapshot` --- the holdup
+//  written verbatim into `<t>/internalState`, plus (where the unit exposes
+//  one) an instantaneous outlet face into `<t>/streams`.  Scrubbing a time
+//  directory therefore shows the reactor's ACTUAL state at that instant.
+// -------------------------------------------------------------------------
+struct DynamicUnitSnapshot
+{
+    std::string                                   name;   // unit name
+    std::string                                   type;   // equipment type word
+    scalar                                        T = 0;  // K
+    scalar                                        P = 0;  // Pa  (canonical SI)
+    scalar                                        V = 0;  // m^3 (0 if not tracked)
+    // Holdup inventory per component (kmol), index-aligned with compNames_.
+    // Empty for a pure flow unit with no tracked inventory.
+    std::vector<scalar>                           moles;
+    // Optional instantaneous outlet face (continuous units): F [kmol/s], z[].
+    bool                                          hasOutlet = false;
+    scalar                                        outF = 0;     // kmol/s
+    scalar                                        outT = 0;     // K
+    scalar                                        outP = 0;     // Pa
+    std::vector<scalar>                           outZ;         // mole fractions
+    // Free-form extra scalars (conversion, supersaturation, controller MV...)
+    // captured verbatim so a time shows the FULL state at that t.
+    std::vector<std::pair<std::string, scalar>>   extras;
+};
+
 class SolutionWriter
 {
 public:
@@ -194,6 +226,28 @@ public:
                       const std::map<std::string, ProcessStream>&  streams,
                       const std::vector<std::string>&              tears,
                       const std::vector<FlatUnit>&                 units);
+
+    // ---- DYNAMIC instant (choupoBatch / choupoCtrl) -------------------
+    //  Write one REAL-TIME instant: `<caseRoot>/<time>/` where `<time>` is the
+    //  physical simulation time in SECONDS formatted OpenFOAM-style (trailing
+    //  zeros trimmed: `0`, `0.5`, `1`, `10.5`).  Each unit's HOLDUP STATE goes
+    //  to `<time>/internalState` (mole inventory, T, V, conversion, ...) and
+    //  --- where a unit exposes an instantaneous outlet --- a `<time>/streams`
+    //  face is written in the same self-describing dict format the steady path
+    //  uses, so the dict reader parses both back.  Appends one row per time to
+    //  `solution.log` and refreshes the `latest` symlink.  Purge is OFF for the
+    //  dynamic path (a transient trajectory is the whole point --- you keep
+    //  every written time).  `t` is the absolute time; `app` ("batch"/"ctrl")
+    //  labels the header.
+    void writeDynamicInstant(scalar                                   t,
+                             const std::string&                       app,
+                             const std::vector<DynamicUnitSnapshot>&  units);
+
+    // Format a physical time (s) as a clean OpenFOAM-style directory name:
+    // an integer prints with no decimals (`10`), a fractional value trims
+    // trailing zeros (`0.5`, not `0.500000`; `10.25`).  Exposed static so the
+    // application's own echo can name the same directory.
+    static std::string formatTime(scalar t);
 
     // ---- Restart (Slice 1) --------------------------------------------
     //  Read `<caseRoot>/<n>/streams` for the highest numbered instant n (max
@@ -286,9 +340,15 @@ private:
                      const std::map<std::string, Bc>&    roles) const;
 
     void refreshLatestSymlink(int iteration) const;
+    // Overload for the dynamic path: the target is a TIME-named directory.
+    void refreshLatestSymlink(const std::string& timeName) const;
     void purgeOldInstants(int currentIteration,
                           const std::vector<int>& alwaysKeep) const;
     void appendLog(const SolutionInstantMeta& meta) const;
+    // One row per written dynamic time into solution.log (a separate header
+    // from the steady iteration log; the two never share a case directory).
+    void appendDynamicLog(scalar t, const std::string& timeName,
+                          std::size_t nUnits) const;
     // Append one row to `<caseRoot>/residuals.dat` (the plot's data source):
     //   columns  `iteration massResidual energyResidual tearResidual tolerance`.
     // A whitespace-separated table gnuplot reads directly; the header line is a

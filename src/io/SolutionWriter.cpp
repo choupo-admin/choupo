@@ -76,6 +76,27 @@ static std::string sci(scalar v)
     return os.str();
 }
 
+// ---------------------------------------------------------------------------
+//  OpenFOAM-style time-directory name: an integer prints with no decimal point
+//  (`0`, `10`); a fractional time trims trailing zeros (`0.5`, `10.25`), never
+//  `0.500000`.  We render at a generous fixed precision, then strip trailing
+//  zeros and a dangling point.  Negative / positive zero both normalise to `0`.
+// ---------------------------------------------------------------------------
+std::string SolutionWriter::formatTime(scalar t)
+{
+    if (t == 0.0) return "0";   // also catches -0.0
+    std::ostringstream os;
+    os << std::fixed << std::setprecision(9) << t;
+    std::string s = os.str();
+    if (s.find('.') != std::string::npos)
+    {
+        // Trim trailing zeros, then a trailing decimal point if it is left bare.
+        s.erase(s.find_last_not_of('0') + 1);
+        if (!s.empty() && s.back() == '.') s.pop_back();
+    }
+    return s;
+}
+
 static std::string nowIso()
 {
     std::time_t t = std::time(nullptr);
@@ -680,6 +701,190 @@ void SolutionWriter::refreshLatestSymlink(int iteration) const
                         std::ios::out | std::ios::trunc);
         f << iteration << "\n";
     }
+}
+
+// ---------------------------------------------------------------------------
+//  Dynamic-path latest symlink: the target is the TIME-named directory (e.g.
+//  `12.5`), not an integer iteration.  Same symlink-hostile fallback.
+void SolutionWriter::refreshLatestSymlink(const std::string& timeName) const
+{
+    const fs::path link = fs::path(caseRoot_) / "latest";
+    std::error_code ec;
+    fs::remove(link, ec);
+    fs::create_directory_symlink(timeName, link, ec);
+    if (ec)
+    {
+        std::ofstream f((fs::path(caseRoot_) / "latest.txt").string(),
+                        std::ios::out | std::ios::trunc);
+        f << timeName << "\n";
+    }
+}
+
+// ===========================================================================
+//  DYNAMIC instant (choupoBatch / choupoCtrl): the time directory IS the real
+//  physical time.  The unit's truth is its 0-D HOLDUP state, written to
+//  `<time>/internalState`; an instantaneous outlet face (continuous units) is
+//  written to `<time>/streams` in the same self-describing dict format.
+// ===========================================================================
+void SolutionWriter::writeDynamicInstant(
+    scalar                                   t,
+    const std::string&                       app,
+    const std::vector<DynamicUnitSnapshot>&  units)
+{
+    std::error_code ec;
+    fs::create_directories(caseRoot_, ec);
+
+    const std::string timeName = formatTime(t);
+    const fs::path instDir = fs::path(caseRoot_) / timeName;
+    const fs::path tmpDir  = fs::path(caseRoot_) / (".tmp_" + timeName);
+
+    fs::remove_all(tmpDir, ec);
+    fs::create_directories(tmpDir, ec);
+
+    // ---- internalState: the HOLDUP truth, one sub-dict per unit -----------
+    std::ostringstream is;
+    is <<
+"/*--------------------------------*- Choupo -*----------------------------------*\\\n"
+"| Choupo " << CHOUPO_VERSION << "   DYNAMIC instant   time " << timeName << " s   ("
+       << app << ")\n"
+"| The time directory IS the real physical time.  A batch/dynamic unit is a 0-D\n"
+"| HOLDUP cell: its truth is the internal inventory (mole numbers n_i [kmol], T\n"
+"| [K], V [m^3]) PLUS any per-unit extras (conversion, supersaturation, ...).\n"
+"| Scrub a time and you see the reactor's ACTUAL state at that instant.  Reads\n"
+"| back via the engine's own dict tokenizer (never JSON).  SI-canonical.\n"
+"\\*-----------------------------------------------------------------------------*/\n\n";
+    is << "time            " << sci(t) << ";   // s (real, physical)\n";
+    is << "application     " << app << ";\n\n";
+    is << "units\n{\n";
+    for (const auto& u : units)
+    {
+        is << "    \"" << u.name << "\"\n    {\n";
+        is << "        type        " << (u.type.empty() ? "?" : u.type) << ";\n";
+        is << "        T           " << sci(u.T) << ";   // K\n";
+        is << "        P           " << sci(u.P) << ";   // Pa\n";
+        if (u.V != 0.0)
+            is << "        V           " << sci(u.V) << ";   // m^3\n";
+        if (!u.moles.empty())
+        {
+            is << "        holdupMolar                       // kmol per species (inventory)\n        {\n";
+            for (std::size_t i = 0; i < compNames_.size() && i < u.moles.size(); ++i)
+                is << "            " << std::left << std::setw(16) << compNames_[i]
+                   << " " << sci(u.moles[i]) << ";\n";
+            is << "        }\n";
+        }
+        if (!u.extras.empty())
+        {
+            is << "        extras\n        {\n";
+            for (const auto& [k, v] : u.extras)
+                is << "            " << std::left << std::setw(16) << k
+                   << " " << sci(v) << ";\n";
+            is << "        }\n";
+        }
+        is << "    }\n";
+    }
+    is << "}\n";
+
+    {
+        const fs::path f = tmpDir / "internalState";
+        std::ofstream of(f.string(), std::ios::out | std::ios::trunc);
+        of << is.str();
+        of.flush();
+        if (!of.good()) { of.close(); fs::remove_all(tmpDir, ec);
+            std::cerr << "WARNING: solutionControl: write of time " << timeName
+                      << " failed --- instant NOT published.\n"; return; }
+        of.close();
+        if (cfg_.flushEach) fsyncPath(f, /*isDir=*/false);
+    }
+
+    // ---- streams: the instantaneous outlet faces (continuous units) -------
+    //  Reuses the steady streams-file SHAPE (header + a `streams{}` block of
+    //  per-stream T/P/vf + molarFlows) so the SAME dict reader parses it back.
+    bool anyOutlet = false;
+    for (const auto& u : units) if (u.hasOutlet) { anyOutlet = true; break; }
+    if (anyOutlet)
+    {
+        std::ostringstream sb;
+        sb <<
+"/*--------------------------------*- Choupo -*----------------------------------*\\\n"
+"| Choupo " << CHOUPO_VERSION << "   DYNAMIC instant   time " << timeName << " s   ("
+           << app << ")   outlet faces\n"
+"| Instantaneous outlet stream of each continuous unit at this time: F [kmol/s],\n"
+"| T [K], P [Pa] + per-species molarFlows [kmol/s].  A batch (closed) vessel has\n"
+"| no outlet face and contributes only to internalState.  SI-canonical.\n"
+"\\*-----------------------------------------------------------------------------*/\n\n";
+        sb << "time            " << sci(t) << ";\n";
+        sb << "streams\n{\n";
+        for (const auto& u : units)
+        {
+            if (!u.hasOutlet) continue;
+            const std::string sname = u.name + ".out";
+            sb << "    \"" << sname << "\"\n    {\n";
+            sb << "        bc          computed;         // PRODUCT -- the unit's instantaneous outlet\n";
+            sb << "        T           " << sci(u.outT) << ";   // K\n";
+            sb << "        P           " << sci(u.outP) << ";   // Pa\n";
+            sb << "        vf          " << sci(0.0)    << ";   // - (liquid holdup outlet)\n";
+            sb << "        molarFlows                        // kmol/s per species\n        {\n";
+            for (std::size_t i = 0; i < compNames_.size(); ++i)
+            {
+                const scalar zi = (i < u.outZ.size()) ? u.outZ[i] : 0.0;
+                sb << "            " << std::left << std::setw(16) << compNames_[i]
+                   << " " << sci(u.outF * zi) << ";\n";
+            }
+            sb << "        }\n";
+            sb << "    }\n";
+        }
+        sb << "}\n";
+
+        const fs::path f = tmpDir / "streams";
+        std::ofstream of(f.string(), std::ios::out | std::ios::trunc);
+        of << sb.str();
+        of.flush();
+        if (!of.good()) { of.close(); fs::remove_all(tmpDir, ec);
+            std::cerr << "WARNING: solutionControl: write of time " << timeName
+                      << " streams failed --- instant NOT published.\n"; return; }
+        of.close();
+        if (cfg_.flushEach) fsyncPath(f, /*isDir=*/false);
+    }
+
+    // Atomic publish.
+    fs::remove_all(instDir, ec);
+    fs::rename(tmpDir, instDir, ec);
+    if (ec)
+    {
+        fs::remove_all(instDir, ec);
+        fs::copy(tmpDir, instDir,
+                 fs::copy_options::recursive | fs::copy_options::overwrite_existing, ec);
+        fs::remove_all(tmpDir, ec);
+    }
+    if (cfg_.flushEach) fsyncPath(caseRoot_, /*isDir=*/true);
+
+    appendDynamicLog(t, timeName, units.size());
+    refreshLatestSymlink(timeName);
+    // NOTE: no purge on the dynamic path --- a transient trajectory is the
+    // point; every written time is retained.
+}
+
+// ---------------------------------------------------------------------------
+void SolutionWriter::appendDynamicLog(scalar t, const std::string& timeName,
+                                      std::size_t nUnits) const
+{
+    const fs::path logp = fs::path(caseRoot_) / "solution.log";
+    const bool needHeader = !fs::exists(logp);
+    std::ofstream f(logp.string(), std::ios::out | std::ios::app);
+    if (needHeader)
+        f << "# Choupo dynamic solution log --- one line per written time "
+             "instant.\n"
+             "# The time directory IS the real physical time (s); each carries the\n"
+             "# holdup internalState (+ outlet streams where the unit has one).\n"
+             "# timeDir       time[s]                   units    written\n";
+    f << std::left
+      << std::setw(15) << timeName
+      << std::setw(26) << sci(t) << "  "
+      << std::setw(7)  << nUnits << "  "
+      << nowIso() << "\n";
+    f.flush();
+    f.close();
+    if (cfg_.flushEach) fsyncPath(logp, /*isDir=*/false);
 }
 
 // ---------------------------------------------------------------------------
