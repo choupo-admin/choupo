@@ -5,9 +5,11 @@ verbosity     3;
 
 // ---- Time integration ----
 startTime       0;        // s
-endTime         800;      // s   (~1.3x the ~600 s settling time; fills the plot)
+endTime         150;      // s   (the thermal/control transient is ~30 s fast +
+                          //      a slow ~120 s chemical tail; 150 s fills the plot
+                          //      with the stabilisation instead of a flat line)
 deltaT          1.0;      // s
-writeInterval   10;       // s   (80 frames — a smooth transient + scrubber)
+writeInterval   2;        // s   (75 frames — a smooth transient + scrubber)
 
 
 // ---------------------------------------------------------------------

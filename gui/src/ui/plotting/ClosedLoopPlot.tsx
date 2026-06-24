@@ -170,10 +170,19 @@ export function ClosedLoopPlot(props: ClosedLoopPlotProps) {
     return keep.length > 0 ? keep : undefined;
   }, [pvKey, mvKey, distKey, compKeys]);
 
-  // Force the disturbance onto the right (T) axis and relabel it as the stream
-  // property it is.  (The MV already rides right via mvVars below.)
+  // Axis assignment.  The disturbance (inlet T) shares the reactor-T (right)
+  // axis.  The MANIPULATED variable (jacket) saturates far above the PV (it
+  // slams to its 420 K clamp), so left on the same axis as the PV it stretches
+  // the range and squashes the 320->350 K stabilisation into the lower third.
+  // When the moles (left) axis is free (composition lens off) the MV gets its
+  // OWN left axis — both stories then fill their axes.  With composition shown
+  // the left axis is taken by moles, so the MV falls back to the right axis.
+  const mvOnLeft = !showComposition && !!mvKey;
   const mvVars = useMemo(
-    () => [mvKey, distKey].filter((k): k is string => !!k), [mvKey, distKey]);
+    () => (mvOnLeft ? [distKey] : [mvKey, distKey]).filter((k): k is string => !!k),
+    [mvOnLeft, mvKey, distKey]);
+  const lvVars = useMemo(
+    () => (mvOnLeft && mvKey ? [mvKey] : []), [mvOnLeft, mvKey]);
   const renameVars = useMemo(() => {
     if (!distKey) return undefined;
     const label = sigKey
@@ -257,6 +266,8 @@ export function ClosedLoopPlot(props: ClosedLoopPlotProps) {
       title="Closed loop — T(t)"
       filterVars={filterVars}
       mvVars={mvVars.length > 0 ? mvVars : undefined}
+      lvVars={lvVars.length > 0 ? lvVars : undefined}
+      leftTitle={mvOnLeft ? "MV [K]" : undefined}
       renameVars={renameVars}
       referenceLines={referenceLines}
       eventMarkers={eventMarkers}

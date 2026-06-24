@@ -101,6 +101,13 @@ export interface TrajectoryPlotProps {
   filterVars?: string[];
   /** Force these columns onto the right (T/MV) axis. */
   mvVars?: string[];
+  /** Force these columns onto the LEFT axis (e.g. the jacket MV — kept off the
+   *  reactor-T axis so its saturation spike to 420 K doesn't squash the PV into
+   *  the lower third).  Pairs with leftTitle to relabel the axis. */
+  lvVars?: string[];
+  /** Axis-title overrides (defaults: left "moles [kmol]", right "T [K]"). */
+  leftTitle?: string;
+  rightTitle?: string;
   /** Display-only trace renames (column key -> legend label).  Additive: an
    *  unlisted column keeps its raw name.  Lets the Control Room relabel the
    *  schedule controller's MV column as the inlet-T disturbance it really is. */
@@ -120,17 +127,20 @@ function classify(name: string, values: number[]): Side {
 }
 
 export function TrajectoryPlot(props: TrajectoryPlotProps) {
-  const { data, referenceLines, eventMarkers, band, ghost, filterVars, mvVars, renameVars, title } = props;
+  const { data, referenceLines, eventMarkers, band, ghost, filterVars, mvVars, lvVars,
+    leftTitle, rightTitle, renameVars, title } = props;
   const names = Object.keys(data.vars).filter(
     (n) => !filterVars || filterVars.length === 0 || filterVars.includes(n),
   );
   const forceRight = new Set(mvVars ?? []);
+  const forceLeft = new Set(lvVars ?? []);
   const tracesLeft: ReturnType<typeof makeTrace>[] = [];
   const tracesRight: ReturnType<typeof makeTrace>[] = [];
 
   names.forEach((name, idx) => {
     const ys = data.vars[name]!;
-    const side: Side = forceRight.has(name) ? "right" : classify(name, ys);
+    const side: Side = forceLeft.has(name) ? "left"
+      : forceRight.has(name) ? "right" : classify(name, ys);
     const color = PLOT_COLORS.series[idx % PLOT_COLORS.series.length]!;
     const label = renameVars?.[name] ?? name;
     const trace = makeTrace(label, data.t, ys, color, side);
@@ -203,12 +213,12 @@ export function TrajectoryPlot(props: TrajectoryPlotProps) {
         xaxis: {...darkLayout.xaxis, title: { text: "t [s]" } },
         yaxis: {
 ...darkLayout.yaxis,
-          title: { text: "moles [kmol]" },
+          title: { text: leftTitle ?? "moles [kmol]" },
         },
         yaxis2: hasRight
           ? {
               title: {
-                text: "T [K]",
+                text: rightTitle ?? "T [K]",
                 font: { color: "rgba(255,255,255,0.75)" },
               },
               overlaying: "y",
