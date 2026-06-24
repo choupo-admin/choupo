@@ -159,6 +159,27 @@ Build order (Pareto, on data the engine already produces): Fase 1 = xy
 multi-curve + 2D contour/isolines + binary x-y/T-x-y; Fase 2 = ternary (needs a
 composition-simplex sweep added to `choupoProps`); 3D surface optional.
 
+**Explorer chrome budget — the NO-REBLOAT invariant (ratified 2026-06-24).**
+The plot is the one primary surface. There are exactly **three chrome homes**:
+(1) the **collapsible left SET rail** (component authoring only — folds to a
+28px re-open tab, lossless of the dragged width, `[` toggles); (2) **ONE top
+toolbar row, `wrap: nowrap`, which must NEVER grow a second row**; (3) the
+**collapsible honesty footer** below the plot (alerts + validity readouts stay
+VISIBLE — numerical-honesty credo — but a `⚠ N` pill folds them so they never
+push the plot down). Any new control goes into the toolbar as a
+menu-button/popover, or into an existing popover — **NEVER a new stacked row
+above the plot.** A control that would force the toolbar to wrap is wrong by
+construction: fold it into a popover. The plot's top-left origin is FIXED and
+must not move when lenses or options change (the PURE/MIXTURE badge, the SET
+pill and the plain-words caption ride as on-plot top-left overlays, not pre-plot
+rows). `wrap: nowrap` is the *mechanical* guard that makes re-bloat physically
+impossible without consciously breaking the rule. **No STEP-1/2/3 wizard
+labels** — the regions are self-evident spatially (a numbered wizard is the
+forbidden setup-dialog smell, §5). The one exception that stays INLINE rather
+than folding into a popover: a control that *forks the curve* (the scaling
+Davies/Pitzer activity model; the steam saturation/isobar mode) — because
+SEEING the fork is the lesson.
+
 ## 4. Consolidated patterns
 
 ### Selection model

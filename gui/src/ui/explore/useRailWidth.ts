@@ -18,6 +18,12 @@ export const RAIL_MIN = 200;     // below this, search + a checkbox row stop fit
 export const RAIL_MAX = 460;     // past this the plot starves with no catalogue benefit
 export const RAIL_DEFAULT = 240; // current width, and the double-click reset target
 export const RAIL_KEY = "choupo.explore.railWidth";
+// Collapse is ORTHOGONAL to the dragged width (Claude.ai-style fold-to-edge):
+// the panel renders at width 0 when collapsed but `width` keeps the last
+// dragged value, so re-opening is lossless — the 380px browser comes back.
+// Persisted under its own global key (the Explorer is a catalogue scratchpad,
+// not case-keyed — mirrors RAIL_KEY's rationale).  Default = EXPANDED.
+export const RAIL_COLLAPSED_KEY = "choupo.explore.railCollapsed";
 
 /** Clamp a candidate width to the rail's [MIN, MAX] range. */
 export function clampRailWidth(w: number): number {
@@ -48,9 +54,33 @@ export function saveRailWidth(w: number): void {
   }
 }
 
+/** Read the persisted collapsed flag (default EXPANDED = false). */
+export function loadRailCollapsed(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(RAIL_COLLAPSED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/** Persist the collapsed flag under the global key.  Best-effort. */
+export function saveRailCollapsed(c: boolean): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(RAIL_COLLAPSED_KEY, c ? "1" : "0");
+  } catch {
+    /* storage blocked — collapse stays session-only */
+  }
+}
+
 export interface RailWidthHandle {
-  /** Current rail width (px), clamped. */
+  /** Current rail width (px), clamped.  Kept even while collapsed (lossless). */
   width: number;
+  /** Whether the rail is folded to width 0 (the dragged width is preserved). */
+  collapsed: boolean;
+  /** Fold / unfold the rail — bind to the chevron + the re-open tab + `[`. */
+  toggleCollapsed: () => void;
   /** Start a drag — bind to the splitter's onPointerDown. */
   onPointerDown: (e: React.PointerEvent) => void;
   /** Snap back to the default — bind to the splitter's onDoubleClick. */
@@ -64,8 +94,13 @@ export interface RailWidthHandle {
  */
 export function useRailWidth(): RailWidthHandle {
   const [width, setWidth] = useState<number>(loadRailWidth);
+  const [collapsed, setCollapsed] = useState<boolean>(loadRailCollapsed);
   const rafRef = useRef<number | null>(null);
   const pending = useRef<number>(width);
+
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed((c) => { const next = !c; saveRailCollapsed(next); return next; });
+  }, []);
 
   const reset = useCallback(() => {
     pending.current = RAIL_DEFAULT;
@@ -113,5 +148,5 @@ export function useRailWidth(): RailWidthHandle {
     el.addEventListener("pointercancel", onUp);
   }, []);
 
-  return { width, onPointerDown, reset };
+  return { width, collapsed, toggleCollapsed, onPointerDown, reset };
 }

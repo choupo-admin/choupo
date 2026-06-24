@@ -22,9 +22,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActionIcon, Alert, Badge, Box, Button, Chip, Code, Collapse, CopyButton, Group, Loader, NumberInput,
-  Popover, Select, Stack, Switch, Text, Tooltip,
+  Popover, SegmentedControl, Select, Stack, Switch, Text, Tooltip,
 } from "@mantine/core";
-import { IconAdjustmentsHorizontal, IconBook, IconExternalLink } from "@tabler/icons-react";
+import { useReducedMotion } from "@mantine/hooks";
+import {
+  IconAdjustmentsHorizontal, IconBook, IconChevronDown, IconChevronLeft, IconChevronRight,
+  IconExternalLink,
+} from "@tabler/icons-react";
 
 import { resolveAdapter } from "../adapters/index.js";
 import { EXPLORE_OUTPUT, synthesizeExploreCase, type ExploreSpec } from "../case/exploreSynth.js";
@@ -101,6 +105,15 @@ const PLOT_TYPES: PlotType[] = [
   { id: "steam", label: "Steam tables (IF97)", min: 1, max: 1, vle: false,
     why: "IF97 is the water formulation — select water alone" },
 ];
+
+// Short lens labels for the toolbar SegmentedControl (the full label rides the
+// tooltip).  Keeps the one toolbar row from wrapping while the long names stay
+// discoverable on hover.
+const LENS_SHORT: Record<PlotKind, string> = {
+  scan: "scan", phase: "P-T", txy: "T-x-y", gamma: "γ(x)", mccabe: "McCabe",
+  binaryLle: "LLE", ternary: "ternary", ternaryLle: "tern.LLE",
+  psychro: "psychro", scaling: "scaling", steam: "steam",
+};
 
 // PURE = per-component intrinsic properties the engine resolves as <prop>_<c>:
 // one curve per compound, composition has NO effect.  Everything else is a
@@ -340,6 +353,11 @@ export function ExploreWorkspace() {
   // must not be swallowed).
   const [opAdvisories, setOpAdvisories] = useState<string[]>([]);
   const [snippetOpen, setSnippetOpen] = useState(false);
+  // The honesty footer (alerts + validity readouts) collapses to a `⚠ N` pill
+  // so it never pushes the plot's top origin down — but it stays VISIBLE
+  // (numerical-honesty credo), defaulting OPEN whenever there is something to
+  // say.  A user can fold it; a NEW alert re-expands it (see the effect below).
+  const [footerOpen, setFooterOpen] = useState(true);
 
   // Display units (the TopBar Units menu) — state stays canonical SI; the inputs
   // convert for DISPLAY only, so the synthesized propsDict is always SI.
@@ -811,14 +829,24 @@ export function ExploreWorkspace() {
 
   // F1 = open the Theory Guide at the section matching the active plot (a
   // keyboard accelerator; the visible "Theory" link is the primary path).
+  // `[` = fold / unfold the SET rail (guarded: ignored while a text field is
+  // focused, so typing "[" into the search box never collapses the browser).
   const helpUrl = theoryUrl(plotType, property);
+  const toggleCollapsed = rail.toggleCollapsed;
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "F1") { e.preventDefault(); window.open(helpUrl, "_blank"); }
+      if (e.key === "F1") { e.preventDefault(); window.open(helpUrl, "_blank"); return; }
+      if (e.key === "[" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        const t = e.target as HTMLElement | null;
+        const tag = t?.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || t?.isContentEditable) return;
+        e.preventDefault();
+        toggleCollapsed();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [helpUrl]);
+  }, [helpUrl, toggleCollapsed]);
 
   // Components that can't yield the chosen pure property (so their curve won't
   // appear) — surfaced as a note instead of a silent gap.  Only Psat is
@@ -887,6 +915,12 @@ export function ExploreWorkspace() {
       : null;
   })();
 
+  // The honesty footer re-expands whenever a NEW alert appears (an error,
+  // advisory, or model-lie warning), so a folded footer never SWALLOWS a fresh
+  // honesty signal — the student always SEES the new flag.
+  const hasAlert = !!err || !!activeReason || opAdvisories.length > 0 || !!idealLieWarning || !!lleInTxy;
+  useEffect(() => { if (hasAlert) setFooterOpen(true); }, [hasAlert]);
+
   // context: which model pickers are physically relevant for the active plot
   const showGamma = isVle || plotType === "ternary";       // γ model drives VLE + bubble-T (LLE uses UNIFAC)
   // EOS picker: ONLY for properties that actually consume the EOS (positive
@@ -951,6 +985,7 @@ export function ExploreWorkspace() {
     return (
       <Box style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
         <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} rail={rail} unlockLine={unlockLine} />
+        {rail.collapsed && <RailReopenTab count={selected.length} onExpand={rail.toggleCollapsed} />}
         <EstimateForm opened={estimateOpen} onClose={() => setEstimateOpen(false)} prefillName={estimatePrefill} />
         <Box style={{ flex: 1, minWidth: 0, height: "100%", display: "flex",
           alignItems: "center", justifyContent: "center", padding: 24 }}>
@@ -969,371 +1004,427 @@ export function ExploreWorkspace() {
     );
   }
 
+  // The mode pill (PURE vs MIXTURE) becomes an ON-PLOT overlay (top-left) — it
+  // annotates the curve's state, so it rides ON the curve rather than as a
+  // pre-plot row.  Computed once, consumed in the plot region below.
+  const modeBadge = plotType === "scan" ? (
+    <Badge size="sm" variant="light" tt="none"
+      color={scanMode === "pure" ? "teal" : "accent"}>
+      {scanMode === "pure"
+        ? "PURE · one curve per compound · composition ignored"
+        : selected.length >= 2
+          ? `MIXTURE · equimolar (xᵢ = 1/${selected.length})`
+          : "MIXTURE · single component (x = 1.0)"}
+    </Badge>
+  ) : null;
+
   return (
     <Box style={{ position: "absolute", inset: 0, display: "flex", minHeight: 0 }}>
       <LeftRail selected={selected} onAdd={addComp} onRemove={removeComp} vleContext={isVle || isTernary} caseComponents={caseList} onEstimate={openEstimate} rail={rail} unlockLine={unlockLine} />
+      {rail.collapsed && <RailReopenTab count={selected.length} onExpand={rail.toggleCollapsed} />}
       <EstimateForm opened={estimateOpen} onClose={() => setEstimateOpen(false)} prefillName={estimatePrefill} />
 
-      {/* RIGHT — the SET | LENS | VIEW reading rail (EXPLORER-ux-redesign §1).
-          LENS = the lens strip + the active lens's controls in their OWN scroll
-          (evacuated off the plot's vertical budget); VIEW = the plot at flex:1
-          with the run-honesty alerts pinned above it.  No wizard / Next gate —
-          all three regions stay live and re-flow reactively. */}
+      {/* RIGHT — the VIEW column.  Chrome lives in exactly THREE homes (see the
+          NO-REBLOAT invariant below): (1) the collapsible left SET rail; (2) the
+          ONE non-wrapping toolbar right below; (3) the collapsible honesty
+          footer under the plot.  The plot is the one primary surface — flex:1,
+          its top-left origin FIXED (it never lurches when a lens or option
+          changes).
+
+          ───────────────────────────────────────────────────────────────────
+          NO-REBLOAT RULE (invariant — do NOT break).  Any NEW control goes into
+          the toolbar as a menu-button / popover, or into an existing popover —
+          NEVER a new stacked row above the plot.  The toolbar is `wrap:nowrap`:
+          a control that would force it to wrap is wrong by construction — fold
+          it into a popover.  The plot's top edge must not move when lenses or
+          options change.  (See docs/ai/gui-credo.md, Explorer clause.)
+          ─────────────────────────────────────────────────────────────────── */}
       <Box style={{ flex: 1, minWidth: 0, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-        {/* LENS — the strip + the active lens's controls, with their OWN scroll
-            (capped to ~45% so a dense control band can never starve the plot). */}
-        <Box style={{ flex: "0 1 auto", maxHeight: "45%", overflow: "auto", padding: 16, paddingBottom: 8 }}>
-        <Stack gap="sm">
-          <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>STEP 2 · LENS</Text>
-          {/* plot-type strip: only the views that APPLY to the current selection
-              are shown -- a non-applicable view (steam tables for a non-water
-              component, a binary plot for one compound, ...) DISAPPEARS rather
-              than sitting greyed (Vitor 2026-06-15).  The currently-active view
-              is kept even if it just became invalid, so the toggle never
-              vanishes under you -- it stays disabled with its reason.  A lens
-              that NEWLY materialises pulses for 600ms (the unlock, felt). */}
-          <Group gap={6}>
-            {PLOT_TYPES.filter((pt) => reasonFor(pt) === null || pt.id === plotType).map((pt) => {
-              const reason = reasonFor(pt);
-              const pulse = pulsing.has(pt.id);
-              const btn = (
-                <Button key={pt.id} size="xs" variant={pt.id === plotType ? "filled" : "default"}
-                  color="accent" disabled={!!reason} onClick={() => setPlotType(pt.id)}
-                  className={pulse ? "choupo-lens-pulse" : undefined}>
-                  {pt.label}
-                </Button>
-              );
-              return reason ? <Tooltip key={pt.id} label={reason} withArrow multiline w={240}>{<span>{btn}</span>}</Tooltip> : btn;
-            })}
-          </Group>
+        {/* THE ONE TOOLBAR — non-wrapping, ~44px.  Left→right: the lens
+            SegmentedControl, the active lens's curve-moving controls (menu-
+            buttons + inline fields + the analysis/steam popovers), the ⚙
+            overflow, then (right-pinned) Theory + the McCabe pop-out. */}
+        <Box style={{
+          flexShrink: 0, minHeight: 44, padding: "6px 12px", overflowX: "auto", overflowY: "hidden",
+          borderBottom: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+        }}>
+        <Group gap="sm" wrap="nowrap" align="center" style={{ minWidth: "fit-content" }}>
+          {/* lens picker — SegmentedControl (same idiom as McCabe's
+              Construction|Sensitivity).  Gating UNCHANGED: only the views that
+              APPLY are shown; the active view stays even if it just became
+              invalid (so the control never vanishes under you).  A lens that
+              NEWLY materialises pulses for ~600ms (the unlock, felt) via the
+              accent ring on the wrapper. */}
+          {(() => {
+            const lenses = PLOT_TYPES.filter((pt) => reasonFor(pt) === null || pt.id === plotType);
+            const anyPulse = lenses.some((pt) => pulsing.has(pt.id));
+            return (
+              <Box className={anyPulse ? "choupo-lens-pulse" : undefined} style={{ borderRadius: 6 }}>
+                <SegmentedControl size="xs" color="accent" value={plotType}
+                  onChange={(v) => setPlotType(v as PlotKind)}
+                  data={lenses.map((pt) => ({
+                    value: pt.id,
+                    label: (
+                      <Tooltip label={pt.label} withArrow openDelay={400}>
+                        <span>{LENS_SHORT[pt.id] ?? pt.label}</span>
+                      </Tooltip>
+                    ),
+                  }))} />
+              </Box>
+            );
+          })()}
 
-          {/* loud mode pill — the pure-vs-mixture distinction the forum flagged
-              as too easy to miss in the subtitle alone */}
           {plotType === "scan" && (
-            <Badge size="sm" variant="light" tt="none" w="fit-content"
-              color={scanMode === "pure" ? "teal" : "accent"}>
-              {scanMode === "pure"
-                ? "PURE-component · one curve per compound · composition ignored"
-                : selected.length >= 2
-                  ? `MIXTURE scalar · equimolar (xᵢ = 1/${selected.length})`
-                  : "MIXTURE scalar · single component (x = 1.0)"}
-            </Badge>
-          )}
-          <Group gap="xs" align="center" wrap="nowrap">
-            <Text size="xs" c="dimmed" style={{ flex: 1, minWidth: 0 }}>{subtitle}</Text>
-            <Tooltip label="Open the matching section of the Theory Guide (or press F1)" withArrow>
-              <Button component="a" href={helpUrl} target="_blank" rel="noopener noreferrer"
-                variant="subtle" size="compact-xs" leftSection={<IconBook size={14} />}>
-                Theory
-              </Button>
-            </Tooltip>
-          </Group>
-
-          <Group align="end" gap="sm" wrap="wrap">
-            {plotType === "scan" && (
-              <>
-                <Select label="Property"
+            <>
+              <ToolField label="Property">
+                <Select size="xs"
                   data={[
                     { group: "pure component", items: PURE_PROPS },
                     { group: "mixture scalar", items: MIXTURE_PROPS },
                     { group: "transport (no EOS)",
                       items: TRANSPORT_PROPS.map((v) => ({ value: v, label: TRANSPORT_LABEL[v] ?? v })) },
                   ]}
-                  value={property} onChange={(v) => setProperty(v ?? "Psat")} w={190} allowDeselect={false} />
-                <Select label="Axis" data={["T", "P"]} value={axisVar}
-                  onChange={(v) => setAxisVar((v as "T" | "P") ?? "T")} w={70} allowDeselect={false} />
-                <NumberInput label={`from (${axisUnit})`} value={axisToDisp(fromV)}
-                  onChange={(v) => setFromV(axisToSI(num(v, axisToDisp(fromV))))} w={110} />
-                <NumberInput label={`to (${axisUnit})`} value={axisToDisp(toV)}
-                  onChange={(v) => setToV(axisToSI(num(v, axisToDisp(toV))))} w={110} />
-                {axisVar === "P" && <NumberInput label={`T (${temperatureLabel(Tu)})`} value={kToDisplay(fixedT, Tu)}
-                  onChange={(v) => setFixedT(parseTemperature(num(v, kToDisplay(fixedT, Tu)), Tu))} w={100} />}
-              </>
-            )}
-            {plotType === "scaling" && (
-              <>
+                  value={property} onChange={(v) => setProperty(v ?? "Psat")} w={170} allowDeselect={false} />
+              </ToolField>
+              <ToolField label="Axis">
+                <Select size="xs" data={["T", "P"]} value={axisVar}
+                  onChange={(v) => setAxisVar((v as "T" | "P") ?? "T")} w={64} allowDeselect={false} />
+              </ToolField>
+              <ToolField label={`from (${axisUnit})`}>
+                <NumberInput size="xs" value={axisToDisp(fromV)}
+                  onChange={(v) => setFromV(axisToSI(num(v, axisToDisp(fromV))))} w={96} />
+              </ToolField>
+              <ToolField label={`to (${axisUnit})`}>
+                <NumberInput size="xs" value={axisToDisp(toV)}
+                  onChange={(v) => setToV(axisToSI(num(v, axisToDisp(toV))))} w={96} />
+              </ToolField>
+              {axisVar === "P" && (
+                <ToolField label={`T (${temperatureLabel(Tu)})`}>
+                  <NumberInput size="xs" value={kToDisplay(fixedT, Tu)}
+                    onChange={(v) => setFixedT(parseTemperature(num(v, kToDisplay(fixedT, Tu)), Tu))} w={90} />
+                </ToolField>
+              )}
+            </>
+          )}
+          {plotType === "scaling" && (
+            <>
+              {/* The activity-model fork (Davies/Pitzer) stays INLINE as a
+                  segment — it is the one scaling control that FORKS the SI
+                  curve, and SEEING the fork is the lesson.  Everything else in
+                  the water analysis folds into the "Water analysis ▾" popover. */}
+              <Tooltip label="Davies (extended Debye-Hückel): single I-controlled curve, quantitative to I ≈ 0.5 mol/kg, indicative beyond.  Pitzer HMW: ion-specific virial interactions (e.g. the Ca-SO4 2:2 pairing), validated vs HMW-1984 seawater to I ≈ 6 mol/kg.  The SI curves track at low I and FORK in brine — the recovery decision flips on the model." multiline w={320} withArrow>
+                <Box>
+                  <SegmentedControl size="xs" color="accent" value={scalingActivity}
+                    onChange={(v) => setScalingActivity((v as "davies" | "pitzer") ?? "davies")}
+                    data={[
+                      { value: "davies", label: "Davies" },
+                      { value: "pitzer", label: "Pitzer" },
+                    ]} />
+                </Box>
+              </Tooltip>
+              <ToolMenu label="Water analysis" value="" wide>
+                <Stack gap="xs" style={{ width: 320 }}>
+                  {/* The water analysis: total (element) molalities; 0 drops the
+                      ion.  Defaults = the tutorial's brackish groundwater. */}
                 {/* The water analysis: total (element) molalities; 0 drops the
                     ion.  Defaults = the tutorial's brackish groundwater. */}
-                <Tooltip label="analysis units — mg/L converts to molality at ρ ≈ 1 kg/L (dilute); the synthesized dict always carries mol/kg water" multiline w={260} withArrow>
-                  <Select label="analysis" data={["mg/L", "mol/kg"]} value={ionUnit}
-                    onChange={(v) => setIonUnit((v as "mg/L" | "mol/kg") ?? "mg/L")} w={92} allowDeselect={false} />
-                </Tooltip>
-                {SCALING_IONS.map(({ ion, mw }) => (
-                  <NumberInput key={ion} label={ion} w={86} min={0}
-                    value={ionToDisp(ionTotals[ion] ?? 0, mw)}
-                    step={ionUnit === "mg/L" ? 10 : 0.001}
-                    decimalScale={ionUnit === "mg/L" ? 2 : 6}
-                    onChange={(v) => setIonTotals((t) => ({
-                      ...t,
-                      [ion]: Math.max(0, ionToMolal(num(v, ionToDisp(t[ion] ?? 0, mw)), mw)),
-                    }))} />
-                ))}
-                <Tooltip label="solved (electroneutrality): H+ joins the unknowns, charge balance closes the system per point — the engine announces the feed charge imbalance the solved pH absorbs.  given: the numeric pH is held across the scan (no degassing / alkalinity shift)." multiline w={300} withArrow>
-                  <Select label="pH" w={190} allowDeselect={false}
-                    data={[
-                      { value: "solve", label: "solved (electroneutrality)" },
-                      { value: "given", label: "given" },
-                    ]}
-                    value={scalingPHMode}
-                    onChange={(v) => setScalingPHMode((v as "solve" | "given") ?? "solve")} />
-                </Tooltip>
-                <NumberInput label="pH value" value={scalingPH} w={80} min={0} max={14} step={0.1}
-                  disabled={scalingPHMode === "solve"}
-                  onChange={(v) => setScalingPH(num(v, scalingPH))} />
-                <Tooltip label="closed: every total (DIC included) concentrates as feed/(1−r).  open (CO₂): the concentrate equilibrates with the atmosphere — a(CO2aq) pinned by Henry, DIC a solved outcome (degassing / invasion allowed)." multiline w={300} withArrow>
-                  <Select label="system" w={110} allowDeselect={false}
-                    data={[
-                      { value: "closed", label: "closed" },
-                      { value: "open", label: "open (CO₂)" },
-                    ]}
-                    value={scalingAtm}
-                    onChange={(v) => setScalingAtm((v as "closed" | "open") ?? "closed")} />
-                </Tooltip>
-                {scalingAtm === "open" && (
-                  <NumberInput label="pCO₂ (atm)" value={scalingPCO2} w={110} min={0}
-                    step={1e-4} decimalScale={6}
-                    onChange={(v) => setScalingPCO2(Math.max(0, num(v, scalingPCO2)))} />
-                )}
-                <NumberInput label={`T (${temperatureLabel(Tu)})`} w={86}
-                  value={Number(kToDisplay(scalingT, Tu).toFixed(2))}
-                  onChange={(v) => setScalingT(parseTemperature(num(v, kToDisplay(scalingT, Tu)), Tu))} />
-                <Tooltip label="Davies (extended Debye-Hückel): single I-controlled curve, quantitative to I ≈ 0.5 mol/kg, indicative beyond.  Pitzer HMW: ion-specific virial interactions (e.g. the Ca-SO4 2:2 pairing), validated vs HMW-1984 seawater to I ≈ 6 mol/kg.  The SI curves track at low I and FORK in brine — the recovery decision flips on the model." multiline w={320} withArrow>
-                  <Select label="activity" w={190} allowDeselect={false}
-                    data={[
-                      { value: "davies", label: "Davies (to I~0.5)" },
-                      { value: "pitzer", label: "Pitzer HMW (brines, to I~6)" },
-                    ]}
-                    value={scalingActivity}
-                    onChange={(v) => setScalingActivity((v as "davies" | "pitzer") ?? "davies")} />
-                </Tooltip>
-                <Tooltip label="off: SI only — how supersaturated each mineral is vs recovery (the propensity curve).  on: let the scaling minerals (calcite, gypsum) precipitate to SI = 0 — the engine reports SIeq_<m> (clamped at 0), n_<m> and scale_<m> (the deposit curve).  EQUILIBRIUM CEILING: the thermodynamic maximum (SI→0, infinite time, no nucleation barrier), NOT a kinetic deposit prediction — real scale ≤ ceiling, antiscalants act on kinetics this cannot see." multiline w={320} withArrow>
-                  <Select label="equilibrium" w={210} allowDeselect={false}
-                    data={[
-                      { value: "off", label: "off — SI only (propensity)" },
-                      { value: "on", label: "on — precipitate to SI = 0" },
-                    ]}
-                    value={scalingEquil ? "on" : "off"}
-                    onChange={(v) => setScalingEquil(v === "on")} />
-                </Tooltip>
-                {scalingEquil && (
-                  <Tooltip label="feed volumetric flow — enables the kg/day scale-rate column (kgday_<m>).  Optional even with equilibrium on: without it the engine still gives the precipitated amount in mol/kg." multiline w={280} withArrow>
-                    <NumberInput label="feed flow (m³/h)" value={scalingFeedFlow} w={120} min={0} step={1}
-                      onChange={(v) => setScalingFeedFlow(Math.max(0, num(v, scalingFeedFlow)))} />
+                  <Tooltip label="analysis units — mg/L converts to molality at ρ ≈ 1 kg/L (dilute); the synthesized dict always carries mol/kg water" multiline w={260} withArrow>
+                    <Select label="analysis" data={["mg/L", "mol/kg"]} value={ionUnit}
+                      onChange={(v) => setIonUnit((v as "mg/L" | "mol/kg") ?? "mg/L")} allowDeselect={false} />
                   </Tooltip>
-                )}
-                <NumberInput label="recovery from" value={recFrom} w={110} min={0} max={0.98} step={0.05}
-                  onChange={(v) => setRecFrom(num(v, recFrom))} />
-                <NumberInput label="to" value={recTo} w={86} min={0.01} max={0.99} step={0.05}
-                  onChange={(v) => setRecTo(num(v, recTo))} />
-              </>
-            )}
-            {plotType === "steam" && (() => {
-              // Per-mode T range (different defaults + validity), shared inputs.
-              const sFrom = steamMode === "saturation" ? satFrom : isoFrom;
-              const sTo = steamMode === "saturation" ? satTo : isoTo;
-              const setSFrom = steamMode === "saturation" ? setSatFrom : setIsoFrom;
-              const setSTo = steamMode === "saturation" ? setSatTo : setIsoTo;
-              const views = steamMode === "saturation" ? STEAM_SAT_VIEWS : STEAM_ISO_VIEWS;
-              const propPick = views[steamProp] ? steamProp : "h";
-              return (
-                <>
-                  <Tooltip label="saturation curve: the region-4 line with the f/g property pairs (regions 1/2 evaluated on the line, valid 0.01–350 °C).  isobar: h, s, v, cp vs T at fixed P — crossing Tsat jumps the properties." multiline w={280} withArrow>
-                    <Select label="mode" w={150} allowDeselect={false}
+                  <Group gap="xs" grow>
+                    {SCALING_IONS.map(({ ion, mw }) => (
+                      <NumberInput key={ion} label={ion} min={0}
+                        value={ionToDisp(ionTotals[ion] ?? 0, mw)}
+                        step={ionUnit === "mg/L" ? 10 : 0.001}
+                        decimalScale={ionUnit === "mg/L" ? 2 : 6}
+                        onChange={(v) => setIonTotals((t) => ({
+                          ...t,
+                          [ion]: Math.max(0, ionToMolal(num(v, ionToDisp(t[ion] ?? 0, mw)), mw)),
+                        }))} />
+                    ))}
+                  </Group>
+                  <Group gap="xs" grow>
+                    <Tooltip label="solved (electroneutrality): H+ joins the unknowns, charge balance closes the system per point — the engine announces the feed charge imbalance the solved pH absorbs.  given: the numeric pH is held across the scan (no degassing / alkalinity shift)." multiline w={300} withArrow>
+                      <Select label="pH" allowDeselect={false}
+                        data={[
+                          { value: "solve", label: "solved (electroneutrality)" },
+                          { value: "given", label: "given" },
+                        ]}
+                        value={scalingPHMode}
+                        onChange={(v) => setScalingPHMode((v as "solve" | "given") ?? "solve")} />
+                    </Tooltip>
+                    <NumberInput label="pH value" value={scalingPH} min={0} max={14} step={0.1}
+                      disabled={scalingPHMode === "solve"}
+                      onChange={(v) => setScalingPH(num(v, scalingPH))} />
+                  </Group>
+                  <Group gap="xs" grow>
+                    <Tooltip label="closed: every total (DIC included) concentrates as feed/(1−r).  open (CO₂): the concentrate equilibrates with the atmosphere — a(CO2aq) pinned by Henry, DIC a solved outcome (degassing / invasion allowed)." multiline w={300} withArrow>
+                      <Select label="system" allowDeselect={false}
+                        data={[
+                          { value: "closed", label: "closed" },
+                          { value: "open", label: "open (CO₂)" },
+                        ]}
+                        value={scalingAtm}
+                        onChange={(v) => setScalingAtm((v as "closed" | "open") ?? "closed")} />
+                    </Tooltip>
+                    {scalingAtm === "open" && (
+                      <NumberInput label="pCO₂ (atm)" value={scalingPCO2} min={0}
+                        step={1e-4} decimalScale={6}
+                        onChange={(v) => setScalingPCO2(Math.max(0, num(v, scalingPCO2)))} />
+                    )}
+                    <NumberInput label={`T (${temperatureLabel(Tu)})`}
+                      value={Number(kToDisplay(scalingT, Tu).toFixed(2))}
+                      onChange={(v) => setScalingT(parseTemperature(num(v, kToDisplay(scalingT, Tu)), Tu))} />
+                  </Group>
+                  <Tooltip label="off: SI only — how supersaturated each mineral is vs recovery (the propensity curve).  on: let the scaling minerals (calcite, gypsum) precipitate to SI = 0 — the engine reports SIeq_<m> (clamped at 0), n_<m> and scale_<m> (the deposit curve).  EQUILIBRIUM CEILING: the thermodynamic maximum (SI→0, infinite time, no nucleation barrier), NOT a kinetic deposit prediction — real scale ≤ ceiling, antiscalants act on kinetics this cannot see." multiline w={320} withArrow>
+                    <Select label="equilibrium" allowDeselect={false}
                       data={[
-                        { value: "saturation", label: "saturation curve" },
-                        { value: "isobar", label: "isobar" },
+                        { value: "off", label: "off — SI only (propensity)" },
+                        { value: "on", label: "on — precipitate to SI = 0" },
                       ]}
-                      value={steamMode}
-                      onChange={(v) => setSteamMode((v as "saturation" | "isobar") ?? "saturation")} />
+                      value={scalingEquil ? "on" : "off"}
+                      onChange={(v) => setScalingEquil(v === "on")} />
                   </Tooltip>
-                  {steamMode === "isobar" && (
-                    <NumberInput label={`P (${pressureLabel(Pu)})`} value={paToDisplay(steamP, Pu)} w={100}
-                      onChange={(v) => setSteamP(parsePressure(num(v, paToDisplay(steamP, Pu)), Pu))} />
+                  {scalingEquil && (
+                    <Tooltip label="feed volumetric flow — enables the kg/day scale-rate column (kgday_<m>).  Optional even with equilibrium on: without it the engine still gives the precipitated amount in mol/kg." multiline w={280} withArrow>
+                      <NumberInput label="feed flow (m³/h)" value={scalingFeedFlow} min={0} step={1}
+                        onChange={(v) => setScalingFeedFlow(Math.max(0, num(v, scalingFeedFlow)))} />
+                    </Tooltip>
                   )}
-                  <NumberInput label={`from (${temperatureLabel(Tu)})`} w={110}
-                    value={Number(kToDisplay(sFrom, Tu).toFixed(2))}
-                    onChange={(v) => setSFrom(parseTemperature(num(v, kToDisplay(sFrom, Tu)), Tu))} />
-                  <NumberInput label={`to (${temperatureLabel(Tu)})`} w={110}
-                    value={Number(kToDisplay(sTo, Tu).toFixed(2))}
-                    onChange={(v) => setSTo(parseTemperature(num(v, kToDisplay(sTo, Tu)), Tu))} />
-                  <Tooltip label="one property family at a time — the full table mixes magnitudes (psat ~10⁷ Pa beside v_f ~10⁻³ m³/kg) that flatten each other on a shared axis" multiline w={260} withArrow>
-                    <Select label="property" w={150} allowDeselect={false}
-                      data={Object.entries(views).map(([value, vw]) => ({ value, label: vw.label }))}
-                      value={propPick}
-                      onChange={(v) => setSteamProp(v ?? "h")} />
-                  </Tooltip>
-                </>
-              );
-            })()}
-            {/* resolution / performance knobs tucked into a ⚙ popover — not
-                the physics, so they don't clutter the main row.  For the
-                psychrometric chart EVERY knob lives here (the chart fills the
-                row): range, humidity, saturation-line spacing, y-scale. */}
-            <Popover position="bottom-end" withArrow shadow="md">
-              <Popover.Target>
-                <Tooltip label={plotType === "psychro" ? "chart options" : "resolution & display options"} withArrow>
-                  <ActionIcon variant="default" size="lg" aria-label="options" style={{ alignSelf: "flex-end" }}>
-                    <IconAdjustmentsHorizontal size={16} />
-                  </ActionIcon>
-                </Tooltip>
-              </Popover.Target>
-              <Popover.Dropdown>
-                <Stack gap="xs">
-                  {plotType === "psychro" && (
-                    <>
-                      <Group gap="xs" grow>
-                        <NumberInput label={`T from (${temperatureLabel(Tu)})`} value={Number(kToDisplay(tFrom, Tu).toFixed(1))}
-                          step={5} decimalScale={1}
-                          onChange={(v) => setTFrom(parseTemperature(num(v, kToDisplay(tFrom, Tu)), Tu))} />
-                        <NumberInput label={`T to (${temperatureLabel(Tu)})`} value={Number(kToDisplay(tTo, Tu).toFixed(1))}
-                          step={5} decimalScale={1}
-                          onChange={(v) => setTTo(parseTemperature(num(v, kToDisplay(tTo, Tu)), Tu))} />
-                      </Group>
-                      <NumberInput label={`P (${pressureLabel(Pu)})`} value={paToDisplay(fixedP, Pu)}
-                        onChange={(v) => setFixedP(parsePressure(num(v, paToDisplay(fixedP, Pu)), Pu))} w={260} />
-                      <Group gap="xs" grow>
-                        <NumberInput label="RH from (%)" value={rhFrom} min={0} max={99}
-                          onChange={(v) => setRhFrom(num(v, rhFrom))} />
-                        <NumberInput label="RH to (%)" value={rhTo} min={1} max={99}
-                          onChange={(v) => setRhTo(num(v, rhTo))} />
-                        <NumberInput label="RH step (%)" value={rhStep} min={1} max={50}
-                          onChange={(v) => setRhStep(num(v, rhStep))} />
-                      </Group>
-                      <NumberInput label={`ΔT between sat. lines (${temperatureLabel(Tu)})`} value={wbStep} min={5} max={50} step={5}
-                        onChange={(v) => setWbStep(num(v, wbStep))} w={260}
-                        description="spacing of the wet-bulb / adiabatic-saturation anchor lines" />
-                      <NumberInput label="Y max (0=auto)" value={psyYMax} min={0} step={0.05} decimalScale={3}
-                        onChange={(v) => setPsyYMax(num(v, psyYMax))} w={260}
-                        description="auto = drying band; raise to see full saturation" />
-                    </>
-                  )}
-                  <NumberInput label={isTernary ? "grid (intervals per edge)" : "points"} value={nPts}
-                    onChange={(v) => setNPts(num(v, nPts))} w={260} min={2}
-                    description={isTernary ? "more = finer triangle, slower"
-                      : plotType === "scaling" ? "recovery points across the scan"
-                      : "samples along the axis"} />
-                  {plotType === "ternaryLle" && (
-                    <NumberInput label="tie-line stride" value={tieStride}
-                      onChange={(v) => setTieStride(num(v, tieStride))} w={260} min={1}
-                      description="draw a tie-line every Nth split node (higher = fewer lines)" />
-                  )}
+                  <Group gap="xs" grow>
+                    <NumberInput label="recovery from" value={recFrom} min={0} max={0.98} step={0.05}
+                      onChange={(v) => setRecFrom(num(v, recFrom))} />
+                    <NumberInput label="to" value={recTo} min={0.01} max={0.99} step={0.05}
+                      onChange={(v) => setRecTo(num(v, recTo))} />
+                  </Group>
                 </Stack>
-              </Popover.Dropdown>
-            </Popover>
-            {plotType === "ternaryLle" && <NumberInput label={`T (${temperatureLabel(Tu)})`} value={kToDisplay(fixedT, Tu)}
-              onChange={(v) => setFixedT(parseTemperature(num(v, kToDisplay(fixedT, Tu)), Tu))} w={100} />}
-            {(isVle || isTernary || (plotType === "scan" && axisVar === "T")) && <NumberInput label={`P (${pressureLabel(Pu)})`} value={paToDisplay(fixedP, Pu)}
-              onChange={(v) => setFixedP(parsePressure(num(v, paToDisplay(fixedP, Pu)), Pu))} w={100} />}
-            {showGamma && (
-              <Tooltip label="liquid activity model: ideal = Raoult (no azeotrope); NRTL/Wilson auto-resolve curated binary pairs by name, else that pair is ideal; UNIFAC is PREDICTIVE (γ from molecular groups, no fitted pairs) — a component without a group decomposition is treated as ideal" multiline w={280} withArrow>
-                <Select label="γ model" data={["ideal", "NRTL", "Wilson", "UNIFAC"]} value={activity}
-                  onChange={(v) => setActivity(v ?? "NRTL")} w={120} allowDeselect={false} />
-              </Tooltip>
-            )}
-            {showEos && (
-              <Tooltip label="vapour equation of state: idealGas ⇒ Z = 1; SRK/PR are cubic real-gas models" multiline w={240} withArrow>
-                <Select label="EoS" data={["idealGas", "SRK", "PR"]} value={eos}
-                  onChange={(v) => setEos(v ?? "idealGas")} w={110} allowDeselect={false} />
-              </Tooltip>
-            )}
-            {showTransport && (
-              <Tooltip label="transport correlation, chosen WITHIN a family (e.g. Andrade vs Vogel) — a sibling of the EOS, never driven by it; both move the curve, so you SEE which you commit to" multiline w={280} withArrow>
-                <Select label="model" data={tModels} value={tModel}
-                  onChange={(v) => setTransportModel(v ?? tModels[0]!)} w={130} allowDeselect={false} />
-              </Tooltip>
-            )}
-            {/* (v) multi-method: overlay several models of the same family and
-                SEE the spread.  Only for a scan of ONE component on a comparable
-                family; opt-in (single-model is the default). */}
-            {compareFamily && (
-              <Group gap={8} align="flex-end" style={{ alignSelf: "flex-end", paddingBottom: 4 }}>
-                <Tooltip label="overlay several models of the same family and SEE the spread (≤3)" withArrow multiline w={240}>
-                  <Switch size="xs" checked={compareOn} onChange={(e) => setCompareOn(e.currentTarget.checked)}
-                    label="compare" styles={{ label: { fontSize: 11 } }} />
+              </ToolMenu>
+            </>
+          )}
+          {plotType === "steam" && (() => {
+            // Per-mode T range (different defaults + validity), shared inputs.
+            // The mode (saturation|isobar) FORKS the table schema, so it stays
+            // INLINE as a segment; the ranges + property pick fold into "Steam ▾".
+            const sFrom = steamMode === "saturation" ? satFrom : isoFrom;
+            const sTo = steamMode === "saturation" ? satTo : isoTo;
+            const setSFrom = steamMode === "saturation" ? setSatFrom : setIsoFrom;
+            const setSTo = steamMode === "saturation" ? setSatTo : setIsoTo;
+            const views = steamMode === "saturation" ? STEAM_SAT_VIEWS : STEAM_ISO_VIEWS;
+            const propPick = views[steamProp] ? steamProp : "h";
+            return (
+              <>
+                <Tooltip label="saturation curve: the region-4 line with the f/g property pairs (regions 1/2 evaluated on the line, valid 0.01–350 °C).  isobar: h, s, v, cp vs T at fixed P — crossing Tsat jumps the properties." multiline w={280} withArrow>
+                  <Box>
+                    <SegmentedControl size="xs" color="accent" value={steamMode}
+                      onChange={(v) => setSteamMode((v as "saturation" | "isobar") ?? "saturation")}
+                      data={[
+                        { value: "saturation", label: "saturation" },
+                        { value: "isobar", label: "isobar" },
+                      ]} />
+                  </Box>
                 </Tooltip>
-                {compareOn && (
-                  <Chip.Group multiple value={cmpModels}
-                    onChange={(v) => setCompareModels((v as string[]).slice(0, 3))}>
-                    <Group gap={4}>
-                      {compareFamily.models.map((m) => (
-                        <Chip key={m} size="xs" value={m} color="accent">{m}</Chip>
-                      ))}
+                <ToolMenu label="Steam" value={views[propPick]?.label ?? propPick}>
+                  <Stack gap="xs" style={{ width: 240 }}>
+                    {steamMode === "isobar" && (
+                      <NumberInput label={`P (${pressureLabel(Pu)})`} value={paToDisplay(steamP, Pu)}
+                        onChange={(v) => setSteamP(parsePressure(num(v, paToDisplay(steamP, Pu)), Pu))} />
+                    )}
+                    <Group gap="xs" grow>
+                      <NumberInput label={`from (${temperatureLabel(Tu)})`}
+                        value={Number(kToDisplay(sFrom, Tu).toFixed(2))}
+                        onChange={(v) => setSFrom(parseTemperature(num(v, kToDisplay(sFrom, Tu)), Tu))} />
+                      <NumberInput label={`to (${temperatureLabel(Tu)})`}
+                        value={Number(kToDisplay(sTo, Tu).toFixed(2))}
+                        onChange={(v) => setSTo(parseTemperature(num(v, kToDisplay(sTo, Tu)), Tu))} />
                     </Group>
-                  </Chip.Group>
-                )}
-              </Group>
-            )}
-            {/* No Plot button — the view recomputes live on any change. */}
-            {busy && (
-              <Group gap={6} style={{ alignSelf: "flex-end", paddingBottom: 6 }}>
-                <Loader size="xs" /><Text size="xs" c="dimmed">computing…</Text>
-              </Group>
-            )}
-          </Group>
+                    <Tooltip label="one property family at a time — the full table mixes magnitudes (psat ~10⁷ Pa beside v_f ~10⁻³ m³/kg) that flatten each other on a shared axis" multiline w={260} withArrow>
+                      <Select label="property" allowDeselect={false}
+                        data={Object.entries(views).map(([value, vw]) => ({ value, label: vw.label }))}
+                        value={propPick}
+                        onChange={(v) => setSteamProp(v ?? "h")} />
+                    </Tooltip>
+                  </Stack>
+                </ToolMenu>
+              </>
+            );
+          })()}
+          {/* The fixed (T,P) the lens evaluates at — compact menu-buttons that
+              SHOW their value (`P 1 bar`, `T 25 °C`); they MOVE the curve, so
+              they sit in the toolbar, each opening a stable popover. */}
+          {plotType === "ternaryLle" && (
+            <ToolMenu label="T" value={`${kToDisplay(fixedT, Tu).toFixed(1)} ${temperatureLabel(Tu)}`}>
+              <NumberInput size="xs" label={`T (${temperatureLabel(Tu)})`} value={kToDisplay(fixedT, Tu)} w={130}
+                onChange={(v) => setFixedT(parseTemperature(num(v, kToDisplay(fixedT, Tu)), Tu))} />
+            </ToolMenu>
+          )}
+          {(isVle || isTernary || (plotType === "scan" && axisVar === "T")) && (
+            <ToolMenu label="P" value={`${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)}`}>
+              <NumberInput size="xs" label={`P (${pressureLabel(Pu)})`} value={paToDisplay(fixedP, Pu)} w={130}
+                onChange={(v) => setFixedP(parsePressure(num(v, paToDisplay(fixedP, Pu)), Pu))} />
+            </ToolMenu>
+          )}
+          {/* The curve-moving model pickers (γ / EoS / transport) — each a
+              menu-button showing the committed value, opening its Select. */}
+          {showGamma && (
+            <ToolMenu label="γ" value={activity}
+              tip="liquid activity model: ideal = Raoult (no azeotrope); NRTL/Wilson auto-resolve curated binary pairs by name, else that pair is ideal; UNIFAC is PREDICTIVE (γ from molecular groups, no fitted pairs) — a component without a group decomposition is treated as ideal">
+              <Select size="xs" label="γ model" data={["ideal", "NRTL", "Wilson", "UNIFAC"]} value={activity}
+                onChange={(v) => setActivity(v ?? "NRTL")} w={150} allowDeselect={false} />
+            </ToolMenu>
+          )}
+          {showEos && (
+            <ToolMenu label="EoS" value={eos}
+              tip="vapour equation of state: idealGas ⇒ Z = 1; SRK/PR are cubic real-gas models">
+              <Select size="xs" label="EoS" data={["idealGas", "SRK", "PR"]} value={eos}
+                onChange={(v) => setEos(v ?? "idealGas")} w={150} allowDeselect={false} />
+            </ToolMenu>
+          )}
+          {showTransport && (
+            <ToolMenu label="model" value={tModel}
+              tip="transport correlation, chosen WITHIN a family (e.g. Andrade vs Vogel) — a sibling of the EOS, never driven by it; both move the curve, so you SEE which you commit to">
+              <Select size="xs" label="model" data={tModels} value={tModel}
+                onChange={(v) => setTransportModel(v ?? tModels[0]!)} w={150} allowDeselect={false} />
+            </ToolMenu>
+          )}
+          {/* (v) multi-method: overlay several models of the same family and
+              SEE the spread.  Only for a scan of ONE component on a comparable
+              family; opt-in (single-model is the default). */}
+          {compareFamily && (
+            <Group gap={8} align="center" wrap="nowrap">
+              <Tooltip label="overlay several models of the same family and SEE the spread (≤3)" withArrow multiline w={240}>
+                <Switch size="xs" checked={compareOn} onChange={(e) => setCompareOn(e.currentTarget.checked)}
+                  label="compare" styles={{ label: { fontSize: 11 } }} />
+              </Tooltip>
+              {compareOn && (
+                <Chip.Group multiple value={cmpModels}
+                  onChange={(v) => setCompareModels((v as string[]).slice(0, 3))}>
+                  <Group gap={4} wrap="nowrap">
+                    {compareFamily.models.map((m) => (
+                      <Chip key={m} size="xs" value={m} color="accent">{m}</Chip>
+                    ))}
+                  </Group>
+                </Chip.Group>
+              )}
+            </Group>
+          )}
 
-          {skipped.length > 0 && (
-            <Text size="xs" c="dimmed">No vapour pressure (curve not shown): {skipped.join(", ")}</Text>
+          {/* resolution / performance knobs in the ⚙ overflow — not the
+              physics, so they don't clutter the row.  For the psychrometric
+              chart EVERY knob lives here (the chart fills the row): range,
+              humidity, saturation-line spacing, y-scale.  size md → fits 44px. */}
+          <Popover position="bottom-end" withArrow shadow="md">
+            <Popover.Target>
+              <Tooltip label={plotType === "psychro" ? "chart options" : "resolution & display options"} withArrow>
+                <ActionIcon variant="default" size="md" aria-label="options">
+                  <IconAdjustmentsHorizontal size={16} />
+                </ActionIcon>
+              </Tooltip>
+            </Popover.Target>
+            <Popover.Dropdown>
+              <Stack gap="xs">
+                {plotType === "psychro" && (
+                  <>
+                    <Group gap="xs" grow>
+                      <NumberInput label={`T from (${temperatureLabel(Tu)})`} value={Number(kToDisplay(tFrom, Tu).toFixed(1))}
+                        step={5} decimalScale={1}
+                        onChange={(v) => setTFrom(parseTemperature(num(v, kToDisplay(tFrom, Tu)), Tu))} />
+                      <NumberInput label={`T to (${temperatureLabel(Tu)})`} value={Number(kToDisplay(tTo, Tu).toFixed(1))}
+                        step={5} decimalScale={1}
+                        onChange={(v) => setTTo(parseTemperature(num(v, kToDisplay(tTo, Tu)), Tu))} />
+                    </Group>
+                    <NumberInput label={`P (${pressureLabel(Pu)})`} value={paToDisplay(fixedP, Pu)}
+                      onChange={(v) => setFixedP(parsePressure(num(v, paToDisplay(fixedP, Pu)), Pu))} w={260} />
+                    <Group gap="xs" grow>
+                      <NumberInput label="RH from (%)" value={rhFrom} min={0} max={99}
+                        onChange={(v) => setRhFrom(num(v, rhFrom))} />
+                      <NumberInput label="RH to (%)" value={rhTo} min={1} max={99}
+                        onChange={(v) => setRhTo(num(v, rhTo))} />
+                      <NumberInput label="RH step (%)" value={rhStep} min={1} max={50}
+                        onChange={(v) => setRhStep(num(v, rhStep))} />
+                    </Group>
+                    <NumberInput label={`ΔT between sat. lines (${temperatureLabel(Tu)})`} value={wbStep} min={5} max={50} step={5}
+                      onChange={(v) => setWbStep(num(v, wbStep))} w={260}
+                      description="spacing of the wet-bulb / adiabatic-saturation anchor lines" />
+                    <NumberInput label="Y max (0=auto)" value={psyYMax} min={0} step={0.05} decimalScale={3}
+                      onChange={(v) => setPsyYMax(num(v, psyYMax))} w={260}
+                      description="auto = drying band; raise to see full saturation" />
+                  </>
+                )}
+                <NumberInput label={isTernary ? "grid (intervals per edge)" : "points"} value={nPts}
+                  onChange={(v) => setNPts(num(v, nPts))} w={260} min={2}
+                  description={isTernary ? "more = finer triangle, slower"
+                    : plotType === "scaling" ? "recovery points across the scan"
+                    : "samples along the axis"} />
+                {plotType === "ternaryLle" && (
+                  <NumberInput label="tie-line stride" value={tieStride}
+                    onChange={(v) => setTieStride(num(v, tieStride))} w={260} min={1}
+                    description="draw a tie-line every Nth split node (higher = fewer lines)" />
+                )}
+              </Stack>
+            </Popover.Dropdown>
+          </Popover>
+
+          {/* No Plot button — the view recomputes live on any change. */}
+          {busy && (
+            <Group gap={6} wrap="nowrap">
+              <Loader size="xs" /><Text size="xs" c="dimmed">computing…</Text>
+            </Group>
           )}
-          {/* Validity readout: the ionic strength the engine computed rides the
-              CSV (column I); the SI axis stays pure log10(IAP/K). */}
-          {iEnds && (
-            <Text size="xs" c="dimmed">
-              ionic strength I = {iEnds.first.toPrecision(3)} → {iEnds.last.toPrecision(3)} mol/kg
-              across the scan — {scalingActivity === "pitzer"
-                ? "Pitzer-HMW activity is quantitative to I ≈ 6 mol/kg (brine-grade)"
-                : "Davies activity is quantitative to I ≈ 0.5 mol/kg"}
-            </Text>
+
+          {/* spacer pushes the trailing affordances to the right edge */}
+          <Box style={{ flex: 1, minWidth: 8 }} />
+
+          {/* trailing: the McCabe pop-out (only for that lens) + Theory */}
+          {plotType === "mccabe" && csv && (
+            <Tooltip label="Open the McCabe-Thiele analyzer full-window in a new tab" withArrow>
+              <ActionIcon variant="subtle" size="md" color="accent" aria-label="pop out McCabe analyzer"
+                onClick={() => popOutExploreMccabe({
+                  csv: dropCsvColumn(csv, "liquid_stable"),
+                  compA: selected[0] ?? "", compB: selected[1] ?? "",
+                  P: fixedP, model: activity,
+                })}>
+                <IconExternalLink size={16} />
+              </ActionIcon>
+            </Tooltip>
           )}
-        </Stack>
+          <Tooltip label="Open the matching section of the Theory Guide (or press F1)" withArrow>
+            <ActionIcon component="a" href={helpUrl} target="_blank" rel="noopener noreferrer"
+              variant="subtle" size="md" color="gray" aria-label="open the Theory Guide">
+              <IconBook size={16} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
         </Box>
 
-        {/* VIEW — the result: a STEP 3 header (with the ↗ pop-out), the run-level
-            honesty alerts pinned ABOVE, then the plot at flex:1 (no fixed-height
-            hack — it fills the remaining height for EVERY lens), then the method
-            chips + author/snippet. */}
-        <Box style={{ flex: 1, minWidth: 0, overflow: "auto", padding: 16, paddingTop: 8, display: "flex", flexDirection: "column" }}>
+        {/* VIEW — the plot is the one primary surface: flex:1, its top-left
+            origin FIXED (it never lurches when a lens / option changes; chrome
+            is evicted to the toolbar above + the honesty footer below).  The
+            SET pill, the PURE/MIXTURE badge and the plain-words caption ride as
+            on-plot overlays (top-left), annotating the curve ON the curve. */}
+        <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 16, paddingTop: 12, display: "flex", flexDirection: "column" }}>
         <Stack gap="sm" style={{ flex: 1, minHeight: 0 }}>
-          <Group justify="space-between" align="center" wrap="nowrap">
-            <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>STEP 3 · VIEW</Text>
-            {plotType === "mccabe" && csv && (
-              <Tooltip label="Open the McCabe-Thiele analyzer full-window in a new tab" withArrow>
-                <Button size="compact-xs" variant="subtle" color="accent"
-                  leftSection={<IconExternalLink size={13} />}
-                  onClick={() => popOutExploreMccabe({
-                    csv: dropCsvColumn(csv, "liquid_stable"),
-                    compA: selected[0] ?? "", compB: selected[1] ?? "",
-                    P: fixedP, model: activity,
-                  })}>
-                  Pop out
-                </Button>
-              </Tooltip>
-            )}
-          </Group>
-
-          {/* Run-level honesty — which γ pairs resolved / op advisories / the
-              ideal-mixing lie / the heteroazeotrope — pinned ABOVE the plot
-              (shared by txy/γ/McCabe), never squeezed into the plot's budget. */}
-          {pairNote && <Text size="xs" c="dimmed">{pairNote}</Text>}
-          {opAdvisories.length > 0 && (
-            <Alert color="yellow" variant="light" title="Solver advisory">
-              {opAdvisories.map((a) => (<Text key={a} size="xs">{a}</Text>))}
-            </Alert>
-          )}
-          {idealLieWarning && (
-            <Alert color="orange" variant="light" title="Assuming ideal mixing — not your real system">
-              <Text size="xs">{idealLieWarning}</Text>
-            </Alert>
-          )}
-          {lleInTxy && (
-            <Alert color="orange" variant="light" title="Heteroazeotrope — flat three-phase line">
-              <Text size="xs">{lleInTxy}</Text>
-            </Alert>
-          )}
-          {err && <Alert color="red" variant="light">{err}</Alert>}
-          {activeReason && <Alert color="yellow" variant="light" title="Cannot plot">{activeReason}</Alert>}
-
           {csv ? (
             <Box style={{ flex: 1, minHeight: 360, position: "relative" }}>
+              {/* on-plot overlays (top-left): SET pill (load-bearing when the
+                  rail is collapsed) + the PURE/MIXTURE badge + the caption.
+                  Absolutely positioned so they never push the figure down. */}
+              <Box style={{ position: "absolute", top: 4, left: 8, zIndex: 4,
+                display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start",
+                pointerEvents: "none", maxWidth: "70%" }}>
+                <Group gap={6} align="center" style={{ pointerEvents: "auto" }}>
+                  <Badge size="sm" variant="outline" color="gray" tt="none"
+                    style={{ background: "light-dark(rgba(255,255,255,0.7), rgba(0,0,0,0.5))" }}>
+                    {selected.join(" · ")}
+                  </Badge>
+                  {modeBadge}
+                </Group>
+                <Text size="xs" c="dimmed"
+                  style={{ background: "light-dark(rgba(255,255,255,0.6), rgba(0,0,0,0.45))",
+                    borderRadius: 4, padding: "1px 4px", lineHeight: 1.3 }}>
+                  {subtitle}
+                </Text>
+              </Box>
               {plotType === "phase" ? (
                 <PurePhaseDiagram csv={csv} comp={selected[0] ?? ""}
                   tc={metaByName(selected[0] ?? "", catalogue)?.tc}
@@ -1347,8 +1438,8 @@ export function ExploreWorkspace() {
                 // The interactive McCabe-Thiele staircase over the engine's
                 // y_eq(x) (read out of the same T-x-y CSV) — R/q knobs re-walk
                 // the staircase in pure TS, no WASM re-solve.
-                // The ↗ pop-out trigger lives in the VIEW-region header above
-                // (one affordance, not two); the inline plot stays single-column.
+                // The ↗ pop-out trigger lives in the toolbar (trailing), one
+                // affordance not two; the inline plot stays single-column.
                 <McCabePlot csv={dropCsvColumn(csv, "liquid_stable")}
                   compA={selected[0] ?? ""} compB={selected[1] ?? ""} P={fixedP} />
               ) : (
@@ -1380,12 +1471,12 @@ export function ExploreWorkspace() {
               )}
             </Box>
           ) : busy ? (
-            <Box style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Box style={{ flex: 1, minHeight: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Group gap={8}><Loader size="sm" /><Text size="sm" c="dimmed">computing — {subtitle}</Text></Group>
             </Box>
           ) : (
-            <Box style={{ height: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Text size="sm" c="dimmed">{subtitle}</Text>
+            <Box style={{ flex: 1, minHeight: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Text size="sm" c="dimmed" ta="center" maw={460}>{subtitle}</Text>
             </Box>
           )}
 
@@ -1398,7 +1489,7 @@ export function ExploreWorkspace() {
             const dAbs = ax.conv(compareInfo.spread.absMax) - ax.conv(0);
             const unitTag = ax.unit && ax.unit !== "—" ? ` ${ax.unit}` : "";
             return (
-              <Group gap={8} align="center">
+              <Group gap={8} align="center" wrap="wrap">
                 {compareInfo.models.map((m, i) => (
                   <Badge key={m} size="sm" variant="light" tt="none"
                     styles={{ root: {
@@ -1415,32 +1506,92 @@ export function ExploreWorkspace() {
               </Group>
             );
           })()}
-
-          <Group gap="xs">
-            <Button variant="subtle" size="xs" onClick={() => setSnippetOpen((o) => !o)}>
-              {snippetOpen ? "Hide propsDict" : "Author this exploration → copy propsDict"}
-            </Button>
-            {isVle && <Text size="xs" c="dimmed">NRTL/Wilson pairs auto-resolve by name; absent → ideal (no azeotrope).</Text>}
-          </Group>
-          <Collapse in={snippetOpen}>
-            <Text size="xs" c="dimmed" mb={4}>
-              Create or open a case, then put this block in <code>system/propsDict</code> under
-              <code> operations ( … )</code>; keep <code>constant/thermoPackage</code> in sync with the
-              components/models above, and <code>runCase</code>.
-            </Text>
-            <Group gap="xs" mb={4}>
-              <CopyButton value={snippet}>
-                {({ copied, copy }) => (
-                  <Button size="xs" variant={copied ? "filled" : "light"} color="accent" onClick={copy}>
-                    {copied ? "Copied ✓" : "Copy propsDict"}
-                  </Button>
-                )}
-              </CopyButton>
-            </Group>
-            <Code block style={{ fontSize: 11 }}>{snippet}</Code>
-          </Collapse>
         </Stack>
         </Box>
+
+        {/* THE HONESTY FOOTER — chrome home #3.  The run-level honesty (which γ
+            pairs resolved / op advisories / the ideal-mixing lie / the
+            heteroazeotrope / validity readouts) + the "Author this exploration"
+            hand-off live BELOW the plot in a collapsible strip, so they STAY
+            VISIBLE (numerical-honesty credo) but never push the plot's top
+            origin down.  A `⚠ N` pill folds it; a new alert re-expands it. */}
+        {(() => {
+          const alerts: React.ReactNode[] = [];
+          if (err) alerts.push(<Alert key="err" color="red" variant="light">{err}</Alert>);
+          if (activeReason) alerts.push(<Alert key="reason" color="yellow" variant="light" title="Cannot plot">{activeReason}</Alert>);
+          if (opAdvisories.length > 0) alerts.push(
+            <Alert key="adv" color="yellow" variant="light" title="Solver advisory">
+              {opAdvisories.map((a) => (<Text key={a} size="xs">{a}</Text>))}
+            </Alert>);
+          if (idealLieWarning) alerts.push(
+            <Alert key="ideal" color="orange" variant="light" title="Assuming ideal mixing — not your real system">
+              <Text size="xs">{idealLieWarning}</Text>
+            </Alert>);
+          if (lleInTxy) alerts.push(
+            <Alert key="lle" color="orange" variant="light" title="Heteroazeotrope — flat three-phase line">
+              <Text size="xs">{lleInTxy}</Text>
+            </Alert>);
+          const notes: React.ReactNode[] = [];
+          if (pairNote) notes.push(<Text key="pair" size="xs" c="dimmed">{pairNote}</Text>);
+          if (skipped.length > 0) notes.push(
+            <Text key="skip" size="xs" c="dimmed">No vapour pressure (curve not shown): {skipped.join(", ")}</Text>);
+          if (iEnds) notes.push(
+            <Text key="i" size="xs" c="dimmed">
+              ionic strength I = {iEnds.first.toPrecision(3)} → {iEnds.last.toPrecision(3)} mol/kg
+              across the scan — {scalingActivity === "pitzer"
+                ? "Pitzer-HMW activity is quantitative to I ≈ 6 mol/kg (brine-grade)"
+                : "Davies activity is quantitative to I ≈ 0.5 mol/kg"}
+            </Text>);
+          const nFlags = alerts.length;
+          return (
+            <Box style={{ flexShrink: 0, padding: "4px 12px 8px",
+              borderTop: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))" }}>
+              <Group gap="xs" wrap="nowrap" align="center">
+                <Button variant="subtle" size="compact-xs" color="gray"
+                  onClick={() => setFooterOpen((o) => !o)}
+                  leftSection={nFlags > 0
+                    ? <Badge size="xs" circle color="orange" variant="filled">{nFlags}</Badge>
+                    : undefined}>
+                  {footerOpen ? "Hide details" : nFlags > 0 ? "Honesty & details" : "Details"}
+                </Button>
+                <Button variant="subtle" size="compact-xs" onClick={() => setSnippetOpen((o) => !o)}>
+                  {snippetOpen ? "Hide propsDict" : "Author → copy propsDict"}
+                </Button>
+                {!footerOpen && nFlags === 0 && isVle && (
+                  <Text size="xs" c="dimmed" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    NRTL/Wilson pairs auto-resolve by name; absent → ideal (no azeotrope).
+                  </Text>
+                )}
+              </Group>
+              <Collapse in={footerOpen}>
+                <Stack gap={6} mt={6}>
+                  {alerts}
+                  {notes}
+                  {isVle && <Text size="xs" c="dimmed">NRTL/Wilson pairs auto-resolve by name; absent → ideal (no azeotrope).</Text>}
+                </Stack>
+              </Collapse>
+              <Collapse in={snippetOpen}>
+                <Stack gap={4} mt={6}>
+                  <Text size="xs" c="dimmed">
+                    Create or open a case, then put this block in <code>system/propsDict</code> under
+                    <code> operations ( … )</code>; keep <code>constant/thermoPackage</code> in sync with the
+                    components/models above, and <code>runCase</code>.
+                  </Text>
+                  <Group gap="xs">
+                    <CopyButton value={snippet}>
+                      {({ copied, copy }) => (
+                        <Button size="xs" variant={copied ? "filled" : "light"} color="accent" onClick={copy}>
+                          {copied ? "Copied ✓" : "Copy propsDict"}
+                        </Button>
+                      )}
+                    </CopyButton>
+                  </Group>
+                  <Code block style={{ fontSize: 11, maxHeight: 200, overflow: "auto" }}>{snippet}</Code>
+                </Stack>
+              </Collapse>
+            </Box>
+          );
+        })()}
       </Box>
     </Box>
   );
@@ -1466,31 +1617,139 @@ function LeftRail({
   unlockLine?: string | null;
 }) {
   const [hover, setHover] = useState(false);
+  const collapsed = rail.collapsed;
+  // Animate WIDTH (not translateX — a transform would slide the rail OVER the
+  // plot and the plot would jump at the end); reduced-motion → instant.  Fire
+  // a window resize on transitionend (Plotly's useResizeHandler listens for it)
+  // so the figure re-fits the new width once the fold settles.  A one-shot rAF
+  // covers the reduced-motion case where no transition event fires.
+  const reduce = useReducedMotion();
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!reduce) return;   // animated path resizes on transitionend instead
+    const id = window.requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
+    return () => window.cancelAnimationFrame(id);
+  }, [collapsed, reduce]);
   return (
-    <Box style={{
-      width: rail.width, flexShrink: 0, height: "100%", padding: 12, overflow: "hidden",
-      position: "relative",
-      borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+    <Box
+      onTransitionEnd={(e) => { if (e.propertyName === "width") window.dispatchEvent(new Event("resize")); }}
+      style={{
+      width: collapsed ? 0 : rail.width, flexShrink: 0, height: "100%",
+      padding: collapsed ? 0 : 12, overflow: "hidden", position: "relative",
+      transition: reduce ? "none" : "width 180ms ease, padding 180ms ease",
+      borderRight: collapsed
+        ? "none"
+        : "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
     }}>
-      <Text size="xs" fw={700} c="dimmed" mb={6} style={{ letterSpacing: 0.5 }}>STEP 1 · SET</Text>
-      <Box style={{ height: "calc(100% - 22px)" }}>
+      <Group justify="space-between" align="center" mb={6} wrap="nowrap" gap={4}>
+        <Text size="xs" fw={700} c="dimmed" style={{ letterSpacing: 0.5 }}>SET</Text>
+        <Tooltip label="Collapse the component browser (shortcut: [ )" withArrow>
+          <ActionIcon variant="subtle" size="sm" color="gray" aria-label="collapse component browser"
+            onClick={rail.toggleCollapsed}>
+            <IconChevronLeft size={15} />
+          </ActionIcon>
+        </Tooltip>
+      </Group>
+      <Box style={{ height: "calc(100% - 28px)" }}>
         <CompoundBrowser selected={selected} onAdd={onAdd} onRemove={onRemove} vleContext={vleContext} caseComponents={caseComponents} onEstimate={onEstimate} unlockLine={unlockLine} />
       </Box>
       {/* 6px col-resize splitter over the rail's right border (drag to resize,
-          double-click to reset); the hover seam tints with the accent. */}
+          double-click to reset); the hover seam tints with the accent.  Hidden
+          when collapsed (the 28px re-open tab is the only left-edge affordance
+          then). */}
+      {!collapsed && (
+        <Box
+          onPointerDown={rail.onPointerDown}
+          onDoubleClick={rail.reset}
+          onPointerEnter={() => setHover(true)}
+          onPointerLeave={() => setHover(false)}
+          title="drag to resize · double-click to reset"
+          style={{
+            position: "absolute", top: 0, right: -3, width: 6, height: "100%",
+            cursor: "ew-resize", zIndex: 5,
+            background: hover ? `color-mix(in srgb, ${PLOT_COLORS.accent} 30%, transparent)` : "transparent",
+            transition: "background 120ms",
+          }}
+        />
+      )}
+    </Box>
+  );
+}
+
+/** An inline toolbar field: a small dimmed label beside a compact control, so
+ *  the scan Property / Axis / from / to read on ONE 44px toolbar row instead of
+ *  the label-on-top stack the standalone Mantine inputs default to. */
+function ToolField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <Group gap={4} wrap="nowrap" align="center" style={{ flexShrink: 0 }}>
+      <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>{label}</Text>
+      {children}
+    </Group>
+  );
+}
+
+/** A curve-moving toolbar control folded into a menu-button: the button SHOWS
+ *  its committed value (`P 1 bar`, `γ NRTL`) and opens a fixed-position popover
+ *  with the real Select / NumberInput — spatial stability (the control never
+ *  wraps or jumps), the value stays SEEN.  The popover is what keeps the one
+ *  toolbar row from growing into the stacked-rows it replaced. */
+function ToolMenu({
+  label, value, tip, wide = false, children,
+}: {
+  label: string;
+  value: string;
+  tip?: string;
+  wide?: boolean;
+  children: React.ReactNode;
+}) {
+  const btn = (
+    <Button size="xs" variant="default" rightSection={<IconChevronDown size={13} />}
+      style={{ flexShrink: 0 }}>
+      <Text span size="xs" c="dimmed" mr={value ? 4 : 0}>{label}</Text>
+      {value && <Text span size="xs" fw={600}>{value}</Text>}
+    </Button>
+  );
+  return (
+    <Popover position="bottom-start" withArrow shadow="md" width={wide ? undefined : 220}>
+      <Popover.Target>
+        {tip ? <Tooltip label={tip} multiline w={280} withArrow openDelay={300}>{btn}</Tooltip> : btn}
+      </Popover.Target>
+      <Popover.Dropdown>{children}</Popover.Dropdown>
+    </Popover>
+  );
+}
+
+/** The 28px vertical re-open tab, flush to the plot's left edge, rendered ONLY
+ *  when the rail is collapsed.  A `›` chevron + a rotated micro-label `SET · N`
+ *  (N = the selected-set size = load-bearing scent: the SET is state, not just
+ *  navigation).  The whole strip is the click target (a large Fitts edge strip,
+ *  Linear/Notion idiom), mirroring the collapse chevron's corner. */
+function RailReopenTab({ count, onExpand }: { count: number; onExpand: () => void }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <Tooltip label="Show the component browser (shortcut: [ )" withArrow position="right">
       <Box
-        onPointerDown={rail.onPointerDown}
-        onDoubleClick={rail.reset}
+        onClick={onExpand}
         onPointerEnter={() => setHover(true)}
         onPointerLeave={() => setHover(false)}
-        title="drag to resize · double-click to reset"
+        role="button" aria-label="show component browser" tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onExpand(); } }}
         style={{
-          position: "absolute", top: 0, right: -3, width: 6, height: "100%",
-          cursor: "ew-resize", zIndex: 5,
-          background: hover ? `color-mix(in srgb, ${PLOT_COLORS.accent} 30%, transparent)` : "transparent",
+          width: 28, flexShrink: 0, height: "100%", cursor: "pointer",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+          paddingTop: 10,
+          borderRight: "1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))",
+          background: hover
+            ? "light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6))"
+            : "transparent",
           transition: "background 120ms",
-        }}
-      />
-    </Box>
+        }}>
+        <IconChevronRight size={15} color="var(--mantine-color-dimmed)" />
+        <Text size="xs" fw={700} c="dimmed"
+          style={{ writingMode: "vertical-rl", letterSpacing: 0.5, userSelect: "none" }}>
+          SET · {count}
+        </Text>
+      </Box>
+    </Tooltip>
   );
 }

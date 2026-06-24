@@ -70,6 +70,48 @@ describe("rail width — persist round-trip", () => {
   });
 });
 
+describe("rail collapse — persist round-trip", () => {
+  it("defaults to EXPANDED (false) when the key is absent", async () => {
+    const { loadRailCollapsed } = await import("../src/ui/explore/useRailWidth.js");
+    expect(loadRailCollapsed()).toBe(false);
+  });
+
+  it("save(true) then load returns true under the GLOBAL collapsed key", async () => {
+    const { saveRailCollapsed, loadRailCollapsed, RAIL_COLLAPSED_KEY } =
+      await import("../src/ui/explore/useRailWidth.js");
+    saveRailCollapsed(true);
+    expect(ls.getItem(RAIL_COLLAPSED_KEY)).toBe("1");
+    expect(loadRailCollapsed()).toBe(true);
+  });
+
+  it("save(false) round-trips and reads as EXPANDED", async () => {
+    const { saveRailCollapsed, loadRailCollapsed, RAIL_COLLAPSED_KEY } =
+      await import("../src/ui/explore/useRailWidth.js");
+    saveRailCollapsed(false);
+    expect(ls.getItem(RAIL_COLLAPSED_KEY)).toBe("0");
+    expect(loadRailCollapsed()).toBe(false);
+  });
+
+  it("treats any value other than \"1\" as EXPANDED (junk-tolerant)", async () => {
+    const { loadRailCollapsed, RAIL_COLLAPSED_KEY } =
+      await import("../src/ui/explore/useRailWidth.js");
+    ls.setItem(RAIL_COLLAPSED_KEY, "yes");
+    expect(loadRailCollapsed()).toBe(false);
+  });
+
+  it("is INDEPENDENT of the dragged width (collapse is lossless)", async () => {
+    const { saveRailWidth, loadRailWidth, saveRailCollapsed, loadRailCollapsed } =
+      await import("../src/ui/explore/useRailWidth.js");
+    saveRailWidth(380);          // user drags the rail wide
+    saveRailCollapsed(true);     // then folds it
+    // the width is preserved verbatim — re-opening restores 380, not 0/default
+    expect(loadRailWidth()).toBe(380);
+    expect(loadRailCollapsed()).toBe(true);
+    saveRailCollapsed(false);    // re-open
+    expect(loadRailWidth()).toBe(380);
+  });
+});
+
 describe("McCabe pop-out — state carry", () => {
   it("stashes the frozen curve + provenance + knobs and reads them back identically", async () => {
     const { popOutExploreMccabe, readExploreMccabeStash, mccabeKey } =
