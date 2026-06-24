@@ -58,6 +58,7 @@ import { localCaseDir } from "../case/caseName.js";
 import { downloadCaseZip } from "../case/saveCase.js";
 import { openCaseZip, openCaseFolder, SUPPORTS_DIR_PICKER } from "../cases/loadCase.js";
 import { canComputePinch } from "../case/pinch.js";
+import { collectControllerKnobs } from "../case/controllerKnobs.js";
 
 // Workspaces in the top menu.  Each is a top-level toggle:
 //   - implemented entries (`key` truthy) flip the global activeWorkspace
@@ -72,6 +73,7 @@ const WORKSPACES: { label: string; key: WorkspaceKey | null }[] = [
   { label: "Explore",   key: "explore"   },   // interactive property scratchpad (see, then decide)
   { label: "Streams",   key: "streams"   },
   { label: "Variables", key: "variables" },
+  { label: "Control",   key: "control"   },   // PID tuning bench (choupoCtrl + a PID)
   { label: "Plots",     key: "plots"     },
   { label: "Log",       key: "log"       },
   { label: "Case",      key: "case"      },
@@ -114,11 +116,19 @@ export function MenuBar() {
     typeof caseFiles.controlDict?.["application"] === "string"
       ? (caseFiles.controlDict["application"] as string)
       : undefined;
+  // The Control Room appears only for a choupoCtrl case that actually declares
+  // a PID (the lens-disappears gating, mirroring the Explorer): no PID -> no
+  // gains to tune, so the tab is not even shown.
+  const hasPid = application === "choupoCtrl"
+    && collectControllerKnobs(flowsheet).pid !== null;
   // "Explore" is in EVERY set: the property explorer synthesizes its own
   // transient case, so it is independent of the loaded case's type.
   const SET_PROPS = new Set(["Props", "Explore", "Plots", "Log", "Case"]);
   const SET_SOLVE = new Set(["Flowsheet", "Props", "Explore", "Streams", "Variables", "Plots", "Log", "Case", "Pinch", "Reports"]);
-  const SET_TIME = new Set(["Flowsheet", "Props", "Explore", "Plots", "Log", "Case"]);
+  const SET_TIME = new Set([
+    "Flowsheet", "Props", "Explore", "Plots", "Log", "Case",
+    ...(hasPid ? ["Control"] : []),
+  ]);
   const allowedLabels: Set<string> =
     !hasCaseOpen(tutorialName) ? new Set(["Explore"])            // blank boot: only the standalone Explorer
     : showIntro ? new Set()                                      // intro -> no tabs

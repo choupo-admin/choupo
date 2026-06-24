@@ -153,6 +153,7 @@ export type WorkspaceKey =
   | "log"
   | "props"
   | "explore"
+  | "control"
   | "case"
   | "reports"
   | "pinch";
@@ -346,8 +347,13 @@ function bootCase(): {
 // standalone, so it opens with no case loaded.
 function bootWorkspace(): WorkspaceKey | null {
   if (typeof window !== "undefined") {
-    const w = new URLSearchParams(window.location.search).get("workspace");
+    const params = new URLSearchParams(window.location.search);
+    const w = params.get("workspace");
     if (w === "explore") return "explore";
+    // The landing hero deep-links the Control Room on a ctrl case
+    // (?case=ctrl02_disturbance_rejection&view=control).
+    const v = params.get("view");
+    if (v === "control" || w === "control") return "control";
   }
   return null;
 }

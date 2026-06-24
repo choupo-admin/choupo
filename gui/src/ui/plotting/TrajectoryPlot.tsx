@@ -42,12 +42,67 @@ License
 
   When the trajectory has no temperature-class variable, the right
   axis is omitted and all traces go on the left.
+
+  Optional ADDITIVE props (all default to empty -> every existing
+  caller renders byte-identically) let a richer surface — the Control
+  Room's ClosedLoopPlot — compose this same renderer:
+
+      referenceLines  horizontal dashed lines (a setpoint)
+      eventMarkers    vertical dotted lines + annotations (disturbances)
+      band            a shaded ±half horizontal band (settling envelope)
+      ghost           faded previous-run traces drawn UNDER the live ones
+      filterVars      keep only these trajectory columns (drop the rest)
+      mvVars          force these columns onto the right (T/MV) axis
+      title           override the "Trajectory" header
 \*---------------------------------------------------------------------------*/
 
 import type { TrajectoryData } from "../../adapters/SolverAdapter.js";
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 
 type Side = "left" | "right";
+
+/** A horizontal reference line (e.g. the controller setpoint). */
+export interface ReferenceLine {
+  y: number;
+  label?: string;
+  color?: string;
+  dashed?: boolean;
+}
+/** A vertical event marker (e.g. a disturbance step). */
+export interface EventMarker {
+  x: number;
+  label?: string;
+  color?: string;
+}
+/** A shaded horizontal band centred on `y` of half-width `half` (±band). */
+export interface PlotBand {
+  y: number;
+  half: number;
+  label?: string;
+  color?: string;
+}
+/** A faded previous-run trace drawn under the live ones. */
+export interface GhostTrace {
+  name: string;
+  t: number[];
+  y: number[];
+  side?: Side;
+  color?: string;
+  opacity?: number;
+}
+
+export interface TrajectoryPlotProps {
+  data: TrajectoryData;
+  referenceLines?: ReferenceLine[];
+  eventMarkers?: EventMarker[];
+  band?: PlotBand;
+  ghost?: GhostTrace[];
+  /** Keep only these columns (others dropped).  Empty/undefined => keep all. */
+  filterVars?: string[];
+  /** Force these columns onto the right (T/MV) axis. */
+  mvVars?: string[];
+  title?: string;
+}
 
 function classify(name: string, values: number[]): Side {
   // Mole numbers and concentrations stay on the left (small magnitudes).
@@ -60,28 +115,86 @@ function classify(name: string, values: number[]): Side {
   return m > 10 ? "right" : "left";
 }
 
-export function TrajectoryPlot({ data }: { data: TrajectoryData }) {
-  const names = Object.keys(data.vars);
+export function TrajectoryPlot(props: TrajectoryPlotProps) {
+  const { data, referenceLines, eventMarkers, band, ghost, filterVars, mvVars, title } = props;
+  const names = Object.keys(data.vars).filter(
+    (n) => !filterVars || filterVars.length === 0 || filterVars.includes(n),
+  );
+  const forceRight = new Set(mvVars ?? []);
   const tracesLeft: ReturnType<typeof makeTrace>[] = [];
   const tracesRight: ReturnType<typeof makeTrace>[] = [];
 
   names.forEach((name, idx) => {
     const ys = data.vars[name]!;
-    const side = classify(name, ys);
+    const side: Side = forceRight.has(name) ? "right" : classify(name, ys);
     const color = PLOT_COLORS.series[idx % PLOT_COLORS.series.length]!;
     const trace = makeTrace(name, data.t, ys, color, side);
     (side === "left" ? tracesLeft : tracesRight).push(trace);
   });
 
-  const hasRight = tracesRight.length > 0;
-  const traces = [...tracesLeft,...tracesRight];
+  // Ghost traces (a previous run) ride UNDER the live ones, faded.
+  const ghostTraces = (ghost ?? []).map((g) => makeGhost(g));
+
+  const hasRight = tracesRight.length > 0 || (ghost ?? []).some((g) => g.side === "right");
+  // The live + ghost traces, ghosts first so they paint underneath.
+  const traces = [...ghostTraces, ...tracesLeft, ...tracesRight];
+
+  // ±band as a filled horizontal ribbon on the RIGHT (T) axis when present,
+  // else the left — drawn as two stacked traces (lower transparent, upper
+  // filled to it).  Origin of x is the data's time span.
+  const t0 = data.t[0] ?? 0;
+  const t1 = data.t[data.t.length - 1] ?? 1;
+  const bandAxis: "y" | "y2" = hasRight ? "y2" : "y";
+  const bandTraces = band ? bandRibbon(band, t0, t1, bandAxis) : [];
+
+  // Setpoint / reference lines + disturbance markers as Plotly SHAPES (not data
+  // traces) so they never enter the legend or the autoscale of the series.
+  const shapes = [
+    ...(referenceLines ?? []).map((r) => ({
+      type: "line" as const,
+      xref: "paper" as const,
+      x0: 0, x1: 1,
+      yref: hasRight ? ("y2" as const) : ("y" as const),
+      y0: r.y, y1: r.y,
+      line: { color: r.color ?? PLOT_COLORS.accent2, width: 1.5, dash: r.dashed === false ? "solid" : "dash" },
+      layer: "below" as const,
+    })),
+    ...(eventMarkers ?? []).map((m) => ({
+      type: "line" as const,
+      yref: "paper" as const,
+      y0: 0, y1: 1,
+      xref: "x" as const,
+      x0: m.x, x1: m.x,
+      line: { color: m.color ?? PLOT_COLORS.axis, width: 1, dash: "dot" as const },
+      layer: "below" as const,
+    })),
+  ];
+
+  const annotations = [
+    ...(referenceLines ?? [])
+      .filter((r) => r.label)
+      .map((r) => ({
+        xref: "paper" as const, x: 0.99, xanchor: "right" as const,
+        yref: hasRight ? ("y2" as const) : ("y" as const), y: r.y, yanchor: "bottom" as const,
+        text: r.label!, showarrow: false,
+        font: { ...darkLayout.font, size: 10, color: r.color ?? PLOT_COLORS.accent2 },
+      })),
+    ...(eventMarkers ?? [])
+      .filter((m) => m.label)
+      .map((m) => ({
+        xref: "x" as const, x: m.x, xanchor: "left" as const,
+        yref: "paper" as const, y: 0.02, yanchor: "bottom" as const,
+        text: m.label!, showarrow: false,
+        font: { ...darkLayout.font, size: 10, color: m.color ?? PLOT_COLORS.axis },
+      })),
+  ];
 
   return (
     <Plot
-      data={traces}
+      data={[...bandTraces, ...traces]}
       layout={{
 ...darkLayout,
-        title: { text: "Trajectory", font: {...darkLayout.font, size: 14 } },
+        title: { text: title ?? "Trajectory", font: {...darkLayout.font, size: 14 } },
         xaxis: {...darkLayout.xaxis, title: { text: "t [s]" } },
         yaxis: {
 ...darkLayout.yaxis,
@@ -100,6 +213,8 @@ export function TrajectoryPlot({ data }: { data: TrajectoryData }) {
               tickfont: { color: "rgba(255,255,255,0.75)" },
             }
         : undefined,
+        shapes,
+        annotations,
         legend: {...darkLayout.legend, x: 0.02, y: 0.98 },
       }}
       config={PLOT_CONFIG}
@@ -125,4 +240,41 @@ function makeTrace(name: string,
     line: { color, width: 2 },
     hovertemplate: `${name}<br>t = %{x:.1f} s<br>y = %{y:.4g}<extra></extra>`,
   };
+}
+
+function makeGhost(g: GhostTrace) {
+  return {
+    type: "scatter" as const,
+    mode: "lines" as const,
+    name: g.name,
+    x: g.t,
+    y: g.y,
+    yaxis: g.side === "right" ? ("y2" as const) : ("y" as const),
+    line: { color: g.color ?? PLOT_COLORS.axis, width: 1.5, dash: "solid" as const },
+    opacity: g.opacity ?? 0.35,
+    hoverinfo: "skip" as const,
+  };
+}
+
+/** A shaded ±half ribbon centred on band.y: a transparent lower trace then an
+ *  upper trace that fills down to it (Plotly `fill: "tonexty"`). */
+function bandRibbon(band: PlotBand, t0: number, t1: number, axis: "y" | "y2") {
+  const x = [t0, t1];
+  const lower = band.y - band.half;
+  const upper = band.y + band.half;
+  const color = band.color ?? "rgba(38,198,218,0.10)";
+  return [
+    {
+      type: "scatter" as const, mode: "lines" as const,
+      x, y: [lower, lower], yaxis: axis,
+      line: { width: 0 }, hoverinfo: "skip" as const, showlegend: false,
+    },
+    {
+      type: "scatter" as const, mode: "lines" as const,
+      name: band.label ?? "band",
+      x, y: [upper, upper], yaxis: axis,
+      line: { width: 0 }, fill: "tonexty" as const, fillcolor: color,
+      hoverinfo: "skip" as const, showlegend: false,
+    },
+  ];
 }

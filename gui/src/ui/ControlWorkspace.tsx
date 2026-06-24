@@ -1,0 +1,614 @@
+/*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+License
+    This file is part of Choupo.
+
+    Choupo is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Choupo is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+    License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+
+    SPDX-License-Identifier: GPL-3.0-or-later
+
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  ControlWorkspace -- the Control Room: a live PID-tuning bench for choupoCtrl
+  cases.  Chrome-minimal shell (the Explorer language): ONE toolbar, ONE
+  collapsible tuning rail, the ClosedLoopPlot primary, ONE collapsible metrics
+  footer.
+
+  The re-run loop reuses the WhatIf knob-layer mechanism (resolveAdapter("wasm")
+  + AbortController + busy/error/last-good-trace) but runs the WHOLE case --
+  controllers KEPT in the loop -- with the PID gains/setpoint mutated via
+  applyTuning (the indexed setScalarAtPath grammar).  A run is ~2000 integration
+  steps, so it fires on slider RELEASE / a "Run loop" button, never per-pixel;
+  the previous trace stays ghosted so the plot never blanks.
+
+  MANDATORY HONESTY (gui-credo §4): tuning re-runs the loop in the browser;
+  NOTHING writes back.  To keep a gain, edit system/controlDict on disk.  The
+  workspace resets on close (state is component-local).
+\*---------------------------------------------------------------------------*/
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ActionIcon, Alert, Badge, Box, Button, Code, Collapse, CopyButton, Group,
+  Loader, SegmentedControl, Slider, Stack, Text, Tooltip,
+} from "@mantine/core";
+import {
+  IconAlertTriangle, IconChevronLeft, IconChevronRight, IconInfoCircle,
+  IconPin, IconPlayerPlay, IconRefresh,
+} from "@tabler/icons-react";
+
+import { resolveAdapter } from "../adapters/index.js";
+import type { RunResult, TrajectoryData } from "../adapters/SolverAdapter.js";
+import { withDisplayPrefs } from "../case/applyPrefs.js";
+import {
+  applyTuning, collectControllerKnobs, parallelToInteracting,
+  type ScheduleKnobs,
+} from "../case/controllerKnobs.js";
+import {
+  controlMetrics, dampingColor, disturbanceWindows, type ControlMetrics,
+} from "../case/controlMetrics.js";
+import type { CaseFiles } from "../case/types.js";
+import { serialize, fromJson, type JsonDict } from "../dict/index.js";
+import { useStore } from "../state/store.js";
+import { ClosedLoopPlot, type PinnedRun } from "./plotting/ClosedLoopPlot.js";
+import { PLOT_COLORS } from "./plotting/plotly.js";
+
+const COLLAPSE_KEY = "choupo.control.railCollapsed";
+
+// Slider ranges (the design's felt-lesson table).
+const KP_RANGE: [number, number] = [0, 30];
+const KI_RANGE: [number, number] = [0, 0.3];
+const KD_RANGE: [number, number] = [0, 50];
+const SP_RANGE: [number, number] = [320, 380];
+const PIN_COLORS = ["#ffb74d", "#a5d6a7", "#ce93d8", "#ff8a65"];
+
+interface Tuning {
+  kp: number;
+  ki: number;
+  kd: number;
+  setpoint: number;
+}
+
+export function ControlWorkspace() {
+  const caseFiles = useStore((s) => s.caseFiles);
+  const prefs = useStore((s) => s.displayPrefs);
+  const seededResult = useStore((s) => s.runResult);
+
+  const flowsheetJson = caseFiles.flowsheet;
+  const layer = useMemo(() => collectControllerKnobs(flowsheetJson), [flowsheetJson]);
+  const pid = layer.pid;
+
+  // --- collapsible rail ----------------------------------------------------
+  const [collapsed, setCollapsed] = useState<boolean>(() => {
+    try { return window.localStorage.getItem(COLLAPSE_KEY) === "1"; } catch { return false; }
+  });
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed((c) => {
+      const next = !c;
+      try { window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0"); } catch { /* ignore */ }
+      return next;
+    });
+  }, []);
+
+  // --- tuning state (reset-on-close = component-local) ----------------------
+  const baseline = useMemo<Tuning>(
+    () => (pid
+      ? { kp: pid.kp, ki: pid.ki, kd: pid.kd, setpoint: pid.setpoint }
+      : { kp: 0, ki: 0, kd: 0, setpoint: 0 }),
+    [pid],
+  );
+  const [tuning, setTuning] = useState<Tuning>(baseline);
+  // Re-seed when the case (and thus the baseline) changes.
+  useEffect(() => { setTuning(baseline); }, [baseline]);
+
+  // The committed tuning that produced the CURRENT trace (vs the live slider
+  // preview).  Re-run on release sets this; the SP reference line previews the
+  // live value before the run.
+  const [committed, setCommitted] = useState<Tuning>(baseline);
+  useEffect(() => { setCommitted(baseline); }, [baseline]);
+
+  // --- run plumbing (the WhatIf mechanism, whole case) ---------------------
+  const [trace, setTrace] = useState<TrajectoryData | null>(
+    seededResult?.trajectory ?? null,
+  );
+  const [busy, setBusy] = useState(false);
+  const [runError, setRunError] = useState<string | null>(null);
+  const [mockWarning, setMockWarning] = useState<string | null>(null);
+  const [ghost, setGhost] = useState<{ t: number[]; pv: number[]; iae?: number } | null>(null);
+  const [pins, setPins] = useState<PinnedRun[]>([]);
+  const abortRef = useRef<AbortController | null>(null);
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  // --- view controls -------------------------------------------------------
+  const [bandPct, setBandPct] = useState<2 | 5>(2);
+  const [lens, setLens] = useState<"track" | "reject">("reject");
+  const [dictOpen, setDictOpen] = useState(false);
+
+  const buildFiles = useCallback((t: Tuning): CaseFiles | null => {
+    if (!flowsheetJson || !pid) return null;
+    const next = applyTuning(flowsheetJson, pid, t) as JsonDict;
+    return { ...caseFiles, flowsheet: next };
+  }, [flowsheetJson, pid, caseFiles]);
+
+  // The PV column key (for the ghost/metrics) -- resolve once per trace.
+  const pvKey = useMemo(() => {
+    if (!trace || !pid) return undefined;
+    const keys = Object.keys(trace.vars);
+    return [`${pid.name}.PV`, pid.measure ? `${pid.measure.unit}.${pid.measure.cv}` : undefined]
+      .filter((k): k is string => !!k)
+      .find((k) => keys.includes(k)) ?? keys.find((k) => k.endsWith(".PV"));
+  }, [trace, pid]);
+
+  const runLoop = useCallback(async (t: Tuning) => {
+    const files = buildFiles(t);
+    if (!files || busy) return;
+    // Snapshot the current trace as the ghost BEFORE the new run (so the
+    // before/after is a visible pair, never a blank).
+    if (trace && pvKey) {
+      const pv = trace.vars[pvKey];
+      if (pv) {
+        const m = pid
+          ? controlMetrics(trace.t, pv, { reference: committed.setpoint, bandHalf: (bandPct / 100) * committed.setpoint })
+          : null;
+        setGhost({ t: trace.t, pv, iae: m?.iae });
+      }
+    }
+    setBusy(true);
+    setRunError(null);
+    try {
+      const resolved = await resolveAdapter("wasm");
+      if (resolved.kind === "unavailable") {
+        setRunError(resolved.fallbackReason
+          ?? "The real (WebAssembly) solver could not be loaded — nothing was run.");
+        return;
+      }
+      setMockWarning(resolved.kind === "mock"
+        ? (resolved.fallbackReason ?? "Using the MOCK solver — numbers are NOT real.")
+        : null);
+      abortRef.current?.abort();
+      const ctl = new AbortController();
+      abortRef.current = ctl;
+      const result: RunResult = await resolved.adapter.run(
+        withDisplayPrefs(files, prefs), () => {}, ctl.signal);
+      if (ctl.signal.aborted) return;
+      if (result.status !== "done" || !result.trajectory) {
+        const tail = (result.log ?? "").trim().split("\n").slice(-8).join("\n");
+        // Keep the last good trace; an unstable gain is a teachable outcome.
+        setRunError(
+          (tail || "The solver reported an error (empty log).")
+          + "\n\n(This gain destabilised the loop — the last stable trace is kept.)");
+        return;
+      }
+      setTrace(result.trajectory);
+      setCommitted(t);
+    } catch (e) {
+      if (!abortRef.current?.signal.aborted) setRunError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [buildFiles, busy, trace, pvKey, prefs, pid, committed, bandPct]);
+
+  // Pin the current trace as a labelled snapshot (Kp=4 vs 12 vs 20 overlay).
+  const pinCurrent = useCallback(() => {
+    if (!trace || !pvKey || !pid) return;
+    const pv = trace.vars[pvKey];
+    if (!pv) return;
+    const m = controlMetrics(trace.t, pv, {
+      reference: committed.setpoint, bandHalf: (bandPct / 100) * committed.setpoint,
+    });
+    const label = `Kp=${committed.kp} Ki=${committed.ki}`;
+    setPins((p) => [
+      ...p.slice(-3),
+      { label, t: trace.t, pv, iae: m.iae, color: PIN_COLORS[p.length % PIN_COLORS.length], opacity: 0.5 },
+    ]);
+  }, [trace, pvKey, pid, committed, bandPct]);
+
+  // --- metrics + windows ---------------------------------------------------
+  const schedules: ScheduleKnobs[] = layer.schedules;
+  const tEnd = trace ? (trace.t[trace.t.length - 1] ?? 0) : 0;
+
+  // The Track window = the startup step [0, first disturbance]; the Reject
+  // window = the first disturbance kick [t_dist, next] from the schedule.
+  const windows = useMemo(() => {
+    const allSteps = schedules.flatMap((s) => s.schedule);
+    const w = disturbanceWindows(allSteps, tEnd);
+    const track: [number, number] = [0, w[1]?.t0 ?? tEnd];
+    // first NON-zero-time disturbance window
+    const dist = w.find((x) => x.t0 > 0);
+    const reject: [number, number] = dist ? [dist.t0, dist.t1] : [0, tEnd];
+    return { track, reject };
+  }, [schedules, tEnd]);
+
+  const activeWindow = lens === "track" ? windows.track : windows.reject;
+
+  const metrics = useMemo<ControlMetrics | null>(() => {
+    if (!trace || !pvKey) return null;
+    const pv = trace.vars[pvKey];
+    if (!pv) return null;
+    // For the Reject lens the "before" reference is the pre-disturbance PV at
+    // the window start (the steady value the loop must hold), not the setpoint.
+    const idx = trace.t.findIndex((ti) => ti >= activeWindow[0] - 1e-9);
+    const preValue = lens === "reject" && idx >= 0 ? pv[idx] : undefined;
+    return controlMetrics(trace.t, pv, {
+      reference: committed.setpoint,
+      bandHalf: (bandPct / 100) * committed.setpoint,
+      window: activeWindow,
+      preValue,
+    });
+  }, [trace, pvKey, committed.setpoint, bandPct, activeWindow, lens]);
+
+  // ghost metrics for the ▲/▼ delta (previous run's IAE over the same window).
+  const ghostMetrics = useMemo<ControlMetrics | null>(() => {
+    if (!ghost) return null;
+    return controlMetrics(ghost.t, ghost.pv, {
+      reference: committed.setpoint,
+      bandHalf: (bandPct / 100) * committed.setpoint,
+      window: activeWindow,
+    });
+  }, [ghost, committed.setpoint, bandPct, activeWindow]);
+
+  // --- the mutated controllers(...) block text (Show dict) -----------------
+  const dictText = useMemo(() => {
+    if (!flowsheetJson || !pid) return "";
+    const patched = applyTuning(flowsheetJson, pid, committed) as JsonDict;
+    const controllers = patched["controllers"];
+    try {
+      return serialize(fromJson({ controllers } as JsonDict, "flowsheetDict"));
+    } catch {
+      return "(could not serialise the controllers block)";
+    }
+  }, [flowsheetJson, pid, committed]);
+
+  // --- the interacting-form twin (textbook lens) ---------------------------
+  const twin = useMemo(() => parallelToInteracting(tuning.kp, tuning.ki, tuning.kd), [tuning]);
+
+  // --- gate ----------------------------------------------------------------
+  const application = typeof caseFiles.controlDict?.["application"] === "string"
+    ? (caseFiles.controlDict["application"] as string) : undefined;
+  if (application !== "choupoCtrl" || !pid) {
+    return (
+      <Box p="lg" maw={620}>
+        <Alert color="yellow" variant="light" icon={<IconAlertTriangle size={14} />}>
+          <Text size="sm" fw={600}>The Control Room needs a closed-loop dynamic case.</Text>
+          <Text size="xs" c="dimmed" mt={4}>
+            {application !== "choupoCtrl"
+              ? "This is not a choupoCtrl case (its controlDict.application is "
+                + `${application ?? "unset"}).  Open a control tutorial — e.g. `
+                + "ctrl02_disturbance_rejection."
+              : "This choupoCtrl case declares no PID controller.  The tuning rail "
+                + "drives a PID's gains/setpoint, so there is nothing to tune here."}
+          </Text>
+        </Alert>
+      </Box>
+    );
+  }
+
+  const ghostsForPlot: PinnedRun[] = [
+    ...(ghost ? [{ label: "PV (prev)", t: ghost.t, pv: ghost.pv, iae: ghostMetrics?.iae, color: PLOT_COLORS.axis, opacity: 0.35 }] : []),
+    ...pins,
+  ];
+
+  const railW = collapsed ? 0 : 260;
+
+  return (
+    <Box style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 0 }}>
+      {/* ---- ONE toolbar row (nowrap) ---- */}
+      <Group
+        gap="sm" px="sm" py={6} wrap="nowrap"
+        style={{ borderBottom: "1px solid var(--mantine-color-dark-5)", flex: "0 0 auto", overflowX: "auto" }}
+      >
+        <ChipMono label="Kp" value={tuning.kp} />
+        <ChipMono label="Ki" value={tuning.ki} />
+        <ChipMono label="Kd" value={tuning.kd} />
+        <ChipMono label="SP" value={tuning.setpoint} unit="K" />
+        <Button
+          size="compact-xs" color="accent" leftSection={<IconPlayerPlay size={13} />}
+          loading={busy} onClick={() => void runLoop(tuning)}
+        >
+          Run loop
+        </Button>
+        <Button
+          size="compact-xs" variant="light" leftSection={<IconPin size={13} />}
+          disabled={!trace} onClick={pinCurrent}
+        >
+          Pin
+        </Button>
+        {pins.length > 0 && (
+          <Button size="compact-xs" variant="subtle" color="gray" onClick={() => setPins([])}>
+            clear pins
+          </Button>
+        )}
+        <Box style={{ flex: 1 }} />
+        <SegmentedControl
+          size="xs"
+          value={lens}
+          onChange={(v) => setLens(v as "track" | "reject")}
+          data={[{ label: "Track", value: "track" }, { label: "Reject", value: "reject" }]}
+        />
+        <SegmentedControl
+          size="xs"
+          value={String(bandPct)}
+          onChange={(v) => setBandPct(Number(v) as 2 | 5)}
+          data={[{ label: "±2%", value: "2" }, { label: "±5%", value: "5" }]}
+        />
+        {busy && <Loader size="xs" color="accent" />}
+      </Group>
+
+      {/* ---- rail + plot ---- */}
+      <Box style={{ display: "flex", flex: 1, minHeight: 0, position: "relative" }}>
+        {collapsed ? (
+          <Box
+            onClick={toggleCollapsed}
+            title="Show tuning rail ( [ )"
+            style={{
+              width: 28, flex: "0 0 28px", cursor: "pointer",
+              borderRight: "1px solid var(--mantine-color-dark-5)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >
+            <IconChevronRight size={16} />
+          </Box>
+        ) : (
+          <Box
+            style={{
+              width: railW, flex: `0 0 ${railW}px`, minWidth: 0, overflowY: "auto",
+              borderRight: "1px solid var(--mantine-color-dark-5)",
+            }}
+          >
+            <Stack gap={14} p="sm">
+              <Group justify="space-between" align="center">
+                <Text size="xs" tt="uppercase" fw={700} c="dimmed">Tuning</Text>
+                <ActionIcon size="sm" variant="subtle" color="gray" onClick={toggleCollapsed} title="Hide rail ( [ )">
+                  <IconChevronLeft size={15} />
+                </ActionIcon>
+              </Group>
+
+              <KnobSlider
+                label="Kp (proportional)" path={pid.targetPaths.kp}
+                value={tuning.kp} min={KP_RANGE[0]} max={KP_RANGE[1]} step={0.1}
+                onPreview={(v) => setTuning((t) => ({ ...t, kp: v }))}
+                onCommit={(v) => void runLoop({ ...tuning, kp: v })}
+              />
+              <KnobSlider
+                label="Ki (integral)" path={pid.targetPaths.ki}
+                value={tuning.ki} min={KI_RANGE[0]} max={KI_RANGE[1]} step={0.005}
+                onPreview={(v) => setTuning((t) => ({ ...t, ki: v }))}
+                onCommit={(v) => void runLoop({ ...tuning, ki: v })}
+              />
+              <KnobSlider
+                label="Kd (derivative)" path={pid.targetPaths.kd}
+                value={tuning.kd} min={KD_RANGE[0]} max={KD_RANGE[1]} step={0.5}
+                onPreview={(v) => setTuning((t) => ({ ...t, kd: v }))}
+                onCommit={(v) => void runLoop({ ...tuning, kd: v })}
+              />
+              <KnobSlider
+                label="setpoint [K]" path={pid.targetPaths.setpoint}
+                value={tuning.setpoint} min={SP_RANGE[0]} max={SP_RANGE[1]} step={0.5}
+                onPreview={(v) => setTuning((t) => ({ ...t, setpoint: v }))}
+                onCommit={(v) => void runLoop({ ...tuning, setpoint: v })}
+              />
+
+              {/* the interacting-form twin (textbook lens) */}
+              <Box style={{ borderTop: "1px dashed var(--mantine-color-dark-4)", paddingTop: 8 }}>
+                <Text size="10px" c="dimmed" tt="uppercase" fw={600}>interacting-form equivalent</Text>
+                <Text size="xs" ff="JetBrains Mono, monospace" mt={2}>
+                  Kc {twin.kc.toFixed(2)} · τI {Number.isFinite(twin.tauI) ? `${twin.tauI.toFixed(0)} s` : "∞"} · τD {twin.tauD.toFixed(1)} s
+                </Text>
+                <Text size="9px" c="dimmed" mt={2}>τI = Kp/Ki · τD = Kd/Kp</Text>
+              </Box>
+
+              <Button
+                size="compact-xs" variant="subtle"
+                onClick={() => setDictOpen((o) => !o)}
+              >
+                {dictOpen ? "Hide dict" : "Show dict"}
+              </Button>
+              <Collapse in={dictOpen}>
+                <Group justify="flex-end" mb={4}>
+                  <CopyButton value={dictText}>
+                    {({ copied, copy }) => (
+                      <Button size="compact-xs" variant="light" color="accent" onClick={copy}>
+                        {copied ? "Copied ✓" : "Copy"}
+                      </Button>
+                    )}
+                  </CopyButton>
+                </Group>
+                <Code block style={{ fontSize: 10 }}>{dictText}</Code>
+              </Collapse>
+
+              {/* the mandatory honesty banner */}
+              <Alert color="cyan" variant="light" icon={<IconInfoCircle size={13} />} p="xs">
+                <Text size="10px">
+                  Tuning re-runs the loop in the browser; nothing writes back — to
+                  keep a gain, edit <code>system/controlDict</code>.
+                </Text>
+              </Alert>
+            </Stack>
+          </Box>
+        )}
+
+        {/* ---- the primary plot ---- */}
+        <Box style={{ flex: 1, minWidth: 0, position: "relative" }}>
+          {mockWarning && (
+            <Alert color="yellow" variant="light" icon={<IconAlertTriangle size={13} />} p="xs" m="xs">
+              <Text size="xs">{mockWarning}</Text>
+            </Alert>
+          )}
+          {runError && (
+            <Alert color="red" variant="light" icon={<IconAlertTriangle size={13} />} p="xs" m="xs"
+              withCloseButton onClose={() => setRunError(null)}>
+              <Code block style={{ fontSize: 10, whiteSpace: "pre-wrap", background: "transparent" }}>{runError}</Code>
+            </Alert>
+          )}
+          {trace ? (
+            <Box style={{ height: "100%", width: "100%" }}>
+              <ClosedLoopPlot
+                trajectory={trace}
+                pid={pid}
+                schedules={schedules}
+                setpoint={tuning.setpoint}
+                bandFraction={bandPct / 100}
+                ghosts={ghostsForPlot}
+                xRange={activeWindow}
+              />
+            </Box>
+          ) : (
+            <Stack align="center" justify="center" h="100%" gap="sm">
+              <IconRefresh size={28} opacity={0.4} />
+              <Text size="sm" c="dimmed">
+                Press <b>Run loop</b> (or move a slider) to integrate the closed loop.
+              </Text>
+            </Stack>
+          )}
+        </Box>
+      </Box>
+
+      {/* ---- ONE collapsible metrics footer ---- */}
+      {metrics && (
+        <Group
+          gap="md" px="sm" py={6} wrap="wrap"
+          style={{ borderTop: "1px solid var(--mantine-color-dark-5)", flex: "0 0 auto" }}
+        >
+          <MetricCard
+            label="IAE" headline value={fmtExp(metrics.iae)}
+            delta={ghostMetrics ? pctDelta(metrics.iae, ghostMetrics.iae) : null}
+            betterDown
+            formula="∫|SP − PV| dt over the window (trapezoid) — the score: lower is a tighter loop."
+          />
+          <MetricCard
+            label="overshoot"
+            value={metrics.overshootPct === null ? "—" : `${metrics.overshootPct.toFixed(1)}%`}
+            delta={ghostMetrics && metrics.overshootPct !== null && ghostMetrics.overshootPct !== null
+              ? pctDelta(metrics.overshootPct, ghostMetrics.overshootPct) : null}
+            betterDown
+            formula="(PV_peak − SP)/(SP − PV_before)·100 — how far it shoots past the target."
+          />
+          <MetricCard
+            label="settling"
+            value={metrics.settlingTime === null ? "— not settled" : `${metrics.settlingTime.toFixed(0)} s`}
+            formula="Last exit of the ±band (the shaded ribbon) — null when it never settles inside it."
+          />
+          <MetricCard
+            label="offset" value={metrics.steadyStateOffset.toFixed(2)}
+            formula="SP − PV(end) — persists when Ki=0 (no integral action)."
+          />
+          <MetricCard
+            label="ISE" value={fmtExp(metrics.ise)}
+            formula="∫(SP − PV)² dt — penalises big early errors harder than IAE."
+          />
+          <Tooltip label="From the overshoot-peak envelope (decay ratio of successive peaks)." withArrow multiline w={240}>
+            <Badge size="lg" variant="light" color={dampingColor(metrics.dampingVerdict)} radius="sm"
+              styles={{ root: { textTransform: "none" } }}>
+              {metrics.dampingVerdict}
+              {metrics.decayRatio !== null ? `  (decay ${metrics.decayRatio.toFixed(2)})` : ""}
+            </Badge>
+          </Tooltip>
+          <Text size="10px" c="dimmed">
+            window: {lens} [{activeWindow[0].toFixed(0)}–{activeWindow[1].toFixed(0)} s]
+          </Text>
+        </Group>
+      )}
+    </Box>
+  );
+}
+
+/* --------------------------- small components ----------------------------- */
+
+function ChipMono({ label, value, unit }: { label: string; value: number; unit?: string }) {
+  return (
+    <Text size="xs" ff="JetBrains Mono, monospace" style={{ whiteSpace: "nowrap" }}>
+      <Text span c="dimmed">{label}</Text> {fmtNum(value)}{unit ? `${unit}` : ""}
+    </Text>
+  );
+}
+
+function KnobSlider({
+  label, path, value, min, max, step, onPreview, onCommit,
+}: {
+  label: string; path: string; value: number; min: number; max: number; step: number;
+  onPreview: (v: number) => void; onCommit: (v: number) => void;
+}) {
+  return (
+    <Box>
+      <Group justify="space-between" align="baseline" mb={2}>
+        <Text size="xs" fw={500}>{label}</Text>
+        <Text size="xs" ff="JetBrains Mono, monospace" c="accent">{fmtNum(value)}</Text>
+      </Group>
+      <Slider
+        value={value} min={min} max={max} step={step}
+        onChange={onPreview}
+        onChangeEnd={onCommit}
+        label={(v) => fmtNum(v)}
+        size="sm" color="accent"
+      />
+      <Text size="9px" c="dimmed" ff="JetBrains Mono, monospace" mt={2}>{path}</Text>
+    </Box>
+  );
+}
+
+function MetricCard({
+  label, value, delta, betterDown, headline, formula,
+}: {
+  label: string; value: string; delta?: number | null; betterDown?: boolean;
+  headline?: boolean; formula: string;
+}) {
+  const arrow = delta == null || !Number.isFinite(delta) ? null
+    : delta < 0 ? "▼" : delta > 0 ? "▲" : "=";
+  const good = delta == null ? undefined
+    : betterDown ? delta < 0 : delta > 0;
+  return (
+    <Tooltip label={formula} withArrow multiline w={260} openDelay={200}>
+      <Box style={{ minWidth: 78 }}>
+        <Text size="10px" c="dimmed" tt="uppercase" fw={600}>{label}</Text>
+        <Group gap={4} align="baseline">
+          <Text size={headline ? "lg" : "sm"} fw={headline ? 700 : 500}
+            ff="JetBrains Mono, monospace" c={headline ? "accent" : undefined}>
+            {value}
+          </Text>
+          {arrow && (
+            <Text size="10px" c={good ? "teal.5" : "red.5"} ff="JetBrains Mono, monospace">
+              {arrow} {Math.abs(delta!).toFixed(0)}%
+            </Text>
+          )}
+        </Group>
+      </Box>
+    </Tooltip>
+  );
+}
+
+/* ------------------------------- helpers ---------------------------------- */
+
+function fmtNum(v: number): string {
+  if (!Number.isFinite(v)) return "—";
+  if (v === 0) return "0";
+  const a = Math.abs(v);
+  if (a >= 100) return v.toFixed(0);
+  if (a >= 1) return v.toFixed(1);
+  return v.toFixed(3);
+}
+function fmtExp(v: number): string {
+  if (!Number.isFinite(v)) return "—";
+  return v.toExponential(2);
+}
+function pctDelta(now: number, prev: number | undefined): number | null {
+  if (prev === undefined || !Number.isFinite(prev) || prev === 0) return null;
+  return ((now - prev) / Math.abs(prev)) * 100;
+}

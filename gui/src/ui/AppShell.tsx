@@ -84,6 +84,11 @@ const PinchView = lazy(() =>
 const PlotsWorkspace = lazy(() =>
   import("./PlotsWorkspace.js").then((m) => ({ default: m.PlotsWorkspace })),
 );
+// The Control Room (live PID tuning) pulls the ClosedLoopPlot -> the plotly
+// kit, so it is lazy like the other plot-bearing workspaces.
+const ControlWorkspace = lazy(() =>
+  import("./ControlWorkspace.js").then((m) => ({ default: m.ControlWorkspace })),
+);
 // InternalsView too: it pulls ProfilePlot -> the plotly kit, and it only
 // renders in a dedicated ?internals=<key> tab -- statically importing it was
 // the last chain dragging Plotly itself into the index chunk.
@@ -283,6 +288,10 @@ export function AppShell() {
         ) : activeWorkspace === "plots" ? (
           <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
             <PlotsWorkspace />
+          </Suspense>
+        ) : activeWorkspace === "control" ? (
+          <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+            <ControlWorkspace />
           </Suspense>
         ) : activeWorkspace === "props" ? (
           <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
