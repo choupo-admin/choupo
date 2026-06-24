@@ -29,11 +29,13 @@ License
 #include "SweepDriver.H"
 #include "ResponseExtractor.H"
 #include "core/ResultEmitter.H"
+#include "postProcessing/PostProcessor.H"
 
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 
 namespace Choupo {
@@ -129,6 +131,30 @@ int SweepDriver::run()
             for (std::size_t i = 0; i < responses_.size(); ++i) csv << ",nan";
             csv << "\n";
             continue;
+        }
+
+        // Run the post-processing chain (sizing -> costing -> economics) on
+        // this converged point so a response can read a cost/economics KPI
+        // (e.g. economics.IRR).  Without this a sweep cannot SEE cost -- the
+        // differentiator.  Mirrors OptimizationDriver's per-evaluation chain.
+        // The chain's own console output is silenced across the sweep (one
+        // run would otherwise print ~nPoints economics tables); the headline
+        // scalars land in result.kpis where extractResponse finds them.  The
+        // representative point (captured below) is re-emitted with its log
+        // visible at the end.
+        if (postDict_ && result.converged)
+        {
+            std::ostringstream sink;
+            auto* coutBuf = std::cout.rdbuf(sink.rdbuf());
+            auto* cerrBuf = std::cerr.rdbuf(sink.rdbuf());
+            try
+            {
+                auto chain = PostProcessor::buildChain(postDict_);
+                for (auto& pp : chain) pp->run(result);
+            }
+            catch (const std::exception&) { /* leave KPIs unset -> nan response */ }
+            std::cout.rdbuf(coutBuf);
+            std::cerr.rdbuf(cerrBuf);
         }
 
         // Keep the converged point nearest the range middle as the GUI's

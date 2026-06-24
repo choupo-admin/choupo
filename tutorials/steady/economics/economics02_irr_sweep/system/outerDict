@@ -1,0 +1,31 @@
+/*---------------------------------------------------------------------------*\
+  Sensitivity sweep over reactor volume, reading ECONOMIC responses.
+
+  THE DIFFERENTIATOR: the SweepDriver runs the full post-processing chain
+  (sizing -> costing -> economics) on EACH converged point, so the
+  responses below resolve `economics.IRR` / `economics.NPV` /
+  `economics.paybackYears` as ordinary unit.kpi look-ups.  A bigger reactor
+  raises conversion (more product, more revenue) but also raises CAPEX and
+  raw-material throughput -- the sweep exposes the trade-off the student
+  cannot see from a single CAPEX number.
+
+  Sweep target:  reactor V_R in [4, 12] m^3  (inside the Turton vessel
+  validity range; below ~3 m^3 the low conversion drops the bubble point
+  and the fixed-duty heater would cross the dome -- a deliberate floor).
+\*---------------------------------------------------------------------------*/
+
+type    sweep;
+
+parameter
+{
+    target   units[0].operation.V_R;
+    range    ( 4.0  12.0 );
+    nPoints  5;
+}
+
+responses ( economics.IRR  economics.NPV  economics.paybackYears  economics.FCI  economics.COM_d );
+
+report
+{
+    file    sweep_results.csv;
+}

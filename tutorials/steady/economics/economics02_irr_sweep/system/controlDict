@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Sweep reactor volume; read economics.IRR/NPV/payback per point (SweepDriver runs the post chain)";
+
+verbosity     3;

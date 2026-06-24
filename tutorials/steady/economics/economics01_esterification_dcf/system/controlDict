@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Esterification plant: CAPEX (Guthrie) -> OPEX (COM_d) -> discounted-cash-flow appraisal (NPV/IRR/payback)";
+
+verbosity     3;

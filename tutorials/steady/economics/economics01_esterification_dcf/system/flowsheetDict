@@ -1,0 +1,60 @@
+/*---------------------------------------------------------------------------*\
+  A FIXED (designed) esterification plant, sized for a full economic
+  appraisal rather than an optimisation:
+
+      feed --> reactor (CSTR) --> heater --> separator (flash)
+                                                 |-> liqProd (ethyl acetate rich)
+                                                 |-> vapProd
+
+  The feed is scaled to plant throughput so the reactor volume and the
+  heat-exchanger area land INSIDE the Turton correlation validity ranges
+  (V in [0.3, 520] m^3, A in [10, 1000] m^2) -- the resulting CAPEX is a
+  physically meaningful base for the DCF, not an extrapolated artefact.
+
+  Prices (product/raw-material/labour) live in constant/economics, each
+  dated and primary-cited.  The postDict chain is sizing -> costing ->
+  economics; the economics pass prints the COM_d / NPV / IRR / payback
+  appraisal and publishes the headline scalars into the economics KPIs.
+\*---------------------------------------------------------------------------*/
+
+streams
+{
+    feed
+    {
+        F            500.0 kmol/h;
+        T            350.0 K;
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+    }
+}
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+
+        operation   { V_R 5.0; }          // m^3 -- inside [0.3, 520]
+        reaction    esterification_etac;
+    }
+
+    {
+        name        heater;
+        type        heater;
+        in          reactorOut;
+        outputs     ( hotStream );
+
+        operation   { Q  3.0e5 W; }       // 0.3 MW process heat (sensible, stays below the dome)
+    }
+
+    {
+        name        separator;
+        type        isothermalFlash;
+        in          hotStream;
+        outputs     ( liqProd  vapProd );
+
+        operation   { P 1.0 bar; }
+    }
+);
