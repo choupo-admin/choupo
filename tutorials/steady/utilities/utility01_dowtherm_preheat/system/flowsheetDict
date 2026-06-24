@@ -2,11 +2,16 @@
   utility01_dowtherm_preheat
   ==========================
 
-  A hydrocarbon feed (50/50 n-hexane / n-octane) needs to be heated from
-  320 K to ~530 K before downstream conversion.  HP steam can deliver at
-  most ~525 K (T_sat at 40 barg) -- not enough for the temperature drop
-  we want.  Next escalation up the temperature ladder is a hot-oil loop;
-  the textbook choice in the 250-400 C range is Dowtherm A.
+  A hydrocarbon feed (50/50 n-hexane / n-octane) needs to be heated to
+  ~530 K before downstream conversion.  HP steam can deliver at most
+  ~525 K (T_sat at 40 barg) -- not enough; the next escalation up the
+  temperature ladder is a hot-oil loop, the textbook choice in the
+  250-400 C range being Dowtherm A (delivered here at 623 K).
+
+  NOTE: the 25 m2 / U=600 exchanger is deliberately generous -- NTU=13.8,
+  C_r=0.06 give effectiveness ~= 1.00, so the cold outlet is PINNED to the
+  623 K oil inlet, OVERSHOOTING the 530 K target by ~93 K.  The case shows
+  a pinned-effectiveness exchanger; shrink the area to land near 530 K.
 
   Hardware (the credo): area + U + flow direction.  The duty Q, the
   outlet temperatures, and the Dowtherm flowrate fall out of the

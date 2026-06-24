@@ -22,13 +22,19 @@
       utility loop.  Anti-windup: integral does not advance when the
       unclamped output is outside the bounds.
 
-  Expected trajectory:
-      Open-loop:   T relaxes to ~ 325 K (natural steady state).
-      Closed-loop: T jumps to ~ 346 K within the first control step,
-                   then climbs smoothly (well-damped, no overshoot)
-                   and settles at the 350 K setpoint by ~ 600 s.  The
-                   jacket (MV) holds around 347 K to keep heating in
-                   against the cool 320 K feed.
+  Expected trajectory (150 s window):
+      Open-loop:   T relaxes a few K above the 320 K inlet (small
+                   exotherm balanced by convective cooling).
+      Closed-loop: T rises fast (the jacket MV slams to its 420 K clamp,
+                   then backs off), entering the +/-2% setpoint band by
+                   ~ 20 s, well-damped with no overshoot.  By 150 s T is
+                   ~ 348.5 K and still creeping up: the last ~ 1.5 K rides
+                   the slow chemical tail (the exotherm's conversion,
+                   tau ~ 120 s) toward 350 K beyond the window.  The
+                   jacket (MV) settles around 347 K to keep heating in
+                   against the cool 320 K feed.  (Widen endTime to watch
+                   the final approach to 350 K; the 150 s window is sized
+                   to SHOW the control transient, not the slow tail.)
 
   To run the OPEN-LOOP comparison, comment out the entire
   `controllers` block below --- the case will then run the bare

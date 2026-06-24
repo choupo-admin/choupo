@@ -1,5 +1,5 @@
 application   choupoCtrl;
-description   "Dynamic CSTR (compA -> compB) with PID jacket-temperature control; T climbs smoothly from 320 K and settles at the 350 K setpoint with no overshoot";
+description   "Dynamic CSTR (compA -> compB) with PID jacket-temperature control; T climbs from 320 K into the +/-2% setpoint band within ~20 s (no overshoot) and tracks toward 350 K across the 150 s window";
 
 verbosity     3;
 
