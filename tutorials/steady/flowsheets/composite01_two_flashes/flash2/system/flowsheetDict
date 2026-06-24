@@ -1,11 +1,13 @@
 /*---------------------------------------------------------------------------*\
   flash2 / system/flowsheetDict   (LEAF -- child of composite01)
 
-  Re-flashes flash1's liquid at a higher temperature (more vaporises).
+  Re-flashes flash1's liquid (benzene-lean) at a higher temperature.  At
+  373 K, 1 bar this is a genuine two-phase split: a benzene-richer vapour
+  comes off while a benzene-leaner liquid stays behind (vf ~ 0.44).
 \*---------------------------------------------------------------------------*/
 
 name        flash2;
 type        isothermalFlash;
-operation   { T 380.0 K;  P 1.0 bar; }
+operation   { T 373.0 K;  P 1.0 bar; }
 
 boundary    { inlets ( feed );  outlets ( liquid  vapor ); }

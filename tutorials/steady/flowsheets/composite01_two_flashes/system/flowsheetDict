@@ -5,6 +5,11 @@
   connections : the wiring.  `from`/`to` endpoints are either a bare name
                 (this node's boundary inlet/outlet) or `<child>/<port>`.
   The engine flattens to namespaced streams (flash1.liquid -> flash2.feed).
+
+  Two flashes in series, each a GENUINE vapour/liquid split.  flash1 (370 K)
+  splits the feed; its liquid (benzene-lean) feeds flash2 (373 K), which is
+  still below that liquid's dew point, so flash2 produces a real vapour AND a
+  real liquid `bottoms` -- not a total vaporiser.
 \*---------------------------------------------------------------------------*/
 
 children    ( flash1  flash2 );
@@ -29,7 +34,7 @@ streams
 connections
 (
     { from feed;            to flash1/feed;  }   // boundary inlet -> child
-    { from flash1/liquid;   to flash2/feed;  }   // child -> child (the liquid is re-flashed hotter)
+    { from flash1/liquid;   to flash2/feed;  }   // child -> child (flash1's liquid re-flashed hotter -> 2nd real V/L split)
     { from flash1/vapor;    to vapor1;       }   // child -> boundary outlet
     { from flash2/vapor;    to vapor2;       }
     { from flash2/liquid;   to bottoms;      }
