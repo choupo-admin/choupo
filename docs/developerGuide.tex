@@ -97,16 +97,24 @@ Choupo/
 |-- etc/bashrc                     sourceable shell env
 |-- bin/                           runCase, runApplication, listCases, cleanCase
 |-- data/
-|   |-- components/                 <name>.dat --- component database
-|   |-- materials/                  <name>.dat --- material database
-|   `-- README.md                   data-file format
+|   `-- standards/                  the FROZEN, committee-managed reference tree
+|       |-- components/             <name>.dat --- component catalogue (arity-1)
+|       |-- materials/              <name>.dat --- material database
+|       |-- membranes/              <name>.dat --- NF/RO membrane catalogue
+|       |-- utilities/              <name>.dat --- plant-utility catalogue
+|       |-- binaryPairs/            NRTL / Wilson / UNIQUAC pair files (arity-2)
+|       |-- henrysLaw/              Henry's-law pairs (arity-2)
+|       |-- solution/               <solute>-<solvent>.dat --- aqueous TIER (arity-2)
+|       |-- electrolyte/            ions.dat + Pitzer/eNRTL catalogues (arity-2)
+|       |-- eos/<model>/            model-keyed binaryInteractions (k_ij)
+|       `-- unifac/                 group-interaction tables
 |-- docs/                          THIS FILE + userGuide.{md,tex,pdf}
 |-- src/
 |   |-- core/                       Dictionary, SimulationResult, Constants, Types
 |   |-- streams/                    ProcessStream
 |   |-- thermo/                     Component, ThermoPackage, Database +
 |   |                                phase/, vaporPressure/, activityCoefficient/,
-|   |                                equationOfState/, heatCapacity/
+|   |                                equationOfState/, heatCapacity/, membrane/
 |   |-- materials/                  Material, MaterialRegistry
 |   |-- solver/                     NewtonRaphson, NewtonND, Wegstein, StabilityTest
 |   |-- unitOperations/             UnitOperation base + per-category folders
@@ -114,15 +122,28 @@ Choupo/
 |   |-- postProcessing/             PostProcessor base + Sizing/Costing passes
 |   |-- propertyOps/                PropertyOperation base (choupoProps)
 |   |-- control/                    Controller base + PID/Schedule (choupoCtrl)
+|   |-- reporting/                  BalanceMath, EnergyBalanceReport (the ledger)
+|   |-- io/                         SolutionWriter --- OpenFOAM-style instants
 |   `-- applications/               choupoSolve / choupoBatch / choupoCtrl /
 |                                     choupoProps -- one main.cpp per binary
 |-- tests/                         regression scripts (bin/runTests)
-|-- tutorials/                     end-to-end cases (104 at, under
+|-- tutorials/                     end-to-end cases (~190, under
 |                                     steady/ batch/ ctrl/ props/ plant/)
 |-- gui/                           web GUI (see CLAUDE.md Sec. 12)
 |-- LICENSE                        GPL-3.0-or-later
 `-- README.md
 \end{lstlisting}
+
+\begin{keyidea}
+\textbf{Data lives under \file{data/standards/}, write-guarded.}  The engine
+\emph{refuses} to write under \file{data/standards/} --- adding a number there
+is a deliberate curation act, not a side effect of a run.  WHERE a number
+belongs (an intrinsic field in \file{components/<name>.dat}, a pair file in a
+catalogue, or an operation's \file{constant/}) is decided by the
+\textbf{data-governance doctrine} (\file{docs/ai/data-doctrine.md}): the
+canonical reference for every curation question, summarised in
+\S\ref{sec:data-cascade}.
+\end{keyidea}
 
 \begin{keyidea}
 There is \emph{one binary per problem class}, four in all --- they share
@@ -520,13 +541,27 @@ What travels between unit operations (units: SI canonical):
 \begin{lstlisting}[language=C++]
 struct ProcessStream {
     std::string         name;
-    scalar              F;       // kmol/s
+    scalar              F;       // total FLUID molar flow [kmol/s]
     scalar              T;       // K
     scalar              P;       // Pa
-    std::vector<scalar> z;       // mole fractions, size = NC
-    scalar              vf;      // vapor fraction (VLE outputs)
+    std::vector<scalar> z;       // FLUID mole fractions, size = NC
+    scalar              vf;      // vapour fraction (VLE outputs)
+    std::vector<scalar> s;       // solid molar flow per component [kmol/s]
+    ParticleSizeDist    psd;     // size distribution of the solid phase
+    std::string         category;// "" = process; non-empty = utility leg
 };
 \end{lstlisting}
+
+\begin{keyidea}
+\code{F}, \code{z} and \code{vf} describe the \emph{fluid} phases only; the
+\textbf{solid is carried alongside in \code{s[]}} (kmol/s per component, empty
+or all-zero = no solids), with its size distribution in \code{psd}.  A
+crystalliser writes its crystals into \code{s[]}; the balance machinery
+(\file{src/reporting/BalanceMath.H}) reads \code{s[]} so mass \emph{and} energy
+close over the solid too (see \S\ref{sec:energy-datum}).  The \code{category}
+tag (populated by \code{utility <name>;}) lets the energy ledger separate a
+utility leg --- heat crossing the boundary --- from a process stream.
+\end{keyidea}
 
 Mass-basis flow is a derived view, not a stored field --- if you
 need kg/s, call \code{F\_mass(stream, thermo)} from
@@ -575,6 +610,29 @@ Holds:
 
 Every unit operation receives a \code{const ThermoPackage\&} in
 \code{solve()}.
+
+\paragraph{Two enthalpy datums --- and why only one survives.}  The package
+exposes enthalpy on two references:
+
+\begin{itemize}[leftmargin=*,nosep]
+  \item \code{Hliquid(T,x)} / \code{Hvapour(T,y)} --- the \textbf{sensible}
+        datum, anchored at an arbitrary \(T_{\mathrm{ref}}\).  Fine for a
+        single-stream heat-up, useless across a reactor: it silently drops the
+        heat of reaction.
+  \item \code{H\_stream\_formation(T,P,vf,z)} --- the \textbf{elements} datum
+        (formation enthalpies at 298.15\,K, the same reference as the ideal-gas
+        \(H_{ig}\)).  The reaction enthalpy then \emph{emerges} as the
+        difference of formation enthalpies, so a balance closes \emph{through}
+        a reactor, a crystalliser, or a heat of solution.
+\end{itemize}
+
+\begin{keyidea}
+\textbf{One datum, no fallback (\S\ref{sec:energy-datum}).}  The energy-balance
+ledger runs on the elements datum \emph{only}.  The former silent
+``fall back to the sensible datum'' arm was \textbf{deleted}: a component
+missing its \code{gibbsFormation} now \emph{throws}, naming the component, so a
+curation gap is loud, never a quietly wrong closure.
+\end{keyidea}
 
 % =====================================================================
 \section{The factory pattern --- explicit, no macros}\label{sec:factory}
@@ -644,11 +702,13 @@ failure mode is silent.
 \end{pitfall}
 
 % =====================================================================
-\section{Adding a new unit operation}
+\section{Adding a new unit operation}\label{sec:add-unitop-quick}
 
 \begin{whatyoulllearn}
-Five steps and roughly thirty minutes for a simple one --- skeleton,
-implementation, registration, tutorial, regression.
+The five moving parts in outline --- skeleton, implementation, registration,
+tutorial, regression.  The full \emph{tim-tim-por-tim-tim} walkthrough, with a
+real worked example and the mandatory WASM rebuild, is in
+\S\ref{sec:recipe-unitop}; this is the at-a-glance version.
 \end{whatyoulllearn}
 
 \subsection{Step 1 --- Skeleton}
@@ -692,35 +752,40 @@ private:
 \begin{lstlisting}[language=C++]
 int MyOp::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosity)
 {
-    // 1. Read inputs from dict --- let lookups throw on missing keys
-    auto op = dict->subDict("operation");
-    const scalar T = op->lookupScalar("T");
-    //...
+    // 1. The Flowsheet INJECTS the inlet + your params as sub-dicts of `dict`
+    //    (sequential-modular: no global stream registry to rummage).
+    auto feed = dict->subDict("feed");          // F (kmol/s SI), Tfeed, Pfeed
+    auto comp = dict->subDict("composition");   // mole fractions z_i
+    auto op   = dict->subDict("operation");     // YOUR parameters
+    const scalar F     = feed->lookupScalar("F",     Dims::molarFlow);
+    const scalar Tfeed = feed->lookupScalar("Tfeed", Dims::temperature);
+    const scalar T     = op->lookupScalar("T",       Dims::temperature);
 
-    // 2. Read inlet stream(s)
-    const ProcessStream& inlet = inlets_.at(0);
+    // 2. Echo inputs (verbosity >= 3 --- the pedagogical default)
+    if (verbosity >= 3)
+        std::cout << "  [MyOp] T = " << T << " K, F_in = "
+                  << (F * 3600.0) << " kmol/h\n";   // print in kmol/h, store SI
 
-    // 3. Echo inputs (verbosity >= 3)
-    if (verbosity >= 3) {
-        std::cout << "  [MyOp] T = " << T << " K, F_in = " << inlet.F << " kmol/h\n";
-    }
+    // 3. Solve the model --- use solver/ classes for Newton/Wegstein.
+    //    newton1D(f, dfdx, x0, NROptions) -> NRResult { root, iterations, converged }
+    solver::NROptions nro;  nro.lower = 200.0;  nro.upper = 700.0;
+    auto r = solver::newton1D([&](scalar x){ /* g(x) */ return 0.0; },
+                              [&](scalar x){ /* g'(x) */ return 1.0; },
+                              /*x0=*/Tfeed, nro);
 
-    // 4. Solve the model --- use solver/ classes for Newton/Wegstein
-    NewtonRaphson nr;
-    nr.setVerbose(verbosity >= 3);
-    auto root = nr.solve([&](scalar x){ /* g(x) */ return /*...*/; },
-                         x0, /*tol=*/1e-8, /*maxIter=*/50);
-
-    // 5. Build produced streams
-    ProcessStream out = inlet;       // copy --- keeps thermo, name overwritten
+    // 4. Build produced streams into produced_ (order = your contract;
+    //    the Flowsheet binds them to names via `outputs (... )`)
+    produced_.clear();
+    ProcessStream out;
     out.name = "myOp_out";
-    out.T = T;
-    out.F = /*... */;
+    out.F = F;  out.T = T;  out.P = feed->lookupScalar("Pfeed", Dims::pressure);
+    out.z.resize(thermo.n());                    // fill ALL fields
     produced_.push_back(out);
 
-    // 6. Populate KPIs
-    kpis_["conversion"] = /*... */;
-    kpis_["T_out"]      = T;
+    // 5. Populate KPIs (they feed sizing / costing / sensitivity)
+    kpis_.clear();
+    kpis_["T_out"] = T;
+    kpis_["F"]     = F;
 
     return 0;     // 0 == converged
 }
@@ -746,40 +811,83 @@ Create \file{tutorials/myOp01\_quick\_smoke/} with
 \file{constant/thermoPackage}. Keep the case trivial so it doubles as a
 regression test.
 
-\subsection{Step 5 --- Regression}
+\subsection{Step 5 --- Build, WASM, regression}
 
 \begin{lstlisting}
-make all
-for t in tutorials/*/; do
-./choupoSolve "$t" > /dev/null 2>&1 && \
-        echo "PASS $(basename $t)" || echo "FAIL $(basename $t)"
-done
+make all                 # recursive find picks the new .cpp up automatically
+make wasm-gui            # MANDATORY: the GUI's WASM is a SEPARATE build (see below)
+bin/runTests             # NaN/inf guard on every case + golden-master KPIs
 \end{lstlisting}
+
+\begin{pitfall}
+\textbf{Rebuild the WASM or the browser will not see your type.}  The WASM
+solver is a separate compile from the native binary.  Symptom of a stale
+\file{.wasm}: the native run works, but the GUI errors
+\code{UnitOperation::New: unknown type 'myOp'}.  Fix with \code{make wasm-gui}
+(force a clean one with \code{make wasm-clean \&\& make wasm} if it says
+``Nothing to be done'').  Never validate with a bare
+\code{choupoSolve > /dev/null \&\& PASS} loop --- a solver can return NaN with
+exit code 0; \code{bin/runTests} is the only honest gate (\S\ref{sec:regression}).
+\end{pitfall}
 
 All previously-passing tutorials \emph{must} still pass.
 
 % =====================================================================
-\section{Adding a new thermodynamic model}
+\section{Adding a new thermodynamic model}\label{sec:add-thermo-model}
 
-Same factory pattern, with \code{ActivityModel} / \code{EquationOfState}
-/ \code{VaporPressureModel} / \code{HeatCapacityModel} / \code{Phase} as
-the base.
+Same explicit-factory spirit as everywhere else, with \code{ActivityModel} /
+\code{EquationOfState} / \code{VaporPressureModel} / \code{HeatCapacityModel} /
+\code{Phase} as the base.  The one difference from \code{UnitOperation} is
+\textbf{the factory takes construction arguments} (a thermo model needs the
+configuring sub-dict, and usually the component list), so its \code{Factory}
+signature is not the nullary unit-op one --- match the base you are extending:
 
-\paragraph{Example --- adding UNIQUAC as an activity model.}
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Base & \code{Factory} / register call \\
+\midrule
+\code{VaporPressureModel} & \code{(const DictPtr\&)};
+   \code{registerModel(name, f)} \\
+\code{HeatCapacityModel}   & \code{(const DictPtr\&)};
+   \code{registerModel(name, f)} \\
+\code{ActivityModel}       & \code{(const DictPtr\&, const std::vector<std::string>\&)};
+   \code{registerModel(name, f)} \\
+\code{EquationOfState}     & \code{(const DictPtr\&, const std::vector<Component>\&)};
+   \code{registerModel(name, f)} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent The detailed, copy-pasteable recipe --- with the validation-first
+AAD step and the EoS data-doctrine path --- is in
+\S\ref{sec:recipe-property}.  The short version, adding UNIQUAC as an activity
+model:
 
 \begin{enumerate}[leftmargin=*]
   \item \file{src/thermo/activityCoefficient/UNIQUAC.\{H,cpp\}}
-        inheriting \code{ActivityModel}. Override
-        \code{gamma(x, T)}, \code{readFromDict(...)}, \code{type()}.
-  \item In \file{src/thermo/activityCoefficient/ActivityModel.cpp}:
+        inheriting \code{ActivityModel}. Override the pure virtuals
+        \code{gamma(scalar T\_K, const sVector\& x)}, \code{n()},
+        \code{modelName()}; a constructor \code{UNIQUAC(const DictPtr\&, const
+        std::vector<std::string>\&)} reads the pair parameters.
+  \item In \file{src/thermo/activityCoefficient/ActivityModel.cpp}, add the
+        \code{\#include} and \emph{one} line in \code{registerBuiltins()}:
 \begin{lstlisting}[language=C++]
 #include "UNIQUAC.H"
 //...
 void ActivityModel::registerBuiltins() {
-    reg("ideal",  []{ return std::make_unique<Ideal>();   });
-    reg("NRTL",   []{ return std::make_unique<NRTL>();    });
-    reg("Wilson", []{ return std::make_unique<Wilson>();  });
-    reg("UNIQUAC",[]{ return std::make_unique<UNIQUAC>(); });   // new
+    registerModel("ideal",  [](const DictPtr&, const std::vector<std::string>& n)
+        -> std::unique_ptr<ActivityModel>
+        { return std::make_unique<IdealSolution>(n.size()); });
+    registerModel("NRTL",   [](const DictPtr& d, const std::vector<std::string>& n)
+        -> std::unique_ptr<ActivityModel>
+        { return std::make_unique<NRTL>(d, n); });
+    registerModel("Wilson", [](const DictPtr& d, const std::vector<std::string>& n)
+        -> std::unique_ptr<ActivityModel>
+        { return std::make_unique<Wilson>(d, n); });
+    registerModel("UNIQUAC",[](const DictPtr& d, const std::vector<std::string>& n)   // new
+        -> std::unique_ptr<ActivityModel>
+        { return std::make_unique<UNIQUAC>(d, n); });
 }
 \end{lstlisting}
   \item Use it in a tutorial's \file{thermoPackage}:
@@ -836,29 +944,44 @@ optionally \code{diagnostics()}), then one \code{reg("myOp", ...)} line in
 WASM (\code{make wasm-gui}) or the browser will not see the new op.
 
 % =====================================================================
-\section{Adding components, materials, reactions}
+\section{Adding components, materials, reactions}\label{sec:add-data}
 
-These are \emph{data-driven} --- no \cpp{} changes needed.
+These are \emph{data-driven} --- no \cpp{} changes needed.  WHERE each number
+belongs is not a matter of taste: it is decided by the data-governance doctrine
+(\file{docs/ai/data-doctrine.md}, summarised in \S\ref{sec:data-cascade}).
+Read that before adding or moving a value.
 
 \subsection{Components}
 
-Choupo's component data is organised in two tiers:
+Choupo's component data cascades through tiers, lowest precedence to highest:
+\code{proposed < standard < case < sector < unit}.
 
 \begin{itemize}[leftmargin=*]
   \item \file{data/standards/components/<name>.dat} --- the
-        \textbf{curated central catalogue} shipped with the simulator
-        (46 components at v0.0.40).  Treat this directory as read-only
-        from a case author's point of view: changes here are reviewed
-        edits to the standard library.
-  \item \file{<case>/constant/components/<name>.dat} --- \textbf{per-case
-        overlays}, where a user adds bespoke or sample-specific data for
-        a single case (a particular powder's sorption isotherm, a new
-        membrane solute, a laboratory measurement).  At load time
-        \code{Database} overlays the per-case file
-        \emph{field-by-field} on top of the standard catalogue entry,
-        so the overlay can extend or override individual fields without
-        having to repeat the whole component definition.
+        \textbf{curated central catalogue} shipped with the simulator.  Carries
+        only \textbf{arity-1 intrinsic} data: identity, \code{critical},
+        \code{gasIdeal}, \code{liquidPure}, \code{solid}, \code{transport}, the
+        \code{gibbsFormation} datum, and any \code{eosParameters\{\}}
+        model-keyed block.  Treat it as read-only --- the engine
+        \emph{refuses} to write here; a change is a reviewed curation act.  A
+        \textbf{pair} number (NRTL \(\tau\), Henry, \(k_{ij}\), a heat of
+        solution) is \textbf{never} copied into the \code{.dat}; it lives in a
+        catalogue, referenced by name.
+  \item \file{<case>/constant/components/<name>.dat} (and the same at
+        \file{<sector>/} and \file{<unit>/}) --- \textbf{per-scope overlays}
+        for sample-specific refinements (a particular powder's sorption
+        isotherm, a laboratory measurement).
 \end{itemize}
+
+\begin{keyidea}
+\textbf{The overlay merges block-by-block, NOT field-by-field.}  An overlay
+carrying \code{solid \{ rho\_p 1610; \}} replaces the \emph{entire}
+\code{solid\{\}} block --- the standard's \code{k\_v} is \emph{lost}, not
+deep-merged.  A reference-state block is the atomic unit of physical meaning;
+mixing a sample's \code{rho\_p} with the catalogue's \code{k\_v} would be a
+silent hidden hybrid.  \textbf{The curator must copy the whole block they
+refine.}  (This corrects the pre-doctrine ``field-by-field'' behaviour.)
+\end{keyidea}
 
 The file format is identical in both tiers:
 
@@ -936,12 +1059,22 @@ Three values are allowed:
 \end{tabularx}
 \end{center}
 
-The default is \code{gas} for backward compatibility with pre-v0.0.40
+The default is \code{gas} for backward compatibility with the earliest
 component files, but \textbf{new components should always declare it
 explicitly} so the datum is unambiguous at the source of truth.  A
 \code{solid} or \code{liquid} declaration without the matching $c_p$
 model throws a clear error from \code{Component::h\_formation} the
 first time a stream containing the component is evaluated.
+
+\begin{pitfall}
+\textbf{A missing \code{gibbsFormation} is now fatal, not papered over.}  The
+energy ledger runs on the elements datum \emph{only} (\S\ref{sec:energy-datum});
+the old ``fall back to the sensible datum with a note'' path was deleted.  A
+component that appears in a stream the balance touches but carries no formation
+datum throws, naming the component --- a loud curation gap, never a quietly
+wrong closure.  Curate the eleven historical gaps (or the new component's
+datum) before relying on the balance.
+\end{pitfall}
 
 Add the new component name to the case's \code{thermoPackage.components
 (...)} list (or to a per-case \file{constant/components/<name>.dat}
@@ -1026,6 +1159,18 @@ reactions
 
 Referenced from a CSTR / PFR by name
 (\code{reaction ethanol\_to\_water\_test;}).
+
+\begin{keyidea}
+\textbf{The reactions library cascades UP, like \code{thermoPackage}.}  When a
+branch of a fractal plant (\S\ref{sec:fractal}) is run \emph{standalone}, its
+named-reaction library resolves by walking up the parent-folder chain (capped
+at six levels) exactly as the thermo package does, and \textbf{announces its
+origin} --- \code{reactions library: loaded --- LOCAL} vs \code{inherited from
+<parent>/...}.  Before this symmetry was restored, a sub-sector run alone died
+with ``reaction not in constant/reactions'' because only the local folder was
+consulted: the two cascades were asymmetric.  No-silent-crutch: the cascade is
+loud.
+\end{keyidea}
 
 % =====================================================================
 \section{Adding an outer driver / post-processor}
@@ -1213,7 +1358,7 @@ Description
 Don't omit this on new files --- it doubles as licence notice.
 
 % =====================================================================
-\section{Regression testing}
+\section{Regression testing}\label{sec:regression}
 
 Regression is run with \code{bin/runTests}.  Run it before every
 change set; all previously-passing tutorials must still pass.
@@ -1357,6 +1502,619 @@ re-solving the flowsheet, it belongs in an outer driver.
 \end{keyidea}
 
 % =====================================================================
+\section{The fractal flowsheet --- nesting and \code{flattenNode}}
+\label{sec:fractal}
+
+\begin{whatyoulllearn}
+How a plant of sectors of units collapses to ONE flat solver problem, why the
+hierarchy is namespace-only, and how a branch runs standalone.
+\end{whatyoulllearn}
+
+A Choupo case is a \textbf{fractal}: a composite \emph{sector} nests leaf units
+(or further sectors), to any depth.  But the solver never sees the tree.
+\code{flattenNode} walks the declared children and collapses the hierarchy into
+\textbf{one flat solver problem} with dotted \code{plant.sector.unit} names ---
+the hierarchy is \emph{authoring and namespace} only, never a recursive
+solver-within-a-solver.  One flat Newton-on-tears recycle solves the whole
+plant.
+
+\begin{keyidea}
+\textbf{The hierarchy is discovered from the \emph{dicts}, not the filesystem.}
+\code{flattenNode} iterates the \code{children(... )} declared in
+\code{flowsheetDict}; a child loads as a sector only when its own
+\code{flowsheetDict} exists.  This is why the numeric instant directories
+(\S\ref{sec:instants}) sitting beside the sector folders are never mistaken for
+sectors --- they are not declared children and have no \code{flowsheetDict}.
+\end{keyidea}
+
+\paragraph{Lean fractal folders + the dual-reader.}  A node's topology may live
+either way, both first-class:
+\begin{itemize}[leftmargin=*,nosep]
+  \item the classic \file{<node>/system/flowsheetDict}, or
+  \item the lean \file{<node>/flowsheetDict} directly at the node root.
+\end{itemize}
+A \textbf{dual-reader} keeps both loading: the child loader reads
+\file{<child>/flowsheetDict} first and \emph{falls back} to
+\file{<child>/system/flowsheetDict}; the top-level \code{choupoSolve} does the
+same at the case root.  Existing fractal cases (esterification, twoSectorDemo)
+load byte-identically through the fallback --- \textbf{no forced mass-migration}.
+
+\paragraph{A branch runs alone.}  Because both \code{thermoPackage} and the
+reactions library cascade UP the parent chain (\S\ref{sec:add-data}), pointing
+\code{choupoSolve} at a sub-sector folder runs that branch as a complete case,
+inheriting the parent's thermo and reactions and announcing what it inherited.
+
+\paragraph{The model-boundary rule.}  A per-unit \code{thermo \{\}} override
+REPLACES the global models for that unit (components stay global, via
+\code{thermoFor}).  A stream crossing such a boundary is re-interpreted there.
+The governing law: \textbf{\(H\) is the conserved truth, \(T\) is the
+model-dependent readout}.  A model boundary is not a physical device, so there
+is no real \(\Delta T\) to absorb; H-continuity is a convention, not a law.  The
+default is \textbf{hold-\(T\), let-\(H\)-jump} (the discontinuity is visible in
+the printed enthalpy); a silent ``hold \(H\), flex \(T\)'' is rejected.  The
+honest opt-in is a \textbf{model-boundary audit} --- print \(\Delta H =
+H_{\mathrm{down}}-H_{\mathrm{up}}\) at fixed \((T,P,z)\), fold it into the
+first-law ledger, and hard-refuse across any phase / \code{vf} / speciation
+flip.  Full rationale: \file{docs/ai/energy.md}.
+
+% =====================================================================
+\section{Solution instants --- OpenFOAM-style per-iteration snapshots}
+\label{sec:instants}
+
+\begin{whatyoulllearn}
+Where the converged (and intermediate) stream tables are written, and why the
+layout is faithful to OpenFOAM's time directories.
+\end{whatyoulllearn}
+
+A run writes \textbf{durable per-iteration snapshots} of every stream, modelled
+on OpenFOAM's time directories.  \code{src/io/SolutionWriter} owns the writes;
+the durability core is atomic (\code{.tmp} $\to$ \code{rename} + \code{fsync},
+gated on \code{flushEach}), a restart re-seeds the recycle tear from the latest
+instant, and a litter sweep purges stale numeric dirs.
+
+\paragraph{The layout --- instants at the CASE ROOT.}  An instant is a bare
+iteration-\emph{number} directory at the case root, beside \file{constant/},
+\file{system/} and the fractal sector folders.  ``The time speaks for itself'' ---
+there is no \file{solution/} wrapper.
+
+\begin{lstlisting}
+case/
+  constant/  system/  reports/        # the usual case payload
+  FERMENTATION/  CONCENTRATION/  ...   # fractal SECTOR folders (alphabetic)
+  0/                                   # instant 0 (the initial seed)
+    streams                              # ROOT flat stream table (the spine)
+    FERMENTATION/ streams                # per-sector view
+    CONCENTRATION/ streams
+    byUnit/                              # per-unit breakout
+  1/  2/  3/                           # later recycle iterations
+  latest -> 3                          # convenience symlink to the highest
+  solution.log                         # the instant index
+\end{lstlisting}
+
+\begin{keyidea}
+\textbf{A stream IS a surface field (\(\phi\)); the OpenFOAM analogy is exact.}
+The payload file is named \code{streams}; \code{latest} is the
+highest-numbered instant (latestTime style --- restart discovers it by the max
+integer dir name).  A load-bearing \emph{all-digit filter} on the numeric-dir
+scan guarantees a sector folder (alphabetic) is never swept or mistaken for an
+instant, and the fractal loader iterating declared children (not a filesystem
+walk) guarantees the reverse.
+\end{keyidea}
+
+The pilot is \file{tutorials/plant/ChemicalPlantTutorial}; \code{writeInterval}
+controls how many instants land (set it to \code{1} on a 3-iteration case or
+you only see \code{0} and the final --- and miss the whole tear-residual
+march).
+
+% =====================================================================
+\section{The data cascade --- arity, scope, kind}\label{sec:data-cascade}
+
+\begin{whatyoulllearn}
+The mechanical decision procedure for WHERE every thermodynamic number lives.
+This is the engine-side summary; the canonical, ratified reference is
+\file{docs/ai/data-doctrine.md} --- read it before any curation act.
+\end{whatyoulllearn}
+
+\begin{keyidea}
+\textbf{A datum's home is decided by ARITY, then SCOPE, then KIND --- in that
+order.}  Read the quantity's \emph{definition}, not its frequency of use.
+\end{keyidea}
+
+\paragraph{(1) Arity --- how many species does the definition name?}
+\begin{itemize}[leftmargin=*,nosep]
+  \item \textbf{Arity-1} (the molecule alone on the table, no partner named ---
+        \emph{not even implicitly}) $\to$ INTRINSIC,
+        \file{data/standards/components/<name>.dat}: \(T_c, P_c, \omega\), MW,
+        \code{gibbsFormation}, \code{solid}, \code{liquidPure},
+        \code{transport}.
+  \item \textbf{Arity-2} (the definition must name a partner --- a solvent, a
+        counter-ion, an interaction species, \emph{even water}) $\to$ PAIR/SET
+        data in a \textbf{catalogue}, keyed by the pair, cited per value,
+        referenced by name.  NRTL \(\tau\), Henry \(H\), Pitzer \(\beta\), EoS
+        \(k_{ij}\), a heat of solution.  \textbf{Never copied into the
+        \code{.dat}.}
+\end{itemize}
+
+\paragraph{(2) Scope --- at what level is the number TRUE?}  A datum lives at
+the \emph{highest level where it is true} (the canonical value is a curation act
+in \file{data/standards/}).  A lower node overlays only when it makes the value
+\emph{more} true --- a sample-measured refinement.  Precedence, low to high:
+\code{proposed < standard < case < sector < unit}.
+
+\paragraph{(3) Kind --- the molecule, or the molecule-in-a-machine?}  A
+\emph{rate} (kinetics) or a \emph{geometry / distribution} (PSD) is NOT
+component data at all --- it lives in the operation's \code{constant/}
+(\code{constant/crystallisation}, \code{constant/dryingKinetics},
+\code{constant/reactions}).  PSD is a \emph{stream} attribute.
+
+\paragraph{The aqueous TIER and the default-solvent resolver.}  Water gets
+\emph{no} exemption from the arity test: an ``in-water'' property is pair data.
+Its one earned privilege is a single canonical, by-name aqueous reference tier
+--- \file{data/standards/electrolyte/ions.dat} for ions, and
+\file{data/standards/solution/<solute>-<solvent>.dat} for molecular solutes
+(the heat of solution).  The package declares a default solvent once
+(\code{solvent water;}); when an in-solvent property is needed and no solvent is
+named at the call site, the resolver uses the default \textbf{and announces it
+every run}:
+
+\begin{lstlisting}
+[thermo] dHsoln(sucrose): solvent not named -> DEFAULT = water;
+         solution/sucrose-water.dat  [Putnam & Kilday 1986]
+\end{lstlisting}
+
+\noindent Off-default it \emph{fails with a remedy} (``provide
+solution/sucrose-ethanol.dat or set \code{solvent water;} explicitly'') --- it
+never silently substitutes the water number.  This is implemented in
+\code{ThermoPackage} (\code{solventName\_}, the \code{SolutionRegistry} walk).
+
+\paragraph{The overlay merges block-by-block.}  As in \S\ref{sec:add-data}: a
+reference-state block (\code{solid\{\}}, \code{gasIdeal\{\}},
+\code{liquidPure\{\}}, each \code{eosParameters.<model>\{\}}) is the atomic unit
+of physical meaning.  An overlay replaces the whole block --- the curator copies
+the whole block they refine; a lone-scalar overlay is the forbidden hidden
+hybrid.
+
+\paragraph{Model extensibility --- \code{eosParameters\{ <model>\{\dots\} \}}.}
+The same definition test, asked of the \emph{model}:
+\begin{enumerate}[leftmargin=*,nosep]
+  \item A model needing only the corresponding-states triad \(\{T_c, P_c,
+        \omega\}\) (every cubic: SRK, PR, \dots) \textbf{reads the triad off the
+        Component and derives its own \(a_c, b, m, \alpha(T)\) in source} ---
+        adding it touches \emph{zero} data files (this is why adding PR after
+        SRK touched no \code{.dat}).  Do not pre-bake \(a_c\) into the
+        \code{.dat}.
+  \item A model-specific PURE parameter that cannot be generated (PC-SAFT's
+        \(m, \sigma, \varepsilon/k\)) goes in a \code{model}-keyed sub-block on
+        the component, \code{eosParameters\{ PCSAFT\{\dots\} \}}, each factory
+        reading \emph{its own} sub-block and ignoring the rest.
+  \item PAIR parameters (\(k_{ij}\)) go in a model-keyed catalogue,
+        \file{data/standards/eos/<model>/binaryInteractions/<i>-<j>.dat}, with
+        the always-permitted inline override in the package.
+\end{enumerate}
+A model with no required \code{eosParameters.<model>} block \textbf{fails with a
+remedy}, never a silent corresponding-states fallback.
+
+% =====================================================================
+\section{The elements datum --- one enthalpy surface}\label{sec:energy-datum}
+
+\begin{whatyoulllearn}
+Why the energy balance runs on ONE datum, how the heat of reaction / solution /
+crystallisation emerge from it, and what throws when a datum is missing.
+\end{whatyoulllearn}
+
+A heat balance that has to close \emph{through} a reactor, a crystalliser, or a
+dissolution cannot use a sensible (arbitrary-\(T_{\mathrm{ref}}\)) datum --- it
+would silently drop the heat of reaction.  Choupo runs the energy ledger on the
+\textbf{elements datum}: formation enthalpies at 298.15\,K, the same reference
+as the ideal-gas \(H_{ig}\), so the reaction / phase-change / dissolution
+enthalpy \emph{emerges} as the difference of formation enthalpies.
+
+\begin{keyidea}
+\textbf{One datum, no silent fallback (Vítor's law: elements-only,
+throw-on-gap).}  The second datum and every silent path were deleted ---
+\code{streamH\_sensible}, \code{solidH\_sensible}, the \code{tryDatum(elements
+= false)} fallback, the \code{EnergyRef::Sensible} arm.
+\code{streamH\_elements} now \emph{propagates a real missing-Hf gap}, naming the
+component, instead of swallowing it.  A curation gap is loud, never a quietly
+wrong closure.
+\end{keyidea}
+
+\paragraph{The solid term.}  A stream's enthalpy is computed over both phases:
+the fluid (\code{s.F}, \code{s.z}) \textbf{and} the solid carried in
+\code{s.s[]} (kmol/s per component), on the same elements datum ---
+\(\sum_i s.s[i]\cdot h^\circ_i(\mathrm{solid}, T)\), the same solid formation
+leg \code{Component::h\_formation(T,"solid")} uses.  Before this, the crystals a
+crystalliser had just made were silently dropped from the stream enthalpy and
+the heat of crystallisation read zero; counting \code{s.s[]} (plus the aqueous
+solution tier for the dissolved solute) closed the crystalliser balance.
+
+\paragraph{Utility legs vs process streams --- no double-count.}  The ledger
+partitions each unit's ins/outs by \code{category}
+(\file{src/reporting/BalanceMath.H}, \code{EnergyBalanceReport.cpp}):
+utility-tagged legs (steam $\to$ condensate) feed a \code{qBoundary}
+accumulator --- the real heat crossing the boundary --- while process streams
+feed \(h_{\mathrm{in}} / h_{\mathrm{out}}\).  An evaporator's \code{duty\_kW} is
+delivered \emph{through its own steam stream}, so it is INTERNAL and must NOT
+also be summed as an external item; a process-to-process exchanger's duty is
+likewise internal.  Closure \(= 100\cdot\Delta H / \text{supplied}\) over
+genuine boundary heat only.  This killed a fake \(2131\,\%\) non-closure that
+was a pure double-count, not lost latent heat.
+
+\paragraph{One enthalpy surface everywhere.}  The published stream \code{.H}
+(Flowsheet) and the isothermal-flash duty (\code{IsothermalFlash.cpp}) now run
+on the \emph{same} canonical elements-datum form the report reads
+(\code{H\_stream\_formation}, \(h_{ig} - \Delta h_{\mathrm{vap}}(T)\)), not a
+Watson-at-298 + \(\int c_p^{\mathrm{liq}}\) variant.  The two differed by the
+liquid latent model and surfaced as a \(\sim24\,\%\) gap between a flash's
+reported \(Q\) and its own stream \(\Delta H\); unifying the surface moves only
+the reported \emph{duty} (an energy KPI), never the material flows.
+
+% =====================================================================
+\section{Extending Choupo --- step by step}\label{sec:recipes}
+
+\begin{whatyoulllearn}
+Two complete, copy-pasteable walkthroughs ---
+\emph{tim-tim-por-tim-tim} --- each ending in a green
+\code{bin/runTests}.  Recipe~A: a new unit operation, end to end.  Recipe~B: a
+new property-prediction method, with the validation-first step that earns your
+trust before you simulate with it.
+\end{whatyoulllearn}
+
+% --------------------------------------------------------------------
+\subsection{Recipe A --- a new unit operation, end to end}
+\label{sec:recipe-unitop}
+
+\textbf{The worked example: \code{isothermalSplitter}} --- a unit that splits
+one feed into two outlets by a fraction \(\theta\) to the top, both outlets at
+the feed's \(T, P, z\) (composition unchanged; the spec is the split fraction).
+Trivially simple physics on purpose --- so every \emph{mechanical} step is
+visible.
+
+\paragraph{Step 1 --- The header.}
+\file{src/unitOperations/mixer/IsothermalSplitter.H} (it belongs beside the
+existing \code{Splitter}):
+
+\begin{lstlisting}[language=C++]
+#pragma once
+#include "core/Dictionary.H"
+#include "thermo/ThermoPackage.H"
+#include "unitOperations/UnitOperation.H"
+
+namespace Choupo {
+
+class IsothermalSplitter : public UnitOperation {
+public:
+    IsothermalSplitter() = default;
+    const std::string& type() const override { return type_; }
+
+    int solve(const DictPtr& dict,
+              const ThermoPackage& thermo,
+              int verbosity) override;
+
+    std::vector<ProcessStream>      producedStreams() const override { return produced_; }
+    std::map<std::string, scalar>   kpis()            const override { return kpis_; }
+
+private:
+    inline static const std::string type_ = "isothermalSplitter";
+    std::vector<ProcessStream>      produced_;
+    std::map<std::string, scalar>   kpis_;
+};
+
+} // namespace Choupo
+\end{lstlisting}
+
+\noindent Note the exact \code{solve} signature ---
+\code{int solve(const DictPtr\&, const ThermoPackage\&, int)} --- and that
+\code{type()} returns a reference to a member string.  Prepend the licence
+banner (\S on header banner); it doubles as the licence notice.
+
+\paragraph{Step 2 --- The implementation.}
+\file{src/unitOperations/mixer/IsothermalSplitter.cpp}.  The Flowsheet injects
+the inlet and your parameters as sub-dicts of \code{dict}; you publish outlets
+into \code{produced\_} in the order your \code{outputs (... )} declares:
+
+\begin{lstlisting}[language=C++]
+#include "mixer/IsothermalSplitter.H"
+#include "core/Dimensions.H"
+#include <iostream>
+
+namespace Choupo {
+
+int IsothermalSplitter::solve(const DictPtr& dict,
+                              const ThermoPackage& thermo,
+                              int verbosity)
+{
+    auto feed = dict->subDict("feed");          // F (kmol/s SI), Tfeed, Pfeed
+    auto comp = dict->subDict("composition");   // mole fractions z_i
+    auto op   = dict->subDict("operation");     // YOUR parameters
+
+    const scalar F     = feed->lookupScalar("F",     Dims::molarFlow);
+    const scalar Tfeed = feed->lookupScalar("Tfeed", Dims::temperature);
+    const scalar Pfeed = feed->lookupScalar("Pfeed", Dims::pressure);
+    const scalar theta = op->lookupScalar("splitFraction");    // [-], 0..1
+
+    if (theta < 0.0 || theta > 1.0)
+        throw std::runtime_error(
+            "isothermalSplitter: splitFraction must be in [0,1]");
+
+    std::vector<scalar> z(thermo.n());
+    for (std::size_t i = 0; i < thermo.n(); ++i)
+        z[i] = comp->lookupScalar(thermo.comp(i).name());
+
+    if (verbosity >= 3)
+        std::cout << "  [isothermalSplitter] F = " << (F * 3600.0)
+                  << " kmol/h, split " << theta << " to top\n";
+
+    produced_.clear();                          // ORDER == outputs(...) order
+    ProcessStream top;  top.name = "top";
+    top.F = theta * F;  top.T = Tfeed;  top.P = Pfeed;  top.z = z;
+    produced_.push_back(top);
+
+    ProcessStream bot;  bot.name = "bottom";
+    bot.F = (1.0 - theta) * F;  bot.T = Tfeed;  bot.P = Pfeed;  bot.z = z;
+    produced_.push_back(bot);
+
+    kpis_.clear();                              // KPIs feed sizing/costing/sweep
+    kpis_["F_top"]         = top.F;
+    kpis_["F_bottom"]      = bot.F;
+    kpis_["splitFraction"] = theta;
+
+    return 0;                                   // 0 == converged
+}
+
+} // namespace Choupo
+\end{lstlisting}
+
+\begin{keyidea}
+\textbf{Fill EVERY field of a produced stream} (\code{F, T, P, z}, and
+\code{vf} / \code{s} if relevant).  A half-filled stream propagates NaN
+downstream and the NaN guard fails the case --- by design.
+\end{keyidea}
+
+\paragraph{Step 3 --- Register it (the one line).}  Edit
+\file{src/unitOperations/UnitOperation.cpp}: add the include beside the other
+mixer includes, and one line in \code{registerBuiltins()}:
+
+\begin{lstlisting}[language=C++]
+#include "mixer/IsothermalSplitter.H"       // (1) beside #include "mixer/Splitter.H"
+//...
+void UnitOperation::registerBuiltins()
+{
+    auto reg = [](const std::string& name, auto&& maker) {
+        registerType(name, std::forward<decltype(maker)>(maker)); };
+    //...
+    reg("splitter",           []{ return std::make_unique<Splitter>(); });
+    reg("isothermalSplitter", []{ return std::make_unique<IsothermalSplitter>(); }); // (2)
+    //...
+}
+\end{lstlisting}
+
+\noindent That is the \emph{entire} registration story --- no macro, no static
+initialiser.  A student greps \code{registerBuiltins} and sees your type listed.
+
+\paragraph{Step 4 --- Build (the recursive pickup).}
+
+\begin{lstlisting}
+make all
+\end{lstlisting}
+
+\noindent The Makefile discovers sources with \code{find src -name '*.cpp'}, so
+the new \file{.cpp} is compiled with no Makefile edit; \code{-MMD -MP} tracks
+the new header dependency automatically.
+
+\paragraph{Step 5 --- Rebuild the WASM (MANDATORY).}
+
+\begin{lstlisting}
+make wasm-gui          # = choupoSolve + choupoProps, the two the GUI uses
+\end{lstlisting}
+
+\begin{pitfall}
+\textbf{Skip this and the GUI throws \code{UnitOperation::New: unknown type
+'isothermalSplitter'}} even though the native binary runs the type fine.  The
+WASM solver is a separate Emscripten compile; a new built-in only reaches the
+browser after a WASM rebuild.  If \code{make wasm} reports ``Nothing to be
+done'', force it: \code{make wasm-clean \&\& make wasm}.  Never run two
+\code{make wasm} concurrently --- they clobber \file{gui/public/wasm/}.
+\end{pitfall}
+
+\paragraph{Step 6 --- A minimal tutorial case.}  Keep it trivial so it doubles
+as a regression test.  \file{tutorials/steady/mixer/splitter01\_isothermal/}:
+
+\begin{lstlisting}
+splitter01_isothermal/
+  splitter01.cho                 # empty marker (the GUI's openable entity)
+  system/
+    controlDict                  # application choupoSolve; verbosity 3;
+    flowsheetDict                # the topology below
+  constant/
+    thermoPackage                # components ( benzene toluene ); ideal
+\end{lstlisting}
+
+\noindent The \file{system/flowsheetDict} (one feed boundary, one unit, two
+product boundaries):
+
+\begin{lstlisting}[language=dict]
+boundary
+{
+    inlets  ( feed );
+    feed { F 1.0 kmol/s; Tfeed 350 K; Pfeed 1 bar;
+            composition { benzene 0.5; toluene 0.5; } }
+}
+
+units
+(
+    {
+        name      S1;
+        type      isothermalSplitter;
+        in        feed;
+        outputs   ( top bottom );        // ORDER matches produced_ order
+        operation { splitFraction 0.3; }
+    }
+);
+\end{lstlisting}
+
+\paragraph{Step 7 --- Add KPIs to the regression (\code{expected}).}  Your
+\code{kpis()} already feed sizing, costing and the sweep/optimisation drivers;
+pin the load-bearing ones to golden masters.  Drop a
+\file{tutorials/steady/mixer/splitter01\_isothermal/expected}:
+
+\begin{lstlisting}
+# kind   name   key             expected   reltol
+kpi      S1     F_top           0.3        1e-6
+kpi      S1     F_bottom        0.7        1e-6
+stream   top    F               0.3        1e-6
+\end{lstlisting}
+
+\noindent then record/verify and run the full gate:
+
+\begin{lstlisting}
+bin/runTests --record tutorials/steady/mixer/splitter01_isothermal   # write from a trusted run
+bin/runTests                                                          # the whole corpus must stay green
+\end{lstlisting}
+
+\begin{keyidea}
+\textbf{The gate is \code{bin/runTests}, not a bare exit-code loop} ---
+NaN/inf guard on \emph{every} case plus the \code{expected} KPI/stream
+comparison (\S\ref{sec:regression}).  A solver can return NaN with exit code 0;
+only the structured-result scan catches it.
+\end{keyidea}
+
+% --------------------------------------------------------------------
+\subsection{Recipe B --- a new property-prediction method}
+\label{sec:recipe-property}
+
+A property model plugs into one of four bases.  \textbf{Pick the base by the
+quantity you predict}, then follow the same \code{fromDict} + \code{registerModel}
+pattern --- and validate against measured data \emph{before} you trust it.
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+You predict\dots & Base & \code{registerModel} factory signature \\
+\midrule
+\(P^{\mathrm{sat}}(T)\)        & \code{VaporPressureModel} & \code{(const DictPtr\&)} \\
+\(c_p(T)\)                     & \code{HeatCapacityModel}  & \code{(const DictPtr\&)} \\
+\(\gamma_i(T,x)\)              & \code{ActivityModel}      & \code{(const DictPtr\&, const std::vector<std::string>\&)} \\
+\(\varphi_i,\,Z,\,H^{\mathrm{res}}\) & \code{EquationOfState} & \code{(const DictPtr\&, const std::vector<Component>\&)} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{B.1 --- A vapour-pressure model (the simplest base).}  Say you add a
+two-parameter \code{Clapeyron} \(P^{\mathrm{sat}}\).
+
+\begin{enumerate}[leftmargin=*]
+  \item \file{src/thermo/vaporPressure/Clapeyron.\{H,cpp\}}, inheriting
+        \code{VaporPressureModel}, override the pure virtual
+        \code{scalar Psat\_Pa(scalar T\_K) const}; a constructor
+        \code{Clapeyron(const DictPtr\&)} reads the parameters (mirror
+        \file{Antoine.cpp}, whose ctor is \code{Antoine::Antoine(const
+        DictPtr\&)}).
+  \item Register --- include + one line in
+        \code{VaporPressureModel::registerBuiltins()}:
+\begin{lstlisting}[language=C++]
+#include "Clapeyron.H"
+//...
+void VaporPressureModel::registerBuiltins()
+{
+    registerModel("Antoine",
+        [](const DictPtr& d) -> std::unique_ptr<VaporPressureModel>
+        { return std::make_unique<Antoine>(d); });
+    registerModel("AmbroseWalton",
+        [](const DictPtr& d) -> std::unique_ptr<VaporPressureModel>
+        { return std::make_unique<AmbroseWalton>(d); });
+    registerModel("Clapeyron",                                          // new
+        [](const DictPtr& d) -> std::unique_ptr<VaporPressureModel>
+        { return std::make_unique<Clapeyron>(d); });
+}
+\end{lstlisting}
+  \item Select it in a component's \code{vaporPressure\{ model Clapeyron; ... \}}
+        block.
+\end{enumerate}
+
+\paragraph{B.2 --- Validate FIRST (the AAD step).}  A property model is
+\textbf{not trustworthy until it has been checked against measured data}.
+Choupo's \code{choupoProps} binary is the validation weapon: run the
+\emph{measured} dataset through the model and read the average absolute
+deviation (AAD) before you let the model into a flowsheet.
+
+\begin{lstlisting}
+choupoProps <validationCase>          # e.g. a propertyScan1D over measured T
+# the run prints, per point:  model vs measured, dev %;  headline:
+#   AAD = 1.8 %   AAD tolerance = 3.0 %   -> PASS
+\end{lstlisting}
+
+\begin{keyidea}
+\textbf{The number that earns trust is the AAD against measured data, not that
+the model compiles.}  The bench prints the per-point deviation and a headline
+AAD against a tolerance (the same machinery \code{HeatTransferBench} and the
+Pitzer activity validation use); a model that misses its anchor beyond
+tolerance fails loudly.  This is the property half of ``see, then decide'' ---
+you simulate with a model \emph{because} you have seen its AAD, never because a
+dropdown recommended it.
+\end{keyidea}
+
+\paragraph{B.3 --- An equation of state (and the data-doctrine path).}  An EoS
+is the one base where WHERE the parameters live is a doctrine decision.  The
+canonical reference is \file{docs/ai/data-doctrine.md}~\S4; in short:
+
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Corresponding-states EoS (reads only the triad).}  If the model
+        needs only \(\{T_c, P_c, \omega\}\), \textbf{read them off the
+        \code{Component} and derive the rest in source} --- touch \emph{zero}
+        data files.  This is exactly what \code{SRK} and \code{PR} do: the
+        \code{SRK} constructor reads \code{c.Tc()}, \code{c.Pc()},
+        \code{c.omega()} and computes \(a_c = \Omega_a R^2 T_c^2 / P_c\),
+        \(b = \Omega_b R T_c / P_c\), \(m = m(\omega)\).  Do \emph{not}
+        pre-bake \(a_c\) into the \code{.dat} (it would duplicate a value the
+        model owns and let the two drift).
+  \item \textbf{Model-specific PURE parameters (cannot be generated).}  PC-SAFT's
+        \(\{m, \sigma, \varepsilon/k\}\) live in a \code{model}-keyed sub-block
+        on the component --- additive, never disturbing the triad:
+\begin{lstlisting}[language=dict]
+// inside the component .dat
+eosParameters
+{
+    PCSAFT  { m 2.4653;  sigma 3.6478e-10;  epsilon_k 287.35;
+              provenance { origin regressed; method "Gross & Sadowski 2001"; } }
+    // SRK/PR appear in NO key here -- they read Tc, Pc, omega
+}
+\end{lstlisting}
+        Each factory reads \emph{its own} \code{eosParameters.<model>} sub-block
+        by name and ignores the rest, so one molecule carries SRK + PR +
+        PC-SAFT simultaneously, each with its own \code{provenance\{\}}.
+  \item \textbf{Pair parameters \(k_{ij}\).}  A model-keyed catalogue,
+        \file{data/standards/eos/<model>/binaryInteractions/<i>-<j>.dat}, with
+        the always-permitted inline override.  \code{SRK::fromDict} already
+        reads an inline \code{binaryInteractions} list of
+        \code{\{ i; j; kij; \}} dicts and resolves names positionally against
+        the component list.
+\end{enumerate}
+
+\paragraph{The explicit factory, and the open follow-up.}  Register the EoS the
+same explicit way, dispatching to a \code{fromDict} static (the
+\code{Component}-list overload):
+
+\begin{lstlisting}[language=C++]
+registerModel("PCSAFT",
+    [](const DictPtr& dict, const std::vector<Component>& comps)
+        -> std::unique_ptr<EquationOfState>
+    { return PCSAFT::fromDict(dict, comps); });
+\end{lstlisting}
+
+\begin{pitfall}
+\textbf{Glass-box requirement:} an EoS with no required
+\code{eosParameters.<model>} block on a component must \textbf{fail with a
+remedy} (``PCSAFT needs m, sigma, epsilon\_k for X; fit them with choupoProps or
+pick SRK/PR which run off Tc, Pc, omega''), \emph{never} a silent
+corresponding-states fallback.  \textbf{Open follow-up} (noted in the doctrine):
+a uniform \code{modelParams} accessor on \code{Component} that hands a factory
+its \code{eosParameters.<model>} sub-dict by model name is not yet generalised
+--- today each EoS that needs a pure block reads it itself.  Until that lands,
+copy the \code{liquidViscosity\{\}} raw-sub-dict reader pattern.
+\end{pitfall}
+
+% =====================================================================
 \section{Roadmap}
 
 Ordered by impact for the MCFT course and V\'\i tor's research:
@@ -1424,11 +2182,13 @@ Run from inside case dir                 & \code{runCase} \\
 List tutorials                           & \code{listCases} \\
 List built-in unit-op types (in code)    & \code{UnitOperation::availableTypes()} \\
 Tweak a dict field programmatically      & \code{dict->setScalarAtPath(path, v)} \\
-Add a unit op                            & \S 6 \\
-Add a thermo model                       & \S 7 \\
-Add a component / material / reaction    & \S 8 \\
-Add an outer driver / post-processor     & \S 9 \\
-Add a sizing model                       & \S 10 \\
+Add a unit op (full walkthrough)         & \S\ref{sec:recipe-unitop} (quick: \S\ref{sec:add-unitop-quick}) \\
+Add a property model (full walkthrough)  & \S\ref{sec:recipe-property} (quick: \S\ref{sec:add-thermo-model}) \\
+Add a component / material / reaction    & \S\ref{sec:add-data} \\
+Add an outer driver / post-processor     & --- (see the outer-driver section) \\
+Where does a number live?                & \S\ref{sec:data-cascade} + \file{docs/ai/data-doctrine.md} \\
+Energy datum / balance closure           & \S\ref{sec:energy-datum} \\
+Fractal flowsheet + instants             & \S\ref{sec:fractal}, \S\ref{sec:instants} \\
 Project conventions / AI rules           & \file{CLAUDE.md} \\
 User-facing how-to                       & \file{docs/userGuide.pdf} \\
 \bottomrule
