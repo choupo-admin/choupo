@@ -26,56 +26,41 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "EquipmentSize.H"
-#include "CrystalliserSize.H"
 #include "CycloneSize.H"
-#include "EvaporatorSize.H"
-#include "ShellTubeHX.H"
-#include "SprayDryerSize.H"
-#include "StirredTank.H"
 
 #include <stdexcept>
 
 namespace Choupo {
 
-std::map<std::string, EquipmentSize::Factory>& EquipmentSize::registry()
+EquipmentSizing CycloneSize::size(const std::string&     unitName,
+    const SimulationResult& result,
+    const Material&         material,
+    const DictPtr&          designRules) const
 {
-    static std::map<std::string, Factory> r;
-    return r;
-}
+    auto kpiIt = result.kpis.find(unitName);
+    if (kpiIt == result.kpis.end())
+        throw std::runtime_error("Cyclone: unit '" + unitName
+            + "' has no KPIs in the simulation result");
 
-void EquipmentSize::registerType(const std::string& name, Factory f)
-{
-    registry()[name] = std::move(f);
-}
+    const auto& k = kpiIt->second;
+    auto q = k.find("Q_gas");
+    if (q == k.end())
+        throw std::runtime_error("Cyclone: unit '" + unitName
+            + "' has no 'Q_gas' KPI -- the cyclone carries no gas load in this "
+              "run (nothing to size)");
 
-std::unique_ptr<EquipmentSize> EquipmentSize::New(const std::string& type)
-{
-    auto it = registry().find(type);
-    if (it == registry().end())
-    {
-        std::string avail;
-        for (const auto& kv : registry()) avail += " " + kv.first;
-        throw std::runtime_error("EquipmentSize: unknown type '" + type
-            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
-    }
-    return it->second();
-}
+    const scalar Q_gas = q->second;     // m^3/s   (Guthrie sizeKey)
 
-void EquipmentSize::registerBuiltins()
-{
-    registerType("stirredTank",
-        []{ return std::make_unique<StirredTank>(); });
-    registerType("shellTubeHX",
-        []{ return std::make_unique<ShellTubeHX>(); });
-    registerType("evaporator",
-        []{ return std::make_unique<EvaporatorSize>(); });
-    registerType("crystalliser",
-        []{ return std::make_unique<CrystalliserSize>(); });
-    registerType("sprayDryer",
-        []{ return std::make_unique<SprayDryerSize>(); });
-    registerType("cyclone",
-        []{ return std::make_unique<CycloneSize>(); });
+    const scalar P_des = designRules->lookupScalarOrDefault("pressureDesign", 1.0);
+
+    EquipmentSizing d;
+    d.unitName       = unitName;
+    d.equipmentType  = "cyclone";
+    d.material       = material.name;
+    d.values["Q_gas"]          = Q_gas;
+    d.values["pressureDesign"] = P_des;
+    if (k.count("bodyDiameter")) d.values["bodyDiameter"] = k.at("bodyDiameter");
+    return d;
 }
 
 } // namespace Choupo

@@ -1,0 +1,76 @@
+/*---------------------------------------------------------------------------*\
+  FERMENTATION / system/flowsheetDict   (SECTOR -- COMPOSITE with INTERNAL RECYCLE)
+
+  Continuous fermentation side-loop of the sugar plant: a slip-stream of
+  fresh juice (Must) is hydrolysed + fermented into ethanol + CO2, the
+  Flash splits the volatiles (EthanolVapour product) from the liquid
+  bottoms, and a Splitter recycles 80 % of the bottoms back to the
+  Mixer so unconverted sucrose gets another shot.  Pedagogical purpose:
+
+    1. Reaction (Arrhenius first-order in sucrose).
+    2. Vapour-liquid flash for separation.
+    3. Tear-stream RECYCLE that the Wegstein/Newton outer loop must
+       iterate to a fixed point.
+
+  Topology:
+
+      Must ──►[Mixer]──MixedFeed──►[Fermentor]──FermOut──►[Flash]──►EthanolVapour
+                ▲                                            │
+                │                                            ▼
+                │                                          Liquid
+                │                                            │
+                └─Recycle─────[Splitter]◄───────────────────┘
+                                  │
+                                  ▼
+                                Purge
+
+  Tear stream:  Recycle  (Splitter output -> Mixer input).
+\*---------------------------------------------------------------------------*/
+
+children    ( Mixer  Fermentor  Flash  Splitter );
+
+boundary
+{
+    inlets   ( Must );
+    outlets  ( EthanolVapour  Purge );
+}
+
+streams     // defaults for isolated run; the plant cables Must from outside
+{
+    Must
+    {
+        F                50 kmol/h;
+        T               310 K;
+        P                 1 bar;
+        molarComposition { water 0.95;  sucrose 0.05; }
+    }
+
+    // Initial guess for the tear.  The Wegstein/Newton outer loop
+    // iterates this until it matches what the Splitter actually
+    // produces.  Composition picked roughly mid-conversion so the
+    // first pass is in a reasonable basin.
+    Recycle
+    {
+        F               150 kmol/h;
+        T               310 K;
+        P                 1 bar;
+        molarComposition { water 0.85;  sucrose 0.02;  ethanol 0.10;  CO2 0.03; }
+    }
+}
+
+tearStreams    ( Recycle );
+recycleSolver  Newton;        // default; switch to Wegstein for tougher recycles
+recycleTol     1e-5;
+recycleMaxIter 80;
+
+connections
+(
+    { from Must;                to Mixer/Must;            }   // sector inlet -> Mixer
+    { from Recycle;             to Mixer/Recycle;         }   // tear -> Mixer
+    { from Mixer/Mixed;         to Fermentor/Feed;        }
+    { from Fermentor/Out;       to Flash/Feed;            }
+    { from Flash/Vapour;        to EthanolVapour;         }   // sector outlet (product)
+    { from Flash/Liquid;        to Splitter/In;           }
+    { from Splitter/Recycle;    to Recycle;               }   // tear back to Mixer
+    { from Splitter/Purge;      to Purge;                 }   // sector outlet (purge)
+);

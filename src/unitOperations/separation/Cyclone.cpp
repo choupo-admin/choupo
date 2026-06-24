@@ -186,6 +186,7 @@ int Cyclone::solve(const DictPtr& dict,
     const scalar massIn  = sMassTot;
     kpis_.clear();
     kpis_["bodyDiameter"]   = Dc;
+    kpis_["Q_gas"]          = Q;              // m^3/s  volumetric gas flow (sizing parameter)
     kpis_["d50"]            = d50;            // m
     kpis_["d50_micron"]     = d50 * 1.0e6;
     kpis_["efficiency"]     = etaGlobal;      // mass collection efficiency

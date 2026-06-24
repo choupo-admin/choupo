@@ -45,10 +45,14 @@ namespace {
 
 namespace fs = std::filesystem;
 
-// Mass flow [kg/s] of a stream = F [kmol/s] * Sigma z_i * MW_i [kg/kmol].
-// Mirrors ResponseExtractor::MW_mix; falls back to molar F (MW=1) only when
-// the molar-mass map is incomplete -- which is loud because the printed €/yr
-// would then be nonsense, so we instead THROW and tell the author.
+// Total mass flow [kg/s] of a stream, FLUID + SOLID:
+//   fluid = F [kmol/s] * Sigma z_i * MW_i ;   solid = Sigma s_i * MW_i .
+// A solid product (e.g. crystalline sugar `Powder`) carries almost all of its
+// mass in the solid phase s[] (F / z describe the fluid phases only) -- pricing
+// on the fluid mass alone would undercount the product by orders of magnitude
+// (the bug this guards against).  Mirrors the JSON `F_mass` + `F_solid_mass`.
+// Throws (loud) when a molar mass is missing -- the priced euro/yr would
+// otherwise be silent nonsense.
 scalar streamMassFlow(const SimulationResult& r, const std::string& streamName)
 {
     auto it = r.streams.find(streamName);
@@ -62,17 +66,26 @@ scalar streamMassFlow(const SimulationResult& r, const std::string& streamName)
             "size mismatch on stream '" + streamName + "' -- cannot form a mass "
             "flow for the price calculation");
 
-    scalar mw = 0.0;
-    for (std::size_t i = 0; i < s.z.size(); ++i)
+    auto mwOf = [&](std::size_t i) -> scalar
     {
         auto mit = r.componentMolarMass.find(r.componentNames[i]);
         if (mit == r.componentMolarMass.end())
             throw std::runtime_error("EconomicsPass: molar mass for component '"
                 + r.componentNames[i] + "' unavailable -- cannot mass-price "
                 "stream '" + streamName + "'");
-        mw += s.z[i] * mit->second;
-    }
-    return s.F * mw;     // kg/s
+        return mit->second;
+    };
+
+    scalar mwMix = 0.0;                         // kg/kmol of the fluid
+    for (std::size_t i = 0; i < s.z.size(); ++i)
+        mwMix += s.z[i] * mwOf(i);
+    scalar fluidMass = s.F * mwMix;             // kg/s
+
+    scalar solidMass = 0.0;                     // kg/s (crystalline phase)
+    for (std::size_t i = 0; i < s.s.size() && i < r.componentNames.size(); ++i)
+        solidMass += s.s[i] * mwOf(i);
+
+    return fluidMass + solidMass;               // kg/s, total mass leaving
 }
 
 // One priced stream line read from constant/economics (a revenue product or a
@@ -215,7 +228,15 @@ int EconomicsPass::run(SimulationResult& result)
         if (refuseOnMissing) return missing("labourRate (€/h, e.g. Eurostat/BLS chem sector)");
         std::cerr << "EconomicsPass: labourRate absent -- C_OL set to 0 (LOUD).\n";
     }
-    const scalar C_OL = operatorsTotal * labourRate * H;   // €/yr
+    // Labour cost = total operating positions * annual salary per operator.
+    // The salary is the LOADED hourly rate * the hours ONE operator works in a
+    // year (operatorAnnualHours, ~1960 h = 49 wk x 40 h, Eurostat/BLS basis) --
+    // NOT the plant's annual operating hours H.  (Conflating the two would pay
+    // each operator the full 7884 plant-hours, a ~4x overstatement: the bug
+    // this guards against.  Turton Sec. 8 cross-check: ~66 kUSD/yr/operator.)
+    const scalar operatorAnnualHours =
+        econDict_->lookupScalarOrDefault("operatorAnnualHours", 1960.0);
+    const scalar C_OL = operatorsTotal * labourRate * operatorAnnualHours;  // €/yr
 
     // C_RM: raw materials.  Each `rawMaterials ( { stream; price; } ... )`
     // entry prices a feed stream's mass flow.
@@ -332,15 +353,20 @@ int EconomicsPass::run(SimulationResult& result)
     scalar IRR        = std::nan("");
     bool   haveIRR    = false;
     {
-        // Bracket by scanning [0,1] for a sign change of NPV(i).
-        const int    nScan = 200;
-        scalar       iLo = 0.0, iHi = 1.0;
+        // Bracket by scanning [0, iScanMax] for a sign change of NPV(i).  A very
+        // profitable project can have IRR well above 100 % (NPV still positive at
+        // i=1), so the scan reaches 500 % -- otherwise a healthy project reports
+        // a bare "no break-even" which is misleading (it breaks even immediately,
+        // the root is just past 1).  Step held at 0.5 % for resolution.
+        const scalar iScanMax = 5.0;
+        const int    nScan = static_cast<int>(iScanMax / 0.005);
+        scalar       iLo = 0.0, iHi = iScanMax;
         scalar       fLo = npvAt(0.0);
         bool         bracketed = false;
         scalar       prevI = 0.0, prevF = fLo;
         for (int k = 1; k <= nScan; ++k)
         {
-            const scalar i = static_cast<scalar>(k) / static_cast<scalar>(nScan);
+            const scalar i = iScanMax * static_cast<scalar>(k) / static_cast<scalar>(nScan);
             const scalar f = npvAt(i);
             if (std::isfinite(prevF) && std::isfinite(f) && prevF * f < 0.0)
             {
@@ -437,6 +463,9 @@ int EconomicsPass::run(SimulationResult& result)
               << ") = " << std::setprecision(2) << N_OL_per_shift
               << "/shift -> " << std::setprecision(1) << operatorsTotal
               << " operating positions\n";
+    std::cout << "    salary/operator = " << std::setprecision(0) << labourRate
+              << " EUR/h x " << operatorAnnualHours << " h/yr = "
+              << std::setw(0) << (labourRate * operatorAnnualHours) << " EUR/yr\n";
     std::cout << std::setprecision(0);
     std::cout << "    C_OL (labour)                = " << std::setw(14) << C_OL << " EUR/yr\n";
     std::cout << "    2.73  x C_OL                 = " << std::setw(14) << 2.73 * C_OL << " EUR/yr\n";

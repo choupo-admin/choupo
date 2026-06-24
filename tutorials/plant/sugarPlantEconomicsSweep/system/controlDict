@@ -1,0 +1,59 @@
+/*---------------------------------------------------------------------------*\
+  chemicalPlantTutorial / system/controlDict   (PLANT level)
+
+  The controlDict CASCADES down the folder tree: a sector or unit inherits
+  this one and overrides only what it changes (same overlay rule as the
+  data).  So this is the only controlDict the plant strictly needs.
+\*---------------------------------------------------------------------------*/
+
+application   choupoSolve;        // the recursive plant solver will live here
+description   "Sugar plant ECONOMICS SWEEP -- IRR / payback / NPV vs RawJuice sucrose content (Phase-2 SweepDriver post-chain differentiator)";
+
+verbosity     3;
+
+// Reports run over the FLATTENED plant (all units across all sectors), so the
+// stream table, mass balance and energy balance close over the whole factory
+// at once -- per-unit too, with the namespaced equipment (concentration.evap1,
+// drying.SD, ...).
+reports { streamTable {}  massBalance {}  energyBalance {}  utilities {}  spreadsheet {} }
+
+// Report-output layout: the CHT-faithful `postProcessing/<report>/<instant>/`
+// tree (OpenFOAM functionObject convention) instead of the legacy `reports/`.
+// This keeps the derived reports OUT of the way of the instant `streams` field
+// files: the stream TABLE is postProcessing/streamTable/<n>/streamTable.csv,
+// so "streams" no longer means two different things in the same case.  Default
+// (any other case) stays `reports/` -- this is the pilot opting in.
+reportsLayout postProcessing;
+
+// ---- Solution instants (OpenFOAM-style per-iteration stream snapshots) -------
+//  PILOT of the solution-directory discipline.  FAITHFUL to OpenFOAM, each
+//  retained recycle OUTER iteration ("pseudo-time") is a NUMBERED TIME
+//  DIRECTORY at THIS case root (0/ 1/ 2/ 3/, right next to constant/ system/
+//  and the sector folders CONCENTRATION/ DRYING/ FERMENTATION/ JuiceSplitter/
+//  -- "the time speaks for itself").  These instant dirs are gitignored run
+//  output; `ls` shows the convergence history at a glance.  The loader is NOT
+//  confused by them: it loads only the DECLARED `children (...)` that carry a
+//  system/flowsheetDict, never a numeric dir.
+//
+//  Inside each <n>/:
+//    streams    -- the global field file.  A stream IS the flux between two
+//                  units (OpenFOAM's surfaceField phi): stored ONCE here.
+//                  Carries a read-only topology{} echo (who-feeds-whom), a
+//                  per-stream bc tag (fixedValue feed / computed product /
+//                  tear true), and the lossless T/P/vf/H + molarFlows body.
+//                  Reads back through the engine's own dict tokenizer.
+//    byUnit/<dotted.unit>/ -- per-unit projection: a `streams -> ../../streams`
+//                  symlink (single source) + a `ports` dict naming this unit's
+//                  inlets/outlets by global key + bc role.  A shared interior
+//                  stream appears in BOTH touching units' ports but is stored
+//                  ONCE in streams.
+//  `latest` symlinks the newest instant; `solution.log` (case root) is the
+//  one-line-per-instant index.  Each instant publishes via an atomic rename,
+//  so a restart never reads a half write; with flushEach it is power-loss
+//  durable.  Restart finds "latest" by max instant number (OpenFOAM style).
+//
+//  ABSENT this whole block => the feature is OFF.  This sweep variant leaves
+//  solution-instant writing OFF: the SweepDriver runs the flowsheet once per
+//  swept point, so per-iteration instant dirs would multiply across the sweep
+//  with no value here.  See the sister case ChemicalPlantTutorial for the
+//  solution-directory pilot.

@@ -1,0 +1,103 @@
+/*---------------------------------------------------------------------------*\
+  ChemicalPlantTutorial / system/postDict
+
+  THE FLAGSHIP END-TO-END ECONOMIC APPRAISAL.
+
+  The post-processing chain runs over the FLATTENED plant (every unit across
+  every sector, with `SECTOR.Unit` names), turning the converged flowsheet
+  into money:
+
+    1. sizing     -- physical size of each major item from its unit-op KPIs
+                     (evaporator area, crystalliser magma volume, spray-dryer
+                     evaporation rate, fermentor volume).
+    2. costing    -- Guthrie/Turton purchased + bare-module + total-module cost
+                     (CEPCI-updated to the target year, EUR).
+    3. economics  -- OPEX (Turton COM_d), revenue, straight-line DCF, NPV, IRR,
+                     discounted + simple payback.  Prices read from
+                     constant/economics (refuse if absent).
+
+  Every cost factor + DCF assumption below is dict-owned and printed by the
+  pass (glass-box).  Defaults shown are cited teaching values (Turton 5th ed.,
+  Ch. 7-8 + Sec. 10); the market/time data (prices, CEPCI, FX, tax) lives in
+  constant/economics, dated and primary-cited.
+
+  Units NOT costed here (intentional, stated out loud):
+    * DRYING.BD  (belt/solid dryer) -- no area KPI exposed -> no sizer yet;
+    * DRYING.CY  (cyclone) -- carries NO gas/solids load in this run (dormant);
+    * mixers / flashes / splitters -- not capital equipment for this estimate.
+  N_np below counts the 5 costed process units accordingly.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        {
+            unitName    CONCENTRATION.Evap1;
+            type        evaporator;
+            material    SS304;             // sugar-contact -> stainless
+            designRules { pressureDesign 2.0; }     // near-atmospheric effect
+        }
+        {
+            unitName    CONCENTRATION.Evap2;
+            type        evaporator;
+            material    SS304;
+            designRules { pressureDesign 1.6; }
+        }
+        {
+            unitName    CONCENTRATION.Cryst;
+            type        crystalliser;
+            material    SS304;
+            designRules { pressureDesign 1.0; }
+        }
+        {
+            unitName    DRYING.SD;
+            type        sprayDryer;
+            material    SS304;
+            designRules { pressureDesign 1.0; }
+        }
+        {
+            unitName    FERMENTATION.Fermentor;
+            type        stirredTank;
+            material    SS316;             // fermentation broth
+            designRules
+            {
+                L_over_D        2.5;
+                pressureDesign  2.0;       // bar (operating x safety)
+                corrosionAllow  0.003;     // m
+                jointEfficiency 1.0;
+            }
+        }
+    );
+}
+
+costing
+{
+    method      Guthrie;
+    year        2024;
+    cepci       800;        // target-year CEPCI (Chemical Engineering, 2024 ~800)
+    cepci2001   397;        // Turton base-year basis
+    usdToEur    0.924;      // ECB 2024 average (see constant/economics)
+}
+
+economics
+{
+    method              discountedCashFlow;
+
+    projectLife         10;           // Turton Sec. 10
+    constructionPeriod  1;
+    discountRate        0.10;         // MARR
+    taxRate             0.21;         // US statutory (TCJA 2018) -- see constant/economics
+    depreciation        straightLine;
+    depreciableLife     9;
+    salvageFraction     0.0;
+    workingCapital      0.15;         // x FCI
+    streamFactor        0.90;         // 7884 h/yr
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    langFactor          3.63;         // solid-fluid (cross-check line only)
+    N_np                5;            // Evap1 + Evap2 + Cryst + SprayDryer + Fermentor
+    estimateClass       4;            // -30/+50% AACE banner
+
+    refuseOnMissingPrice 1;           // glass-box: refuse if a price is absent
+}

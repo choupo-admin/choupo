@@ -26,56 +26,44 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "EquipmentSize.H"
 #include "CrystalliserSize.H"
-#include "CycloneSize.H"
-#include "EvaporatorSize.H"
-#include "ShellTubeHX.H"
-#include "SprayDryerSize.H"
-#include "StirredTank.H"
 
 #include <stdexcept>
 
 namespace Choupo {
 
-std::map<std::string, EquipmentSize::Factory>& EquipmentSize::registry()
+EquipmentSizing CrystalliserSize::size(const std::string&     unitName,
+    const SimulationResult& result,
+    const Material&         material,
+    const DictPtr&          designRules) const
 {
-    static std::map<std::string, Factory> r;
-    return r;
-}
+    auto kpiIt = result.kpis.find(unitName);
+    if (kpiIt == result.kpis.end())
+        throw std::runtime_error("Crystalliser: unit '" + unitName
+            + "' has no KPIs in the simulation result");
 
-void EquipmentSize::registerType(const std::string& name, Factory f)
-{
-    registry()[name] = std::move(f);
-}
+    const auto& k = kpiIt->second;
+    auto lf = k.find("liquorFlow");
+    auto rt = k.find("residenceTime");
+    if (lf == k.end() || rt == k.end())
+        throw std::runtime_error("Crystalliser: unit '" + unitName
+            + "' is missing 'liquorFlow' / 'residenceTime' KPIs -- is it an "
+              "MSMPR crystalliser?");
 
-std::unique_ptr<EquipmentSize> EquipmentSize::New(const std::string& type)
-{
-    auto it = registry().find(type);
-    if (it == registry().end())
-    {
-        std::string avail;
-        for (const auto& kv : registry()) avail += " " + kv.first;
-        throw std::runtime_error("EquipmentSize: unknown type '" + type
-            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
-    }
-    return it->second();
-}
+    // Magma (working) volume = liquor volumetric flow * mean residence time.
+    const scalar V_magma = lf->second * rt->second;     // m^3
 
-void EquipmentSize::registerBuiltins()
-{
-    registerType("stirredTank",
-        []{ return std::make_unique<StirredTank>(); });
-    registerType("shellTubeHX",
-        []{ return std::make_unique<ShellTubeHX>(); });
-    registerType("evaporator",
-        []{ return std::make_unique<EvaporatorSize>(); });
-    registerType("crystalliser",
-        []{ return std::make_unique<CrystalliserSize>(); });
-    registerType("sprayDryer",
-        []{ return std::make_unique<SprayDryerSize>(); });
-    registerType("cyclone",
-        []{ return std::make_unique<CycloneSize>(); });
+    const scalar P_des = designRules->lookupScalarOrDefault("pressureDesign", 1.0);
+
+    EquipmentSizing d;
+    d.unitName       = unitName;
+    d.equipmentType  = "crystalliser";
+    d.material       = material.name;
+    d.values["V_magma"]        = V_magma;     // Guthrie sizeKey
+    d.values["liquorFlow"]     = lf->second;
+    d.values["residenceTime"]  = rt->second;
+    d.values["pressureDesign"] = P_des;
+    return d;
 }
 
 } // namespace Choupo

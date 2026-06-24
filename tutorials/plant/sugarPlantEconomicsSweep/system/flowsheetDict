@@ -1,0 +1,71 @@
+/*---------------------------------------------------------------------------*\
+  ChemicalPlantTutorial / system/flowsheetDict   (PLANT level -- COMPOSITE)
+
+  A composite node: it has `children` (sub-flowsheets, here the sectors) and
+  `connections` (the pipework between them).  The same shape a sector uses to
+  list its units -- one level up.  This is the fractal.
+
+  Naming convention (see docs/ai/case-layout.md):
+    SECTORS in CAPS         : CONCENTRATION, DRYING, FERMENTATION
+    Units in PascalCase     : Cryst, Evap1, Evap2
+    Streams in PascalCase   : RawJuice, Magma, Powder, EvapVapour
+    Components in lowercase : water, sucrose, N2
+\*---------------------------------------------------------------------------*/
+
+children    ( JuiceSplitter  CONCENTRATION  DRYING  FERMENTATION );
+
+// The plant's own interface: raw materials + utilities in, products out.
+// `Must` no longer a boundary inlet -- it is now produced internally by
+// JuiceSplitter from the single RawJuice header that feeds both lines.
+boundary
+{
+    inlets   ( RawJuice  PlantSteam  DryingAir );
+    // products + every effluent, so the plant-wide balance closes on all water
+    outlets  ( Powder  RecoveredDust  Stack
+               EvapVapour  EvapCondensate1  EvapCondensate2  DryerVapour
+               EthanolVapour  Purge );
+}
+
+// Plant feeds = fixed inputs (not cabled from anywhere).  These are the
+// DEFAULTS; nothing overrides them because the plant is the top level.
+// RawJuice is now sized to feed BOTH lines (150 kmol/h): 100 kmol/h
+// continues to CONCENTRATION (= the old direct feed) and 50 kmol/h goes
+// to FERMENTATION (= the old `Must` feed), via the JuiceSplitter's
+// 2/3 + 1/3 split.
+streams
+{
+    RawJuice    { F 150 kmol/h;  T 298.15 K;  P 1 bar;  molarComposition { water 0.94;  sucrose 0.06; } }
+    PlantSteam  { utility steamLP;  F 60 kmol/h; }
+    DryingAir   { F 300 kmol/h;  T 473.15 K;  P 1 bar;  state superheatedVapour;  molarComposition { N2 1.0; } }
+}
+
+// The cabling.  A connection OVERRIDES the destination's default feed with
+// the source corrente.  Boundary names (left/right ends) are this node's
+// interface; `SECTOR/Stream` are a child's boundary streams.
+connections
+(
+    // plant boundary  ->  juice splitter
+    { from RawJuice;                  to JuiceSplitter/In;            }
+
+    // juice splitter  ->  the two production lines
+    { from JuiceSplitter/ToConcentration; to CONCENTRATION/DilutedJuice; }
+    { from JuiceSplitter/ToFermentation;  to FERMENTATION/Must;          }
+
+    // plant boundary  ->  sector utilities
+    { from PlantSteam;                to CONCENTRATION/Steam;        }
+    { from DryingAir;                 to DRYING/DryingAir;           }
+
+    // sector  ->  sector  (the inter-sector pipe between buildings)
+    { from CONCENTRATION/Magma;       to DRYING/Magma;               }
+
+    // sector outlets  ->  plant boundary
+    { from DRYING/Powder;             to Powder;            }
+    { from DRYING/Dust;               to RecoveredDust;     }
+    { from DRYING/ExhaustClean;       to Stack;             }
+    { from DRYING/BdVapour;           to DryerVapour;       }
+    { from CONCENTRATION/Vapour;      to EvapVapour;        }
+    { from CONCENTRATION/Condensate1; to EvapCondensate1;   }
+    { from CONCENTRATION/Condensate2; to EvapCondensate2;   }
+    { from FERMENTATION/EthanolVapour; to EthanolVapour;    }
+    { from FERMENTATION/Purge;         to Purge;            }
+);

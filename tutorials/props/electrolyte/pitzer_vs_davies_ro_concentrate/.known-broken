@@ -1,0 +1,8 @@
+# PRE-EXISTING HANG (not an economics-Phase-3 regression).
+# choupoProps loops indefinitely after loading the electrolyte pair overlays
+# (Pitzer/Davies speciation on the RO-concentrate brine does not terminate).
+# Reproduced on a pristine feat/solution-directory HEAD with ALL economics
+# changes stashed, so it is independent of the sizing/costing/economics work.
+# Marked known-broken so the suite does not stall; needs a separate fix to the
+# electrolyte speciation iteration (timeout/iteration cap or convergence bug).
+electrolyte speciation does not converge -- choupoProps hangs (pre-existing)

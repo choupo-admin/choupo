@@ -1,0 +1,16 @@
+/*---------------------------------------------------------------------------*\
+  Evap2 / system/flowsheetDict   (LEAF -- 2nd effect)
+
+  Heated by the 1st-effect vapour (lower U, the vapour is cooler/lower-P).
+\*---------------------------------------------------------------------------*/
+
+type        evaporator;
+operation   { area 60 m2;  U 1800 W/m2/K; }
+
+boundary    { inlets ( Feed  Steam );  outlets ( Syrup  Vap2  Cond2 ); }
+
+streams     // defaults for isolated run; the sector cables Feed=Juice1, Steam=Vap1
+{
+    Feed   { F 70 kmol/h;  T 360 K;  P 1 bar;  molarComposition { water 0.91;  sucrose 0.09; } }
+    Steam  { F 40 kmol/h;  P 1.5 bar;  state saturatedVapour;    molarComposition { water 1.0; } }
+}

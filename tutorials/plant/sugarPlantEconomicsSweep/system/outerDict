@@ -1,0 +1,48 @@
+/*---------------------------------------------------------------------------*\
+  sugarPlantEconomicsSweep / system/outerDict
+
+  THE DIFFERENTIATOR -- a sensitivity sweep that reads ECONOMIC responses.
+
+  This case is the flagship sugar plant (tutorials/plant/ChemicalPlantTutorial)
+  driven by a SweepDriver instead of a single pass.  The driver runs the FULL
+  post-processing chain (sizing -> costing -> economics, system/postDict) on
+  EVERY converged point, so the responses below resolve `economics.IRR` /
+  `economics.paybackYears` / ... as ordinary unit.kpi look-ups -- the Phase-2
+  SweepDriver post-chain wiring in action.
+
+  Swept variable: the sucrose content of the RawJuice feed (mol fraction).
+  Richer juice -> more crystalline sugar product per unit feed -> more revenue
+  against an almost-unchanged plant cost -> the IRR climbs and the payback
+  appears and shortens.  The base feed (6 mol% sucrose) is sub-economic at the
+  current EU sugar price; the sweep walks the feed quality up through the
+  break-even point, so the IRR / NPV / payback trade-off is visible end to end:
+
+      sucrose   IRR      payback     NPV
+      0.090     0.9 %    --          -14.6 M EUR
+      0.104     6.6 %    --           -5.7 M EUR
+      0.118    11.6 %    9.3 yr       +2.8 M EUR
+      0.132    16.2 %    7.1 yr      +11.1 M EUR
+      0.146    20.4 %    5.7 yr      +19.2 M EUR
+      0.160    24.4 %    4.8 yr      +27.0 M EUR
+
+  A single CAPEX number cannot show this trade-off; the sweep can.  For the
+  FULL itemised single-point appraisal (FCI / TCI / COM_d / NPV / IRR /
+  payback with the AACE banner) run the sister case
+  tutorials/plant/ChemicalPlantTutorial (one pass, no outerDict).
+\*---------------------------------------------------------------------------*/
+
+type    sweep;
+
+parameter
+{
+    target   streams.RawJuice.molarComposition.sucrose;
+    range    ( 0.09  0.16 );
+    nPoints  6;
+}
+
+responses ( economics.IRR  economics.paybackYears  economics.NPV  economics.revenue  economics.FCI );
+
+report
+{
+    file    sweep_results.csv;
+}

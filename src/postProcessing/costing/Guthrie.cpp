@@ -29,20 +29,36 @@ License
 #include "Guthrie.H"
 
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
 namespace Choupo {
 
 namespace {
 
-// Turton 4th ed. Appendix A. Costs in 2001 USD.
+// Turton 4th/5th ed. Appendix A. Costs in 2001 USD (baseYear); the CostingPass
+// updates each to the target year via the CEPCI ratio, so EVERY correlation
+// here MUST be on the same 2001 basis or the CEPCI scaling is wrong.
+//
+// Two purchased-cost forms are supported, both 2001 USD:
+//   * Turton log-quadratic  : log10(Cp) = K1 + K2 log10 S + K3 (log10 S)^2
+//   * single-anchor power law: Cp = Cp_ref * (S / S_ref)^n
+// The power-law form is used for equipment Turton App. A does not tabulate as
+// a log-quadratic (crystalliser, spray dryer, cyclone); each anchor names its
+// PRIMARY source in the comment beside it (glass-box: one cited point + the
+// classic six-/seven-tenths exponent).
 struct EquipCoeffs
 {
-    scalar K1, K2, K3;     // C_p correlation
+    scalar K1, K2, K3;     // C_p log-quadratic correlation (Turton form)
     scalar B1, B2;         // bare-module
     scalar C1, C2, C3;     // pressure-factor correlation
     scalar Smin, Smax;     // sizing parameter validity range
     std::string sizeKey;   // which EquipmentSizing value provides S
+    bool   powerLaw  = false;  // true: use the Cp_ref/(S_ref,n) anchor below
+    scalar Cp_ref    = 0.0;    // anchor purchased cost [2001 USD]
+    scalar S_ref     = 1.0;    // anchor size (same units as the sizeKey)
+    scalar n_exp     = 0.6;    // power-law exponent
+    scalar baseYear  = 2001.0; // CEPCI basis of this correlation
 };
 
 // Process Vessels (vertical/horizontal) — Turton table A.1
@@ -64,10 +80,65 @@ const EquipCoeffs hxCoeffs {
     "A"
 };
 
+// Evaporator (long-tube / forced-circulation) — Turton 5th ed. App. A Table A.1
+// S = A [m²] heat-transfer area;  near-atmospheric -> the vessel ASME F_P path
+// is not used (F_P=1).  C1..C3 unused (no polynomial F_P for this item).
+const EquipCoeffs evaporatorCoeffs {
+    5.0238, 0.3475, 0.0703,
+    2.25,   1.82,
+    0.0, 0.0, 0.0,
+    10.0, 1000.0,
+    "A"
+};
+
+// Crystalliser (continuous forced-circulation / MSMPR) — single cited anchor.
+//   PRIMARY: Seider, Seader, Lewin & Widagdo, "Product & Process Design
+//   Principles" 3rd ed., crystalliser cost chart (continuous, jacketed).
+//   Anchor: ~10 m³ magma working volume -> ~3.0e5 USD (2001 basis); six-tenths
+//   scaling.  Near-atmospheric -> F_P=1.
+const EquipCoeffs crystalliserCoeffs {
+    0.0, 0.0, 0.0,
+    2.25, 1.82,                 // vessel-like bare-module (installed field unit)
+    0.0, 0.0, 0.0,
+    1.0, 200.0,
+    "V_magma",
+    true,  3.0e5, 10.0, 0.60, 2001.0
+};
+
+// Spray dryer — single cited anchor on the water-evaporation rate.
+//   PRIMARY: Turton et al. 5th ed. App. A "dryer" chart (spray); evaporation
+//   rate as the size driver.  Anchor: ~0.1 kg/s evaporated -> ~1.8e5 USD
+//   (2001 basis); six-tenths scaling.  Near-atmospheric -> F_P=1.
+const EquipCoeffs sprayDryerCoeffs {
+    0.0, 0.0, 0.0,
+    1.60, 1.20,                 // packaged dryer module factors (lighter than a vessel)
+    0.0, 0.0, 0.0,
+    0.005, 5.0,
+    "W_evap",
+    true,  1.8e5, 0.10, 0.60, 2001.0
+};
+
+// Cyclone (gas-solid) — single cited anchor on the inlet volumetric gas flow.
+//   PRIMARY: Sinnott & Towler, "Chemical Engineering Design" 6th ed., gas
+//   cyclone cost vs. gas throughput.  Anchor: ~1 m³/s -> ~2.5e3 USD (2001
+//   basis); seven-tenths scaling.  Near-atmospheric -> F_P=1.
+const EquipCoeffs cycloneCoeffs {
+    0.0, 0.0, 0.0,
+    1.30, 0.90,                 // light fabricated item
+    0.0, 0.0, 0.0,
+    0.05, 50.0,
+    "Q_gas",
+    true,  2.5e3, 1.0, 0.70, 2001.0
+};
+
 const EquipCoeffs& coeffsFor(const std::string& equipType)
 {
-    if (equipType == "stirredTank") return vesselCoeffs;
-    if (equipType == "shellTubeHX") return hxCoeffs;
+    if (equipType == "stirredTank")  return vesselCoeffs;
+    if (equipType == "shellTubeHX")  return hxCoeffs;
+    if (equipType == "evaporator")   return evaporatorCoeffs;
+    if (equipType == "crystalliser") return crystalliserCoeffs;
+    if (equipType == "sprayDryer")   return sprayDryerCoeffs;
+    if (equipType == "cyclone")      return cycloneCoeffs;
     throw std::runtime_error("Guthrie: no cost correlation for equipment '"
         + equipType + "'");
 }
@@ -126,12 +197,20 @@ CostBreakdown Guthrie::cost(const EquipmentSizing& dim, const Material& mat) con
     const scalar S = getS();
     if (S < c.Smin || S > c.Smax)
     {
-        // Extrapolate but warn; useful pedagogically.
-        // (Could throw or clamp instead.)
+        // Numerical honesty: extrapolate (do NOT clamp -- that would hide the
+        // out-of-range condition), but say so out loud so the student sees the
+        // correlation is being used past its fitted range.
+        std::cout << "  [validity] WARNING: " << dim.equipmentType << " '"
+                  << dim.unitName << "': size " << c.sizeKey << " = " << S
+                  << " is OUTSIDE the correlation range [" << c.Smin << ", "
+                  << c.Smax << "] -- cost EXTRAPOLATED, treat with caution.\n";
     }
 
-    // Purchased cost in 2001 USD.
-    const scalar Cp_2001_USD = std::pow(10.0, log10Cp(c, S));
+    // Purchased cost in 2001 USD -- Turton log-quadratic OR single-anchor
+    // power law, whichever this equipment's correlation declares.
+    const scalar Cp_2001_USD = c.powerLaw
+        ? c.Cp_ref * std::pow(S / c.S_ref, c.n_exp)
+        : std::pow(10.0, log10Cp(c, S));
 
     // Update to target year + currency
     const scalar Cp_target = Cp_2001_USD

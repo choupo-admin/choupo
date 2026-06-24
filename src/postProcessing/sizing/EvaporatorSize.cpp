@@ -26,56 +26,42 @@ License
     Required legal notices:  see NOTICE
 \*---------------------------------------------------------------------------*/
 
-#include "EquipmentSize.H"
-#include "CrystalliserSize.H"
-#include "CycloneSize.H"
 #include "EvaporatorSize.H"
-#include "ShellTubeHX.H"
-#include "SprayDryerSize.H"
-#include "StirredTank.H"
 
 #include <stdexcept>
 
 namespace Choupo {
 
-std::map<std::string, EquipmentSize::Factory>& EquipmentSize::registry()
+EquipmentSizing EvaporatorSize::size(const std::string&     unitName,
+    const SimulationResult& result,
+    const Material&         material,
+    const DictPtr&          designRules) const
 {
-    static std::map<std::string, Factory> r;
-    return r;
-}
+    auto kpiIt = result.kpis.find(unitName);
+    if (kpiIt == result.kpis.end())
+        throw std::runtime_error("Evaporator: unit '" + unitName
+            + "' has no KPIs in the simulation result");
 
-void EquipmentSize::registerType(const std::string& name, Factory f)
-{
-    registry()[name] = std::move(f);
-}
+    // The evaporator unit-op exposes its required area as `A_m2` (preferred)
+    // or the bare `A` alias; either is the characteristic size for costing.
+    const auto& k = kpiIt->second;
+    scalar A = 0.0;
+    if      (k.count("A_m2")) A = k.at("A_m2");
+    else if (k.count("A"))    A = k.at("A");
+    else
+        throw std::runtime_error("Evaporator: unit '" + unitName
+            + "' has no 'A_m2' (or 'A') KPI -- is it an evaporator effect?");
 
-std::unique_ptr<EquipmentSize> EquipmentSize::New(const std::string& type)
-{
-    auto it = registry().find(type);
-    if (it == registry().end())
-    {
-        std::string avail;
-        for (const auto& kv : registry()) avail += " " + kv.first;
-        throw std::runtime_error("EquipmentSize: unknown type '" + type
-            + "'.  Registered:" + (avail.empty() ? " (none)" : avail));
-    }
-    return it->second();
-}
+    const scalar P_des = designRules->lookupScalarOrDefault("pressureDesign", 1.0);
 
-void EquipmentSize::registerBuiltins()
-{
-    registerType("stirredTank",
-        []{ return std::make_unique<StirredTank>(); });
-    registerType("shellTubeHX",
-        []{ return std::make_unique<ShellTubeHX>(); });
-    registerType("evaporator",
-        []{ return std::make_unique<EvaporatorSize>(); });
-    registerType("crystalliser",
-        []{ return std::make_unique<CrystalliserSize>(); });
-    registerType("sprayDryer",
-        []{ return std::make_unique<SprayDryerSize>(); });
-    registerType("cyclone",
-        []{ return std::make_unique<CycloneSize>(); });
+    EquipmentSizing d;
+    d.unitName       = unitName;
+    d.equipmentType  = "evaporator";
+    d.material       = material.name;
+    d.values["A"]              = A;        // Guthrie sizeKey
+    d.values["A_m2"]           = A;
+    d.values["pressureDesign"] = P_des;
+    return d;
 }
 
 } // namespace Choupo
