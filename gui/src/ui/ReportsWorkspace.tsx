@@ -34,7 +34,7 @@ License
   (direct + outer), and the balances are computed from the boundary streams.
 \*---------------------------------------------------------------------------*/
 
-import { Box, Group, ScrollArea, Stack, Table, Text } from "@mantine/core";
+import { Box, Group, ScrollArea, SimpleGrid, Stack, Table, Text } from "@mantine/core";
 
 import { useStore } from "../state/store.js";
 import { massBalance, energyBalance } from "../case/balances.js";
@@ -65,6 +65,21 @@ export function ReportsWorkspace() {
   const mb = massBalance(runResult.streams, runResult.componentMolarMass);
   const eb = energyBalance(runResult.streams);
   const kgh = (kgs: number) => (kgs * 3600);
+
+  const econ = runResult.economics;
+  // Compact money formatting in the report currency (k / M suffix); plain
+  // integers for the per-year DCF cells to keep the table dense.
+  const money = (v: number) => {
+    const a = Math.abs(v);
+    if (a >= 1e6) return `${(v / 1e6).toFixed(2)}M`;
+    if (a >= 1e3) return `${(v / 1e3).toFixed(0)}k`;
+    return v.toFixed(0);
+  };
+  // The first operating year whose cumulative DCF turns non-negative -- the
+  // discounted payback year (highlighted in the table).
+  const paybackYear = econ
+    ? econ.cashFlow.find((r) => r.year > 0 && r.cumulativeDCF >= 0)?.year
+    : undefined;
 
   return (
     <ScrollArea h="100%" type="auto">
@@ -149,8 +164,91 @@ export function ReportsWorkspace() {
             {eb.skipped > 0 ? `  ${eb.skipped} boundary stream(s) had no enthalpy and were skipped.` : ""}
           </Text>
         </Section>
+
+        {/* ---- Economic appraisal (only when an economics postDict ran) -- */}
+        {econ && (
+          <Section title="Economic appraisal (DCF, Perry/Turton)"
+            subtitle={`discounted cash flow over ${econ.projectLife} yr — ${econ.currency}`}>
+            <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="xs" mb="sm">
+              <Metric label="FCI" value={`${money(econ.FCI)} ${econ.currency}`} />
+              <Metric label="TCI" value={`${money(econ.TCI)} ${econ.currency}`} />
+              <Metric label="COM (no depr.)" value={`${money(econ.COM_d)} ${econ.currency}/yr`} />
+              <Metric label="Revenue" value={`${money(econ.revenue)} ${econ.currency}/yr`} />
+              <Metric label="NPV"
+                value={`${money(econ.NPV)} ${econ.currency}`}
+                color={econ.NPV >= 0 ? "teal.4" : "red.5"} />
+              <Metric label="IRR"
+                value={econ.IRR === null ? "—" : `${(econ.IRR * 100).toFixed(1)}%`}
+                color={econ.IRR === null ? "dimmed"
+                  : econ.IRR >= econ.discountRate ? "teal.4" : "yellow.5"} />
+              <Metric label="Disc. payback"
+                value={econ.discountedPayback === null ? "never"
+                  : `${econ.discountedPayback.toFixed(1)} yr`} />
+              <Metric label="Simple payback"
+                value={econ.simplePayback === null ? "never"
+                  : `${econ.simplePayback.toFixed(1)} yr`} />
+            </SimpleGrid>
+            <Text size="xs" c="dimmed" mb={6}>
+              AACE Class-{econ.estimateClass} estimate — accuracy band {econ.accLo.toFixed(0)}% / +{econ.accHi.toFixed(0)}%.
+              Discount rate {(econ.discountRate * 100).toFixed(1)}%, tax {(econ.taxRate * 100).toFixed(0)}%.
+              {econ.irrAmbiguous ? "  IRR has multiple sign changes — interpret with care." : ""}
+            </Text>
+            <ScrollArea type="auto">
+              <Table striped withTableBorder fz="xs" ff="monospace" miw={760}>
+                <Table.Thead><Table.Tr>
+                  <Table.Th>Year</Table.Th>
+                  <Table.Th ta="right">Capital</Table.Th>
+                  <Table.Th ta="right">Revenue</Table.Th>
+                  <Table.Th ta="right">OPEX</Table.Th>
+                  <Table.Th ta="right">Depr.</Table.Th>
+                  <Table.Th ta="right">Taxable</Table.Th>
+                  <Table.Th ta="right">Tax</Table.Th>
+                  <Table.Th ta="right">After-tax</Table.Th>
+                  <Table.Th ta="right">Cash flow</Table.Th>
+                  <Table.Th ta="right">Disc.f</Table.Th>
+                  <Table.Th ta="right">Disc.CF</Table.Th>
+                  <Table.Th ta="right">Cum. DCF</Table.Th>
+                </Table.Tr></Table.Thead>
+                <Table.Tbody>
+                  {econ.cashFlow.map((r) => (
+                    <Table.Tr key={r.year}
+                      bg={r.year === paybackYear ? "var(--mantine-color-teal-light)" : undefined}>
+                      <Table.Td>{r.year}</Table.Td>
+                      <Table.Td ta="right">{r.investment !== 0 ? money(r.investment) : "—"}</Table.Td>
+                      <Table.Td ta="right">{money(r.revenue)}</Table.Td>
+                      <Table.Td ta="right">{money(r.opex)}</Table.Td>
+                      <Table.Td ta="right">{money(r.depreciation)}</Table.Td>
+                      <Table.Td ta="right">{money(r.taxableIncome)}</Table.Td>
+                      <Table.Td ta="right">{money(r.tax)}</Table.Td>
+                      <Table.Td ta="right">{money(r.afterTaxProfit)}</Table.Td>
+                      <Table.Td ta="right">{money(r.cashFlow)}</Table.Td>
+                      <Table.Td ta="right">{r.discountFactor.toFixed(3)}</Table.Td>
+                      <Table.Td ta="right">{money(r.discountedCF)}</Table.Td>
+                      <Table.Td ta="right"
+                        c={r.cumulativeDCF >= 0 ? "teal.4" : "red.5"}>{money(r.cumulativeDCF)}</Table.Td>
+                    </Table.Tr>
+                  ))}
+                </Table.Tbody>
+              </Table>
+            </ScrollArea>
+            <Text size="xs" c="dimmed" mt={4}>
+              Monetary cells in {econ.currency} (k / M suffix).  Year 0 is construction (the capital outflow);
+              the discounted payback row{paybackYear !== undefined ? "" : " (none — never recovered)"} is highlighted.
+              Full table in <code>reports/economics/cashFlow.csv</code> / <code>.ods</code>.
+            </Text>
+          </Section>
+        )}
       </Stack>
     </ScrollArea>
+  );
+}
+
+function Metric({ label, value, color }: { label: string; value: string; color?: string }) {
+  return (
+    <Box>
+      <Text size="xs" c="dimmed">{label}</Text>
+      <Text fw={600} c={color}>{value}</Text>
+    </Box>
   );
 }
 

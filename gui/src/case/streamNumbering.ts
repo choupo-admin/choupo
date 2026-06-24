@@ -113,8 +113,13 @@ export function globalStreamNumbering(
       uf.union(qf, qt);
     }
     for (const child of children as string[]) {
-      const rel = `${path ? path + "/" : ""}${child}/system/flowsheetDict`;
-      const text = raw[rel];
+      const base = `${path ? path + "/" : ""}${child}`;
+      // The tutorial registry stores a sub-flowsheet under `<child>/flowsheetDict`
+      // (relative to the case root); some re-rooting paths add a `system/` segment.
+      // Try BOTH -- with only the `system/` form the walk never descended into a
+      // sector, so every unit->unit pipe inside a sector (50%+ of a fractal
+      // plant's streams) registered nowhere and showed no PFD number.
+      const text = raw[`${base}/flowsheetDict`] ?? raw[`${base}/system/flowsheetDict`];
       if (!text) continue;
       const childFs = parseFlowsheet(text, `${child}/flowsheetDict`);
       if (childFs && Array.isArray(childFs["children"])) walk(childFs, qual(path, child));

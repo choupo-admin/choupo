@@ -287,6 +287,55 @@ export interface RunResult {
    *  2026-06-02.dat").  The GUI previews them read-only and offers a download
    *  of the DATED file; promotion to the bare <name>.dat stays an off-GUI act. */
   proposals?: { [relPath: string]: string };
+  /** Discounted-cash-flow appraisal (Perry / Turton Ch.10) from an economics
+   *  postDict: the headline scalars (FCI / TCI / COM_d / revenue / NPV / IRR /
+   *  payback + AACE accuracy band) AND the year-by-year DCF table.  Absent for
+   *  cases without an economics report.  Feeds the Reports "Economic appraisal"
+   *  section. */
+  economics?: Economics;
+}
+
+/** One row of the year-by-year discounted-cash-flow table (the income / cash-
+ *  flow statement).  Year 0 is construction (the investment outflow); years
+ *  1..N are operating years.  Monetary fields in the report currency. */
+export interface CashFlowRow {
+  year: number;
+  investment: number;     // FCI + WC outflow (year 0), <0
+  revenue: number;
+  opex: number;           // COM_d (no depreciation)
+  depreciation: number;
+  taxableIncome: number;
+  tax: number;
+  afterTaxProfit: number;
+  cashFlow: number;
+  discountFactor: number;
+  discountedCF: number;
+  cumulativeDCF: number;  // running sum of discountedCF
+}
+
+/** Headline economic appraisal + the full DCF table.  Mirrors the C++
+ *  EconomicsSummary (reports/economics/cashFlow.csv).  IRR is null when no real
+ *  internal rate exists (no sign change); payback is null when never recovered. */
+export interface Economics {
+  currency: string;
+  FCI: number;
+  WC: number;
+  TCI: number;
+  COM_d: number;
+  revenue: number;
+  depreciation: number;
+  NPV: number;
+  IRR: number | null;          // fraction; null when none
+  irrAmbiguous: boolean;
+  discountedPayback: number | null;  // years; null when never
+  simplePayback: number | null;
+  discountRate: number;        // fraction
+  taxRate: number;             // fraction
+  projectLife: number;
+  estimateClass: number;       // AACE class
+  accLo: number;               // accuracy band low  (%)
+  accHi: number;               // accuracy band high (%)
+  cashFlow: CashFlowRow[];
 }
 
 export interface Advisory {

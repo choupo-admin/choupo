@@ -71,11 +71,24 @@ function assignStreamNumbers(view: FlowsheetView): Map<string, number> {
   const add = (s: string) => { if (s && !num.has(s)) num.set(s, ++n); };
   const produced = new Set<string>();
   for (const u of view.units) for (const o of u.outputs) produced.add(o);
+  // Order intent (kept stable so the canvas badge and the Streams `#` column
+  // agree): boundary feeds first, then every produced stream, THEN any stream
+  // that still has no number -- interior pipes, declared tears, and inputs that
+  // are not a unit output.  Without that last sweep a fractal/flattened view
+  // left interior streams unnumbered ("muitas correntes nao tem numero"); now
+  // EVERY stream that appears in the view (edge or table row) gets one.
   for (const u of view.units) {
     const ins = Array.isArray(u.in) ? u.in : [u.in];
     for (const s of ins) if (!produced.has(s)) add(s);   // boundary feeds first
   }
   for (const u of view.units) for (const o of u.outputs) add(o);   // then products
+  // Backstop -- cover everything still missed, deterministically:
+  for (const u of view.units) {                          // any input not yet seen
+    const ins = Array.isArray(u.in) ? u.in : [u.in];
+    for (const s of ins) add(s);
+  }
+  for (const s of view.tearStreams ?? []) add(s);        // declared tears
+  for (const s of Object.keys(view.streams)) add(s);     // declared streams
   return num;
 }
 

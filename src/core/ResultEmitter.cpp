@@ -469,6 +469,54 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         os << "\n  ]";
     }
 
+    // ---- economics (discounted-cash-flow appraisal, Perry / Turton Ch.10) --
+    //   The headline scalars (FCI / TCI / COM_d / revenue / NPV / IRR /
+    //   payback + AACE accuracy band) AND the full year-by-year DCF table ---
+    //   exactly the columns of reports/economics/cashFlow.csv.  Emitted ONLY
+    //   when an economics postDict ran (economics.present); omitted otherwise
+    //   so every non-economics case's JSON is byte-for-byte unchanged.
+    if (r.economics.present)
+    {
+        const auto& e = r.economics;
+        os << ",\n  \"economics\": {\n";
+        os << "    \"currency\": "          << esc(e.currency)           << ",\n";
+        os << "    \"FCI\": "               << num(e.FCI)                << ",\n";
+        os << "    \"WC\": "                << num(e.WC)                 << ",\n";
+        os << "    \"TCI\": "               << num(e.TCI)                << ",\n";
+        os << "    \"COM_d\": "             << num(e.COM_d)              << ",\n";
+        os << "    \"revenue\": "           << num(e.revenue)            << ",\n";
+        os << "    \"depreciation\": "      << num(e.depreciation)       << ",\n";
+        os << "    \"NPV\": "               << num(e.NPV)                << ",\n";
+        os << "    \"IRR\": "               << (e.haveIRR ? num(e.IRR) : std::string("null")) << ",\n";
+        os << "    \"irrAmbiguous\": "      << (e.irrAmbiguous ? "true" : "false") << ",\n";
+        os << "    \"discountedPayback\": " << num(e.discPayback)        << ",\n";
+        os << "    \"simplePayback\": "     << num(e.simplePayback)      << ",\n";
+        os << "    \"discountRate\": "      << num(e.discountRate)       << ",\n";
+        os << "    \"taxRate\": "           << num(e.taxRate)            << ",\n";
+        os << "    \"projectLife\": "       << e.projectLife             << ",\n";
+        os << "    \"estimateClass\": "     << e.estimateClass           << ",\n";
+        os << "    \"accLo\": "             << num(e.accLo)              << ",\n";
+        os << "    \"accHi\": "             << num(e.accHi)              << ",\n";
+        os << "    \"cashFlow\": [";
+        for (std::size_t i = 0; i < e.cashFlow.size(); ++i)
+        {
+            const auto& cf = e.cashFlow[i];
+            os << (i ? ",\n" : "\n") << "      { \"year\": " << cf.year
+               << ", \"investment\": "     << num(cf.investment)
+               << ", \"revenue\": "        << num(cf.revenue)
+               << ", \"opex\": "           << num(cf.operatingCost)
+               << ", \"depreciation\": "   << num(cf.depreciation)
+               << ", \"taxableIncome\": "  << num(cf.taxableIncome)
+               << ", \"tax\": "            << num(cf.tax)
+               << ", \"afterTaxProfit\": " << num(cf.afterTaxProfit)
+               << ", \"cashFlow\": "       << num(cf.cashFlow)
+               << ", \"discountFactor\": " << num(cf.discountFactor)
+               << ", \"discountedCF\": "   << num(cf.discountedCF)
+               << ", \"cumulativeDCF\": "  << num(cf.cumulativeDCF) << " }";
+        }
+        os << "\n    ]\n  }";
+    }
+
     os << "\n}\n";
     os << "<<<Choupo:result-end>>>\n";
 }

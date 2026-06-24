@@ -64,6 +64,7 @@ import type {
   Advisory,
   ComponentCoverage,
   ConvergenceCurve,
+  Economics,
   ExperimentalDataset,
   ValidationBlock,
   ModelBoundary,
@@ -149,7 +150,7 @@ export class WasmAdapter implements SolverAdapter {
         worker.terminate();
         const { displayLog, streams, convergence, profiles, txy, componentMolarMass, kpis,
           utilityAllocation, computed, advisories, modelBoundaries, operationResults, thermoResolution,
-          componentCoverage, experimentalDatasets, validation } =
+          componentCoverage, experimentalDatasets, validation, economics } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence };
         if (Object.keys(kpis).length > 0) result.kpis = kpis;
@@ -165,6 +166,7 @@ export class WasmAdapter implements SolverAdapter {
         if (componentCoverage && componentCoverage.length > 0) result.componentCoverage = componentCoverage;
         if (experimentalDatasets && experimentalDatasets.length > 0) result.experimentalDatasets = experimentalDatasets;
         if (validation && validation.length > 0) result.validation = validation;
+        if (economics) result.economics = economics;
         if (trajectoryCsv) {
           const parsed = parseTrajectoryCsv(trajectoryCsv);
           if (parsed) result.trajectory = parsed;
@@ -320,6 +322,9 @@ export function extractStructured(log: string,
   experimentalDatasets?: ExperimentalDataset[];
   /** Engine-computed model-vs-measured AAD (the validation weapon). */
   validation?: ValidationBlock[];
+  /** Discounted-cash-flow appraisal (economics postDict): headline scalars +
+   *  the year-by-year DCF table. */
+  economics?: Economics;
 } {
   const beginIdx = log.lastIndexOf(BEGIN_MARK);
   const endIdx = log.lastIndexOf(END_MARK);
@@ -492,6 +497,38 @@ export function extractStructured(log: string,
 ...(componentCoverage ? { componentCoverage } : {}),
 ...(experimentalDatasets ? { experimentalDatasets } : {}),
 ...(validation ? { validation } : {}),
+...(parsed.economics && parsed.economics.present !== false
+      ? { economics: shapeEconomics(parsed.economics) }
+    : {}),
+  };
+}
+
+// Pass the emitted economics block through verbatim (the C++ already shapes it
+// exactly: finite numbers, or null for IRR / payback when none exists).  We only
+// re-assert the known fields so an unexpected payload can't leak untyped keys.
+function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
+  const n = (v: unknown): number => (typeof v === "number" && Number.isFinite(v) ? v : 0);
+  const nn = (v: unknown): number | null =>
+    typeof v === "number" && Number.isFinite(v) ? v : null;
+  return {
+    currency: typeof e.currency === "string" ? e.currency : "EUR",
+    FCI: n(e.FCI), WC: n(e.WC), TCI: n(e.TCI), COM_d: n(e.COM_d),
+    revenue: n(e.revenue), depreciation: n(e.depreciation),
+    NPV: n(e.NPV), IRR: nn(e.IRR), irrAmbiguous: !!e.irrAmbiguous,
+    discountedPayback: nn(e.discountedPayback), simplePayback: nn(e.simplePayback),
+    discountRate: n(e.discountRate), taxRate: n(e.taxRate),
+    projectLife: n(e.projectLife), estimateClass: n(e.estimateClass),
+    accLo: n(e.accLo), accHi: n(e.accHi),
+    cashFlow: Array.isArray(e.cashFlow)
+      ? e.cashFlow.map((r) => ({
+          year: n(r.year), investment: n(r.investment), revenue: n(r.revenue),
+          opex: n(r.opex), depreciation: n(r.depreciation),
+          taxableIncome: n(r.taxableIncome), tax: n(r.tax),
+          afterTaxProfit: n(r.afterTaxProfit), cashFlow: n(r.cashFlow),
+          discountFactor: n(r.discountFactor), discountedCF: n(r.discountedCF),
+          cumulativeDCF: n(r.cumulativeDCF),
+        }))
+      : [],
   };
 }
 
@@ -548,6 +585,20 @@ interface ResultPayload {
       nMeas?: number; nUsed?: number; nOutOfRange?: number; nNearZeroSkipped?: number;
       nNonFinite?: number; status?: string }[];
   }[];
+  economics?: {
+    present?: boolean;
+    currency?: string;
+    FCI?: number; WC?: number; TCI?: number; COM_d?: number;
+    revenue?: number; depreciation?: number; NPV?: number;
+    IRR?: number | null; irrAmbiguous?: boolean;
+    discountedPayback?: number | null; simplePayback?: number | null;
+    discountRate?: number; taxRate?: number;
+    projectLife?: number; estimateClass?: number; accLo?: number; accHi?: number;
+    cashFlow?: { year: number; investment: number; revenue: number; opex: number;
+      depreciation: number; taxableIncome: number; tax: number; afterTaxProfit: number;
+      cashFlow: number; discountFactor: number; discountedCF: number;
+      cumulativeDCF: number }[];
+  };
 }
 
 export function shapeStreams(payload: ResultPayload,
