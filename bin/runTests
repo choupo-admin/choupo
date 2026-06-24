@@ -454,6 +454,69 @@ if [ "$#" -eq 0 ]; then
             fail=$((fail+1))
         fi
     fi
+
+    # --- energy-closure regression (T1 + T2) on the flagship plant ----------
+    #  The ChemicalPlantTutorial is the flagship for the ONE-datum energy
+    #  balance.  Two assertions pin it so the "2131 % double-count" and the
+    #  "silent sensible fallback" can NEVER come back:
+    #
+    #   T1  per-unit datum + no gross non-closure.  Every unit MUST report
+    #       reference = `elements` (NO `sensible` and NO `gap` rows -- the
+    #       sensible fallback was deleted; a curation gap would print `gap`).
+    #       AND no unit's |closure - 100| may exceed 50 % -- that band catches
+    #       the old double-counts (Evap1 2131 %, Evap2 -35028 %) while honestly
+    #       tolerating the small residual water-curve inconsistency that remains
+    #       on the Q-determined evaporator (~5 %, documented).
+    #
+    #   T2  GLOBAL plant boundary first law.  |inputs - outputs| / |inputs|
+    #       from globalEnergyBoundary.csv MUST be < 1 %.  With one datum every
+    #       internal stream cancels, so this is the rigorous whole-plant check.
+    plant="tutorials/plant/ChemicalPlantTutorial"
+    "$ROOT/choupoSolve" "$plant" >/dev/null 2>&1
+    eb=$(find "$plant" -name energyBalance_byUnit.csv 2>/dev/null | sort | tail -1)
+    gb=$(find "$plant" -name globalEnergyBoundary.csv 2>/dev/null | sort | tail -1)
+
+    # T1
+    t1_bad=""
+    if [ -f "$eb" ]; then
+        while IFS=, read -r unit hin hout dH items closure ref; do
+            case "$unit" in unit|''|\#*) continue;; esac
+            [ -z "$ref" ] && continue
+            if [ "$ref" != "elements" ]; then
+                t1_bad="$t1_bad\n    $unit: reference='$ref' (must be elements -- no sensible/gap)"
+                continue
+            fi
+            # |closure - 100| <= 50  (numeric; closure may be n/a for pure nodes)
+            case "$closure" in n/a|'') continue;; esac
+            off=$(awk -v c="$closure" 'BEGIN{d=c-100; if(d<0)d=-d; print (d>50)?1:0}')
+            [ "$off" = "1" ] && t1_bad="$t1_bad\n    $unit: closure $closure % (>50 % off -- a double-count?)"
+        done < "$eb"
+    else
+        t1_bad="\n    energyBalance_byUnit.csv not produced"
+    fi
+    if [ -z "$t1_bad" ]; then
+        printf "PASS  %-40s  (per-unit elements datum, no double-count)\n" "energy-T1:plant"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (T1 per-unit closure)" "energy-T1:plant"; printf "$t1_bad\n"
+        fail=$((fail+1))
+    fi
+
+    # T2
+    if [ -f "$gb" ]; then
+        rp=$(awk -F, '/^residual_pct,/{v=$2; if(v<0)v=-v; print v}' "$gb")
+        ok=$(awk -v v="${rp:-999}" 'BEGIN{print (v<1.0)?1:0}')
+        if [ "$ok" = "1" ]; then
+            printf "PASS  %-40s  (global boundary |in-out|/in = %s %% < 1 %%)\n" "energy-T2:plant" "$rp"
+            pass=$((pass+1))
+        else
+            printf "FAIL  %-40s  (global boundary |in-out|/in = %s %% >= 1 %%)\n" "energy-T2:plant" "${rp:-?}"
+            fail=$((fail+1))
+        fi
+    else
+        printf "FAIL  %-40s  (globalEnergyBoundary.csv not produced)\n" "energy-T2:plant"
+        fail=$((fail+1))
+    fi
 fi
 
 echo "--------------------------------------------------------------------"

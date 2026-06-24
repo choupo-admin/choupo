@@ -68,51 +68,108 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         return v;
     };
 
-    // Sum of a unit's declared energy items (curated, signed +supplied/-removed).
-    auto itemsSum = [&](const std::string& unit, int& n) -> scalar {
+    // Sum of a unit's GENUINE EXTERNAL energy items (curated, signed
+    // +supplied/-removed).  EXCLUDES any duty whose heat is delivered through
+    // the unit's own utility streams (the evaporator's `duty_kW`): that heat is
+    // already counted as the steam/condensate enthalpy drop in `qBoundary`, so
+    // summing the KPI too is the old double-count.  A bare Q_kW / reboiler /
+    // condenser duty has no stream medium and IS a boundary item.
+    auto externalItemsSum = [&](const std::string& unit, int& n) -> scalar {
         scalar s = 0.0; n = 0;
         auto it = ctx.result.kpis.find(unit);
         if (it != ctx.result.kpis.end())
             for (const auto& [k, v] : it->second)
-                if (reporting::isEnergyItemKpi(k)) { s += v; ++n; }
+                if (reporting::isEnergyItemKpi(k)
+                    && !reporting::isInternalMediumDutyKpi(k)) { s += v; ++n; }
         return s;
     };
 
     const auto units = reporting::resolveUnits(topo, ctx.result);
-    int naCount = 0, sensibleCount = 0;
+    int naCount = 0, gapCount = 0;
     for (const auto& u : units)
     {
-        const auto e = reporting::unitEnergyBalance(lookup(u.ins), lookup(u.outs), ctx.thermo, Tref);
+        // ONE datum (elements): a present species with no elements/formation
+        // phase path THROWS naming the component (Vitor's law -- no silent
+        // sensible fallback).  For a DISPLAY report we surface that single
+        // unit's gap LOUDLY (a `gap:<reason>` row + the named component on
+        // stderr) and carry on, so one curation gap does not nuke the whole
+        // run's report.  The fix is to CURATE the component's gibbsFormation,
+        // never to re-add the second datum.
+        reporting::UnitEnergy e;
+        try {
+            e = reporting::unitEnergyBalance(lookup(u.ins), lookup(u.outs),
+                                             ctx.thermo, Tref);
+        } catch (const std::exception& ex) {
+            std::cerr << "WARNING: energyBalance: unit '" << u.name
+                      << "' has no elements-datum enthalpy -- " << ex.what()
+                      << "  (curate the gibbsFormation block; the per-unit "
+                         "closure is reported as a gap, not a sensible "
+                         "fallback)\n";
+            f << u.name << ",n/a,n/a,n/a,n/a,n/a,gap\n";
+            ++gapCount;
+            continue;
+        }
         int nItems = 0;
-        const scalar sumItems = itemsSum(u.name, nItems);
+        const scalar sumExternal = externalItemsSum(u.name, nItems);
 
         if (e.ref == reporting::EnergyRef::None)
         {
             // No stream-enthalpy datum, but the unit may still declare a duty.
             f << u.name << ",n/a,n/a,n/a,";
-            if (nItems > 0) f << std::fixed << std::setprecision(4) << sumItems;
+            if (nItems > 0) f << std::fixed << std::setprecision(4) << sumExternal;
             f << ",n/a,n/a\n";
             ++naCount;
             continue;
         }
 
-        const scalar dH = e.hOut - e.hIn;
-        const char* refName =
-            (e.ref == reporting::EnergyRef::Elements) ? "elements" : "sensible";
-        if (e.ref == reporting::EnergyRef::Sensible) ++sensibleCount;
+        // A process-to-process heat exchanger transfers its declared duty
+        // BETWEEN its own two process streams (hot in/out + cold in/out), so
+        // the heat is INTERNAL -- the four process streams already net it, and
+        // the unit's overall dH is ~0 (adiabatic envelope).  Its duty KPI is
+        // therefore not a boundary item (counting it double-counts, the old
+        // -3663 % on heatExchanger01).  Detected structurally: >=2 process
+        // inlets AND >=2 process outlets, with no utility stream.  A heater /
+        // flash (one process side + a boundary Q) is NOT this and keeps its
+        // duty as a genuine boundary item.
+        const bool internalExchanger =
+            (e.nProcIn >= 2 && e.nProcOut >= 2
+             && std::abs(e.qBoundary) <= 1.0e-9);
 
-        // energy_items: the declared sum if any, else the net duty (= dH).
-        // closure: 100 % when items reconcile with dH (or no breakdown).
-        const scalar items = (nItems > 0) ? sumItems : dH;
-        const scalar closure = (nItems > 0)
-            ? (std::abs(dH) > 1.0e-9 ? 100.0 * sumItems / dH
-             : (std::abs(sumItems) < 1.0e-6 ? 100.0 : 0.0))
-          : 100.0;   // net duty = dH by definition
+        // Process-stream change vs the heat that crossed the boundary.
+        //   dH       = hOut - hIn over the PROCESS streams
+        //   supplied = qBoundary (utility-stream drop) + the external duty KPIs
+        // A unit declares heat to reconcile against EITHER as a utility medium
+        // (qBoundary) OR as a bare external duty KPI (a flash/heater Q_kW),
+        // UNLESS that duty is internal to a process-to-process exchanger.
+        const scalar dH       = e.hOut - e.hIn;
+        const scalar supplied = internalExchanger ? 0.0
+                                                  : (e.qBoundary + sumExternal);
+        const bool   declares = !internalExchanger
+            && ((nItems > 0) || (std::abs(e.qBoundary) > 1.0e-9));
+
+        // When the unit DECLARES boundary heat, closure reconciles the process
+        // enthalpy rise against it: 100 % when dH == supplied.  When it declares
+        // NONE (adiabatic mixer, fermentor, dryer running on its own air), the
+        // dH IS its implied net duty by definition -> closure is trivially
+        // 100 % (there is nothing external to reconcile against).
+        scalar closure, items;
+        if (declares)
+        {
+            closure = (std::abs(supplied) > 1.0e-9)
+                ? 100.0 * dH / supplied
+                : (std::abs(dH) < 1.0e-6 ? 100.0 : 0.0);
+            items   = supplied;
+        }
+        else
+        {
+            closure = 100.0;   // net duty = dH by definition
+            items   = dH;
+        }
 
         f << u.name << "," << std::fixed << std::setprecision(4)
           << e.hIn << "," << e.hOut << "," << dH << ","
           << items << "," << std::setprecision(2) << closure << ","
-          << refName << "\n";
+          << "elements" << "\n";
     }
 
     // Breakdown: each unit's individual declared energy items.
@@ -128,12 +185,67 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     }
     f.close();
 
+    // ---- GLOBAL plant boundary (the first law over the whole flowsheet) ----
+    //   Σ H_elements(feeds) + Σ Q_boundary  =  Σ H_elements(products)
+    // On the ONE datum (elements, 25 C) every INTERNAL stream cancels (it is
+    // one unit's outlet and another's inlet), so only the true system feeds,
+    // products, and boundary duties survive.  Boundary duties = the external
+    // duty KPIs whose heat is NOT already carried by a boundary stream: the
+    // evaporator `duty_kW` is EXCLUDED (its chest steam is the PlantSteam feed,
+    // already in Σ H(feeds)), exactly as it is excluded per-unit.  This is the
+    // single number the GUI shows green and the regression's T2 asserts < 1 %.
+    {
+        scalar Hfeeds = 0.0, Hprods = 0.0, Qext = 0.0;
+        int    nFeed = 0, nProd = 0, nGap = 0;
+        auto sumStream = [&](const std::string& name, scalar& acc, int& cnt)
+        {
+            auto it = ctx.result.streams.find(name);
+            if (it == ctx.result.streams.end()) return;
+            try { acc += reporting::streamH_elements(it->second, ctx.thermo);
+                  ++cnt; }
+            catch (const std::exception&) { ++nGap; }
+        };
+        for (const auto& s : topo.feeds)    sumStream(s, Hfeeds, nFeed);
+        for (const auto& s : topo.products) sumStream(s, Hprods, nProd);
+        for (const auto& [unit, kv] : ctx.result.kpis)
+            for (const auto& [k, v] : kv)
+                if (reporting::isEnergyItemKpi(k)
+                    && !reporting::isInternalMediumDutyKpi(k))
+                    Qext += v;   // signed: + heat into the process
+
+        const scalar residual = Hfeeds + Qext - Hprods;
+        const scalar denom    = std::max(std::abs(Hfeeds), 1.0e-9);
+        const scalar relPct   = 100.0 * residual / denom;
+
+        const std::filesystem::path gpath = dir / "globalEnergyBoundary.csv";
+        std::ofstream g(gpath);
+        if (g.is_open())
+        {
+            g << "quantity,value_kW\n" << std::fixed << std::setprecision(6)
+              << "H_feeds,"        << Hfeeds   << "\n"
+              << "Q_boundary,"     << Qext     << "\n"
+              << "H_products,"     << Hprods   << "\n"
+              << "inputs,"         << (Hfeeds + Qext) << "\n"
+              << "outputs,"        << Hprods   << "\n"
+              << "residual,"       << residual << "\n"
+              << "residual_pct,"   << std::setprecision(4) << relPct << "\n"
+              << "n_feeds,"        << nFeed    << "\n"
+              << "n_products,"     << nProd    << "\n"
+              << "n_gap,"          << nGap     << "\n";
+            g.close();
+            if (ctx.verbosity >= 2)
+                std::cout << "  [report] globalEnergyBoundary -> " << gpath.string()
+                          << "  (|in-out|/in = " << std::setprecision(3)
+                          << std::abs(relPct) << " %)\n";
+        }
+    }
+
     if (ctx.verbosity >= 2)
     {
         std::cout << "  [report] energyBalance_byUnit -> " << path.string()
                   << "  (" << units.size() << " units";
-        if (sensibleCount > 0) std::cout << ", " << sensibleCount << " sensible-only";
-        if (naCount > 0)       std::cout << ", " << naCount << " n/a";
+        if (naCount > 0)  std::cout << ", " << naCount << " n/a";
+        if (gapCount > 0) std::cout << ", " << gapCount << " curation-gap";
         std::cout << ")\n";
     }
 }

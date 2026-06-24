@@ -966,24 +966,28 @@ int IsothermalFlash::solve(const DictPtr& dict,
         scalar H_in, H_out;
         if (useForm)
         {
-            // H_stream(T,P,vf,z) blends each component by the SAME vf over the
-            // overall z --- it does NOT solve the VLE split.  For BOTH ends of
-            // the duty we use the equilibrium PHASE compositions (x α-phase,
-            // y β-phase) weighted by the split, i.e. the very enthalpies the
-            // streams carry.  Using in.z with V_over_F instead smears the
-            // condensable over the vapour and gives the wrong sign (a condenser
-            // then reads as a heater).
+            // ONE enthalpy surface everywhere: the duty is computed on the
+            // SAME canonical elements-datum form (h_ig − ΔHvap_latent(T)) that
+            // the energy-balance report reads (H_stream_formation), NOT the
+            // Watson-at-298 + ∫cpLiq variant H_stream.  The two differ by the
+            // liquid latent model, which surfaced as a phantom ~24 % gap
+            // between this flash's reported Q and its own stream dH.  The
+            // SPLIT (V_over_F) is unchanged -- an isothermal flash sets it from
+            // the VLE, not from Q -- so this moves only the reported DUTY
+            // (an energy KPI), never the material flows.  We still weight by the
+            // equilibrium PHASE compositions (x α-phase, y β-phase) so a feed
+            // already at the drum's conditions reads Q = 0, not a phantom latent.
             const scalar bV = sol.V_over_F;
             if (feedSplit)
             {
                 const scalar bF = feedSol.V_over_F;
-                H_in = (1.0 - bF) * thermo.H_stream(T_feed, P_feed, 0.0, feedSol.x)
-                     +        bF  * thermo.H_stream(T_feed, P_feed, betaVf, feedSol.y);
+                H_in = (1.0 - bF) * thermo.H_stream_formation(T_feed, P_feed, 0.0, feedSol.x)
+                     +        bF  * thermo.H_stream_formation(T_feed, P_feed, betaVf, feedSol.y);
             }
             else
-                H_in = thermo.H_stream(T_feed, P_feed, vf_feed, in.z);
-            H_out = (1.0 - bV) * thermo.H_stream(in.T, in.P, 0.0, sol.x)
-                  +        bV  * thermo.H_stream(in.T, in.P, betaVf, sol.y);
+                H_in = thermo.H_stream_formation(T_feed, P_feed, vf_feed, in.z);
+            H_out = (1.0 - bV) * thermo.H_stream_formation(in.T, in.P, 0.0, sol.x)
+                  +        bV  * thermo.H_stream_formation(in.T, in.P, betaVf, sol.y);
         }
         else if (opts.phaseSet == PhaseSet::LL)
         {

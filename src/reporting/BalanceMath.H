@@ -89,17 +89,43 @@ inline bool isEnergyItemKpi(const std::string& k)
     return items.count(k) > 0;
 }
 
+// A duty KPI whose heat is delivered to the process THROUGH the unit's own
+// heating-medium streams (steam in / condensate out), which appear in the
+// unit's ins/outs.  That medium's enthalpy drop is ALREADY counted as a
+// stream item in the energy balance, so summing the KPI on top double-counts
+// it (the old "2131 % closure" on the evaporator).  Such a duty is INTERNAL
+// to the unit's stream ledger -- kept as a sizing/economy KPI but NOT an
+// external boundary item.  Today this is exactly the evaporator's `duty_kW`
+// (its chest steam + condensate are always streams); a bare `Q_kW`,
+// `Q_reboiler_kW`, `Q_condenser_kW` (flash / heater / column) has NO stream
+// medium and so IS a genuine boundary item.
+inline bool isInternalMediumDutyKpi(const std::string& k)
+{
+    return k == "duty_kW";
+}
 
-// Which enthalpy datum a per-unit energy balance was computed on.
-enum class EnergyRef { Elements, Sensible, None };
 
-// Per-unit energy balance result.  `ref` records which datum was used
-// (and therefore whether the heat of reaction is INCLUDED).
+// Which enthalpy datum a per-unit energy balance was computed on.  There is
+// only ONE datum -- the elements reference (Hf, 25 C) -- so the heat of
+// reaction always shows up in h_out - h_in; `None` means the unit carries no
+// stream-enthalpy data at all (e.g. a pure energy node).  The old `Sensible`
+// fallback was deleted (Vitor's law: elements-only, throw-on-gap, never a
+// silent second datum that drops the reaction heat).
+enum class EnergyRef { Elements, None };
+
+// Per-unit energy balance result, all on the elements datum.  `hIn`/`hOut`
+// carry the PROCESS streams; `qBoundary` is the heat delivered to the process
+// through the unit's UTILITY streams (steam/condensate etc.) -- the utility
+// enthalpy drop, signed + into the process.  Closing the balance compares the
+// process dH against qBoundary plus any genuine external duty KPI.
 struct UnitEnergy
 {
-    scalar    hIn  = 0.0;   // kW
-    scalar    hOut = 0.0;   // kW
-    EnergyRef ref  = EnergyRef::None;
+    scalar    hIn       = 0.0;   // kW, process inlets
+    scalar    hOut      = 0.0;   // kW, process outlets
+    scalar    qBoundary = 0.0;   // kW, heat in via utility streams (in - out)
+    int       nProcIn   = 0;     // # process (non-utility) inlets
+    int       nProcOut  = 0;     // # process (non-utility) outlets
+    EnergyRef ref       = EnergyRef::None;
 };
 
 // A genuinely two-phase stream (0<vf<1) carries the enthalpy of its equilibrium
@@ -127,9 +153,9 @@ inline std::optional<FlashSolution> streamSplit(const ProcessStream& s,
 // formation leg the crystalliser / Component use (h_formation(T,"solid")).
 // Without it the energy balance silently DROPS the crystals it just made --
 // the +677 kW non-closure on the sugar crystalliser -- even though the MASS
-// balance counts them (componentMassFlow reads s.s[] at :65).  Throws (->
-// caller falls back to sensible) only if a crystallising species lacks the
-// solid formation datum, which the elements datum genuinely cannot represent.
+// balance counts them (componentMassFlow reads s.s[] at :65).  Throws (naming
+// the species) only if a crystallising species lacks the solid formation datum
+// -- a real curation gap on the elements datum, NOT papered over by a fallback.
 inline scalar solidH_elements(const ProcessStream& s, const ThermoPackage& thermo)
 {
     scalar h = 0.0;
@@ -139,108 +165,63 @@ inline scalar solidH_elements(const ProcessStream& s, const ThermoPackage& therm
     return h;   // kW  (s.s [kmol/s] x h_formation [J/mol == kJ/kmol] = kW)
 }
 
-// Enthalpy [kW] of the crystalline phase on the SENSIBLE+latent datum
-// (per-component zero at Tref): Σ s.s[i]·∫_Tref^T cp_solid,i dT'.  Uses the
-// true solid Cp when the .dat carries a solidHeatCapacity{} block, else the
-// legacy Cp_liquid fallback (matches h_formation's cpSolidIntegral), else 0
-// for a Cp-less particulate.  The crystal mass was likewise dropped here
-// before -- harmless on the per-component-zero datum, but still incorrect.
-inline scalar solidH_sensible(const ProcessStream& s, const ThermoPackage& thermo,
-                              scalar Tref)
+// ELEMENTS reference (carries Hf -> reaction heat shows up) -- the ONE datum.
+// The fluid phase (s.z) plus the crystalline phase (s.s[]) are BOTH counted so
+// the balance closes over the crystals exactly as the mass balance does.
+//
+// Absent species (z_i <= 0) are skipped by COMPOSITION inside the thermo
+// kernels (H_ig / H_liquid_formation / solidH_elements), never by swallowing
+// an exception.  A PRESENT species with no phase path on the elements datum is
+// a real data gap -> the kernel THROWS naming the component, and that throw is
+// allowed to propagate (Vitor's law: throw-on-gap, never a silent downgrade to
+// a second datum that would drop the reaction heat).
+inline scalar streamH_elements(const ProcessStream& s,
+                               const ThermoPackage& thermo)
 {
-    scalar h = 0.0;
-    for (std::size_t i = 0; i < s.s.size() && i < thermo.n(); ++i)
+    scalar H;
+    if (auto sp = streamSplit(s, thermo))
     {
-        if (s.s[i] <= 0.0) continue;
-        const auto& c = thermo.comp(i);
-        if      (c.hasCpSolid())  h += s.s[i] * c.cpSolid().H(s.T, Tref);
-        else if (c.hasCpLiquid()) h += s.s[i] * c.cpLiquid().H(s.T, Tref);
+        const scalar h =
+            (1.0 - sp->V_over_F) * thermo.H_stream_formation(s.T, s.P, 0.0, sp->x)
+          +        sp->V_over_F  * thermo.H_stream_formation(s.T, s.P, 1.0, sp->y);
+        H = s.F * h;
     }
-    return h;
+    else
+        H = s.F * thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
+    return H + solidH_elements(s, thermo);
 }
 
-// ELEMENTS reference (carries Hf -> reaction heat shows up).  nullopt if
-// any component lacks gibbsFormation / Watson data.  The fluid phase (s.z)
-// plus the crystalline phase (s.s[]) are BOTH counted so the balance closes
-// over the crystals exactly as the mass balance does.
-inline std::optional<scalar> streamH_elements(const ProcessStream& s,
-                                              const ThermoPackage& thermo)
-{
-    try {
-        scalar H;
-        if (auto sp = streamSplit(s, thermo))
-        {
-            const scalar h =
-                (1.0 - sp->V_over_F) * thermo.H_stream_formation(s.T, s.P, 0.0, sp->x)
-              +        sp->V_over_F  * thermo.H_stream_formation(s.T, s.P, 1.0, sp->y);
-            H = s.F * h;
-        }
-        else
-            H = s.F * thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
-        return H + solidH_elements(s, thermo);
-    }
-    catch (const std::exception&) { return std::nullopt; }
-}
-
-// SENSIBLE+latent reference (per-component zero; no Hf).  nullopt if the
-// thermo lacks liquid Cp (permanent gases).
-inline std::optional<scalar> streamH_sensible(const ProcessStream& s,
-                                              const ThermoPackage& thermo,
-                                              scalar Tref)
-{
-    try {
-        scalar H;
-        if (auto sp = streamSplit(s, thermo))
-        {
-            const scalar h =
-                (1.0 - sp->V_over_F) * thermo.Hliquid(s.T, sp->x, Tref)
-              +        sp->V_over_F  * thermo.Hvapour(s.T, sp->y, Tref);
-            H = s.F * h;
-        }
-        else
-        {
-            const scalar h = (s.vf >= 0.5)
-                ? thermo.Hvapour(s.T, s.z, Tref)
-              : thermo.Hliquid(s.T, s.z, Tref);
-            H = s.F * h;
-        }
-        return H + solidH_sensible(s, thermo, Tref);
-    } catch (const std::exception&) { return std::nullopt; }
-}
-
-// Energy balance over a unit, using ONE consistent datum for all its
-// streams: try elements first (correct across reactors); if any stream
-// lacks Hf, retry the whole unit on the sensible datum; None if even
-// that fails.  Null entries in ins/outs are skipped.
+// Energy balance over a unit on the ELEMENTS datum (the only datum).  Process
+// streams (no `category`) accumulate into hIn/hOut; UTILITY streams (a steam /
+// condensate medium, carrying a `category`) accumulate into qBoundary as the
+// heat delivered to the process = (utility H in) - (utility H out).  Null
+// entries in ins/outs are skipped.  `None` only when the unit resolves to no
+// streams at all (a pure energy node); any present species lacking elements
+// data throws (it is NOT papered over by a sensible fallback any more).
 inline UnitEnergy unitEnergyBalance(const std::vector<const ProcessStream*>& ins,
     const std::vector<const ProcessStream*>& outs,
-    const ThermoPackage& thermo, scalar Tref)
+    const ThermoPackage& thermo, scalar /*Tref*/)
 {
-    auto tryDatum = [&](bool elements) -> std::optional<UnitEnergy> {
-        UnitEnergy u;
-        u.ref = elements ? EnergyRef::Elements : EnergyRef::Sensible;
-        for (const auto* s : ins)
-        {
-            if (!s) continue;
-            auto h = elements ? streamH_elements(*s, thermo)
-                            : streamH_sensible(*s, thermo, Tref);
-            if (!h) return std::nullopt;
-            u.hIn += *h;
-        }
-        for (const auto* s : outs)
-        {
-            if (!s) continue;
-            auto h = elements ? streamH_elements(*s, thermo)
-                            : streamH_sensible(*s, thermo, Tref);
-            if (!h) return std::nullopt;
-            u.hOut += *h;
-        }
-        return u;
-    };
-
-    if (auto u = tryDatum(/*elements=*/true))  return *u;
-    if (auto u = tryDatum(/*elements=*/false)) return *u;
-    return UnitEnergy{};   // ref = None
+    UnitEnergy u;
+    bool any = false;
+    for (const auto* s : ins)
+    {
+        if (!s) continue;
+        any = true;
+        const scalar h = streamH_elements(*s, thermo);
+        if (s->category.empty()) { u.hIn += h; ++u.nProcIn; }
+        else                       u.qBoundary += h;   // utility supplies heat in
+    }
+    for (const auto* s : outs)
+    {
+        if (!s) continue;
+        any = true;
+        const scalar h = streamH_elements(*s, thermo);
+        if (s->category.empty()) { u.hOut += h; ++u.nProcOut; }
+        else                       u.qBoundary -= h;    // utility carries heat out
+    }
+    u.ref = any ? EnergyRef::Elements : EnergyRef::None;
+    return u;
 }
 
 } // namespace reporting

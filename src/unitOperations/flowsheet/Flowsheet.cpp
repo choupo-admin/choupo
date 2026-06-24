@@ -753,6 +753,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                 auto probe = UnitOperation::New(cd->lookupWord("type"));
                 if (probe)
                 {
+                    const std::string thisType = cd->lookupWord("type");
                     const auto utilPorts = probe->utilityPorts();
                     std::set<std::size_t> utilPortSet(utilPorts.begin(),
                                                      utilPorts.end());
@@ -763,7 +764,45 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
                         const bool srcIsUtility = (sit != streamReg.end())
                                                   && !sit->second.category.empty();
                         const bool portIsUtility = utilPortSet.count(i) > 0;
-                        if (portIsUtility && !srcIsUtility)
+
+                        // Multi-effect cabling is PHYSICALLY CORRECT: effect-1
+                        // vapour heats effect-2, so an evaporator's `Steam` port
+                        // legitimately receives a sister evaporator's vapour
+                        // outlet -- a process stream by nature (it is real
+                        // material that leaves as the next condensate, not a
+                        // utility tapped off the plant header).  Suppress the
+                        // "expects a UTILITY stream" warning exactly for that
+                        // case: this unit is an evaporator and the source
+                        // endpoint is another evaporator child's outlet.
+                        bool multiEffectVapour = false;
+                        if (portIsUtility && !srcIsUtility
+                            && thisType == "evaporator")
+                        {
+                            const std::string ep =
+                                sourceFor(child + "/" + inlets[i]);
+                            const auto slash = ep.find('/');
+                            if (slash != std::string::npos)
+                            {
+                                const std::string srcChild = ep.substr(0, slash);
+                                const std::string sysPath =
+                                    folderPath + srcChild + "/system/flowsheetDict";
+                                const std::string leanP =
+                                    folderPath + srcChild + "/flowsheetDict";
+                                std::string srcType;
+                                if      (std::filesystem::exists(leanP))
+                                    srcType = Dictionary::fromFile(leanP)
+                                              ->lookupWordOrDefault("type", "");
+                                else if (std::filesystem::exists(sysPath))
+                                    srcType = Dictionary::fromFile(sysPath)
+                                              ->lookupWordOrDefault("type", "");
+                                else if (dict->found(srcChild))
+                                    srcType = dict->subDict(srcChild)
+                                              ->lookupWordOrDefault("type", "");
+                                multiEffectVapour = (srcType == "evaporator");
+                            }
+                        }
+
+                        if (portIsUtility && !srcIsUtility && !multiEffectVapour)
                             std::cerr << "WARNING: unit '" << qname
                                       << "' input '" << inlets[i] << "' (index "
                                       << i << ") expects a UTILITY stream but is"
@@ -2625,6 +2664,12 @@ int Flowsheet::solve(const DictPtr& dict,
             // non-closure on a two-phase feed (its shown H would not match
             // the flash duty's H_in).  Recover the split by flashing at
             // (T,P,z); single-phase streams keep the cheap pure-phase form.
+            // ONE enthalpy surface everywhere: the published .H uses the SAME
+            // canonical elements-datum form (h_ig − ΔHvap_latent(T)) that the
+            // energy-balance report reads (H_stream_formation), so the number
+            // the student SEES on the stream and the number that closes the
+            // balance are byte-identical -- not two latent models that differ
+            // by ∫cpLiq-vs-Watson and silently disagree.
             if (s.vf > 1.0e-9 && s.vf < 1.0 - 1.0e-9
                 && !thermo.phasesOfType("vapor").empty())
             {
@@ -2633,13 +2678,13 @@ int Flowsheet::solve(const DictPtr& dict,
                 const FlashSolution fs = IsothermalFlash::solveCore(fin, thermo, fopts);
                 if (fs.converged
                     && fs.V_over_F > 1.0e-9 && fs.V_over_F < 1.0 - 1.0e-9)
-                    s.H = (1.0 - fs.V_over_F) * thermo.H_stream(s.T, s.P, 0.0, fs.x)
-                        +        fs.V_over_F  * thermo.H_stream(s.T, s.P, 1.0, fs.y);
+                    s.H = (1.0 - fs.V_over_F) * thermo.H_stream_formation(s.T, s.P, 0.0, fs.x)
+                        +        fs.V_over_F  * thermo.H_stream_formation(s.T, s.P, 1.0, fs.y);
                 else
-                    s.H = thermo.H_stream(s.T, s.P, s.vf, s.z);
+                    s.H = thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
             }
             else
-                s.H = thermo.H_stream(s.T, s.P, s.vf, s.z);
+                s.H = thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
             s.H_valid = std::isfinite(s.H);
         }
         catch (const std::exception&)

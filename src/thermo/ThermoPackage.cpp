@@ -800,27 +800,38 @@ scalar ThermoPackage::H_stream(scalar T, scalar P_Pa,
                  +        vapFrac  * m.h_molar(T, m.p_sat(T) * (1.0 - 1.0e-9));
         }
 
+    // NOTE: H_stream is the blend-by-z form (each component smeared over BOTH
+    // phases by the SAME vapFrac); the energy-balance report and the published
+    // stream .H now run on H_stream_formation (the canonical h_ig − ΔHvap
+    // surface), so this path is no longer on the closure hot path.  It survives
+    // for the recycle tear residual and PhaseChanger duty steps.
+    //
+    // The per-phase guards below are by PHASE VALIDITY, not a swallowed data
+    // gap: under blend-by-z a NONVOLATILE solute (sucrose, NaCl) is nominally
+    // "in the vapour half" at vf>0 even though it has no gas phase -- its
+    // h_formation(T,"gas") legitimately has no path, and the correct physics is
+    // to omit that (non-existent) vapour contribution, NOT to throw.  This is a
+    // real phase fact (the species cannot be a vapour), the OPPOSITE of the
+    // datum-fallback the energy balance deleted: there we throw on a genuine
+    // missing-Hf gap; here we skip a phase the species cannot occupy.  Absent
+    // species (z=0) are skipped first by composition.
     scalar H = 0.0;
     for (std::size_t i = 0; i < n(); ++i)
     {
         if (z[i] <= 0.0) continue;
         if (vapFrac < 1.0)
         {
-            // Liquid contribution; throws only for unhandled phase paths,
-            // which we treat as "this component cannot be in the liquid
-            // half" -- skip.  Pedagogical contract: any (T, vf, composition)
-            // the solver actually produces has a reachable phase path.
             try {
                 H += z[i] * (1.0 - vapFrac)
                    * components_[i].h_formation(T, "liquid");
-            } catch (const std::exception&) {}
+            } catch (const std::exception&) {}   // species cannot be liquid here
         }
         if (vapFrac > 0.0)
         {
             try {
                 H += z[i] * vapFrac
                    * components_[i].h_formation(T, "gas");
-            } catch (const std::exception&) {}
+            } catch (const std::exception&) {}    // species cannot be vapour here
         }
     }
     return H;

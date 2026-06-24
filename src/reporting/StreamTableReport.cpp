@@ -88,11 +88,15 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
         for (std::size_t i = 0; i < comps.size() && i < s.s.size(); ++i)
             solidMass += s.s[i] * ctx.thermo.comp(i).MW() * 3600.0;
         f << "," << std::setprecision(6) << solidMass;
-        // Per-stream enthalpy flow [kW] (elements datum, sensible fallback).
-        auto h = reporting::streamH_elements(s, ctx.thermo);
-        if (!h) h = reporting::streamH_sensible(s, ctx.thermo, 298.15);
-        if (h) f << "," << std::setprecision(4) << *h;
-        else   f << ",n/a";
+        // Per-stream enthalpy flow [kW] on the ONE datum (elements, 25 C).
+        // No sensible fallback: if a present species genuinely lacks elements
+        // data the kernel throws -- for a DISPLAY table we catch that single
+        // stream and print n/a (an honest "no elements enthalpy here"), never
+        // a fabricated second datum.  The energy BALANCE, by contrast, lets
+        // the throw propagate so the gap surfaces loudly.
+        try { f << "," << std::setprecision(4)
+                 << reporting::streamH_elements(s, ctx.thermo); }
+        catch (const std::exception&) { f << ",n/a"; }
         for (std::size_t i = 0; i < comps.size(); ++i)
         {
             const scalar xi = (i < s.z.size()) ? s.z[i] : 0.0;

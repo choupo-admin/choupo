@@ -214,10 +214,23 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
     };
     for (const auto& u : units)
     {
-        const auto e = reporting::unitEnergyBalance(lookup(u.ins), lookup(u.outs), ctx.thermo, Tref);
+        // ONE datum (elements): a present species with no formation path
+        // throws naming the component -- surface it as a curation gap row,
+        // never a silent sensible fallback.
+        reporting::UnitEnergy e;
+        bool gap = false;
+        try {
+            e = reporting::unitEnergyBalance(lookup(u.ins), lookup(u.outs),
+                                             ctx.thermo, Tref);
+        } catch (const std::exception&) { gap = true; }
         ods.newRow();
         ods.textCell(u.name);
-        if (e.ref == reporting::EnergyRef::None)
+        if (gap)
+        {
+            ods.textCell("n/a"); ods.textCell("n/a");
+            ods.textCell("n/a"); ods.textCell("gap", OdsWriter::Bad);
+        }
+        else if (e.ref == reporting::EnergyRef::None)
         {
             ods.textCell("n/a"); ods.textCell("n/a");
             ods.textCell("n/a"); ods.textCell("n/a", OdsWriter::Bad);
@@ -227,9 +240,9 @@ void SpreadsheetReport::run(const DictPtr& dict, const ReportContext& ctx)
             ods.numberCell(e.hIn, 4);
             ods.numberCell(e.hOut, 4);
             ods.numberCell(e.hOut - e.hIn, 4);
-            const bool elem = (e.ref == reporting::EnergyRef::Elements);
-            ods.textCell(elem ? "elements" : "sensible",
-                         elem ? OdsWriter::Good : OdsWriter::Bad);
+            // ONE datum: every unit that resolves any stream is on the
+            // elements reference (the sensible fallback was deleted).
+            ods.textCell("elements", OdsWriter::Good);
         }
     }
 
