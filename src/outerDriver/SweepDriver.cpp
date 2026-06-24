@@ -28,6 +28,7 @@ License
 
 #include "SweepDriver.H"
 #include "ResponseExtractor.H"
+#include "core/ResultEmitter.H"
 
 #include <fstream>
 #include <iomanip>
@@ -93,6 +94,17 @@ int SweepDriver::run()
         std::cout << "  " << std::setw(20) << r;
     std::cout << "\n  " << std::string(6 + 16 + 22 * responses_.size(), '-') << "\n";
 
+    // Capture a representative converged pass to emit as the structured JSON
+    // result, so a consumer (the GUI flowsheet, a notebook) gets the stream
+    // table for ONE point — without it a swept case shows blank "— K — Pa"
+    // nodes even though every point solved.  We pick the converged point
+    // closest to the MIDDLE of the range (a typical operating point, not an
+    // extreme), the same way DesignSpec/Optimization emit their final pass.
+    SimulationResult representative;
+    bool             haveRep  = false;
+    std::size_t      bestDist = nPoints_;
+    const std::size_t midK    = (nPoints_ > 0) ? (nPoints_ - 1) / 2 : 0;
+
     int failures = 0;
     for (std::size_t k = 0; k < nPoints_; ++k)
     {
@@ -117,6 +129,19 @@ int SweepDriver::run()
             for (std::size_t i = 0; i < responses_.size(); ++i) csv << ",nan";
             csv << "\n";
             continue;
+        }
+
+        // Keep the converged point nearest the range middle as the GUI's
+        // representative stream snapshot.
+        if (result.converged)
+        {
+            const std::size_t d = (k > midK) ? (k - midK) : (midK - k);
+            if (!haveRep || d < bestDist)
+            {
+                representative = result;
+                haveRep        = true;
+                bestDist       = d;
+            }
         }
 
         // Extract responses
@@ -144,6 +169,11 @@ int SweepDriver::run()
     std::cout << "\n  Sweep complete.  " << (nPoints_ - failures)
               << "/" << nPoints_ << " points converged.\n"
               << "  CSV written to: " << reportFile_ << "\n\n";
+
+    // Emit the representative point's structured result so downstream
+    // consumers (the GUI) have a stream table to draw the flowsheet with.
+    if (haveRep)
+        emitResultJson(std::cout, representative);
 
     return (failures == 0) ? 0 : 1;
 }
