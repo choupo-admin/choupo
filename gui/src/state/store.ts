@@ -402,7 +402,14 @@ export const useStore = create<AppState>((set, get) => ({
     bootWorkspace()
     ?? (initial.name === "" && bootSession?.activeWorkspace === "explore"
           ? null
-          : bootSession?.activeWorkspace ?? null),
+          // A result view (plots/reports/streams/variables/log/pinch) needs a
+          // run -- opening a case must land on the FLOWSHEET, never a stale or
+          // empty result view restored from the last session.  Only a run-free
+          // workspace (props/explore/case) is restored; otherwise null = Flowsheet.
+          : (["plots", "reports", "streams", "variables", "log", "pinch"] as WorkspaceKey[])
+              .includes(bootSession?.activeWorkspace as WorkspaceKey)
+              ? null
+              : bootSession?.activeWorkspace ?? null),
   displayPrefs: loadStoredPrefs(),
 
   setDisplayPrefs: (patch) =>
