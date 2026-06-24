@@ -46,16 +46,48 @@ export function ConvergencePlot({
   curves: ConvergenceCurve[];
   tolerance?: number;
 }) {
-  const data = curves.map((c, i) => ({
-    type: "scatter" as const,
-    mode: "lines+markers" as const,
-    name: c.label,
-    x: c.residuals.map((_, k) => k + 1),
-    y: c.residuals,
-    line: { color: PLOT_COLORS.series[i % PLOT_COLORS.series.length], width: 2 },
-    marker: { size: 7 },
-    hovertemplate: "iter %{x}<br>r = %{y:.2e}<extra>" + c.label + "</extra>",
-  }));
+  // A converged inner solve can report residual EXACTLY 0 (or below machine
+  // precision); on a log axis that is -infinity and the curve plunges
+  // vertically to the floor -- a visualisation artefact, not a divergence.
+  // Clamp to a visible floor and mark that point as "converged" instead of
+  // letting it spike off the bottom.
+  const FLOOR = 1e-13;
+
+  // The GLOBAL recycle residual (mass / energy balance, feed-normalised) is the
+  // headline the student reads; the per-unit INNER solves (each unit's own
+  // Newton/Wegstein) are secondary diagnostics that converge quadratically and
+  // so drop steeply at the end (correct, but they crowd the headline).  Draw
+  // the global curves bold and the inner solves thin + faded so the steep
+  // unit-level drops read as background, not as the main signal.
+  const isGlobal = (label: string) =>
+    /global|mass balance|energy balance/i.test(label);
+
+  const data = curves.map((c, i) => {
+    const global = isGlobal(c.label);
+    const y = c.residuals.map((r) => (r > FLOOR ? r : FLOOR));
+    const convergedAt = c.residuals.findIndex((r) => r <= FLOOR);
+    const color = global
+      ? (/energy/i.test(c.label) ? PLOT_COLORS.warm : PLOT_COLORS.accent)
+      : PLOT_COLORS.series[i % PLOT_COLORS.series.length];
+    return {
+      type: "scatter" as const,
+      mode: "lines+markers" as const,
+      name: global ? c.label : c.label + " (inner)",
+      x: c.residuals.map((_, k) => k + 1),
+      y,
+      line: { color, width: global ? 3 : 1, dash: global ? undefined : ("dot" as const) },
+      marker: {
+        size: global ? 8 : 5,
+        // flag the converged-to-zero point with a check-like ring, not a plunge
+        symbol: c.residuals.map((_, k) => (k === convergedAt ? "circle-open" : "circle")),
+      },
+      opacity: global ? 1 : 0.45,
+      hovertemplate:
+        "iter %{x}<br>r = %{y:.2e}" +
+        (convergedAt >= 0 ? " (converged at floor)" : "") +
+        "<extra>" + c.label + "</extra>",
+    };
+  });
 
   // Longest curve sets the x-extent the tolerance line spans.
   const maxIter = curves.reduce((m, c) => Math.max(m, c.residuals.length), 0);
@@ -66,11 +98,11 @@ export function ConvergencePlot({
       data={data}
       layout={{
 ...darkLayout,
-        title: { text: "Convergence", font: {...darkLayout.font, size: 14 } },
-        xaxis: {...darkLayout.xaxis, title: { text: "Iteration" }, dtick: 1 },
+        title: { text: "Convergence residuals — global (bold) vs inner solves (faded)", font: {...darkLayout.font, size: 13 } },
+        xaxis: {...darkLayout.xaxis, title: { text: "iteration" }, dtick: 1 },
         yaxis: {
 ...darkLayout.yaxis,
-          title: { text: "Residual" },
+          title: { text: "residual (feed-normalised)" },
           type: "log",
           exponentformat: "power",
         },
