@@ -50,7 +50,7 @@ units
 
         inlet
         {
-            F            5.0e-5 kmol/h;
+            F            5.0e-5 kmol/s;
             T            320.0 K;             // initial; the Schedule controller overrides
             molarComposition  { compA 1.0;  compB 0.0; }
         }

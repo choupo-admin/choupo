@@ -53,7 +53,7 @@ units
 
         inlet
         {
-            F            5.0e-5 kmol/h;           // kmol/s
+            F            5.0e-5 kmol/s;           // kmol/s  (τ_res = N/F ≈ 240 s)
             T            320.0 K;            // K   (cool feed)
             molarComposition  { compA 1.0;  compB 0.0; }
         }

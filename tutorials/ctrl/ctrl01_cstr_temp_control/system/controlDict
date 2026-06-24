@@ -5,9 +5,9 @@ verbosity     3;
 
 // ---- Time integration ----
 startTime       0;        // s
-endTime         1500;     // s
+endTime         800;      // s   (~1.3x the ~600 s settling time; fills the plot)
 deltaT          1.0;      // s
-writeInterval   25;       // s
+writeInterval   10;       // s   (80 frames — a smooth transient + scrubber)
 
 
 // ---------------------------------------------------------------------
