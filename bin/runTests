@@ -472,9 +472,16 @@ if [ "$#" -eq 0 ]; then
     #       from globalEnergyBoundary.csv MUST be < 1 %.  With one datum every
     #       internal stream cancels, so this is the rigorous whole-plant check.
     plant="tutorials/plant/ChemicalPlantTutorial"
+    # Clear ALL prior balance output so a pre-fix `sensible` leftover (the old
+    # reports/ format, or a sub-branch isolated run) cannot be picked up below.
+    rm -rf "$plant"/reports "$plant"/postProcessing \
+           "$plant"/*/reports "$plant"/*/postProcessing \
+           "$plant"/*/*/reports "$plant"/*/*/postProcessing 2>/dev/null
     "$ROOT/choupoSolve" "$plant" >/dev/null 2>&1
-    eb=$(find "$plant" -name energyBalance_byUnit.csv 2>/dev/null | sort | tail -1)
-    gb=$(find "$plant" -name globalEnergyBoundary.csv 2>/dev/null | sort | tail -1)
+    # Read ONLY the plant-ROOT postProcessing, latest instant (sort -V = numeric)
+    # -- never a sub-branch's postProcessing or a stale reports/ csv.
+    eb=$(find "$plant/postProcessing" -name energyBalance_byUnit.csv 2>/dev/null | sort -V | tail -1)
+    gb=$(find "$plant/postProcessing" -name globalEnergyBoundary.csv 2>/dev/null | sort -V | tail -1)
 
     # T1
     t1_bad=""
