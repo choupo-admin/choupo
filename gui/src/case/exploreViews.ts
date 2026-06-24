@@ -11,7 +11,7 @@
 import { metaByName, type ComponentMeta } from "./catalogue.js";
 import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 
-export type PlotKind = "scan" | "txy" | "gamma" | "mccabe" | "binaryLle" | "ternary"
+export type PlotKind = "scan" | "txy" | "flash" | "gamma" | "mccabe" | "binaryLle" | "ternary"
   | "ternaryLle" | "phase" | "psychro" | "scaling" | "steam";
 
 export type SelClass = "pure" | "organic-mixture" | "aqueous-organic"
@@ -55,7 +55,7 @@ export function viewsFor(sel: string[], cat: ComponentMeta[],
   // McCabe-Thiele binary distillation: same front door as the T-x-y (exactly 2
   // VLE-able components with a binary VLE curve) — the analyzer reuses that
   // run's y_eq(x) as the real equilibrium curve, so it is offered iff txy is.
-  if (n === 2 && vleMix && allVle) { out.add("txy"); out.add("gamma"); out.add("mccabe"); }
+  if (n === 2 && vleMix && allVle) { out.add("txy"); out.add("flash"); out.add("gamma"); out.add("mccabe"); }
   if (n === 2 && allUnifac) out.add("binaryLle");            // immiscibility instrument
   if (n === 3 && vleMix && allVle) out.add("ternary");
   if (n === 3 && vleMix && allVle && allUnifac) out.add("ternaryLle");

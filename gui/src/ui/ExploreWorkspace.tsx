@@ -39,6 +39,7 @@ import { PurePhaseDiagram } from "./plotting/PurePhaseDiagram.js";
 import { PsychroPlot } from "./plotting/PsychroPlot.js";
 import { BinaryLlePlot } from "./plotting/BinaryLlePlot.js";
 import { McCabePlot } from "./plotting/McCabePlot.js";
+import { FlashPlot } from "./plotting/FlashPlot.js";
 import { CompoundBrowser } from "./explore/CompoundBrowser.js";
 import { EstimateForm } from "./explore/EstimateForm.js";
 import { useRailWidth, type RailWidthHandle } from "./explore/useRailWidth.js";
@@ -76,6 +77,10 @@ const PLOT_TYPES: PlotType[] = [
   // y_eq(x) the T-x-y run already computes (no new physics).  R/q knobs re-walk
   // the staircase in pure TS — the curve only changes when P or the model change.
   { id: "mccabe", label: "McCabe-Thiele (distillation)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
+  // Binary flash: the same y*(x) curve, read as an equilibrium tie-line through
+  // the feed z — the lever rule gives V/F.  T (or V/F) and P are the 2 knobs
+  // (Duhem); pure-TS redraw, no re-solve, like McCabe.
+  { id: "flash", label: "Binary flash (x-y + lever rule)", min: 2, max: 2, vle: true, why: "needs exactly 2 VLE-able components" },
   // Binary LLE: g_mix(x) + the common-tangent construction reading the two
   // coexisting liquid compositions off a single LL flash (predictive UNIFAC γ).
   { id: "binaryLle", label: "Binary LLE (g_mix + tangent)", min: 2, max: 2, vle: false, needsUnifac: true,
@@ -110,7 +115,7 @@ const PLOT_TYPES: PlotType[] = [
 // tooltip).  Keeps the one toolbar row from wrapping while the long names stay
 // discoverable on hover.
 const LENS_SHORT: Record<PlotKind, string> = {
-  scan: "scan", phase: "P-T", txy: "T-x-y", gamma: "γ(x)", mccabe: "McCabe",
+  scan: "scan", phase: "P-T", txy: "T-x-y", flash: "flash", gamma: "γ(x)", mccabe: "McCabe",
   binaryLle: "LLE", ternary: "ternary", ternaryLle: "tern.LLE",
   psychro: "psychro", scaling: "scaling", steam: "steam",
 };
@@ -245,6 +250,7 @@ function theoryAnchor(plotType: PlotKind, property: string): string {
   switch (plotType) {
     case "txy": return "ch:flash";          // binary VLE / bubble-dew
     case "mccabe": return "ch:flash";       // McCabe-Thiele over the binary VLE curve
+    case "flash": return "ch:flash";        // binary flash: tie-line + lever rule
     case "gamma": return "ch:activity";     // activity coefficients
     case "ternary": return "sec:ternary";   // ternary boiling surface
     case "ternaryLle": return "ch:lle-gibbs"; // liquid-liquid / solubility
@@ -418,7 +424,7 @@ export function ExploreWorkspace() {
 
   // McCabe-Thiele consumes the SAME engine run as the T-x-y (the y_eq(x) curve),
   // so it walks the VLE path for the spec / model pickers / fixed-P control.
-  const isVle = plotType === "txy" || plotType === "gamma" || plotType === "mccabe";
+  const isVle = plotType === "txy" || plotType === "gamma" || plotType === "mccabe" || plotType === "flash";
   const isTernary = plotType === "ternary" || plotType === "ternaryLle";
   // Scan mode is DERIVED from the property (correct-by-construction): a
   // per-component property is a pure-component comparison; anything else is a
@@ -634,12 +640,13 @@ export function ExploreWorkspace() {
       };
     }
 
-    if (plotType === "txy" || plotType === "gamma" || plotType === "mccabe") {
+    if (plotType === "txy" || plotType === "gamma" || plotType === "mccabe" || plotType === "flash") {
       // binary VLE: sweep x of the first component 0->1 at fixed P.  McCabe-Thiele
-      // needs the SAME y_eq(x) curve as the T-x-y — so it shares that branch
-      // (T_bubble + y_eq_<c1>); the staircase is then pure TS, zero re-solve.
+      // and the binary FLASH need the SAME y_eq(x) curve as the T-x-y — so they
+      // share that branch (T_bubble + y_eq_<c1>); the staircase / tie-line is
+      // then pure TS, zero re-solve.
       const c1 = selected[0] ?? "", c2 = selected[1] ?? "";
-      const isTxy = plotType === "txy" || plotType === "mccabe";
+      const isTxy = plotType === "txy" || plotType === "mccabe" || plotType === "flash";
       // the T-x-y also probes per-x liquid-liquid stability so it can mark the
       // immiscibility gap instead of drawing a phantom homogeneous curve.
       const properties = isTxy
@@ -971,6 +978,8 @@ export function ExploreWorkspace() {
         ? `Binary VLE — liquid composition swept 0→1 at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)}`
         : plotType === "mccabe"
         ? `McCabe-Thiele binary distillation at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)} — the real y*(x) curve (engine) + the interactive staircase; turn R and q (pure-TS redraw, no re-solve)`
+        : plotType === "flash"
+        ? `Binary flash at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)} — the real y*(x) curve + the tie-line through the feed z; the lever rule gives V/F (pure-TS redraw, no re-solve)`
         : `Activity coefficients γ(x) — composition swept 0→1`
       : isTransportProp(property)
         ? `${TRANSPORT_LABEL[property] ?? property} — transport correlation${tModel ? ` (${tModel})` : ""}, computed from (T, x) only — independent of the equation of state · ${selected.length >= 2 ? `mixture xᵢ = 1/${selected.length}` : "pure"} vs ${axisLabel}`
@@ -1441,6 +1450,12 @@ export function ExploreWorkspace() {
                 // The ↗ pop-out trigger lives in the toolbar (trailing), one
                 // affordance not two; the inline plot stays single-column.
                 <McCabePlot csv={dropCsvColumn(csv, "liquid_stable")}
+                  compA={selected[0] ?? ""} compB={selected[1] ?? ""} P={fixedP} />
+              ) : plotType === "flash" ? (
+                // The binary flash: the engine's y_eq(x) read as an equilibrium
+                // tie-line through the feed z; T/P knobs move the split, the
+                // lever rule gives V/F — pure TS, no WASM re-solve.
+                <FlashPlot csv={dropCsvColumn(csv, "liquid_stable")}
                   compA={selected[0] ?? ""} compB={selected[1] ?? ""} P={fixedP} />
               ) : (
                 <CsvAutoPlot
