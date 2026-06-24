@@ -1,0 +1,51 @@
+/*---------------------------------------------------------------------------*\
+  batch06_adaptive_runaway -- the SAME adiabatic esterification runaway as
+  batch02_adiabatic, but solved with OPT-IN ADAPTIVE time-stepping.
+
+  THE IDEA (like OpenFOAM's adjustTimeStep, but the criterion is the
+  integrator's LOCAL ERROR, not a Courant number --- there is no mesh here):
+  the step starts LOW (deltaT0) and the stiff Rosenbrock23 integrator GROWS or
+  SHRINKS it automatically to hold the rtol/atol tolerance.  In the cold
+  induction the temperature barely moves, so the step grows toward deltaTmax;
+  through the thermal runaway the step shrinks to resolve the sharp dT/dt, then
+  grows again on the plateau.  At verbosity 3 the adaptive step HISTORY is
+  printed --- the student SEES h adapt.
+
+  The trajectory rows + (if solutionControl on) instant dirs still land on the
+  CLEAN writeInterval grid (0, 10, 20, ... s): the integrator is clamped so it
+  never overshoots a write time.  The final state agrees with a fine fixed-step
+  RK4 run to tolerance --- adaptive stepping is an EFFICIENCY/ACCURACY tool,
+  not a different physics.
+
+  Compare with the sibling batch02_adiabatic (fixed RK4, deltaT 0.5 s).
+\*---------------------------------------------------------------------------*/
+
+application   choupoBatch;
+description   "Adiabatic esterification runaway (AcOH+EtOH); ADAPTIVE Rosenbrock23 time-stepping --- the step grows after the fast transient (glass-box step history)";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;          // s
+endTime         600;        // s   (induction + runaway + plateau)
+writeInterval   10;         // s   (trajectory snapshot grid --- clean times)
+
+// deltaT is the FALLBACK fixed step (also the controller-sample grid for
+// choupoCtrl).  Adaptive ignores it for the plant step; kept so the case is
+// still valid if timeStepping is switched back to `fixed`.
+deltaT          0.5;        // s
+
+// ---- OPT-IN adaptive stepping -------------------------------------------
+//   timeStepping adaptive;  switches the deltaT RK4 loop for the error-
+//   controlled stiff Rosenbrock23 sweep.  Absent / `fixed` == byte-identical
+//   to the classic batch path.
+timeStepping    adaptive;
+
+timeSteppingControl
+{
+    rtol        1.0e-6;     // relative local-error tolerance
+    atol        1.0e-9;     // absolute floor (broadcast to all rows)
+    deltaT0     1.0e-3;     // s   -- start LOW (the step grows from here)
+    deltaTmax   10.0;       // s   -- cap (== writeInterval; the spiritual maxCo)
+    maxGrowth   2.0;        // per-accepted-step growth limit
+}

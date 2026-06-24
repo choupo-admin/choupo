@@ -531,4 +531,24 @@ void BatchReactor::step(scalar /*t*/, scalar dt)
     state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y0[n];
 }
 
+// ---- Packed-ODE form (the adaptive driver) ------------------------------
+//  Pack/unpack mirror step()'s convention EXACTLY (n_0..n_{N-1}, T), including
+//  the isothermal T-pin, so the adaptive sweep and a fixed step() agree.
+sVector BatchReactor::odeState() const
+{
+    const std::size_t n = state_.n.size();
+    sVector y(n + 1);
+    for (std::size_t i = 0; i < n; ++i) y[i] = state_.n[i];
+    y[n] = state_.T;
+    return y;
+}
+
+void BatchReactor::setOdeState(const sVector& y)
+{
+    const std::size_t n = state_.n.size();
+    for (std::size_t i = 0; i < n; ++i)
+        state_.n[i] = std::max<scalar>(y[i], 0.0);
+    state_.T = (mode_ == Mode::Isothermal) ? T_setpoint_ : y[n];
+}
+
 } // namespace Choupo

@@ -75,6 +75,15 @@ public:
 
     void step(scalar t, scalar dt) override;
 
+    // ---- Packed-ODE form (the adaptive driver) ----------------------
+    //   The reactor IS a clean autonomous ODE on (n_0..n_{N-1}, T), so it
+    //   exposes the same packed state/derivatives the stiff step() path uses.
+    bool    hasOdeForm() const override { return true; }
+    sVector odeState()   const override;
+    void    setOdeState(const sVector& y) override;
+    sVector odeDerivative(const sVector& y) const override { return derivatives_(y); }
+    std::size_t odeNPositive() const override { return state_.n.size(); }
+
     const BatchState& state() const override { return state_; }
 
     void setOperationParameter(const std::string& key, scalar value) override;

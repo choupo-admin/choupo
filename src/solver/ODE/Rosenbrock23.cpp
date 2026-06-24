@@ -99,11 +99,18 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
     const scalar hMin = (ctrl.hMin > 0.0)
         ? ctrl.hMin
         : 1.0e-13 * std::max(std::abs(t1), 1.0);
+    // Optional caps (0 => no cap).  hMax bounds the step itself; maxGrowth
+    // bounds how fast the step may grow after an accepted step (the spiritual
+    // maxCo).  Both seed at the dict opt-in and otherwise leave behaviour as-is.
+    const scalar hMax      = (ctrl.hMax > 0.0) ? ctrl.hMax : span;
+    const scalar maxGrowth = (ctrl.maxGrowth > 1.0) ? ctrl.maxGrowth : 4.0;
+    if (h > hMax) h = hMax;
 
     scalar stiffPeak = 0.0;
 
     while (t < t1 - 1.0e-14 * std::max(std::abs(t1), 1.0))
     {
+        if (h > hMax) h = hMax;
         if (h > t1 - t) h = t1 - t;
         if (st.steps >= ctrl.maxSteps) { st.ok = false; break; }
 
@@ -183,9 +190,13 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             ++st.accepted;
             for (std::size_t i = 0; i < n; ++i)
                 typ[i] = std::max(std::abs(y[i]), atolFor(ctrl, i));
-            // grow the step (order-2 pair -> exponent 1/3)
+            const scalar hAccepted = h;
+            // grow the step (order-2 pair -> exponent 1/3), capped by maxGrowth.
             const scalar fac = 0.8 * std::pow(std::max(errNorm, 1.0e-10), -1.0 / 3.0);
-            h *= std::min(4.0, std::max(0.2, fac));
+            h *= std::min(maxGrowth, std::max(0.2, fac));
+            if (h > hMax) h = hMax;
+            // Glass-box: report the step we just took at the time we reached.
+            if (ctrl.onAccept) ctrl.onAccept(t, hAccepted);
         }
         else
         {

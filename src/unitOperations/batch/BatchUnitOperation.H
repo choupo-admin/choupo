@@ -101,6 +101,22 @@ public:
     // Advance the vessel state by dt starting from current time t.
     virtual void step(scalar t, scalar dt) = 0;
 
+    // ---- Optional packed-ODE form (the adaptive-stepping interface) -----
+    //   A vessel whose dynamics are a clean autonomous ODE dY/dt = f(Y) on a
+    //   packed state vector Y may expose it here, so choupoBatch's adaptive
+    //   driver can hand the SAME state to the stiff Rosenbrock23 integrator
+    //   (one error-controlled sub-step sweep over [t0,t1]) instead of calling
+    //   step() with a fixed dt.  Default `hasOdeForm()==false` => the unit
+    //   keeps its own step() (e.g. a still with its bubble-T inner solve);
+    //   the adaptive driver then advances such a unit with one fixed step per
+    //   sub-interval.
+    virtual bool    hasOdeForm() const           { return false; }
+    virtual sVector odeState()   const           { return {}; }     // pack Y
+    virtual void    setOdeState(const sVector& /*y*/) {}            // unpack+commit
+    virtual sVector odeDerivative(const sVector& /*y*/) const { return {}; }
+    // Number of leading rows of Y that must stay >= 0 (species moles; T free).
+    virtual std::size_t odeNPositive() const     { return 0; }
+
     // Inspect current state (for trajectory writeout).
     virtual const BatchState& state() const = 0;
 

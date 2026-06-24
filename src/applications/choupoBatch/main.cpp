@@ -75,6 +75,7 @@ Description
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "unitOperations/batch/BatchUnitOperation.H"
 #include "io/SolutionWriter.H"
+#include "solver/ODE/AdaptiveTimeStep.H"
 
 #include <algorithm>
 #include <filesystem>
@@ -162,6 +163,30 @@ try
     const scalar writeInterval =
         controlDict->lookupScalarOrDefault("writeInterval", deltaT);
 
+    // ---- timeStepping: OPT-IN adaptive (error-controlled) stepping ----
+    //  ABSENT or `fixed` => today's fixed-RK4 deltaT loop, BYTE-IDENTICAL.
+    //  `adaptive` => the stiff Rosenbrock23 integrator sub-steps each
+    //  write/event interval with the step set by LOCAL ERROR (rtol/atol),
+    //  starting LOW (deltaT0) and growing/shrinking automatically.  The
+    //  trajectory + instant dirs still land on the CLEAN writeInterval grid.
+    const std::string timeStepping =
+        controlDict->lookupWordOrDefault("timeStepping", "fixed");
+    const bool adaptive = (timeStepping == "adaptive");
+    solver::AdaptiveSettings adaptSet;
+    if (adaptive)
+    {
+        // Keys may sit in a `timeSteppingControl {}` sub-dict OR flat in
+        // controlDict (the flat form keeps the simple cases terse).
+        DictPtr ts = controlDict->found("timeSteppingControl")
+            ? controlDict->subDict("timeSteppingControl") : controlDict;
+        adaptSet.rtol      = ts->lookupScalarOrDefault("rtol",      1.0e-6);
+        adaptSet.atol      = ts->lookupScalarOrDefault("atol",      1.0e-9);
+        adaptSet.deltaT0   = ts->lookupScalarOrDefault("deltaT0",   deltaT);
+        adaptSet.deltaTmax = ts->lookupScalarOrDefault("deltaTmax", writeInterval);
+        adaptSet.maxGrowth = ts->lookupScalarOrDefault("maxGrowth", 4.0);
+        adaptSet.verbosity = verbosity;
+    }
+
     std::cout << "Application:       " << application << "\n";
     if (!description.empty())
         std::cout << "Description:       " << description << "\n";
@@ -170,7 +195,15 @@ try
               << "endTime:           " << endTime        << " s\n"
               << "deltaT:            " << deltaT         << " s\n"
               << "writeInterval:     " << writeInterval  << " s\n"
-              << "reactions library: "
+              << "timeStepping:      " << timeStepping
+              << (adaptive ? "  (Rosenbrock23, error-controlled)" : "  (fixed RK4)")
+              << "\n";
+    if (adaptive)
+        std::cout << "  rtol=" << adaptSet.rtol << "  atol=" << adaptSet.atol
+                  << "  deltaT0=" << adaptSet.deltaT0 << " s"
+                  << "  deltaTmax=" << adaptSet.deltaTmax << " s"
+                  << "  maxGrowth=" << adaptSet.maxGrowth << "\n";
+    std::cout << "reactions library: "
               << (reactionsDict ? "loaded" : "not present")
               << "\n\n";
 
@@ -380,7 +413,10 @@ try
     };
 
     // ---- Time loop ---------------------------------------------------
-    std::cout << "Time integration  (RK4, dt = " << deltaT << " s):\n"
+    std::cout << (adaptive
+                    ? "Time integration  (adaptive Rosenbrock23, deltaT0 = "
+                    : "Time integration  (RK4, dt = ")
+              << (adaptive ? adaptSet.deltaT0 : deltaT) << " s):\n"
               << "      t [s]  ";
     for (const auto& unit : units)
         for (std::size_t i = 0; i < thermo.n(); ++i)
@@ -484,14 +520,9 @@ try
     if (verbosity >= 3) echoLine(t);
     nextWrite += writeInterval;
 
-    while (t < endTime - 1.0e-12)
+    // Shared post-step processing (discharge routing, events, writes).
+    auto postStep = [&](scalar tNow)
     {
-        scalar dt = deltaT;
-        if (t + dt > endTime) dt = endTime - t;
-
-        for (auto& unit : units) unit->step(t, dt);
-        t += dt;
-
         // Continuous discharge routing: hand each unit's per-step
         // sheddings (e.g. a still's condensed vapour) to its `dischargeTo`
         // receiver, so a distillate-receiver tank fills up step by step.
@@ -499,27 +530,117 @@ try
             if (dischargeToIdx[i] >= 0)
                 units[dischargeToIdx[i]]->chargeFrom(units[i]->takeContinuousDischarge());
 
-        // Fire any events whose trigger has just elapsed.  Pedagogical
-        // simplification: we do not cut dt to land exactly on the
-        // trigger time --- events fire at the next step boundary
-        // after t_trigger.  With the typical dt of 0.5-1.0 s this is
-        // an O(dt) error in event timing, negligible at the trajectory
-        // resolution writeInterval typically asks for.
-        while (nextEvent < events.size() && events[nextEvent].time <= t)
+        while (nextEvent < events.size() && events[nextEvent].time <= tNow + 1.0e-9)
         {
             fireEvent(events[nextEvent].dict, events[nextEvent].time);
             ++nextEvent;
         }
-        // Condition-triggered events: fire ONCE, the first step their
-        // `when` condition becomes true (evaluated on the post-step state).
         for (auto& c : condEvents)
-            if (!c.fired && condTrue(c.when)) { fireEvent(c.dict, t); c.fired = true; }
+            if (!c.fired && condTrue(c.when)) { fireEvent(c.dict, tNow); c.fired = true; }
+    };
 
-        if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
+    if (!adaptive)
+    {
+        // ---- FIXED-STEP RK4 (today's path --- byte-identical) ---------
+        while (t < endTime - 1.0e-12)
         {
-            writeSnapshot(t);
-            if (verbosity >= 3) echoLine(t);
-            nextWrite += writeInterval;
+            scalar dt = deltaT;
+            if (t + dt > endTime) dt = endTime - t;
+
+            for (auto& unit : units) unit->step(t, dt);
+            t += dt;
+
+            // Continuous discharge routing.
+            for (std::size_t i = 0; i < units.size(); ++i)
+                if (dischargeToIdx[i] >= 0)
+                    units[dischargeToIdx[i]]->chargeFrom(units[i]->takeContinuousDischarge());
+
+            // Fire any events whose trigger has just elapsed.  Pedagogical
+            // simplification: we do not cut dt to land exactly on the
+            // trigger time --- events fire at the next step boundary
+            // after t_trigger.  With the typical dt of 0.5-1.0 s this is
+            // an O(dt) error in event timing, negligible at the trajectory
+            // resolution writeInterval typically asks for.
+            while (nextEvent < events.size() && events[nextEvent].time <= t)
+            {
+                fireEvent(events[nextEvent].dict, events[nextEvent].time);
+                ++nextEvent;
+            }
+            for (auto& c : condEvents)
+                if (!c.fired && condTrue(c.when)) { fireEvent(c.dict, t); c.fired = true; }
+
+            if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
+            {
+                writeSnapshot(t);
+                if (verbosity >= 3) echoLine(t);
+                nextWrite += writeInterval;
+            }
+        }
+    }
+    else
+    {
+        // ---- ADAPTIVE Rosenbrock23 (opt-in) ---------------------------
+        //  The integrator's LOCAL ERROR sets the step.  We advance to the
+        //  NEXT boundary in {writeInterval grid, recipe-event time, endTime}
+        //  --- the step is clamped so it NEVER overshoots a write/event time;
+        //  the instant + trajectory rows still land on the clean grid.  ODE-
+        //  form units (batchReactor) go through the stiff sweep; any non-ODE
+        //  vessel (a still) takes ONE fixed step over the sub-interval.
+        solver::AdaptiveTimeStepper stepper(adaptSet);
+
+        // Glass-box step history: print the adaptive step as it grows/shrinks.
+        bool printedHeader = false;
+        auto onStep = [&](scalar tEnd, scalar hTaken)
+        {
+            if (verbosity < 3) return;
+            if (!printedHeader)
+            {
+                std::cout << "    [adaptive step history]   t [s]"
+                          << "        h [s]\n";
+                printedHeader = true;
+            }
+            std::cout << "                            "
+                      << std::setw(11) << std::scientific << std::setprecision(4) << tEnd
+                      << "  " << std::setw(11) << hTaken << "\n";
+        };
+
+        while (t < endTime - 1.0e-12)
+        {
+            // Next clean boundary: the earliest of the next write, the next
+            // pending recipe event, and endTime.  The integrator lands HERE.
+            scalar tNext = std::min(nextWrite, endTime);
+            if (nextEvent < events.size())
+                tNext = std::min(tNext, events[nextEvent].time);
+            if (tNext <= t + 1.0e-12) tNext = std::min(t + writeInterval, endTime);
+
+            // Collect ODE-form units for the stiff sweep; step the rest fixed.
+            std::vector<solver::OdeUnit> odeUnits;
+            for (auto& unit : units)
+            {
+                if (unit->hasOdeForm())
+                {
+                    BatchUnitOperation* up = unit.get();
+                    odeUnits.push_back({
+                        [up]               { return up->odeState(); },
+                        [up](const sVector& y){ up->setOdeState(y); },
+                        [up](const sVector& y){ return up->odeDerivative(y); },
+                        up->odeNPositive() });
+                }
+                else
+                    unit->step(t, tNext - t);   // non-ODE vessel: one fixed step
+            }
+            if (!odeUnits.empty())
+                stepper.advance(odeUnits, t, tNext, onStep);
+
+            t = tNext;
+            postStep(t);
+
+            if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
+            {
+                writeSnapshot(t);
+                if (verbosity >= 3) echoLine(t);
+                nextWrite += writeInterval;
+            }
         }
     }
 

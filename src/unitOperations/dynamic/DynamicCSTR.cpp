@@ -215,6 +215,25 @@ void DynamicCSTR::step(scalar /*t*/, scalar dt)
     T_ = y[N];
 }
 
+// ---- Packed-ODE form (the adaptive driver) ------------------------------
+//  Pack/unpack mirror step()'s convention EXACTLY: (n_0..n_{N-1}, T).
+sVector DynamicCSTR::odeState() const
+{
+    const std::size_t N = n_.size();
+    sVector y(N + 1);
+    for (std::size_t i = 0; i < N; ++i) y[i] = n_[i];
+    y[N] = T_;
+    return y;
+}
+
+void DynamicCSTR::setOdeState(const sVector& y)
+{
+    const std::size_t N = n_.size();
+    for (std::size_t i = 0; i < N; ++i)
+        n_[i] = std::max<scalar>(y[i], 0.0);
+    T_ = y[N];
+}
+
 sVector DynamicCSTR::stateVector() const
 {
     sVector s = n_;

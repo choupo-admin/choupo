@@ -1,0 +1,51 @@
+/*---------------------------------------------------------------------------*\
+  ctrl03_adaptive_disturbance -- the SAME PID disturbance-rejection loop as
+  ctrl02_disturbance_rejection, but with OPT-IN ADAPTIVE plant integration.
+
+  THE CONTROL SUBTLETY (the point of this case):
+  a digital PID controller SAMPLES at a FIXED sample time (deltaT = 1 s here).
+  That sampler must NOT adapt with the integrator --- the discrete control law
+  is defined on a fixed grid.  So the controller fires once per 1 s sample;
+  with the manipulated variable (the jacket temperature) then HELD constant,
+  the stiff Rosenbrock23 integrator sub-steps the plant ODE across that 1 s
+  interval with the step set by LOCAL ERROR (rtol/atol).  Two Δt, both correct:
+
+      deltaT      = 1 s     -- the controller SAMPLE time (fixed)
+      deltaT0..max          -- the integrator's adaptive PLANT step (between
+                               samples, MV held)
+
+  Writes land on the clean writeInterval grid (every 20 s) and the integrator
+  is clamped so it never overshoots a write or a sample boundary.  The closed-
+  loop response is identical (to tolerance) to the fixed-RK4 ctrl02 sibling ---
+  adaptive stepping changes the COST of the plant integration, not the control.
+
+  At verbosity 3 the adaptive plant step history is printed.
+\*---------------------------------------------------------------------------*/
+
+application   choupoCtrl;
+description   "PID disturbance rejection with ADAPTIVE plant integration --- controller samples on the fixed 1 s grid, Rosenbrock23 sub-steps between samples (MV held)";
+
+verbosity     3;
+
+// ---- Time integration ----
+startTime       0;          // s
+endTime         2000;       // s
+writeInterval   20;         // s   (trajectory snapshot grid --- clean times)
+
+// deltaT here is the controller SAMPLE time (the digital-control grid).  Under
+// adaptive stepping it stays the sample period; the plant is sub-stepped
+// between samples.  Switch timeStepping back to `fixed` and this is also the
+// RK4 step (== ctrl02, byte-identical).
+deltaT          1.0;        // s   (controller sample time)
+
+// ---- OPT-IN adaptive stepping -------------------------------------------
+timeStepping    adaptive;
+
+timeSteppingControl
+{
+    rtol        1.0e-7;     // relative local-error tolerance
+    atol        1.0e-12;    // absolute floor
+    deltaT0     1.0e-3;     // s   -- start LOW
+    deltaTmax   1.0;        // s   -- never exceed one sample period
+    maxGrowth   2.0;        // per-accepted-step growth limit
+}

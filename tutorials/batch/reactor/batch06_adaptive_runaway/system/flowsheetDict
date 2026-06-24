@@ -1,0 +1,57 @@
+/*---------------------------------------------------------------------------*\
+  batch02_adiabatic  --  exothermic pseudo-first-order esterification
+  (AcOH + EtOH -> EtOAc + H2O) in an adiabatic batch reactor.  Designed
+  to show thermal runaway:
+
+    * T_0 = 320 K (kinetics very slow: k_0 ~ 3.7e-4 s^-1, tau_0 ~ 2700 s).
+    * dH_rxn = -30 kJ/mol of ethanol (exotherm sized so the equimolar
+      charge lifts T by ~125 K at full conversion -> plateau ~445 K).
+    * Equimolar ethanol + acetic acid charge; ethyl acetate + water are
+      the products.  Mass-conserving, so the energy balance is clean.
+
+  Expected qualitative trajectory:
+
+         T |          _______ plateau (~450 K)
+           |        _/
+           |      _/
+           |    _/
+           |  _/
+           | /
+       T_0 |__/
+           +-------------------> t
+              induction  runaway
+
+  The energy balance is just:
+
+       dT/dt = - r * V * dH_rxn / (n_A * Cp_A + n_B * Cp_B)
+
+  Constant-Cp here (polynomial degree 0 for both ethanol and water in
+  the database), so the result extrapolates linearly above the nominal
+  liquidHeatCapacity Trange (280-373 K) without numerical pathology
+  --- consistent with a pedagogical demonstration, not a quantitative
+  prediction at 450 K.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        initial
+        {
+            T            320.0 K;            // K  --- cold start, slow kinetics
+            P            1.013 bar;
+            V            0.001;            // m^3 (1 litre)
+            totalMoles   0.0185;           // kmol (1 litre of liquid ethanol)
+            molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+        }
+
+        operation
+        {
+            mode         adiabatic;        // no T_setpoint --- T evolves with E-balance
+        }
+
+        reaction    esterification_etac_exo;  // see constant/reactions
+    }
+);

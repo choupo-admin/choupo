@@ -81,9 +81,37 @@ For `choupoBatch` / `choupoCtrl` (time-dependent), add:
 ```
 startTime       0;        // s
 endTime         3600;     // s
-deltaT          1.0;      // s   (RK4 step)
+deltaT          1.0;      // s   (RK4 step; in choupoCtrl this is the controller SAMPLE time)
 writeInterval   60;       // s   (trajectory snapshot interval)
 ```
+
+**Opt-in adaptive time-stepping** (default is the fixed-RK4 `deltaT` loop).
+Add `timeStepping adaptive;` to switch the fixed step for the stiff,
+error-controlled Rosenbrock23 integrator — like OpenFOAM's `adjustTimeStep`,
+but the criterion is the integrator's LOCAL ERROR (`rtol`/`atol`), not a
+Courant number (there is no mesh in these 0-D holdup problems).  The step
+starts LOW (`deltaT0`) and grows/shrinks automatically to hold the tolerance;
+trajectory rows still land on the clean `writeInterval` grid.  Absent or
+`timeStepping fixed;` keeps the classic RK4 path byte-identical.
+
+```
+timeStepping    adaptive;          // default: fixed
+timeSteppingControl
+{
+    rtol        1.0e-6;            // relative local-error tolerance
+    atol        1.0e-9;            // absolute floor (broadcast to all rows)
+    deltaT0     1.0e-3;            // s   initial (LOW) step — it grows from here
+    deltaTmax   10.0;             // s   cap on the step (the spiritual maxCo)
+    maxGrowth   2.0;              // per-accepted-step growth limit
+}
+```
+
+In `choupoCtrl` the digital controller still samples on the fixed `deltaT`
+grid; the adaptive integrator sub-steps the plant BETWEEN samples with the
+manipulated variable held.  Worked examples: `tutorials/batch/reactor/
+batch06_adaptive_runaway` and `tutorials/ctrl/ctrl03_adaptive_disturbance`.
+Only units with a clean packed-ODE form (`batchReactor`, `dynamicCSTR`) take
+the adaptive sweep; any other vessel takes one fixed sub-step per interval.
 
 For display preferences (units shown in printed output):
 

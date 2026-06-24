@@ -81,6 +81,16 @@ public:
 
     void step(scalar t, scalar dt) override;
 
+    // ---- Packed-ODE form (the adaptive driver) ----------------------
+    //   Clean ODE on (n_0..n_{N-1}, T) with the MVs (T_jacket, T_in, F_in)
+    //   held constant across the sub-step, so choupoCtrl can sub-step the
+    //   plant between controller samples with the stiff integrator.
+    bool    hasOdeForm() const override { return true; }
+    sVector odeState()   const override;
+    void    setOdeState(const sVector& y) override;
+    sVector odeDerivative(const sVector& y) const override { return derivatives_(y); }
+    std::size_t odeNPositive() const override { return n_.size(); }
+
     sVector stateVector() const override;
     std::vector<std::string> stateLabels() const override;
 

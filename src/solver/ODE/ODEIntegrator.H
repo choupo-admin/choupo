@@ -78,10 +78,20 @@ struct ODEControls
     scalar      rtol      = 1.0e-6;      // relative tolerance
     scalar      hInit     = 0.0;         // initial / fixed step (0 => auto)
     scalar      hMin      = 0.0;         // floor on the step (0 => auto tiny)
+    scalar      hMax      = 0.0;         // cap on the step (0 => no cap = span)
+    scalar      maxGrowth = 4.0;         // per-accepted-step growth limit (the
+                                         //   spiritual maxCo: the step may not
+                                         //   grow by more than this factor)
     std::size_t maxSteps  = 2000000;     // runaway guard
     std::size_t nPositive = 0;           // first nPositive rows must stay >= 0
                                          // (species mole/conc rows; T excluded)
     int         verbosity = 1;           // >=3 prints the stiffness verdict
+
+    // Optional glass-box hook: invoked once per ACCEPTED step with the time at
+    // the END of the step and the step size just taken.  Lets choupoBatch /
+    // choupoCtrl print the adaptive step history so the student SEES h adapt.
+    // Empty by default => no per-step reporting (the ignition path unchanged).
+    std::function<void(scalar tEnd, scalar hTaken)> onAccept;
 };
 
 struct ODEStats

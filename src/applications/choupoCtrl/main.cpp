@@ -83,6 +83,7 @@ Description
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "unitOperations/dynamic/DynamicUnitOperation.H"
 #include "io/SolutionWriter.H"
+#include "solver/ODE/AdaptiveTimeStep.H"
 
 #include <algorithm>
 #include <filesystem>
@@ -166,15 +167,50 @@ try
     const scalar writeInterval =
         controlDict->lookupScalarOrDefault("writeInterval", deltaT);
 
+    // ---- timeStepping: OPT-IN adaptive plant integration --------------
+    //  ABSENT or `fixed` => today's fixed-RK4 deltaT loop, BYTE-IDENTICAL.
+    //  `adaptive` => the controller STILL fires on the fixed deltaT sample
+    //  grid (digital control --- the sampler must NOT adapt), but BETWEEN
+    //  samples the plant ODE is advanced by the stiff Rosenbrock23 integrator
+    //  with the step set by LOCAL ERROR (rtol/atol), the MV held constant.
+    //  The two Δt are different and BOTH correct: deltaT is the sample time;
+    //  deltaT0..deltaTmax is the integrator's adaptive plant step.
+    const std::string timeStepping =
+        controlDict->lookupWordOrDefault("timeStepping", "fixed");
+    const bool adaptive = (timeStepping == "adaptive");
+    solver::AdaptiveSettings adaptSet;
+    if (adaptive)
+    {
+        DictPtr ts = controlDict->found("timeSteppingControl")
+            ? controlDict->subDict("timeSteppingControl") : controlDict;
+        adaptSet.rtol      = ts->lookupScalarOrDefault("rtol",      1.0e-6);
+        adaptSet.atol      = ts->lookupScalarOrDefault("atol",      1.0e-9);
+        adaptSet.deltaT0   = ts->lookupScalarOrDefault("deltaT0",   deltaT);
+        adaptSet.deltaTmax = ts->lookupScalarOrDefault("deltaTmax", deltaT);
+        adaptSet.maxGrowth = ts->lookupScalarOrDefault("maxGrowth", 4.0);
+        adaptSet.verbosity = verbosity;
+    }
+
     std::cout << "Application:       " << application << "\n";
     if (!description.empty())
         std::cout << "Description:       " << description << "\n";
     std::cout << "Verbosity:         " << verbosity      << "\n"
               << "startTime:         " << startTime      << " s\n"
               << "endTime:           " << endTime        << " s\n"
-              << "deltaT:            " << deltaT         << " s\n"
+              << "deltaT:            " << deltaT         << " s"
+              << (adaptive ? "   (controller SAMPLE time --- held fixed)" : "")
+              << "\n"
               << "writeInterval:     " << writeInterval  << " s\n"
-              << "reactions library: "
+              << "timeStepping:      " << timeStepping
+              << (adaptive ? "  (Rosenbrock23 between samples, MV held)"
+                           : "  (fixed RK4)")
+              << "\n";
+    if (adaptive)
+        std::cout << "  rtol=" << adaptSet.rtol << "  atol=" << adaptSet.atol
+                  << "  deltaT0=" << adaptSet.deltaT0 << " s"
+                  << "  deltaTmax=" << adaptSet.deltaTmax << " s"
+                  << "  maxGrowth=" << adaptSet.maxGrowth << "\n";
+    std::cout << "reactions library: "
               << (reactionsDict ? "loaded" : "not present")
               << "\n\n";
 
@@ -344,7 +380,11 @@ try
     };
 
     // ---- Time loop ---------------------------------------------------
-    std::cout << "Time integration  (RK4 inside units, dt = " << deltaT << " s):\n";
+    std::cout << (adaptive
+                    ? "Time integration  (adaptive Rosenbrock23 between samples, "
+                      "sample dt = "
+                    : "Time integration  (RK4 inside units, dt = ")
+              << deltaT << " s):\n";
     if (verbosity >= 3)
     {
         std::cout << "      t [s]    ";
@@ -375,27 +415,104 @@ try
     if (verbosity >= 3) echoLine(t);
     nextWrite += writeInterval;
 
-    while (t < endTime - 1.0e-12)
+    if (!adaptive)
     {
-        scalar dt = deltaT;
-        if (t + dt > endTime) dt = endTime - t;
-
-        // Update controllers FIRST so the unit step sees the new MV.
-        // (Causality choice: MV at time t acts on dY/dt in [t, t+dt].)
-        for (auto& c : controllers) c->update(t, dt);
-
-        // Advance each unit by dt with the current MV held constant
-        // across the RK4 stages (zero-order hold).  Acceptable for
-        // typical dt much smaller than the closed-loop time constant.
-        for (auto& u : units) u->step(t, dt);
-
-        t += dt;
-
-        if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
+        // ---- FIXED-STEP RK4 (today's path --- byte-identical) ---------
+        while (t < endTime - 1.0e-12)
         {
-            writeSnapshot(t);
-            if (verbosity >= 3) echoLine(t);
-            nextWrite += writeInterval;
+            scalar dt = deltaT;
+            if (t + dt > endTime) dt = endTime - t;
+
+            // Update controllers FIRST so the unit step sees the new MV.
+            // (Causality choice: MV at time t acts on dY/dt in [t, t+dt].)
+            for (auto& c : controllers) c->update(t, dt);
+
+            // Advance each unit by dt with the current MV held constant
+            // across the RK4 stages (zero-order hold).  Acceptable for
+            // typical dt much smaller than the closed-loop time constant.
+            for (auto& u : units) u->step(t, dt);
+
+            t += dt;
+
+            if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
+            {
+                writeSnapshot(t);
+                if (verbosity >= 3) echoLine(t);
+                nextWrite += writeInterval;
+            }
+        }
+    }
+    else
+    {
+        // ---- ADAPTIVE plant integration between FIXED controller samples ----
+        //  THE CONTROL SUBTLETY: a digital controller samples at the FIXED
+        //  deltaT grid --- it must NOT adapt with the integrator.  So the
+        //  controller fires once per sample interval [t_s, t_s+deltaT]; with
+        //  the MV then HELD, the adaptive Rosenbrock23 integrator sub-steps
+        //  the plant ODE across that interval.  Writes land on the (possibly
+        //  finer or coarser) writeInterval grid WITHOUT re-firing the
+        //  controller --- the integrator is just clamped to each write time.
+        solver::AdaptiveTimeStepper stepper(adaptSet);
+
+        bool printedHeader = false;
+        auto onStep = [&](scalar tEnd, scalar hTaken)
+        {
+            if (verbosity < 3) return;
+            if (!printedHeader)
+            {
+                std::cout << "    [adaptive plant step history]   t [s]"
+                          << "        h [s]\n";
+                printedHeader = true;
+            }
+            std::cout << "                                  "
+                      << std::setw(11) << std::scientific << std::setprecision(4) << tEnd
+                      << "  " << std::setw(11) << hTaken << "\n";
+        };
+
+        scalar nextSample = startTime;     // controller fires on this grid
+        while (t < endTime - 1.0e-12)
+        {
+            // Fire the controllers exactly at each sample instant (held MV).
+            if (t >= nextSample - 1.0e-9)
+            {
+                scalar sampleDt = std::min(deltaT, endTime - t);
+                for (auto& c : controllers) c->update(t, sampleDt);
+                nextSample += deltaT;
+            }
+
+            // Advance the plant to the next clean boundary: the earliest of
+            // the next controller sample, the next write, and endTime.  The
+            // MV is held across this whole sub-interval.
+            scalar tNext = std::min({ nextSample, nextWrite, endTime });
+            if (tNext <= t + 1.0e-12)
+                tNext = std::min(t + deltaT, endTime);
+
+            std::vector<solver::OdeUnit> odeUnits;
+            for (auto& u : units)
+            {
+                if (u->hasOdeForm())
+                {
+                    DynamicUnitOperation* up = u.get();
+                    odeUnits.push_back({
+                        [up]               { return up->odeState(); },
+                        [up](const sVector& y){ up->setOdeState(y); },
+                        [up](const sVector& y){ return up->odeDerivative(y); },
+                        up->odeNPositive() });
+                }
+                else
+                    u->step(t, tNext - t);   // non-ODE unit: one fixed step
+            }
+            if (!odeUnits.empty())
+                stepper.advance(odeUnits, t, tNext, onStep);
+
+            t = tNext;
+
+            if (t >= nextWrite - 1.0e-9 || t >= endTime - 1.0e-12)
+            {
+                writeSnapshot(t);
+                if (verbosity >= 3) echoLine(t);
+                nextWrite += writeInterval;
+            }
         }
     }
 

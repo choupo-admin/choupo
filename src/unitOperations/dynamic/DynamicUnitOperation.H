@@ -97,6 +97,19 @@ public:
     // ---- Time stepping ------------------------------------------------
     virtual void step(scalar t, scalar dt) = 0;
 
+    // ---- Optional packed-ODE form (the adaptive-stepping interface) -----
+    //   A unit whose plant dynamics are a clean ODE dY/dt = f(Y) (with the
+    //   manipulated variables HELD constant across the step) exposes it here so
+    //   choupoCtrl's adaptive driver can sub-step the SAME state with the stiff
+    //   Rosenbrock23 integrator BETWEEN controller samples (the MV frozen).
+    //   Default `hasOdeForm()==false` => the unit keeps its own fixed step().
+    virtual bool    hasOdeForm() const           { return false; }
+    virtual sVector odeState()   const           { return {}; }     // pack Y
+    virtual void    setOdeState(const sVector& /*y*/) {}            // unpack+commit
+    virtual sVector odeDerivative(const sVector& /*y*/) const { return {}; }
+    // Number of leading rows of Y that must stay >= 0 (species moles; T free).
+    virtual std::size_t odeNPositive() const     { return 0; }
+
     // ---- Inspection ---------------------------------------------------
     //   Mole-number-like state.  Exposing it as a sVector keeps the
     //   trajectory CSV writer in main.cpp generic --- each unit decides
