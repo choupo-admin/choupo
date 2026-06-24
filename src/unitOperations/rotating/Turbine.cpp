@@ -144,6 +144,16 @@ int Turbine::solve(const DictPtr& dict,
     // ---- KPIs -----------------------------------------------------------
     kpis_.clear();
     kpis_["W_shaft"]     = W_shaft;            // signed (negative)
+    // Boundary energy ITEM: the shaft work this turbine takes OUT of its
+    // process stream (signed, NEGATIVE = energy leaving the fluid).  This is
+    // the energy-balance counterpart of the compressor's / pump's positive
+    // `W_shaft_kW` (work added to the fluid).  Without it the work the turbine
+    // extracts from the gas is invisible to the global first-law ledger and the
+    // combined-cycle boundary cannot close.  The downstream electricLoad
+    // generator converts this SAME work to electricity; it carries NO process
+    // stream, so its KPI is excluded from the stream-boundary sum (it would
+    // double-count the energy already removed here).
+    kpis_["W_shaft_kW"]  = W_shaft / 1000.0;   // signed (negative): work removed from fluid
     kpis_["W_generated"] = -W_shaft;           // positive
     kpis_["W_gen_kW"]    = W_gen_kW;
     kpis_["eta_isen"]    = eta;

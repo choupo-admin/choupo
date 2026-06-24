@@ -246,6 +246,35 @@ int GibbsReactor::solve(const DictPtr& dict,
     kpis_["converged"]    = eq.converged ? 1.0 : 0.0;
     kpis_["iterations"]   = static_cast<scalar>(eq.iterations);
     if (mode == "adiabatic") kpis_["outerIterations"] = static_cast<scalar>(outerIter);
+
+    // -- Reactor duty on the ELEMENTS datum (heat that crosses the boundary) --
+    // In ISOTHERMAL (fixed-T) mode the reactor must exchange heat with the
+    // surroundings to hold T against the reaction enthalpy: the chemical energy
+    // released / absorbed by combustion (etc.) crosses the system boundary as a
+    // REAL duty.  On the ONE datum (elements, 25 C) that duty is simply the
+    // stream-enthalpy change H_out - H_in (the formation reference carries
+    // dH_rxn), computed EXACTLY as the energy-balance report does -- so the
+    // per-unit and the global plant-boundary ledgers agree.  Sign: + = heat
+    // ADDED to the process, - = heat REMOVED.  Without this KPI the combustion
+    // chemical energy silently leaks out of globalEnergyBoundary.csv (the 70 %
+    // hole on combined01_brayton_rankine next to the 0.55 % headline closure).
+    //
+    // Adiabatic mode by definition exchanges no heat to hold T (its T floats to
+    // absorb the reaction enthalpy; any externally imposed `Q` is already the
+    // user's spec), so it emits no boundary duty here.
+    if (mode == "isothermal")
+    {
+        const scalar T_in = feedDict->lookupScalar("T", Dims::temperature);
+        sVector zf(thermo.n(), 0.0);
+        for (std::size_t i = 0; i < N; ++i)
+            zf[compIdx[i]] = (F_mol_s > 0.0) ? nIn[i] / F_mol_s : 0.0;
+        const scalar H_in_kW = F_in_kmols * thermo.H_stream_formation(T_in, P, 1.0, zf);
+        scalar H_out_kW = 0.0;
+        for (const auto& s : produced_)
+            H_out_kW += s.F * thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
+        kpis_["Q_kW"] = H_out_kW - H_in_kW;   // F[kmol/s]*h[kJ/kmol] = kW
+    }
+
     for (std::size_t j = 0; j < M; ++j)
         kpis_["lambda_" + elems[j]] = eq.pi[j] * RT_final;
     for (std::size_t i = 0; i < N; ++i)

@@ -30,6 +30,7 @@ License
 #include "BalanceMath.H"
 #include "Topology.H"
 
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <iomanip>
@@ -86,6 +87,14 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
 
     const auto units = reporting::resolveUnits(topo, ctx.result);
     int naCount = 0, gapCount = 0;
+    // Σ of each unit's genuine STREAM-boundary energy (heat/work crossing the
+    // boundary INTO that unit's process streams), accumulated with EXACTLY the
+    // same exclusions the per-unit closure uses: internal process-to-process
+    // exchangers contribute 0 (their duty is internal), and a unit with NO
+    // process streams (an electricLoad generator -- a pure energy SINK whose
+    // shaft work already left the streams at the turbine) is skipped entirely.
+    // This is the global plant boundary's Q_boundary -- see the block below.
+    scalar globalQext = 0.0;
     for (const auto& u : units)
     {
         // ONE datum (elements): a present species with no elements/formation
@@ -95,6 +104,12 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         // stderr) and carry on, so one curation gap does not nuke the whole
         // run's report.  The fix is to CURATE the component's gibbsFormation,
         // never to re-add the second datum.
+        // The unit's genuine external duty KPIs (independent of the enthalpy
+        // datum -- it only reads the KPIs), so a unit whose stream-enthalpy
+        // datum is MISSING (a gap) still has its real boundary duty counted.
+        int nItems = 0;
+        const scalar sumExternal = externalItemsSum(u.name, nItems);
+
         reporting::UnitEnergy e;
         try {
             e = reporting::unitEnergyBalance(lookup(u.ins), lookup(u.outs),
@@ -107,14 +122,21 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                          "fallback)\n";
             f << u.name << ",n/a,n/a,n/a,n/a,n/a,gap\n";
             ++gapCount;
+            // A GAPPED unit still has process streams (the datum is missing,
+            // not the topology), so its real boundary duty crosses the boundary
+            // -- keep it in the plant-boundary sum, matching the pre-refactor
+            // blind KPI sweep (the old behaviour on curation-gap cases).
+            globalQext += sumExternal;
             continue;
         }
-        int nItems = 0;
-        const scalar sumExternal = externalItemsSum(u.name, nItems);
 
         if (e.ref == reporting::EnergyRef::None)
         {
             // No stream-enthalpy datum, but the unit may still declare a duty.
+            // A unit that resolves to NO process streams is a pure energy SINK /
+            // conversion node (the electricLoad generator) -- its KPI is energy
+            // that already crossed at the upstream unit, so it is NOT added to
+            // the plant-boundary sum (it would double-count).
             f << u.name << ",n/a,n/a,n/a,";
             if (nItems > 0) f << std::fixed << std::setprecision(4) << sumExternal;
             f << ",n/a,n/a\n";
@@ -144,6 +166,15 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         const scalar dH       = e.hOut - e.hIn;
         const scalar supplied = internalExchanger ? 0.0
                                                   : (e.qBoundary + sumExternal);
+        // Plant-boundary accumulator: ONLY the genuine external-duty KPIs
+        // (Q_kW / reboiler / condenser / shaft work), never `qBoundary`.  A
+        // utility medium's heat (qBoundary) is carried by its steam/condensate
+        // streams, which are themselves system feeds/products counted in
+        // Σ H(feeds)/Σ H(products) below -- adding qBoundary here would double
+        // count it (the old evaporator trap).  Internal process-to-process
+        // exchangers (the HRSG) contribute 0; no-process-stream sinks (the
+        // electricLoad generator) never reach this branch and are skipped.
+        if (!internalExchanger) globalQext += sumExternal;
         const bool   declares = !internalExchanger
             && ((nItems > 0) || (std::abs(e.qBoundary) > 1.0e-9));
 
@@ -189,13 +220,21 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     //   Σ H_elements(feeds) + Σ Q_boundary  =  Σ H_elements(products)
     // On the ONE datum (elements, 25 C) every INTERNAL stream cancels (it is
     // one unit's outlet and another's inlet), so only the true system feeds,
-    // products, and boundary duties survive.  Boundary duties = the external
-    // duty KPIs whose heat is NOT already carried by a boundary stream: the
-    // evaporator `duty_kW` is EXCLUDED (its chest steam is the PlantSteam feed,
-    // already in Σ H(feeds)), exactly as it is excluded per-unit.  This is the
-    // single number the GUI shows green and the regression's T2 asserts < 1 %.
+    // products, and boundary heat/work survive.  Q_boundary is `globalQext` --
+    // the Σ of each unit's per-unit `supplied` accumulated above, NOT a blind
+    // KPI sweep.  That distinction is what makes a combined-cycle close:
+    //   * an internal process-to-process exchanger (the HRSG) is EXCLUDED -- its
+    //     duty moves heat between two internal streams, never across the boundary;
+    //   * a turbine's shaft work (its negative `W_shaft_kW`) IS counted -- that
+    //     energy leaves the fluid and the boundary;
+    //   * the electricLoad generator that converts that SAME work to electricity
+    //     carries NO process stream, so it is skipped (it would double-count);
+    //   * the evaporator's utility-medium `duty_kW` stays excluded (its chest
+    //     steam is already a feed in Σ H(feeds)), exactly as it is per-unit.
+    // This is the single number the GUI shows green and the regression asserts on.
     {
-        scalar Hfeeds = 0.0, Hprods = 0.0, Qext = 0.0;
+        scalar Hfeeds = 0.0, Hprods = 0.0;
+        const scalar Qext = globalQext;
         int    nFeed = 0, nProd = 0, nGap = 0;
         auto sumStream = [&](const std::string& name, scalar& acc, int& cnt)
         {
@@ -207,15 +246,24 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
         };
         for (const auto& s : topo.feeds)    sumStream(s, Hfeeds, nFeed);
         for (const auto& s : topo.products) sumStream(s, Hprods, nProd);
-        for (const auto& [unit, kv] : ctx.result.kpis)
-            for (const auto& [k, v] : kv)
-                if (reporting::isEnergyItemKpi(k)
-                    && !reporting::isInternalMediumDutyKpi(k))
-                    Qext += v;   // signed: + heat into the process
 
         const scalar residual = Hfeeds + Qext - Hprods;
-        const scalar denom    = std::max(std::abs(Hfeeds), 1.0e-9);
-        const scalar relPct   = 100.0 * residual / denom;
+        // Normalise the residual by the LARGEST energy magnitude in play, not by
+        // |Hfeeds| alone: a CLOSED LOOP (a recycle Rankine, rankine02) has no
+        // boundary feeds (Hfeeds == 0), so |Hfeeds| would collapse the denom to
+        // 1e-9 and turn a ~0 residual into a phantom 21 % -- a silent fake hole
+        // next to the headline closure.  Using max(|feeds|,|products|,|Qext|)
+        // gives an honest small percentage when the loop balances, and leaves
+        // every open plant (|Hfeeds| dominates) unchanged.
+        const scalar denom    = std::max({std::abs(Hfeeds), std::abs(Hprods),
+                                          std::abs(Qext), 1.0e-9});
+        // A fully CLOSED loop (no boundary feeds AND no products -- rankine02's
+        // recycle) has nothing crossing the boundary: feeds, products and Qext
+        // are all ~0 and the first law is vacuous.  Report 0 % rather than
+        // dividing a floating-point-noise residual by the 1e-9 floor (the
+        // phantom 21 %).  Any OPEN plant has a real denom and is unaffected.
+        const bool   noBoundary = (nFeed == 0 && nProd == 0 && denom <= 1.0e-6);
+        const scalar relPct   = noBoundary ? 0.0 : 100.0 * residual / denom;
 
         const std::filesystem::path gpath = dir / "globalEnergyBoundary.csv";
         std::ofstream g(gpath);
