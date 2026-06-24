@@ -61,10 +61,13 @@ export function EnergyBalancePlot({ streams, added }: EnergyBalancePlotProps) {
   const feeds    = streams.filter((s) => s.role === "feed");
   const products = streams.filter((s) => s.role === "product");
 
-  // H_dot per stream in kW (F kmol/s * H J/mol * 1000 mol/kmol / 1000)
+  // Total flow enthalpy per stream in kW.  Prefer the solver's H_kW, which
+  // counts the crystalline phase s[] a solid product (e.g. sucrose Powder)
+  // carries -- F*H alone misses it and the boundary balance does not close.
   const hDotKw = (s: StreamResult): number | null => {
+    if (s.H_kW !== undefined) return s.H_kW;
     if (s.H === undefined) return null;
-    return s.F * s.H;        // F * 1000 * H / 1000 = F * H
+    return s.F * s.H;
   };
 
   // Skip streams with no H, count them for the title badge.

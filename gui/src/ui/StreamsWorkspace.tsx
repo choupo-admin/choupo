@@ -509,9 +509,10 @@ function Detail({
             stream.H !== undefined
               ? [
                   ["H (kJ/mol)",  (stream.H / 1e3).toFixed(3)],
-                  // H_dot = F [kmol/s] * 1000 mol/kmol * H [J/mol] = W; show kW
+                  // Total flow enthalpy: prefer H_kW (counts the crystalline
+                  // phase s[]); else F*H (fluid only).
                   ["Ḣ (kW)",
-                    ((stream.F * stream.H * 1000) / 1e3).toFixed(2),
+                    (stream.H_kW ?? stream.F * stream.H).toFixed(2),
                   ],
                 ]
               : [["H", "—  (no thermo data)"]]
