@@ -299,6 +299,24 @@ int CSTR::solve(const DictPtr& dict,
     kpis_["F_in_kmol_h"]    = F_in_kmols * 3600.0;
     kpis_["F_out_kmol_h"]   = F_out * 3600.0 / 1000.0;
 
+    // -- Reactor duty on the ELEMENTS datum (heat crossing the boundary) ----
+    // The CSTR is isothermal (T_out = T_in = T), so the heat it must exchange
+    // to hold T against the reaction enthalpy is, on the ONE datum (elements,
+    // 25 C), simply H_out - H_in -- computed EXACTLY as the energy-balance
+    // report sums stream enthalpy, so the per-unit and global plant-boundary
+    // ledgers agree.  The flowsheet inherits the product P from the inlet, so
+    // the feed P used here matches the P the report will see.  Mirrors the
+    // GibbsReactor fix; without it an isothermal reactor's heat of reaction
+    // leaks out of globalEnergyBoundary.csv (the ~8.6% hole on process05).
+    {
+        const scalar P_ref = feedDict->lookupScalarOrDefault("P", 101325.0);
+        const scalar H_in_kW = F_in_kmols * thermo.H_stream_formation(T, P_ref, vf_in, z_in);
+        scalar H_out_kW = 0.0;
+        for (const auto& s : produced_)
+            H_out_kW += s.F * thermo.H_stream_formation(s.T, P_ref, s.vf, s.z);
+        kpis_["Q_kW"] = H_out_kW - H_in_kW;   // F[kmol/s]*h[kJ/kmol] = kW
+    }
+
     return r.converged ? 0 : 1;
 }
 
