@@ -157,6 +157,11 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
         // datum) when the thermo package can compute it.  J/mol.  Energy
         // flow rate is F * H * 1000 W; computed in the GUI on the fly.
         if (s.H_valid) os << ", \"H\": " << num(s.H);
+        // Total FLOW enthalpy [kW] = F*H (fluid) + Σ s[i]*h°(solid,T) (crystals).
+        // The boundary energy balance reads THIS (counts a solid product's
+        // crystals), not F*H -- so the GUI plot closes on the same elements
+        // datum as the report.  Absent => fall back to F*H in the GUI.
+        if (s.H_flow_valid) os << ", \"H_kW\": " << num(s.H_flow_kW);
         if (haveMW) os << ", \"F_mass\": " << num(F_mass);
         os << ", \"F_solid_mass\": " << num(F_solid);
         // Utility category (populated by `utility <name>;` in a stream

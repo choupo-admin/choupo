@@ -135,8 +135,11 @@ export interface EnergyBalance {
   skipped: number;
 }
 
-/** Flow enthalpy of one stream [kW]: F [kmol/s] · H [J/mol] · 1000 / 1000. */
+/** Total flow enthalpy of one stream [kW].  Prefer the solver's H_kW (which
+ *  counts the crystalline phase s[] a solid product carries -- F*H misses it);
+ *  fall back to F [kmol/s] · H [J/mol] for fluid-only streams. */
 export function enthalpyKw(s: StreamResult): number | null {
+  if (s.H_kW !== undefined) return s.H_kW;
   if (s.H === undefined) return null;
   return s.F * s.H;
 }

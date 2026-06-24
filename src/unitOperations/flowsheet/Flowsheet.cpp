@@ -2691,6 +2691,25 @@ int Flowsheet::solve(const DictPtr& dict,
         {
             s.H_valid = false;
         }
+        // Total FLOW enthalpy [kW]: the fluid (F*H) PLUS the crystalline phase
+        // (s[] on the solid datum, Σ s[i]*h°(solid,T) -- the SAME leg the energy
+        // report's solidH_elements uses).  A solid product (sucrose Powder) keeps
+        // its mass in s[], not F*H, so without this the boundary balance is short
+        // by the crystal formation enthalpy and the GUI plot does not close.
+        try
+        {
+            scalar solidH = 0.0;            // kW
+            for (std::size_t i = 0; i < s.s.size() && i < thermo.n(); ++i)
+                if (s.s[i] > 0.0)
+                    solidH += s.s[i] * thermo.comp(i).h_formation(s.T, "solid");
+            s.H_flow_kW = (s.H_valid ? s.F * s.H : 0.0) + solidH;
+            s.H_flow_valid = std::isfinite(s.H_flow_kW)
+                          && (s.H_valid || solidH != 0.0);
+        }
+        catch (const std::exception&)
+        {
+            s.H_flow_valid = false;
+        }
     }
 
     // ---- Model-boundary audit (H conserved, T is the model-dependent readout)

@@ -57,6 +57,10 @@ export interface StreamResult {
    *  streams whose thermo blocks can't be evaluated (e.g. a
    *  nonvolatile component appearing at vf > 0). */
   H?: number;
+  /** Total FLOW enthalpy [kW] = F*H (fluid) + Σ s[i]*h°(solid,T) (crystals).
+   *  Counts a solid product's crystals that F*H alone misses; the boundary
+   *  energy balance prefers this.  Absent => fall back to F*H. */
+  H_kW?: number;
   /** Mass flow in canonical SI: kg/s.  Optional --- only present when
    *  the solver emitted `F_mass`.  Equals F * MW_mix. */
   F_mass?: number;

@@ -478,6 +478,7 @@ interface ResultPayload {
       P: number;
       vf?: number;
       H?: number;
+      H_kW?: number;
       F_mass?: number;
       F_solid_mass?: number;
       category?: string;
@@ -604,6 +605,7 @@ export function shapeStreams(payload: ResultPayload,
       P: s.P,
       vf: s.vf,
       H: s.H,
+      H_kW: s.H_kW,
       F_mass: s.F_mass,
       F_solid_mass: s.F_solid_mass,
       category: s.category,

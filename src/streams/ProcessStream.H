@@ -94,8 +94,16 @@ struct ProcessStream
     // lets H STEP (visible), rather than silently flexing T to force H
     // continuous.  A model boundary is not a physical device; there is no
     // real dT to absorb.  See CLAUDE.md sec.10 + docs/ai/energy.md sec.7.
-    scalar      H  = 0.0;        // specific enthalpy      [J/mol]
+    scalar      H  = 0.0;        // specific enthalpy      [J/mol]  (FLUID phase)
     bool        H_valid = false; // true iff H was computed (not zero by default)
+    // Total FLOW enthalpy [kW] = F*H (fluid) + Σ s[i]*h°(solid,T) (crystals).
+    // The .H above is the fluid molar enthalpy only; a solid product (sucrose
+    // Powder) carries its mass in s[], NOT in F*H -- so the boundary energy
+    // balance / GUI must read THIS field to count the crystals (else a solid
+    // product shows ~no enthalpy and the plant balance is short by the crystal
+    // formation enthalpy).  Filled post-solve alongside H.
+    scalar      H_flow_kW = 0.0;
+    bool        H_flow_valid = false;
     // ---- Solid phase -------------------------------------------
     // Particulate solids carried alongside the fluid, indexed by the SAME
     // components as `z` --- so a species can be BOTH dissolved (z[i]) and
