@@ -29,10 +29,12 @@ License
 #include "EconomicsPass.H"
 
 #include "core/Dictionary.H"
+#include "reporting/OdsWriter.H"
 #include "solver/NewtonRaphson.H"
 
 #include <cmath>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
@@ -107,6 +109,203 @@ DictPtr loadPriceFile(bool& present)
     present = fs::exists(p);
     if (!present) return nullptr;
     return Dictionary::fromFile(p.string());
+}
+
+// Format a NaN-safe number for the CSV (so "never recovers" reads as an empty
+// cell, never the literal "nan" which a spreadsheet imports as text).
+std::string csvNum(scalar v, int decimals)
+{
+    if (!std::isfinite(v)) return "";
+    std::ostringstream os;
+    os << std::fixed << std::setprecision(decimals) << v;
+    return os.str();
+}
+
+// -------------------------------------------------------------------------
+//  Write the year-by-year DCF table to a CSV --- one row per year, then a
+//  footer block with the headline scalars + the AACE accuracy band.  Lands at
+//  reports/economics/cashFlow.csv (the pass runs with CWD == case dir).
+// -------------------------------------------------------------------------
+void writeCashFlowCsv(const EconomicsSummary& e)
+{
+    const fs::path dir = fs::path("reports") / "economics";
+    fs::create_directories(dir);
+    const fs::path path = dir / "cashFlow.csv";
+    std::ofstream f(path);
+    if (!f.is_open())
+        throw std::runtime_error("EconomicsPass: cannot open " + path.string()
+            + " for the cash-flow spreadsheet");
+
+    const std::string cur = e.currency;
+    f << "# Discounted-cash-flow appraisal (Perry / Turton Ch.10), currency "
+      << cur << "\n";
+    f << "# AACE Class-" << e.estimateClass << " estimate -- accuracy band "
+      << std::fixed << std::setprecision(0) << e.accLo << "% / +" << e.accHi
+      << "%\n";
+    f << "year,investment_" << cur
+      << ",revenue_"        << cur
+      << ",operatingCost_"  << cur
+      << ",depreciation_"   << cur
+      << ",taxableIncome_"  << cur
+      << ",tax_"            << cur
+      << ",afterTaxProfit_" << cur
+      << ",cashFlow_"       << cur
+      << ",discountFactor"
+      << ",discountedCF_"   << cur
+      << ",cumulativeDCF_"  << cur << "\n";
+
+    for (const auto& r : e.cashFlow)
+    {
+        f << r.year
+          << "," << csvNum(r.investment,     0)
+          << "," << csvNum(r.revenue,        0)
+          << "," << csvNum(r.operatingCost,  0)
+          << "," << csvNum(r.depreciation,   0)
+          << "," << csvNum(r.taxableIncome,  0)
+          << "," << csvNum(r.tax,            0)
+          << "," << csvNum(r.afterTaxProfit, 0)
+          << "," << csvNum(r.cashFlow,       0)
+          << "," << csvNum(r.discountFactor, 4)
+          << "," << csvNum(r.discountedCF,   0)
+          << "," << csvNum(r.cumulativeDCF,  0) << "\n";
+    }
+
+    // Footer block --- the headline appraisal, one metric per line.
+    f << "\n# --- summary ---\n";
+    f << "FCI,"          << csvNum(e.FCI,   0) << "\n";
+    f << "WC,"           << csvNum(e.WC,    0) << "\n";
+    f << "TCI,"          << csvNum(e.TCI,   0) << "\n";
+    f << "COM_d,"        << csvNum(e.COM_d, 0) << "\n";
+    f << "revenue,"      << csvNum(e.revenue, 0) << "\n";
+    f << "NPV,"          << csvNum(e.NPV,   0) << "\n";
+    f << "IRR_pct,"      << (e.haveIRR ? csvNum(100.0 * e.IRR, 2) : "") << "\n";
+    f << "discountedPayback_yr," << csvNum(e.discPayback,   2) << "\n";
+    f << "simplePayback_yr,"     << csvNum(e.simplePayback, 2) << "\n";
+    f << "discountRate_pct,"     << csvNum(100.0 * e.discountRate, 2) << "\n";
+    f << "taxRate_pct,"          << csvNum(100.0 * e.taxRate,      2) << "\n";
+    f << "AACE_class,"           << e.estimateClass << "\n";
+    f << "accuracyBand_pct,"     << csvNum(e.accLo, 0) << "," << csvNum(e.accHi, 0)
+      << "\n";
+    f.close();
+
+    std::cout << "  [economics] cash-flow spreadsheet -> " << path.string()
+              << "\n";
+}
+
+// -------------------------------------------------------------------------
+//  Write the same DCF table to a coloured .ods --- a Perry / Turton appraisal
+//  sheet.  Title; Header-styled column row; one numberCell row per year (the
+//  payback year, where the cumulative DCF first turns positive, flagged Good);
+//  a totals / summary block; the AACE accuracy banner.  Lands at
+//  reports/economics/cashFlow.ods.
+// -------------------------------------------------------------------------
+void writeCashFlowOds(const EconomicsSummary& e)
+{
+    const fs::path dir = fs::path("reports") / "economics";
+    fs::create_directories(dir);
+    const fs::path path = dir / "cashFlow.ods";
+
+    const std::string cur = e.currency;
+
+    OdsWriter ods;
+    ods.beginSheet("Cash Flow (DCF)");
+
+    // -- Title + AACE banner -------------------------------------------------
+    ods.newRow();
+    ods.textCell("Discounted cash-flow appraisal (Perry / Turton Ch.10)  ["
+                 + cur + "]", OdsWriter::Title);
+    ods.newRow();
+    {
+        std::ostringstream banner;
+        banner << "AACE Class-" << e.estimateClass
+               << " estimate  --  accuracy band " << std::fixed
+               << std::setprecision(0) << e.accLo << "% / +" << e.accHi << "%";
+        ods.textCell(banner.str(), OdsWriter::Bad);   // amber-red caution band
+    }
+
+    // -- Column header row ---------------------------------------------------
+    ods.newRow();
+    ods.textCell("Year",                       OdsWriter::Header);
+    ods.textCell("Fixed+Working Capital",      OdsWriter::Header);
+    ods.textCell("Revenue",                    OdsWriter::Header);
+    ods.textCell("OPEX (COM_d)",               OdsWriter::Header);
+    ods.textCell("Depreciation",               OdsWriter::Header);
+    ods.textCell("Taxable income",             OdsWriter::Header);
+    ods.textCell("Tax",                        OdsWriter::Header);
+    ods.textCell("After-tax profit",           OdsWriter::Header);
+    ods.textCell("Cash flow",                  OdsWriter::Header);
+    ods.textCell("Discount factor",            OdsWriter::Header);
+    ods.textCell("Discounted CF",              OdsWriter::Header);
+    ods.textCell("Cumulative DCF",             OdsWriter::Header);
+
+    // -- One row per year; flag the payback year (first cumulative DCF >= 0).-
+    bool paybackFlagged = false;
+    for (const auto& r : e.cashFlow)
+    {
+        // The payback year is the FIRST operating year whose cumulative
+        // discounted cash flow first turns non-negative (capital recovered).
+        const bool isPayback = (!paybackFlagged && r.year > 0
+                                && r.cumulativeDCF >= 0.0);
+        const OdsWriter::Style rowSt = isPayback ? OdsWriter::Good
+                                                 : OdsWriter::Plain;
+        if (isPayback) paybackFlagged = true;
+
+        ods.newRow();
+        ods.numberCell(r.year,            0, rowSt);
+        ods.numberCell(r.investment,      0, rowSt);
+        ods.numberCell(r.revenue,         0, rowSt);
+        ods.numberCell(r.operatingCost,   0, rowSt);
+        ods.numberCell(r.depreciation,    0, rowSt);
+        ods.numberCell(r.taxableIncome,   0, rowSt);
+        ods.numberCell(r.tax,             0, rowSt);
+        ods.numberCell(r.afterTaxProfit,  0, rowSt);
+        ods.numberCell(r.cashFlow,        0, rowSt);
+        ods.numberCell(r.discountFactor,  4, rowSt);
+        ods.numberCell(r.discountedCF,    0, rowSt);
+        ods.numberCell(r.cumulativeDCF,   0, rowSt);
+    }
+
+    // -- Summary block -------------------------------------------------------
+    ods.newRow();   // spacer
+    ods.newRow();
+    ods.textCell("Appraisal summary  [" + cur + "]", OdsWriter::Title);
+
+    auto metric = [&](const std::string& label, scalar v, int dec, bool ok)
+    {
+        ods.newRow();
+        ods.textCell(label, OdsWriter::Bold);
+        if (std::isfinite(v))
+            ods.numberCell(v, dec, ok ? OdsWriter::Good : OdsWriter::Plain);
+        else
+            ods.textCell("n/a", OdsWriter::Bad);
+    };
+
+    metric("Fixed capital investment (FCI)", e.FCI, 0, false);
+    metric("Working capital (WC)",           e.WC,  0, false);
+    metric("Total capital investment (TCI)", e.TCI, 0, false);
+    metric("Cost of manufacture (COM_d)/yr", e.COM_d,   0, false);
+    metric("Annual revenue (R)",             e.revenue, 0, false);
+    metric("NPV @ " + csvNum(100.0 * e.discountRate, 1) + "%",
+           e.NPV, 0, e.NPV > 0.0);
+    metric("IRR [%]", e.haveIRR ? 100.0 * e.IRR : std::nan(""), 2,
+           e.haveIRR);
+    metric("Discounted payback [yr]", e.discPayback,   2,
+           std::isfinite(e.discPayback));
+    metric("Simple payback [yr]",     e.simplePayback, 2,
+           std::isfinite(e.simplePayback));
+
+    if (e.irrAmbiguous)
+    {
+        ods.newRow();
+        ods.textCell("!! Multiple-IRR guard: cumulative cash flow changes sign "
+                     "more than once -- IRR may be non-unique; USE NPV.",
+                     OdsWriter::Bad);
+    }
+
+    ods.save(path.string());
+
+    std::cout << "  [economics] cash-flow spreadsheet -> " << path.string()
+              << "  (1 sheet, coloured)\n";
 }
 
 } // anonymous namespace
@@ -526,6 +725,69 @@ int EconomicsPass::run(SimulationResult& result)
     econ["NPV"]          = NPV;
     econ["IRR"]          = haveIRR ? IRR : std::nan("");
     econ["paybackYears"] = std::isfinite(discPayback) ? discPayback : std::nan("");
+
+    // ---- 11.  Build the year-by-year DCF table + emit the spreadsheet ----
+    // The classic Perry / Turton income/cash-flow statement (years 0..N): the
+    // SHEET is the deliverable, the log above is the echo.  Every column is
+    // reconstructed from the same scalars the log printed (glass-box: the .ods
+    // adds NOTHING the student cannot also read in the log).
+    EconomicsSummary& summary = result.economics;
+    summary.present       = true;
+    summary.FCI           = FCI;
+    summary.WC            = WC;
+    summary.TCI           = TCI;
+    summary.COM_d         = COM_d;
+    summary.revenue       = R;
+    summary.depreciation  = d_annual;
+    summary.NPV           = NPV;
+    summary.IRR           = haveIRR ? IRR : std::nan("");
+    summary.haveIRR       = haveIRR;
+    summary.irrAmbiguous  = irrAmbiguous;
+    summary.discPayback   = discPayback;
+    summary.simplePayback = simplePayback;
+    summary.discountRate  = discountRate;
+    summary.taxRate       = taxRate;
+    summary.projectLife   = Nlife;
+    summary.estimateClass = estimateClass;
+    summary.accLo         = acc_lo;
+    summary.accHi         = acc_hi;
+    summary.currency      = result.costs.empty()
+                          ? std::string("EUR")
+                          : result.costs.begin()->second.currency;
+
+    scalar cumDisc = 0.0;
+    for (int t = 0; t <= Nlife; ++t)
+    {
+        CashFlowYear row;
+        row.year           = t;
+        // Year 0 is construction: the only outflow is the capital (FCI + WC);
+        // the operating columns are zero.  cashFlow[0] already carries that
+        // negative outflow (-FCI - WC).
+        const scalar d_t   = (t >= 1 && t <= Ndepr) ? d_annual : 0.0;
+        if (t == 0)
+        {
+            row.investment    = cashFlow[0];   // -FCI - WC
+        }
+        else
+        {
+            row.revenue       = R;
+            row.operatingCost = COM_d;
+            row.depreciation  = d_t;
+            row.taxableIncome = R - COM_d - d_t;
+            row.tax           = taxRate * row.taxableIncome;
+            row.afterTaxProfit = row.taxableIncome - row.tax;
+        }
+        row.cashFlow        = cashFlow[t];     // already includes WC/salvage at N
+        row.discountFactor  = 1.0 / std::pow(1.0 + discountRate, t);
+        row.discountedCF    = cashFlow[t] * row.discountFactor;
+        cumDisc            += row.discountedCF;
+        row.cumulativeDCF   = cumDisc;
+        summary.cashFlow.push_back(row);
+    }
+
+    // Persist both the .csv and the coloured .ods (reports/economics/).
+    writeCashFlowCsv(summary);
+    writeCashFlowOds(summary);
 
     return 0;
 }

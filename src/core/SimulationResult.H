@@ -168,6 +168,56 @@ struct ModelBoundaryFinding
     std::string reason;          // populated when refused
 };
 
+// One row of the discounted-cash-flow (DCF) appraisal table -- the classic
+// year-by-year income / cash-flow statement (Perry / Turton §10).  Year 0 is
+// construction (the investment outflow); years 1..N are operating years.  All
+// monetary fields in the report currency (EUR); discount factor dimensionless,
+// discounted cash flow in EUR.  Published by EconomicsPass so the GUI / an
+// outer driver can read the FULL table, not just the headline scalars.
+struct CashFlowYear
+{
+    int    year             = 0;    // t = 0..N
+    scalar investment       = 0.0;  // FCI + WC outflow (year 0 only), <0
+    scalar revenue          = 0.0;  // R_t
+    scalar operatingCost    = 0.0;  // COM_d_t (depreciation NOT included)
+    scalar depreciation     = 0.0;  // d_t (straight line)
+    scalar taxableIncome    = 0.0;  // R - COM_d - d
+    scalar tax              = 0.0;  // tau * taxableIncome
+    scalar afterTaxProfit   = 0.0;  // (R - COM_d - d)(1-tau)
+    scalar cashFlow         = 0.0;  // CF_t (after-tax profit + d, + WC/salvage at N)
+    scalar discountFactor   = 0.0;  // 1/(1+i)^t
+    scalar discountedCF     = 0.0;  // CF_t * discountFactor
+    scalar cumulativeDCF    = 0.0;  // running sum of discountedCF
+};
+
+// Headline economic appraisal scalars + the year-by-year DCF table.  Populated
+// by EconomicsPass; mirrors result.kpis["economics"] but typed and complete
+// (the table the .ods / .csv DCF spreadsheet is built from).
+struct EconomicsSummary
+{
+    bool                      present       = false;
+    scalar                    FCI           = 0.0;   // fixed capital investment
+    scalar                    WC            = 0.0;   // working capital
+    scalar                    TCI           = 0.0;   // total capital investment
+    scalar                    COM_d         = 0.0;   // cost of manufacture (no depr.)
+    scalar                    revenue       = 0.0;   // R (annual)
+    scalar                    depreciation  = 0.0;   // d_annual (straight line)
+    scalar                    NPV           = 0.0;
+    scalar                    IRR           = 0.0;   // fraction (NaN if none)
+    bool                      haveIRR       = false;
+    bool                      irrAmbiguous  = false;
+    scalar                    discPayback   = 0.0;   // yr (NaN if never)
+    scalar                    simplePayback = 0.0;   // yr (NaN if never)
+    scalar                    discountRate  = 0.0;
+    scalar                    taxRate       = 0.0;
+    int                       projectLife   = 0;
+    int                       estimateClass = 4;
+    scalar                    accLo         = -30.0; // AACE band low  (%)
+    scalar                    accHi         = +50.0; // AACE band high (%)
+    std::string               currency      = "EUR";
+    std::vector<CashFlowYear> cashFlow;              // rows t = 0..N
+};
+
 struct SimulationResult
 {
     std::map<std::string, ProcessStream>                          streams;
@@ -223,6 +273,10 @@ struct SimulationResult
     // the enthalpy they disagree about (or a refusal across a speciation
     // change).  Populated by the Flowsheet; surfaced in the run log AND here.
     std::vector<ModelBoundaryFinding>                             modelBoundaries;
+    // Economic appraisal: the headline scalars + the full year-by-year DCF
+    // table, populated by EconomicsPass.  `present` is false until the pass
+    // runs.  The .ods / .csv cash-flow spreadsheet is built from this.
+    EconomicsSummary                                              economics;
     bool                                                           converged = true;
 };
 
