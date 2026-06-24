@@ -60,6 +60,25 @@
   /* feature grid */
   .feat{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
   @media(max-width:760px){.feat{grid-template-columns:1fr}}
+  /* install tabs */
+  .ostabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
+  .ostab{background:var(--panel);border:1px solid var(--line);color:var(--muted);
+       border-radius:10px;padding:9px 18px;font-size:14.5px;font-weight:600;cursor:pointer;
+       font-family:inherit}
+  .ostab:hover{color:var(--ink)}
+  .ostab.on{background:linear-gradient(180deg,var(--teal),var(--teal2));
+       color:#04222b;border-color:transparent}
+  .ospanel{display:none}
+  .ospanel.on{display:block}
+  .ospanel h3{font-size:18px;margin:0 0 4px;color:var(--ink)}
+  .ospanel h3 + p{color:var(--muted);font-size:14.5px;margin:0 0 16px}
+  .ospanel .step{color:var(--muted);font-size:14px;margin:18px 0 8px}
+  .ospanel .step b{color:var(--ink)}
+  .note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--teal);
+       border-radius:10px;padding:14px 18px;margin:18px 0;color:var(--muted);font-size:14px}
+  .note b{color:var(--ink)}
+  .note code{color:var(--teal);font-family:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+  pre.term .ok{color:var(--teal);font-weight:700}
   /* run band */
   .run{text-align:center;background:linear-gradient(180deg,#102038,var(--bg));}
   .run h2{font-size:30px}
@@ -80,6 +99,7 @@
     <a href="#why">Why</a>
     <a href="#glass">Glass-box</a>
     <a href="#do">What it does</a>
+    <a href="#install">Install</a>
     <a href="https://github.com/choupo-admin/choupo" target="_blank" rel="noopener">Code</a>
     <a class="btn sm" href="#run">Run Choupo</a>
   </div>
@@ -180,6 +200,135 @@
      point your own assistant at it on your PC — the dicts are just files.</p>
 </div></section>
 
+<section id="install"><div class="wrap">
+  <h2>Install &amp; build it locally</h2>
+  <p class="sub" style="max-width:780px">Want the full simulator on your own machine — all four
+     binaries, every tutorial, the regression suite? It builds from source with
+     <b style="color:var(--ink)">zero external dependencies</b>: just a C++17 compiler
+     (<code style="color:var(--teal);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px">g++</code>)
+     and GNU <code style="color:var(--teal);font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px">make</code>.
+     No Boost, no Eigen, no CMake. Pick your OS.</p>
+
+  <div class="ostabs">
+    <button class="ostab on" data-os="linux">Linux</button>
+    <button class="ostab" data-os="windows">Windows</button>
+    <button class="ostab" data-os="macos">macOS</button>
+  </div>
+
+  <!-- LINUX -->
+  <div class="ospanel on" data-os="linux">
+    <h3>Linux</h3>
+    <p>The native home of Choupo — the smoothest path.</p>
+
+    <div class="step"><b>1.</b> Install the toolchain (g++ + GNU make + git):</div>
+<pre class="term"><span class="c"># Debian / Ubuntu</span>
+sudo apt update &amp;&amp; sudo apt install <span class="t">g++ make git</span>
+
+<span class="c"># Fedora / RHEL</span>
+sudo dnf install <span class="t">gcc-c++ make git</span></pre>
+
+    <div class="step"><b>2.</b> Clone and build the native release:</div>
+<pre class="term">git clone https://github.com/choupo-admin/choupo.git
+cd choupo
+make all                <span class="c"># native release (-O2) -&gt; choupoSolve, choupoBatch, choupoCtrl, choupoProps</span></pre>
+
+    <div class="step"><b>3.</b> Source the shell helpers, then run a tutorial:</div>
+<pre class="term">source etc/bashrc       <span class="c"># adds bin/ + project root to PATH (runCase, listCases, ...)</span>
+runCase tutorials/steady/flash/flash01_benzene_toluene</pre>
+
+    <div class="step"><b>4.</b> Run the full regression suite to confirm a healthy build:</div>
+<pre class="term">bin/runTests
+<span class="c">...</span>
+<span class="ok">PASS 117 / FAIL 0</span>   <span class="c">&lt;- your success signal: tutorials solve + golden-master KPIs match, zero failures</span></pre>
+
+    <div class="step" style="margin-top:22px"><b>Optional — the browser GUI:</b> (Node.js required)</div>
+<pre class="term">cd gui
+npm install
+npm run dev             <span class="c"># Vite dev server on http://localhost:5173</span></pre>
+
+    <div class="note"><b>Two traps to know.</b> Use <code>make all</code>, not a bare
+       <code>make</code> — bare <code>make</code> resolves to the WebAssembly target (a known
+       include-order bug). And the helpers (<code>runCase</code>, <code>listCases</code>) only
+       appear on your <code>PATH</code> after <code>source etc/bashrc</code> in that shell;
+       re-source it in each new terminal, or call <code>./choupoSolve &lt;case&gt;</code> directly.</div>
+  </div>
+
+  <!-- WINDOWS -->
+  <div class="ospanel" data-os="windows">
+    <h3>Windows</h3>
+    <p>Two honest routes. <b style="color:var(--ink)">WSL2 is the recommended one</b> — it is a
+       real Linux, so the build is identical and trouble-free.</p>
+
+    <div class="step"><b>Route A — WSL2 (recommended).</b> In PowerShell as Administrator:</div>
+<pre class="term">wsl --install            <span class="c"># installs Ubuntu under WSL2; reboot when asked</span></pre>
+    <div class="step">Then open the <b>Ubuntu</b> terminal and follow the <b>Linux</b> steps above verbatim:</div>
+<pre class="term">sudo apt update &amp;&amp; sudo apt install <span class="t">g++ make git</span>
+git clone https://github.com/choupo-admin/choupo.git
+cd choupo
+make all
+source etc/bashrc
+runCase tutorials/steady/flash/flash01_benzene_toluene
+bin/runTests             <span class="c"># -&gt; PASS .. / FAIL 0</span></pre>
+
+    <div class="step" style="margin-top:22px"><b>Route B — MSYS2 / MinGW-w64 (native, no Linux layer).</b>
+       Install <a href="https://www.msys2.org" target="_blank" rel="noopener">MSYS2</a>, open the
+       <b>MSYS2 MINGW64</b> shell, then:</div>
+<pre class="term">pacman -S <span class="t">mingw-w64-x86_64-gcc make git</span>
+git clone https://github.com/choupo-admin/choupo.git
+cd choupo
+make all
+source etc/bashrc
+runCase tutorials/steady/flash/flash01_benzene_toluene
+bin/runTests</pre>
+
+    <div class="note"><b>Which is smoother?</b> <b>WSL2</b> — by a clear margin. It runs the
+       exact Linux toolchain, so paths, the <code>source etc/bashrc</code> helpers, and
+       <code>bin/runTests</code> behave precisely as documented. MSYS2 works (the code is portable
+       C++17 with no OS-specific deps), but you must stay in the <b>MINGW64</b> shell and use its
+       <code>g++</code>/<code>make</code>. Same trap as Linux: <code>make all</code>, never a bare
+       <code>make</code> (that builds WebAssembly), and the helpers need
+       <code>source etc/bashrc</code> first.</div>
+  </div>
+
+  <!-- MACOS -->
+  <div class="ospanel" data-os="macos">
+    <h3>macOS</h3>
+    <p>Choupo's Makefile invokes <code>g++</code>. On a Mac that name usually points at Apple's
+       <b style="color:var(--ink)">clang</b>, which compiles the C++17 just fine — or you can install
+       the real GNU GCC with Homebrew.</p>
+
+    <div class="step"><b>1a — simplest:</b> Xcode command-line tools (gives clang as <code>g++</code>) + git:</div>
+<pre class="term">xcode-select --install   <span class="c"># installs clang (aliased as g++) + make + git</span></pre>
+
+    <div class="step"><b>1b — or GNU GCC via Homebrew</b> (installs <code>g++-NN</code> + GNU <code>make</code>):</div>
+<pre class="term">brew install gcc make git</pre>
+
+    <div class="step"><b>2.</b> Clone and build:</div>
+<pre class="term">git clone https://github.com/choupo-admin/choupo.git
+cd choupo
+make all                 <span class="c"># clang as g++ builds C++17 cleanly; or pass CXX=g++-14 to force GNU GCC</span></pre>
+
+    <div class="step"><b>3.</b> Source the helpers and run a tutorial:</div>
+<pre class="term">source etc/bashrc
+runCase tutorials/steady/flash/flash01_benzene_toluene</pre>
+
+    <div class="step"><b>4.</b> Confirm with the regression suite:</div>
+<pre class="term">bin/runTests             <span class="c"># -&gt;</span> <span class="ok">PASS .. / FAIL 0</span></pre>
+
+    <div class="note"><b>clang vs g++.</b> Apple ships <code>clang++</code> under the name
+       <code>g++</code>; it builds Choupo's standard C++17 with no changes. If you installed Homebrew
+       GCC and want the genuine GNU compiler, point the build at it with
+       <code>make all CXX=g++-14</code> (match your installed version, e.g. <code>g++-13</code>).
+       Same two traps as everywhere: <code>make all</code> not a bare <code>make</code> (which builds
+       WebAssembly), and <code>source etc/bashrc</code> before the <code>runCase</code> helper works.</div>
+  </div>
+
+  <p class="pillrow" style="margin-top:6px">Prefer not to install anything? The
+     <a href="/app/" target="choupo-app" rel="noopener">browser app</a> runs the same C++ solver as
+     WebAssembly — see <a href="#run">Run it now</a> above. Full build notes live in the
+     <a href="https://github.com/choupo-admin/choupo/blob/main/README.md" target="_blank" rel="noopener">README</a>.</p>
+</div></section>
+
 <section><div class="wrap">
   <h2>Built for students, researchers, and engineers</h2>
   <p class="sub" style="max-width:780px">Choupo is open-source and free — no licence fees.
@@ -222,6 +371,23 @@
      · GPL-3.0-or-later · Independent open-source project</div>
   <div><b>CHOUPO™</b> is a trademark of TalentGround Lda. — an independent open-source project.</div>
 </div></footer>
+
+<script>
+  // Install section — OS tab switcher
+  (function () {
+    var tabs = document.querySelectorAll('.ostab');
+    var panels = document.querySelectorAll('.ospanel');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var os = tab.getAttribute('data-os');
+        tabs.forEach(function (t) { t.classList.toggle('on', t === tab); });
+        panels.forEach(function (p) {
+          p.classList.toggle('on', p.getAttribute('data-os') === os);
+        });
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>
