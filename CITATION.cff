@@ -18,8 +18,8 @@ type: software
 authors:
   - family-names: Geraldes
     given-names: Vítor
-repository-code: "https://github.com/vitorgeraldes/Choupo"
-url: "https://github.com/vitorgeraldes/Choupo"
+repository-code: "https://github.com/choupo-admin/choupo"
+url: "https://github.com/choupo-admin/choupo"
 license: "GPL-3.0-or-later"
 keywords:
   - chemical engineering education
@@ -41,7 +41,7 @@ preferred-citation:
   authors:
     - family-names: Geraldes
       given-names: Vítor
-  version: "0.2.0"
+  version: "0.9.0"
   year: 2026
-  url: "https://github.com/vitorgeraldes/Choupo"
+  url: "https://github.com/choupo-admin/choupo"
   license: "GPL-3.0-or-later"
