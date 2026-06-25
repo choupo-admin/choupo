@@ -4,7 +4,7 @@
 directories, modular thermo, file-based component database, browser GUI
 (WASM).
 
-> v0.2.0 — four binaries, one per problem class
+> v0.9.0 — four binaries, one per problem class
 > (`choupoSolve` steady, `choupoBatch` time-dependent + recipes,
 > `choupoCtrl` dynamic continuous + control loops, `choupoProps`
 > property evaluation + parameter fitting); 194 tutorials; three-layer
@@ -217,7 +217,7 @@ name or marks — the code is open; the name is a trademark of
 
 ## Roadmap
 
-**v0.2.0 — initial release.**  Four binaries, three-layer architecture
+**v0.9.0 — pre-1.0 consolidation.**  Four binaries, three-layer architecture
 (outer driver / simulator / post-processor), 194 tutorials.  Thermo:
 ideal / NRTL / Wilson activity, SRK + Peng-Robinson cubic EoS,
 ideal-gas H/S, Henry's law, Pitzer electrolyte osmotic, gas + liquid

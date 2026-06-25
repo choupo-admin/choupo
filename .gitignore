@@ -127,8 +127,11 @@ site/_dist/
 tutorials/**/code/.build/
 tutorials/**/log.choupo*
 
-# Theory guide -- not part of v1.0 (academic doc, co-author pending)
+# Theory guide -- now published with the other guides (Vítor 2026-06-25).
+# Keep the LaTeX build auxiliaries ignored; publish only the source + the PDF.
 docs/theoryGuide.*
+!docs/theoryGuide.tex
+!docs/theoryGuide.pdf
 bin/curate/refs/
 
 __pycache__/
