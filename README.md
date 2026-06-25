@@ -30,10 +30,10 @@ directories, modular thermo, file-based component database, browser GUI
 
 ## Why this exists
 
-For pedagogy in **MCFT — Métodos Computacionais em Fenómenos de
-Transferência**.  `Choupo` is a glass box: every equation, every Newton
-iteration, every K-value is visible — both in the source code and in the
-terminal output.
+`Choupo` is a glass box: every equation, every Newton iteration, every K-value
+is visible — both in the source code and in the terminal output.  It is built
+for teaching and for research in areas where transparency and customisation
+matter more than breadth.
 
 ## Build
 
@@ -234,11 +234,3 @@ distillation condenser / reboiler heat ports, forward heat-links
 between units, utility allocation by temperature level, and a full
 Brayton + Rankine combined cycle (shaft split + HRSG heat link) — see
 [`docs/ai/energy.md`](docs/ai/energy.md).
-
-**Ahead:**
-
-| | |
-|---|---|
-| future | Equation-oriented sparse Newton as an OPT-IN alternative mode (`solver eo;`) — to teach the SM-vs-EO contrast; not an SM replacement |
-| future | Electrolyte transport; multi-component Pitzer (mixed-salt brines); liquid viscosity by group contribution |
-| future | Spacer ΔP / Pitzer refinements; further solids unit ops |
