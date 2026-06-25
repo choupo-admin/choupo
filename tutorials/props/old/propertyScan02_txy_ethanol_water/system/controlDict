@@ -1,4 +1,0 @@
-application   choupoProps;
-description   "T-x-y diagram for ethanol/water at 1 atm via NRTL --- shows the azeotrope at x_ethanol ~ 0.89";
-
-verbosity     3;

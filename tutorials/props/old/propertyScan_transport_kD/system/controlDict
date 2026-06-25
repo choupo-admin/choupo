@@ -1,4 +1,0 @@
-application   choupoProps;
-description   "Gas thermal conductivity (Eucken) + binary diffusivity (Fuller) vs T";
-
-verbosity     2;

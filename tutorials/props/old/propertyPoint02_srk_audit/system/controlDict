@@ -1,4 +1,0 @@
-application   choupoProps;
-description   "Audit the SRK EoS (Z, H_R, S_R, v) at 5 reference states against NIST REFPROP / Sandler";
-
-verbosity     3;

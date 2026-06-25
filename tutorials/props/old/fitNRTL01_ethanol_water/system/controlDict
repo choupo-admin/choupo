@@ -1,4 +1,0 @@
-application   choupoProps;
-description   "Levenberg-Marquardt fit of the ethanol/water NRTL pair against 1 atm bubble-T data";
-
-verbosity     3;

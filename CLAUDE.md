@@ -263,7 +263,7 @@ Full dict/units/thermo-override detail + examples →
 
 ## 6. Current state (summary — detail in docs)
 
-* **148 tutorials** under `tutorials/{steady,batch,ctrl,props,plant}/`;
+* **193 tutorials** under `tutorials/{steady,batch,ctrl,props,plant,electrochem}/`;
   `bin/runTests` validates **126** via golden-master KPI + NaN/inf guard
   (batch/ctrl trajectories + `plant/` showcase are run-only).
 * **56 components**, **8 Henry's-law pairs**, **4 materials**, **2 membranes**,

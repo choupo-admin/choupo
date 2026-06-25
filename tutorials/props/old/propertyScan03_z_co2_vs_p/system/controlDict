@@ -1,4 +1,0 @@
-application   choupoProps;
-description   "Compressibility Z and v_molar of pure CO2 vs P at three temperatures (SRK), showing real-gas deviations";
-
-verbosity     3;

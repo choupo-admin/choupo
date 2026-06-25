@@ -1,4 +1,0 @@
-application   choupoProps;
-description   "T_bubble(x_ethanol, P) grid for ethanol/water via NRTL --- how the azeotrope shifts with pressure";
-
-verbosity     3;

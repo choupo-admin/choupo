@@ -1,4 +1,0 @@
-application   choupoProps;
-description   "Audit ThermoPackage ideal-gas methods H_ig, S_ig, Cp_ig against JANAF/NIST tables";
-
-verbosity     3;
