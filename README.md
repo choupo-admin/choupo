@@ -7,7 +7,7 @@ directories, modular thermo, file-based component database, browser GUI
 > v0.2.0 — four binaries, one per problem class
 > (`choupoSolve` steady, `choupoBatch` time-dependent + recipes,
 > `choupoCtrl` dynamic continuous + control loops, `choupoProps`
-> property evaluation + parameter fitting); 193 tutorials; three-layer
+> property evaluation + parameter fitting); 194 tutorials; three-layer
 > simulator architecture (outer driver / simulator / post).
 > Thermo: NRTL / Wilson activity, SRK + Peng-Robinson cubic EoS,
 > gas + liquid transport (viscosity, conductivity, diffusivity),
@@ -142,7 +142,7 @@ The three binaries share `src/{core,thermo,solver,materials,unitOperations,contr
 | Flowsheet machinery             | sequential-modular with Wegstein on tear streams |
 | Web GUI                         | React + Mantine + React Flow + Plotly; all three binaries as WebAssembly, dispatched by `controlDict.application`; time-series trajectory plots for dynamic cases; drag-resizable output panel + pop-out windows |
 
-## Tutorials (193)
+## Tutorials (194)
 
 Cases live under `tutorials/<category>/<name>/`:
 
@@ -218,7 +218,7 @@ name or marks — the code is open; the name is a trademark of
 ## Roadmap
 
 **v0.2.0 — initial release.**  Four binaries, three-layer architecture
-(outer driver / simulator / post-processor), 193 tutorials.  Thermo:
+(outer driver / simulator / post-processor), 194 tutorials.  Thermo:
 ideal / NRTL / Wilson activity, SRK + Peng-Robinson cubic EoS,
 ideal-gas H/S, Henry's law, Pitzer electrolyte osmotic, gas + liquid
 transport (viscosity / conductivity / diffusivity, selectable
