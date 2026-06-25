@@ -1,0 +1,55 @@
+// --- vendored for self-containment (2026-06-07) ---------------------
+// origin   standard
+// source   data/standards/components/aceticAcid.dat
+// sha256   ffb9b61a8ce2c80a2db60c76e1a0604420ce8b3b19004227cda9de810a5abb3c
+// note     byte-copy of the FROZEN reference at vendoring time. This case
+//          is now self-contained + reproducible even if the standard evolves.
+//          Verify-vs-standard / re-sync is a deliberate curation act.
+// ----------------------------------------------------------------------
+
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Acetic Acid  (CH3COOH, C2H4O2, CAS 64-19-7)
+  Note: vapour-phase dimerisation is neglected here (would require
+        a chemical-association EoS).  Adequate for LLE tutorial.
+\*---------------------------------------------------------------------------*/
+
+name        aceticAcid;
+formula     C2H4O2;
+CAS         64-19-7;
+
+MW          60.052;
+Tc          591.95;
+Pc          57.86;
+omega       0.4665;
+Tb          391.05;
+HvapTb      24390;
+Vliq        5.752e-5;          // 57.52 cm³/mol at 25°C
+
+
+gibbsFormation
+{
+    dHf_298   -432250.0;        // J/mol  -- ideal-gas reference
+    s_298     282.500;         // J/(mol·K)  -- third-law absolute
+    phase     gas;            // ideal-gas Hf reference (NIST/JANAF convention)
+}
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   (Poling Appendix A.4)
+    coefficients  (4.68206   1642.540   -39.764);
+    Trange        (290  392);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (4.840   0.2549   -1.753e-4   4.949e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (123.1);          // ~ 123 J/(mol·K) average
+    Trange        (290  390);
+}

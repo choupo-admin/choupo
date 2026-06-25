@@ -1,0 +1,74 @@
+/*---------------------------------------------------------------------------*\
+  constant/economics  --  the CASE-SCOPED market/time tier.
+
+  POLICY (proposed default, to be ratified by Vítor):
+    Market- and time-specific economic data (product/feed prices, labour
+    rate, FX, tax rate, target CEPCI) lives ONLY here -- never as a literal
+    in the C++.  Each value carries its costYear and a provenance{} block
+    naming the PRIMARY source (an index/bulletin/agency), so the number is
+    auditable and refreshable.  The EconomicsPass REFUSES to run if a
+    required price is absent (set economics.refuseOnMissingPrice 0; in the
+    postDict to switch to defaulted-but-loud instead).
+
+  The prices below are representative teaching figures with their primary
+  index named; refresh the value + costYear when you re-run for a live
+  appraisal.  Currency: EUR per kg unless noted.
+\*---------------------------------------------------------------------------*/
+
+// ---- Products (revenue) ----------------------------------------------------
+products
+(
+    {
+        stream      vapProd;          // ethyl-acetate-rich flashed overhead (the prime product)
+        price       1.55;             // EUR/kg
+        costYear    2024;
+        provenance
+        {
+            origin  "ICIS / S&P Global ethyl acetate spot, W. Europe contract";
+            method  "representative bulk contract price (teaching figure)";
+        }
+    }
+    {
+        stream      liqProd;          // water/acid-rich bottoms (low-value byproduct sink)
+        price       0.30;             // EUR/kg
+        costYear    2024;
+        provenance
+        {
+            origin  "ICIS dilute aqueous-organic byproduct / fuel-grade outlet, W. Europe";
+            method  "representative low-value byproduct price (teaching figure)";
+        }
+    }
+);
+
+// ---- Raw materials (purchased feeds) ---------------------------------------
+rawMaterials
+(
+    {
+        stream      feed;             // ethanol + acetic acid charge
+        price       0.85;             // EUR/kg of combined feed
+        costYear    2024;
+        provenance
+        {
+            origin  "ICIS ethanol + acetic acid bulk contract, W. Europe";
+            method  "mass-weighted blend of the two feed contract prices (teaching figure)";
+        }
+    }
+);
+
+// ---- Labour ----------------------------------------------------------------
+labourRate      35.0;                 // EUR/h, loaded operating-labour rate
+labourRateYear  2024;
+labourProvenance
+{
+    origin  "Eurostat chemical-sector labour cost (EU-27)";
+    method  "fully-loaded hourly rate (teaching figure)";
+}
+
+// ---- FX (recorded for audit; the costing pass applies usdToEur itself) -----
+usdToEur        0.92;
+usdToEurDate    "2024-06-03";
+fxProvenance
+{
+    origin  "ECB euro reference exchange rate";
+    method  "daily reference rate";
+}

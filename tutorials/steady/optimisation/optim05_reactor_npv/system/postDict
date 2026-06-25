@@ -1,0 +1,76 @@
+/*---------------------------------------------------------------------------*\
+  Post-processing chain for the esterification economics flagship.
+
+    1. sizing     -- StirredTank for the CSTR, ShellTubeHX for the heater.
+    2. costing    -- Guthrie/Turton purchased + bare-module + total-module
+                     cost (CEPCI-updated to the target year, EUR).
+    3. economics  -- OPEX (Turton COM_d), revenue, straight-line DCF,
+                     NPV, IRR, discounted + simple payback.  Prices are
+                     read from constant/economics (refuse if absent).
+
+  Every cost factor and DCF assumption below is dict-owned and printed by
+  the pass (glass-box).  Defaults shown are the cited teaching values
+  (Turton 5th ed., Ch.7-8 + §10); override any of them here.
+\*---------------------------------------------------------------------------*/
+
+sizing
+{
+    units
+    (
+        {
+            unitName    reactor;
+            type        stirredTank;
+            material    SS316;
+            designRules
+            {
+                L_over_D        2.5;
+                pressureDesign  3.0;        // bar (operating x 2 safety)
+                corrosionAllow  0.003;      // m
+                jointEfficiency 1.0;
+            }
+        }
+
+        {
+            unitName    heater;
+            type        shellTubeHX;
+            material    SS304;
+            designRules
+            {
+                U               600.0;      // W/(m^2.K)  liquid-liquid
+                LMTD            40.0;        // K
+                pressureDesign  2.0;        // bar
+            }
+        }
+    );
+}
+
+costing
+{
+    method      Guthrie;
+    year        2026;
+    cepci       820;        // target-year CEPCI (Chemical Engineering magazine)
+    cepci2001   397;        // Turton base-year basis
+    usdToEur    0.92;       // ECB reference rate (see constant/economics)
+}
+
+economics
+{
+    method              discountedCashFlow;
+
+    projectLife         10;           // Turton §10
+    constructionPeriod  1;
+    discountRate        0.10;         // MARR
+    taxRate             0.21;         // US statutory (TCJA 2018) -- CITE jurisdiction
+    depreciation        straightLine;
+    depreciableLife     9;
+    salvageFraction     0.0;
+    workingCapital      0.15;         // x FCI
+    streamFactor        0.90;         // 7884 h/yr
+    siteFactor          0.50;
+    contingencyFee      1.18;
+    langFactor          3.63;         // solid-fluid (cross-check line only)
+    N_np                3;            // reactor + heater + separator
+    estimateClass       4;            // -30/+50% AACE banner
+
+    refuseOnMissingPrice 1;           // glass-box: refuse if a price is absent
+}

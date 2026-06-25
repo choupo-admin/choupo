@@ -1,0 +1,118 @@
+/*---------------------------------------------------------------------------*\
+  optim05_reactor_npv  --  CONSTRAINED ECONOMIC optimisation: size & operate an
+                           esterification CSTR plant for MAXIMUM NPV.
+
+  Same esterification plant as the economics01 flagship --
+
+      feed --> reactor (CSTR) --> heater --> separator (flash)
+                                                 |-> vapProd (ethyl-acetate-rich
+                                                 |            overhead, the prime
+                                                 |            product @ 1.55 EUR/kg)
+                                                 |-> liqProd (water/acid-rich
+                                                              bottoms, low-value
+                                                              byproduct @ 0.30 EUR/kg)
+
+  -- but instead of a FIXED design we ask the engine the design question:
+
+      maximise   economics.NPV
+      varying    V_R     (reactor volume,        m^3)
+                 T_feed  (feed/reactor T,        K)
+      subject to reactor.V_R    <=  V_max   (a physical SIZE cap)
+                 economics.FCI  <=  FCI_max (a CAPITAL-BUDGET cap)
+
+  ------------------------------------------------------------------------------
+  THE ECONOMIC TRADE-OFF (why this is a genuine optimum, not a corner)
+  ------------------------------------------------------------------------------
+  The heater runs at a FIXED partial duty, so the downstream flash SPLITS the
+  reactor effluent into a light, ethyl-acetate-rich VAPOUR overhead (sold high)
+  and a heavy, water/acid-rich LIQUID bottoms (sold cheap).  Esterification
+  conserves total mass; what conversion buys you is the RESHUFFLING of that mass
+  toward the valuable overhead.  Both knobs raise conversion -- and the CSTR is
+  ISOTHERMAL at the feed temperature (CSTR.cpp: T = feed.T), so:
+
+    * V_R  (reactor volume) -- bigger V_R raises the residence time tau = V_R/Q,
+      so conversion X = k.tau/(1 + k.tau) climbs, more acetic acid + ethanol turn
+      into ethyl acetate, and the priced overhead grows and enriches
+      (REVENUE up).  But a bigger vessel costs more steel: the StirredTank
+      sizing -> Guthrie costing drives FCI (CAPEX) UP.  Revenue rises with
+      DIMINISHING returns as X saturates toward 1, while CAPEX keeps climbing --
+      so an NPV maximum exists.
+
+    * T_feed (feed/reactor temperature) -- higher T raises the Arrhenius rate
+      constant k = A.exp(-Ea/RT), so X climbs too.  T_feed is the cheap
+      conversion ACCELERATOR; its bounds are kept inside the window where the
+      flash splits cleanly (below the temperature that boils the bottoms dry).
+
+  We deliberately set the size cap TIGHTER than where the NPV-greedy design
+  would otherwise stop, so at the optimum the reactor-size constraint BINDS.
+
+  ------------------------------------------------------------------------------
+  HOW TO READ THE SHADOW PRICES (the whole point of the tutorial)
+  ------------------------------------------------------------------------------
+  The SQP prints, at the certified optimum, a Lagrange multiplier (lambda) for
+  each inequality.  A constraint with lambda > 0 is ACTIVE (binding) and its
+  multiplier is the SHADOW PRICE -- the marginal NPV you would gain by relaxing
+  that cap by one unit:
+
+    * reactor.V_R cap   ACTIVE  ->  lambda = d(NPV)/d(V_max)   [EUR of NPV per
+                                    extra m^3 of reactor head-room].
+    * economics.FCI cap         ->  lambda = d(NPV)/d(FCI_max) [EUR of NPV per
+                                    extra EUR of capital you may spend].
+
+  A constraint with lambda ~ 0 is SLACK (not binding) -- relaxing it buys
+  nothing.  Here the FCI cap is deliberately generous: it stays SLACK so the
+  student sees BOTH an active and an inactive constraint side by side.  The
+  trace marks the active set and the KKT certificate proves the point is a true
+  constrained optimum (||grad L|| ~ 0, complementarity ~ 0).
+
+  The two design variables are case-level $references so the SQP can drive them
+  through `variables.<name>` and the trace shows their canonical-SI values.
+\*---------------------------------------------------------------------------*/
+
+variables
+{
+    V_R        4.0;          // manipulated: reactor volume   [m^3], inside [0.3, 520]
+    T_feed     350.0 K;      // manipulated: feed / reactor temperature  [K]
+}
+
+streams
+{
+    feed
+    {
+        F            500.0 kmol/h;
+        T            $T_feed;            // <-- design variable (sets reactor T)
+        P            1.01325 bar;
+        molarComposition  { ethanol 0.5;  aceticAcid 0.5;  ethylAcetate 0.0;  water 0.0; }
+    }
+}
+
+units
+(
+    {
+        name        reactor;
+        type        cstr;
+        in          feed;
+        outputs     ( reactorOut );
+
+        operation   { V_R $V_R; }        // <-- design variable [m^3]
+        reaction    esterification_etac;
+    }
+
+    {
+        name        heater;
+        type        heater;
+        in          reactorOut;
+        outputs     ( hotStream );
+
+        operation   { Q  2.0e5 W; }      // fixed partial duty -- splits the flash
+    }
+
+    {
+        name        separator;
+        type        isothermalFlash;
+        in          hotStream;
+        outputs     ( liqProd  vapProd );
+
+        operation   { P 1.0 bar; }
+    }
+);

@@ -1,0 +1,4 @@
+application   choupoSolve;
+description   "Esterification CSTR sized & operated for MAX NPV by hand-rolled SQP, subject to a reactor-size cap and a capital-budget cap (active-constraint shadow prices)";
+
+verbosity     3;

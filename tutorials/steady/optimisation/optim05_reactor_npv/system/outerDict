@@ -1,0 +1,67 @@
+/*---------------------------------------------------------------------------*\
+  Constrained ECONOMIC optimisation by hand-rolled SQP (line-search, damped-
+  BFGS on the Lagrangian, L1 merit, active-set convex QP -- Nocedal & Wright
+  Ch.18 / 16.5).  Maximise economics.NPV by sizing/operating the esterification
+  CSTR, up to a reactor-size cap and a capital-budget cap.
+
+  objective:    maximise  economics.NPV   (published by the EconomicsPass; the
+                          driver runs the postDict chain so this KPI exists).
+  variables:    V_R     (reactor volume,  m^3)
+                T_feed  (feed/reactor T,   K)
+  constraints:  reactor.V_R    <=  V_max     (physical size head-room -- BINDS)
+                economics.FCI  <=  FCI_max   (capital budget -- left SLACK)
+
+  At the optimum the SQP prints the active set and the Lagrange multipliers
+  (the shadow prices) plus the 5-line KKT certificate.  See the flowsheetDict
+  header for how to READ those shadow prices.
+\*---------------------------------------------------------------------------*/
+
+type    optimization;
+method  sqp;
+
+variables
+(
+    {
+        path     variables.V_R;
+        min      1.0;
+        max      30.0;
+        initial  4.0;
+    }
+    {
+        path     variables.T_feed;
+        min      348.0 K;
+        max      352.5 K;        // kept below the ~353 K cliff where the flash boils the bottoms dry
+        initial  350.0 K;
+    }
+);
+
+objective
+{
+    kind     kpi;
+    path     economics.NPV;
+    sense    maximise;
+}
+
+constraints
+(
+    {
+        kpi      reactor.V_R;
+        atMost   12.0;          // m^3 -- reactor-size cap (shadow price = EUR NPV / m^3); BINDS at the optimum
+    }
+    {
+        kpi      economics.FCI;
+        atMost   1.0e6;         // EUR -- capital budget (shadow price = EUR NPV / EUR FCI); left generous -> SLACK
+    }
+);
+
+options
+{
+    maxIter   40;
+    fdStep    2e-2;
+    fdMode    central;
+}
+
+report
+{
+    file        optimization_history.csv;
+}

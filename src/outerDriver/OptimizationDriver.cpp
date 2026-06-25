@@ -256,10 +256,14 @@ int OptimizationDriver::runNelderMead()
     if (!flowsheetDict_)
         throw std::runtime_error("OptimizationDriver: flowsheetDict not set");
 
-    const bool needPost = (objKind_ == Kind::Cost || objKind_ == Kind::CostTotal);
-    if (needPost && !postDict_)
+    // A cost-kind objective REQUIRES the post chain; any case that SHIPS a
+    // postDict gets it run too, so KPIs the chain publishes (economics.NPV,
+    // economics.FCI, ...) are reachable as objective / constraint paths.
+    const bool costNeedsPost = (objKind_ == Kind::Cost || objKind_ == Kind::CostTotal);
+    if (costNeedsPost && !postDict_)
         throw std::runtime_error("OptimizationDriver: objective requires a"
             " post-processing chain, but the case has no system/postDict");
+    const bool needPost = costNeedsPost || (postDict_ != nullptr);
 
     // -----------------------------------------------------------------
     //  Header + CSV
@@ -454,10 +458,14 @@ int OptimizationDriver::runSqp()
                   << "   (gates passed)\n";
     }
 
-    const bool needPost = (objKind_ == Kind::Cost || objKind_ == Kind::CostTotal);
-    if (needPost && !postDict_)
+    // A cost-kind objective REQUIRES the post chain; any case that SHIPS a
+    // postDict gets it run too, so KPIs the chain publishes (economics.NPV,
+    // economics.FCI, ...) are reachable as objective / constraint paths.
+    const bool costNeedsPost = (objKind_ == Kind::Cost || objKind_ == Kind::CostTotal);
+    if (costNeedsPost && !postDict_)
         throw std::runtime_error("OptimizationDriver: objective requires a"
             " post-processing chain, but the case has no system/postDict");
+    const bool needPost = costNeedsPost || (postDict_ != nullptr);
 
     const std::size_t n = vars_.size();
 
