@@ -1,0 +1,5 @@
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H3PO4; ion "H3PO4"; z 0; masters ( { ion PO4; nu 1; } { ion H; nu 3; } );
+      logK25 21.721; dH -10100; source "USGS PHREEQC phreeqc.dat (public domain); minteq.v4/NIST46.3 (H3PO4)";

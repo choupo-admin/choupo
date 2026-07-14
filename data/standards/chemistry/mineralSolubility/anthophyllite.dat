@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral anthophyllite; formula "Mg7Si8O22(OH)2"; masters ( { ion Mg; nu 7; } { ion H4SiO4; nu 8; } { ion H; nu -14; } ); nuWater -8;
+      logK25 66.8; dH -483000; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Anthophyllite";

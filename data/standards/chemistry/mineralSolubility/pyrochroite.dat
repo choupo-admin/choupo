@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral pyrochroite; formula "Mn(OH)2"; masters ( { ion Mn; nu 1; } { ion H; nu -2; } ); nuWater 2;
+      logK25 15.2; dH 0; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Pyrochroite";

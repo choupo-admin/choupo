@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral sepiolite; formula "Mg2Si3O7.5OH:3H2O"; masters ( { ion Mg; nu 2; } { ion H4SiO4; nu 3; } { ion H; nu -4; } ); nuWater -0.5;
+      logK25 15.76; dH -44768.8; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Sepiolite";

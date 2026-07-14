@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral carnallite; formula "KMgCl3:6H2O"; masters ( { ion K; nu 1; } { ion Mg; nu 1; } { ion Cl; nu 3; } ); nuWater 6;
+      logK25 4.35; dH 1170; analytic ( 24.06 -0.0311 -3090 0 0 0 ); validC ( 0 200 ); source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Carnallite";

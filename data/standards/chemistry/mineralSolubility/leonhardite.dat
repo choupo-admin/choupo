@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral leonhardite; formula "MgSO4:4H2O"; masters ( { ion Mg; nu 1; } { ion SO4; nu 1; } ); nuWater 4;
+      logK25 -0.887; dH 0; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Leonhardite";

@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral diopside; formula "CaMgSi2O6"; masters ( { ion Ca; nu 1; } { ion Mg; nu 1; } { ion H4SiO4; nu 2; } { ion H; nu -4; } ); nuWater -2;
+      logK25 20.96; dH -134000; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Diopside";

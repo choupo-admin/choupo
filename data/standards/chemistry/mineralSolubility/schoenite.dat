@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral schoenite; formula "K2Mg(SO4)2:6H2O"; masters ( { ion K; nu 2; } { ion Mg; nu 1; } { ion SO4; nu 2; } ); nuWater 6;
+      logK25 -4.328; dH 0; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Schoenite";

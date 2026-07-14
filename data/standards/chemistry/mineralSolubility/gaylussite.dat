@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral gaylussite; formula "CaNa2(CO3)2:5H2O"; masters ( { ion Ca; nu 1; } { ion HCO3; nu 2; } { ion H; nu -2; } { ion Na; nu 2; } ); nuWater 5;
+      logK25 11.237; dH -29798.4; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Gaylussite";

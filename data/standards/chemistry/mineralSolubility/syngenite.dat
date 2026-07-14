@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral syngenite; formula "K2Ca(SO4)2:H2O"; masters ( { ion K; nu 2; } { ion Ca; nu 1; } { ion SO4; nu 2; } ); nuWater 1;
+      logK25 -6.43; dH -32650; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Syngenite";

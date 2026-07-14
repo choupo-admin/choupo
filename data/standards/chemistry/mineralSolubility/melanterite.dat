@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral melanterite; formula "FeSO4:7H2O"; masters ( { ion Fe; nu 1; } { ion SO4; nu 1; } ); nuWater 7;
+      logK25 -2.209; dH 20543.4; analytic ( 1.447 -0.004153 0 0 -214949 0 ); validC ( 0 200 ); source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Melanterite";

@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral chrysotile; formula "Mg3Si2O5(OH)4"; masters ( { ion H4SiO4; nu 2; } { ion Mg; nu 3; } { ion H; nu -6; } ); nuWater 1;
+      logK25 32.2; dH -195811; analytic ( 13.248 0 10217.1 -6.1894 0 0 ); validC ( 0 200 ); source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Chrysotile";

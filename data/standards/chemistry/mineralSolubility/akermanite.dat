@@ -1,0 +1,5 @@
+recordType mineralSolubility;
+schemaVersion 1;
+
+mineral akermanite; formula "Ca2MgSi2O7"; masters ( { ion Mg; nu 1; } { ion Ca; nu 2; } { ion H4SiO4; nu 2; } { ion H; nu -6; } ); nuWater -1;
+      logK25 45.23; dH -289000; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Akermanite";
