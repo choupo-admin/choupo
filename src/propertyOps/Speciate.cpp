@@ -115,12 +115,15 @@ scalar totalAsMolality(const DictPtr& t, const std::string& ion)
 electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
 {
     electrolyte::SpeciationInput in;
-    if (dict->found("totals"))
-    {
-        auto t = dict->subDict("totals");
-        for (const auto& k : t->keys())
-            in.totals[k] = totalAsMolality(t, k);
-    }
+    // `analyticalTotals` (roadmap Phase B) is the mode for waters measured directly
+    // in ions/masters; `totals` is its accepted alias (legacy + brevity).
+    for (const char* key : {"totals", "analyticalTotals"})
+        if (dict->found(key))
+        {
+            auto t = dict->subDict(key);
+            for (const auto& k : t->keys())
+                in.totals[k] = totalAsMolality(t, k);
+        }
 
     // COMPOSITION (roadmap Phase B): the analysis given as APPARENT SALTS, each
     // expanded to ion totals through its component.speciesMap (loaded with the
@@ -228,15 +231,77 @@ void readEquilibrate(const DictPtr& dict, electrolyte::SpeciationInput& in)
 
 } // namespace propertyOps
 
+namespace {
+// The case's OFFICIAL dictionary lives in constant/propertyDict (walk UP the
+// fractal cascade).  For the speciate path it is an electrolyte propertyPackage
+// declaring the SYSTEM (propertyMethods.aqueousActivity + inputBasis).  Returns
+// null if there is none up the tree.
+DictPtr caseDictionary()
+{
+    namespace fs = std::filesystem;
+    fs::path p = fs::current_path();
+    for (int up = 0; up < 6; ++up)
+    {
+        fs::path cand = p / "constant" / "propertyDict";
+        if (fs::exists(cand)) return Dictionary::fromFile(cand.string());
+        if (!p.has_parent_path()) break;
+        p = p.parent_path();
+    }
+    return nullptr;
+}
+} // namespace
+
 int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verbosity)
 {
     diag_.clear();
+    // PACKAGE (roadmap Phase B): the case's OFFICIAL dictionary, constant/propertyDict,
+    // when it declares propertyMethods.aqueousActivity, IS the electrolyte
+    // propertyPackage -- it fixes the activity method + input basis, and the op then
+    // carries only the ANALYSIS.  A flat/degenerate thermoPackage (or none) -> the
+    // legacy per-op `activityModel` form (backward compatible).
+    DictPtr pkg = caseDictionary();
+    const bool isPackage = pkg && pkg->found("propertyMethods")
+        && pkg->subDict("propertyMethods")->found("aqueousActivity");
+    if (!isPackage) pkg = nullptr;
+
+    // Activity model: from the package's propertyMethods.aqueousActivity when a
+    // package is declared (model contrasts = DIFFERENT packages), else the per-op
+    // `activityModel`.  Default Davies (the only S1 builtin).  Resolved + the
+    // input basis VALIDATED before the analysis is read (so a bad key fails with a
+    // basis error, not an obscure downstream one).
+    std::string model = dict->lookupWordOrDefault("activityModel", "davies");
+    if (pkg)
+    {
+        {
+            std::string m = pkg->subDict("propertyMethods")->lookupWord("aqueousActivity");
+            const auto dot = m.rfind('.');            // "electrolyte.pitzerHMW" -> "pitzerHMW"
+            model = (dot == std::string::npos) ? m : m.substr(dot + 1);
+        }
+        // Input-basis validation: composition keys subset of apparentComponents;
+        // analyticalTotals/totals keys subset of analyticalMasters.
+        if (pkg->found("inputBasis"))
+        {
+            auto ib = pkg->subDict("inputBasis");
+            auto subsetCheck = [&](const char* opKey, const char* basisKey)
+            {
+                if (!dict->found(opKey) || !ib->found(basisKey)) return;
+                const auto allowed = ib->lookupWordList(basisKey);
+                for (const auto& k : dict->subDict(opKey)->keys())
+                    if (std::find(allowed.begin(), allowed.end(), k) == allowed.end())
+                        throw std::runtime_error(std::string(opKey) + "." + k
+                            + " is not declared in the package inputBasis."
+                            + basisKey + ".");
+            };
+            subsetCheck("composition",      "apparentComponents");
+            subsetCheck("totals",           "analyticalMasters");
+            subsetCheck("analyticalTotals", "analyticalMasters");
+        }
+    }
+
     auto in = propertyOps::readAnalysis(dict);
     propertyOps::readEquilibrate(dict, in);
 
-    // Optional aqueous-activity-model selection (default Davies; the only S1
-    // builtin -- AqueousActivity::New refuses an unknown name with the list).
-    electrolyte::SpeciationSolver solver(dict->lookupWordOrDefault("activityModel", "davies"));
+    electrolyte::SpeciationSolver solver(model);
     const auto res = solver.solve(in, verbosity);
 
     // -- species table CSV ------------------------------------------------------

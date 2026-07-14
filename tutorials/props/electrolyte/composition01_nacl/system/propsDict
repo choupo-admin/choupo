@@ -1,4 +1,4 @@
 operations
 (
-    { name naclWater; type speciate; activityModel davies; composition { NaCl 2.0 mol/kg; } pH solve; diagSpecies ( Na Cl ); output { file spec.csv; } }
+    { name naclWater; type speciate; composition { NaCl 2.0 mol/kg; } pH solve; diagSpecies ( Na Cl ); output { file spec.csv; } }
 );

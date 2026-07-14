@@ -302,7 +302,33 @@ try
             std::cout << "  [deprecated] constant/propertyDict -- rename it to"
                          " constant/propertyDict (the property package is"
                          " more than thermo).\n";
-        if (sel->found("components") && sel->found("propertyMethods"))
+        const bool speciationPkg = sel->found("propertyMethods")
+            && sel->subDict("propertyMethods")->found("aqueousActivity")
+            && !sel->subDict("propertyMethods")->found("liquid");
+        if (speciationPkg)
+        {
+            // SPECIATION package (roadmap Phase B): the case's dictionary declares the
+            // electrolyte SYSTEM (aqueousActivity + inputBasis) consumed by the
+            // speciate/scalingScan ops; the ThermoPackage here is just the solvent
+            // basis (the op does the ion chemistry).  Build it lean -- no liquid /
+            // vapour manifest required.
+            if (verbosity >= 2)
+                std::cout << "Property package:  constant/propertyDict"
+                             "   (electrolyte speciation: aqueousActivity + inputBasis)\n";
+            thermoDict = sel;
+            // The op consumes aqueousActivity + inputBasis from `sel`; the
+            // ThermoPackage here is the (ideal) basis over ALL the package's
+            // declared components, so `components (...)` keeps the full canonical
+            // list.  Ideal activity/eos are supplied here so the package file itself
+            // stays clean of a degenerate `activityModel ideal`.
+            std::string manifest = "components ( ";
+            for (const auto& c : sel->lookupWordList("components")) manifest += c + " ";
+            manifest += "); activityModel { model ideal; } "
+                        "equationOfState { model idealGas; }";
+            auto basis = Dictionary::fromString(manifest, "<speciation-basis>");
+            thermo.readFromDict(basis, db);
+        }
+        else if (sel->found("components") && sel->found("propertyMethods"))
         {
             if (verbosity >= 2)
                 std::cout << "Property package:  INLINE in the case"
