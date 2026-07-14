@@ -13,5 +13,12 @@ solidPhases
     {
         dissolutionReaction { masters ( { ion HCO3; nu 1; } { ion H; nu -1; } { ion Mg; nu 1; } ); nuWater 3; }
         equilibrium { logK25 5.162; dH -14899.2; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Nesquehonite"; }
+        thermochemistry
+        {
+            Hf298 -1.97726e+06;   // J/mol   (formation enthalpy of the solid)
+            S298  195.644;   // J/(mol.K)
+            Cp298 239.329;   // J/(mol.K) at 298.15 K (Maier-Kelley a+bT+c/T^2)
+            source "Helgeson, Delany, Nesbitt & Bird 1978, Am. J. Sci. 278-A -- via CHNOSZ OBIGT (open compilation)";
+        }
     }
 }

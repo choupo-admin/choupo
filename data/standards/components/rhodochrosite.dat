@@ -13,5 +13,12 @@ solidPhases
     {
         dissolutionReaction { masters ( { ion Mn; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } ); }
         equilibrium { logK25 -0.801; dH -20882.3; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+        thermochemistry
+        {
+            Hf298 -889188;   // J/mol   (formation enthalpy of the solid)
+            S298  99.9976;   // J/(mol.K)
+            Cp298 81.5328;   // J/(mol.K) at 298.15 K (Maier-Kelley a+bT+c/T^2)
+            source "Helgeson, Delany, Nesbitt & Bird 1978, Am. J. Sci. 278-A -- via CHNOSZ OBIGT (open compilation)";
+        }
     }
 }
