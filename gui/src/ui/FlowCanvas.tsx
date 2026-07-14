@@ -56,6 +56,7 @@ import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
 import { useReducedMotion } from "@mantine/hooks";
 
 import { flowsheetToGraph } from "../case/toGraph.js";
+import { caseMolarMass, meanMolarMass } from "../case/caseMolarMass.js";
 import type { DynamicInstant } from "../case/dynamicInstants.js";
 import { collectControllerKnobs } from "../case/controllerKnobs.js";
 import { streamNumberResolver } from "../case/streamNumbering.js";
@@ -283,6 +284,9 @@ function CanvasInner({ flowsheet, scrubInstant }: {
 
   // Recompute graph whenever the case changes.
   const graph = useMemo(() => flowsheetToGraph(flowsheet, rawFiles), [flowsheet, rawFiles]);
+  // Component molar masses from the case's own files -- lets a mass-basis flow
+  // (kg/h) + √(mass) wire width show from the 0/ molar state BEFORE any run.
+  const mwMap = useMemo(() => caseMolarMass(rawFiles), [rawFiles]);
 
   // The dynamic instant the TimeScrubber sits on (prop wins; else the store's
   // scrub index into the run's written instants).  When present, the canvas
@@ -572,15 +576,25 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     if (!runResult) {
       // PRE-RUN: style from the authored / 0/ stream state (view.streams) so a
       // drilled unit (or any migrated case, before a solve) still shows
-      // proportional line width and colour-by-T/P/phase.  Flow is MOLAR here (no
-      // component MW pre-run) -- a faithful RELATIVE thickness; the run replaces
-      // it with the mass flow.
+      // proportional line width and colour-by-T/P/phase.  The width basis and
+      // the terminal flow are MASS (kg/s), computed from the 0/ molar flow x the
+      // component MWs the case carries -- matching the post-run totalFlowOf so a
+      // mass-basis view does NOT flip kg/h<->kmol/h (or its wire widths) between
+      // Run and Reset.  When no MW is known the honest fallback is molar.
       const specs = graph.view.streams;
       const propOf = (s: StreamSpec): number | undefined =>
         colorMode === "temperature" ? s.T : colorMode === "pressure" ? s.P : undefined;
+      // Flow used for WIDTH: mass when the composition's MWs are all known
+      // (matches post-run totalFlowOf = kg/s), else the molar flow.
+      const massF = (s: StreamSpec): number | undefined => {
+        const avg = meanMolarMass(s.composition, mwMap);
+        return avg > 0 ? s.F * avg : undefined;
+      };
+      const widthF = (s: StreamSpec): number => massF(s) ?? s.F;
       let mx = 0, lo = Infinity, hi = -Infinity;
       for (const s of Object.values(specs)) {
-        if (s.F > mx) mx = s.F;
+        const wf = widthF(s);
+        if (wf > mx) mx = wf;
         if (colorMode !== "phase" && s.F > 1e-15) {
           const v = propOf(s);
           if (v !== undefined && Number.isFinite(v)) { if (v < lo) lo = v; if (v > hi) hi = v; }
@@ -598,7 +612,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
             ? colorForValue(v, rng.min, rng.max, colorMap)
             : phaseColorFor(phase, colorScheme);
         } else color = phaseColorFor(phase, colorScheme);
-        return { color, phase, totalFlow: s.F };
+        return { color, phase, totalFlow: widthF(s) };
       };
       const present = new Set<PhaseKind>();
       for (const s of Object.values(specs)) if (s.F > 1e-15) present.add(classifyPhase({ vf: s.vf, F: s.F, F_mass: s.F }));
@@ -606,7 +620,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
                utilityOf: (() => null) as (label: string) => string | null,
                resultStreamOf: ((label: string) => {
                  const s = specs[label];
-                 return s ? { F: s.F, T: s.T, P: s.P } : null;
+                 return s ? { F: s.F, F_mass: massF(s), T: s.T, P: s.P, vf: s.vf } : null;
                }) as ((label: string) => { F: number; F_mass?: number; F_solid_mass?: number; F_solid?: number; T: number; P: number } | null),
                maxFlow: mx,
                phasesPresent: present,
@@ -679,7 +693,7 @@ function CanvasInner({ flowsheet, scrubInstant }: {
     return { phaseOf: lookupPhase, utilityOf: lookupUtility,
              resultStreamOf: lookupResult,
              maxFlow: mx, phasesPresent: present, propRange: range };
-  }, [runResult, colorMode, colorScheme, colorMap, graph]);
+  }, [runResult, colorMode, colorScheme, colorMap, graph, mwMap]);
 
   // Annotate each unit node with `drillable` so UnitNode can show a
   // visual hint (a small external-link mark + a "double-click to open" hint).
