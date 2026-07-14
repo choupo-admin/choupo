@@ -122,6 +122,49 @@ electrolyte::SpeciationInput readAnalysis(const DictPtr& dict)
             in.totals[k] = totalAsMolality(t, k);
     }
 
+    // COMPOSITION (roadmap Phase B): the analysis given as APPARENT SALTS, each
+    // expanded to ion totals through its component.speciesMap (loaded with the
+    // Phase-A case overlay).  Electroneutrality is VALIDATED (Sum nu*charge = 0),
+    // so a formulated-salts input can never silently unbalance charge.  Coexists
+    // with (accumulates onto) `totals`; gives the SAME ion totals as writing them
+    // by hand.
+    if (dict->found("composition"))
+    {
+        namespace fs = std::filesystem;
+        const fs::path croot = fs::path(Database::currentRoot()) / "standards";
+        auto comp = dict->subDict("composition");
+        for (const auto& salt : comp->keys())
+        {
+            const scalar m = totalAsMolality(comp, salt);
+            const fs::path sp = croot / "components" / (salt + ".dat");
+            if (!fs::exists(sp))
+                throw std::runtime_error("composition." + salt + ": no components/"
+                    + salt + ".dat for the apparent->ions expansion.");
+            auto rec = Database::applyCaseOverlay(
+                salt, Dictionary::fromFile(sp.string()), sp.string()).dict;
+            if (!(rec->found("component")
+                  && rec->subDict("component")->found("speciesMap")))
+                throw std::runtime_error("composition." + salt + ": components/"
+                    + salt + ".dat has no component.speciesMap.");
+            auto sm = rec->subDict("component")->subDict("speciesMap");
+            scalar netCharge = 0.0;
+            for (const auto& ion : sm->keys())
+            {
+                const scalar nu = sm->lookupScalar(ion);
+                const fs::path ip = croot / "species" / "aqueous" / (ion + ".dat");
+                if (!fs::exists(ip))
+                    throw std::runtime_error("composition." + salt + ": species/aqueous/"
+                        + ion + ".dat missing (needed for the charge balance).");
+                netCharge += nu * Dictionary::fromFile(ip.string())->lookupScalar("charge");
+                in.totals[ion] += m * nu;
+            }
+            if (std::fabs(netCharge) > 1e-9)
+                throw std::runtime_error("composition." + salt + ": speciesMap is NOT "
+                    "electroneutral (Sum nu*charge = " + std::to_string(netCharge)
+                    + ") -- fix components/" + salt + ".dat.");
+        }
+    }
+
     // pH: `pH 7.8;` (given) or `pH solve;` (charge-balance closure)
     const EntryValue& pH = dict->entryValue("pH");
     if (std::holds_alternative<std::string>(pH))

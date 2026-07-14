@@ -1,0 +1,11 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    naclWater              I                2                  1e-4
+diag    naclWater              SI_halite        -0.953442          1e-4
+diag    naclWater              aw               0.930475           1e-4
+diag    naclWater              gamma_Cl         1.01683            1e-4
+diag    naclWater              gamma_Na         1.01683            1e-4
+diag    naclWater              m_Cl             2                  1e-4
+diag    naclWater              m_Na             2                  1e-4
+diag    naclWater              pH               7.13303            1e-4
