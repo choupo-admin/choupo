@@ -1,0 +1,7 @@
+/* Case-local ion charges (overlay over standards/electrolyte/ions.dat).
+   Self-contained: only the ions this case uses. */
+ions
+(
+    { species Na; ion "Na+"; z +1; MW 22.99;  }
+    { species Cl; ion "Cl-"; z -1; MW 35.453; }
+);

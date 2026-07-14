@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Case-local PARTIAL overlay (roadmap Phase A) of the standard NaCl record:
+  recalibrates ONLY solidPhases.halite.calorimetric.dissolutionEnthalpy
+  (3880 -> 5880 J/mol). The crystalliser duty (Q_removed) must reflect this
+  through the ThermoPackageBuilder deep-merge -- everything else (logK25, dH,
+  reaction, crystal) still comes from the standard record.
+\*---------------------------------------------------------------------------*/
+overlayOf NaCl;
+solidPhases
+{
+    halite
+    {
+        calorimetric
+        {
+            dissolutionEnthalpy { value 5880; unit J/mol; basis "case-recalibrated for the overlay test"; }
+        }
+    }
+}

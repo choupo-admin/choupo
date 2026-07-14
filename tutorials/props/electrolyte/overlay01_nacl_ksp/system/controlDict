@@ -1,0 +1,3 @@
+application   choupoProps;
+description   "PARTIAL deep-merge overlay (roadmap Phase A): a case recalibrates ONLY the halite equilibrium logK25 via a case-local overlayOf NaCl; every other datum (dH, dissolutionReaction, calorimetric, crystal) still comes from the standard components/NaCl.dat record. The [overlay] line names exactly which leaf came from the case tier.";
+verbosity     2;

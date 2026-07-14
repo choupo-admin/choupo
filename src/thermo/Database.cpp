@@ -96,6 +96,41 @@ Database::Database(const std::string& explicitRoot)
     current_ = root_;     // expose globally for ActivityModel file lookup
 }
 
+Database::ResolvedComponentDict
+Database::applyCaseOverlay(const std::string& name, DictPtr baseDict,
+                           const std::string& baseFile)
+{
+    ResolvedComponentDict out;
+    out.dict     = baseDict;
+    out.baseFile = baseFile;
+    // Walk UP from the cwd (fractal cascade) for a case-local partial overlay.
+    fs::path p = fs::current_path();
+    for (int up = 0; up < 6; ++up)
+    {
+        fs::path cand = p / "constant" / "components" / (name + ".dat");
+        if (fs::exists(cand))
+        {
+            auto ov = Dictionary::fromFile(cand.string());
+            if (ov->found("overlayOf"))
+            {
+                const std::string of = ov->lookupWord("overlayOf");
+                if (of != name)
+                    throw std::runtime_error(
+                        "component overlay " + cand.string() + ": `overlayOf "
+                        + of + "` does not match the component '" + name
+                        + "' it patches.");
+                baseDict->deepMerge(ov, &out.overlaidPaths);  // skips the overlayOf key
+                baseDict->erase("overlayOf");                 // loader metadata, never thermo data
+                out.overlayFile = cand.string();
+            }
+            break;   // a case-local file WITHOUT overlayOf is a full shadow (loadComponent's job)
+        }
+        if (!p.has_parent_path()) break;
+        p = p.parent_path();
+    }
+    return out;
+}
+
 Component Database::loadComponent(const std::string& name) const
 {
     // Resolution order (OVERLAY semantics):
@@ -239,8 +274,29 @@ Component Database::loadComponent(const std::string& name) const
             local->found("provenance") &&
             local->subDict("provenance")->lookupWordOrDefault("status", "")
                 .find("ESTIMATE") != std::string::npos;
-        for (const auto& k : local->keys())
-            dict->insert(k, local->entryValue(k));   // case overrides standard
+        // Two kinds of case-local file (roadmap Phase A):
+        //  - `overlayOf <name>;` present -> a PARTIAL deep-merge through the ONE
+        //    shared entry point (validates overlayOf==name, strips it, records
+        //    provenance) -- only the declared leaves override.
+        //  - no `overlayOf` -> a FULL REPLACEMENT / shadow record: its top-level
+        //    keys overlay the base (the classic sample-specific override).
+        if (local->found("overlayOf"))
+        {
+            auto rc = Database::applyCaseOverlay(name, dict, base.string());
+            dict = rc.dict;
+            if (thermoAnnounce() && !rc.overlaidPaths.empty())
+            {
+                std::cerr << "[overlay] " << name << ": deep-merge of "
+                          << rc.overlaidPaths.size() << " leaf(s) from caseOverlay "
+                          << rc.overlayFile << " (all other values from standard "
+                          << rc.baseFile << "):";
+                for (const auto& p : rc.overlaidPaths) std::cerr << " " << p;
+                std::cerr << "\n";
+            }
+        }
+        else
+            for (const auto& k : local->keys())
+                dict->insert(k, local->entryValue(k));   // full shadow/replacement
 
         // A modern block-form overlay may sit on a legacy flat catalogue base.
         // Project the local datum onto its flat compatibility key as well, so

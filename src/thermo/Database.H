@@ -69,6 +69,27 @@ public:
     // without threading the database object through their factory.
     static const std::string& currentRoot() { return current_; }
 
+    // Resolved component dictionary after an optional case-local `overlayOf`
+    // PARTIAL deep-merge (roadmap Phase A).  `overlayOf` is loader metadata:
+    // validated == the component name, then stripped -- never retained in `dict`.
+    struct ResolvedComponentDict
+    {
+        DictPtr                  dict;          // base, deep-merged with the overlay
+        std::vector<std::string> overlaidPaths; // leaves that came from the case tier
+        std::string              baseFile;       // the standard/base record path
+        std::string              overlayFile;    // case-local overlay, or "" if none
+    };
+
+    // THE single overlay entry point: apply a case-local
+    // constant/components/<name>.dat `overlayOf` PARTIAL deep-merge over an
+    // already-loaded BASE dict (walk up from cwd, fractal cascade).  Shared by the
+    // SpeciationSolver, the ThermoPackageBuilder and loadComponent so the readers
+    // stay one reader.  A case-local file WITHOUT `overlayOf` is a full
+    // replacement/shadow record, handled by loadComponent, not here.
+    static ResolvedComponentDict applyCaseOverlay(const std::string& name,
+                                                  DictPtr baseDict,
+                                                  const std::string& baseFile);
+
 private:
     std::string root_;
     std::string resolveRoot(const std::string& explicitRoot) const;

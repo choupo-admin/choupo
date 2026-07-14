@@ -934,6 +934,36 @@ DictPtr Dictionary::deepCopy() const
     return out;
 }
 
+void Dictionary::erase(const std::string& key)
+{
+    entries_.erase(key);
+    order_.erase(std::remove(order_.begin(), order_.end(), key), order_.end());
+}
+
+void Dictionary::deepMerge(const DictPtr& overlay,
+                           std::vector<std::string>* overlaidPaths,
+                           const std::string& prefix)
+{
+    for (const auto& k : overlay->order_)
+    {
+        if (k == "overlayOf") continue;      // a directive, not data
+        const EntryValue& ov = overlay->entries_.at(k);
+        const std::string path = prefix.empty() ? k : prefix + "." + k;
+        const bool bothDict =
+            entries_.count(k)
+            && std::holds_alternative<DictPtr>(entries_.at(k))
+            && std::holds_alternative<DictPtr>(ov);
+        if (bothDict)
+            std::get<DictPtr>(entries_.at(k))->deepMerge(
+                std::get<DictPtr>(ov), overlaidPaths, path);
+        else
+        {
+            insert(k, ov);                   // overlay replaces this leaf/subtree
+            if (overlaidPaths) overlaidPaths->push_back(path);
+        }
+    }
+}
+
 void Dictionary::setVarsDictRecursive_(const DictPtr& v)
 {
     varsDict_ = v;

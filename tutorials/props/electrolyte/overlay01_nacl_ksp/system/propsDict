@@ -1,0 +1,6 @@
+operations
+(
+    // 2.0 mol/kg NaCl; SI_halite reflects the case-recalibrated logK25 (1.60),
+    // NOT the standard 1.57 -- proof the partial overlay is applied.
+    { name naclWater; type speciate; activityModel davies; totals { Na 2.0 mol/kg; Cl 2.0 mol/kg; } pH solve; diagSpecies ( Na Cl ); output { file spec.csv; } }
+);

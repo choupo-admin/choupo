@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Case-local PARTIAL overlay of the standard NaCl record (roadmap Phase A).
+  `overlayOf NaCl;` declares this is a DELTA, not a competing complete record:
+  the reader deep-merges it over data/standards/components/NaCl.dat, so ONLY the
+  declared leaf (solidPhases.halite.equilibrium.logK25) is replaced -- dH, the
+  dissolutionReaction, the calorimetric anchor and the crystal block all keep
+  coming from the standard. The run prints the [overlay] provenance line.
+\*---------------------------------------------------------------------------*/
+overlayOf NaCl;
+solidPhases
+{
+    halite
+    {
+        equilibrium
+        {
+            logK25 1.60;      // case recalibration (standard is 1.57); everything else standard
+        }
+    }
+}

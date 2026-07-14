@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral halite; formula "NaCl"; masters ( { ion Na; nu 1; } { ion Cl; nu 1; } );
-      logK25 1.57; dH 3841; source "USGS PHREEQC phreeqc.dat (public domain; Halite delta_h 0.918 kcal/mol = 3841 J/mol)";
-

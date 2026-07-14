@@ -242,6 +242,60 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             m.source  = e->lookupWordOrDefault("source", "undeclared");
             minerals_.push_back(std::move(m));
         }
+        // UNIFIED substance files: a component in standards/components/ may declare
+        // solidPhases{}, each concrete phase being a mineral (dissolution reaction +
+        // equilibrium Ksp).  Scan them alongside the legacy mineralSolubility/ home.
+        if (!caseLocal)
+        {
+            const fs::path cdir = fs::path(Database::currentRoot())
+                                / "standards" / "components";
+            if (fs::exists(cdir))
+            {
+                std::vector<fs::path> cfiles;
+                for (const auto& f : fs::directory_iterator(cdir))
+                    if (f.path().extension() == ".dat") cfiles.push_back(f.path());
+                std::sort(cfiles.begin(), cfiles.end());
+                for (const auto& f : cfiles)
+                {
+                    // UNIFIED overlay (roadmap Phase A): the ONE shared entry point
+                    // deep-merges a case-local `overlayOf` partial over the standard.
+                    auto rc = Database::applyCaseOverlay(
+                        f.stem().string(), Dictionary::fromFile(f.string()), f.string());
+                    auto d = rc.dict;
+                    if (thermoAnnounce() && !rc.overlaidPaths.empty())
+                    {
+                        std::cerr << "[overlay] " << f.stem().string()
+                                  << ": deep-merge of " << rc.overlaidPaths.size()
+                                  << " leaf(s) from caseOverlay " << rc.overlayFile
+                                  << " (all other values from standard " << rc.baseFile
+                                  << "):";
+                        for (const auto& pth : rc.overlaidPaths) std::cerr << " " << pth;
+                        std::cerr << "\n";
+                    }
+                    if (!d->found("solidPhases")) continue;
+                    auto sps = d->subDict("solidPhases");
+                    for (const auto& phase : sps->keys())
+                    {
+                        auto ph = sps->subDict(phase);
+                        if (!ph->found("equilibrium")) continue;   // needs a Ksp model
+                        auto eq = ph->subDict("equilibrium");
+                        const DictPtr rxn = ph->found("dissolutionReaction")
+                            ? ph->subDict("dissolutionReaction") : ph;
+                        MineralEntry m;
+                        m.mineral = phase;
+                        m.formula = d->lookupWordOrDefault("formula", "");
+                        m.masters = readMasters(rxn);
+                        m.nuWater = rxn->lookupScalarOrDefault("nuWater", 0.0);
+                        m.logK25  = eq->lookupScalar("logK25");
+                        m.hasDH   = eq->found("dH");
+                        if (m.hasDH) m.dH = eq->lookupScalar("dH");
+                        m.kt      = readKT(eq);
+                        m.source  = eq->lookupWordOrDefault("source", "undeclared");
+                        minerals_.push_back(std::move(m));
+                    }
+                }
+            }
+        }
         if (caseLocal && thermoAnnounce())
             std::cerr << "[overlay] minerals: case-local " << cl.string()
                       << " ECLIPSES the standard catalogue (taken whole, "

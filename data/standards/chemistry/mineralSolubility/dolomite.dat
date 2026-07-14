@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral dolomite; formula "CaMg(CO3)2"; masters ( { ion Ca; nu 1; } { ion Mg; nu 1; } { ion HCO3; nu 2; } { ion H; nu -2; } );
-      logK25 3.568; dH -69278.7; analytic ( 247.0572 -0.02474302 -16741.58 -77.85122 1127427.8 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: 25 C: Hemingway and Robie, 1994; 50175 C: Benezeth et al., 2018, GCA 224, 262-275";
-

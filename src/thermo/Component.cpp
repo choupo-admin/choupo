@@ -105,6 +105,10 @@ void Component::readFromDict(const DictPtr& d)
         lift("transport",  "diffusionVolume",   "diffusionVolume");
         lift("transport",  "associationFactor", "associationFactor");
         lift("transport",  "liquidViscosity",   "liquidViscosity");
+        // UNIFIED substance file: the apparent-component ion map is authored as
+        // component.speciesMap; lift it onto the legacy `dissociatesTo` key so
+        // every reader below is unchanged (speciesMap renames dissociatesTo).
+        lift("component",  "speciesMap",        "dissociatesTo");
         // (gasIdeal/solid Hf_298+S_298 -> the formation datum, and
         //  anchors{K_b,K_f}, are handled at their read sites below;
         //  aqueousInfDil{} is the electrolyte-enthalpy tier, parse-tolerated.)
@@ -223,7 +227,22 @@ void Component::readFromDict(const DictPtr& d)
         K_f_ = an->lookupScalarOrDefault("K_f", 0.0);
     }
 
-    if (d->found("solid"))
+    // UNIFIED substance file: crystal props live under solidPhases.<phase>.crystal;
+    // read the FIRST phase's crystal here (the molecular crystalliser reads one
+    // ρ_p/k_v off the component).  Fallback to the legacy flat solid{} block.
+    if (d->found("solidPhases"))
+    {
+        auto sp = d->subDict("solidPhases");
+        const auto phases = sp->keys();
+        if (!phases.empty() && sp->subDict(phases.front())->found("crystal"))
+        {
+            auto cr = sp->subDict(phases.front())->subDict("crystal");
+            hasSolid_ = true;
+            rho_p_ = cr->lookupScalarOrDefault("rho_p", 0.0);
+            k_v_   = cr->lookupScalarOrDefault("k_v", 0.5235987756);
+        }
+    }
+    else if (d->found("solid"))
     {
         auto sd = d->subDict("solid");
         hasSolid_ = true;

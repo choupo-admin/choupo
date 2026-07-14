@@ -68,6 +68,17 @@ DictPtr loadRec(const fs::path& f, const std::string& what)
     return Dictionary::fromFile(f.string());
 }
 
+// The apparent-component ion map of a raw substance record: the UNIFIED
+// component.speciesMap if present, else the legacy top-level dissociatesTo.
+DictPtr speciesMapOf(const DictPtr& rec)
+{
+    if (rec->found("component") && rec->subDict("component")->found("speciesMap"))
+        return rec->subDict("component")->subDict("speciesMap");
+    if (rec->found("dissociatesTo")) return rec->subDict("dissociatesTo");
+    return nullptr;
+}
+bool hasSpeciesMap(const DictPtr& rec) { return speciesMapOf(rec) != nullptr; }
+
 } // namespace
 
 // ---- ELECTROLYTE path: assemble a PitzerSingleSalt directly from the new
@@ -189,9 +200,13 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     {
         const fs::path sp = stdCompPath(cn);
         DictPtr rec = fs::exists(sp) ? Dictionary::fromFile(sp.string()) : nullptr;
+        // UNIFIED overlay (roadmap Phase A): the ONE shared entry point deep-merges a
+        // case-local `overlayOf` partial over the standard, so a case-recalibrated
+        // calorimetric/crystal datum reaches the crystalliser too.
+        if (rec) rec = Database::applyCaseOverlay(cn, rec, sp.string()).dict;
         // Is THIS component the active salt?  Yes if it is the only dissociatesTo
         // component, or if it matches the chemistry-declared active salt formula.
-        const bool isSalt = rec && rec->found("dissociatesTo")
+        const bool isSalt = rec && hasSpeciesMap(rec)
             && (activeSaltFormula.empty() || cn == activeSaltFormula
                 || (rec->found("formula") && rec->lookupWord("formula") == activeSaltFormula));
         if (isSalt && saltName.empty())
@@ -226,7 +241,7 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     //     stoichiometry from the catalogue, so this only needs the ion NAMES.
     std::string catName, anName;
     {
-        auto d2t = saltRec->subDict("dissociatesTo");
+        auto d2t = speciesMapOf(saltRec);
         for (const auto& ion : d2t->keys())
         {
             const fs::path ip =
@@ -261,17 +276,33 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     //      Absence-tolerant (no phase -> identity defaults, fine for non-PSD cases).
     if (!phaseName.empty())
     {
-        const fs::path sf =
-            resolve("data/standards/phases/solid/" + phaseName + ".dat");
-        if (fs::exists(sf))
+        // UNIFIED: crystal props from the salt record's solidPhases.<phase>.crystal
+        // (flat rho_p/k_v); else the legacy phases/solid/<phase>.dat (nested value).
+        DictPtr uCrystal;
+        if (saltRec && saltRec->found("solidPhases")
+            && saltRec->subDict("solidPhases")->found(phaseName)
+            && saltRec->subDict("solidPhases")->subDict(phaseName)->found("crystal"))
+            uCrystal = saltRec->subDict("solidPhases")->subDict(phaseName)->subDict("crystal");
+        if (uCrystal)
         {
-            auto sd = Dictionary::fromFile(sf.string());
-            const scalar rho = sd->found("rho_p")
-                ? sd->subDict("rho_p")->lookupScalar("value") : 0.0;
-            scalar kv = 0.5235987756;   // sphere default (matches readFromDict)
-            if (sd->found("shape") && sd->subDict("shape")->found("k_v"))
-                kv = sd->subDict("shape")->subDict("k_v")->lookupScalar("value");
+            const scalar rho = uCrystal->lookupScalarOrDefault("rho_p", 0.0);
+            const scalar kv  = uCrystal->lookupScalarOrDefault("k_v", 0.5235987756);
             comps[soluteIdx].setSolid(rho, kv);
+        }
+        else
+        {
+            const fs::path sf =
+                resolve("data/standards/phases/solid/" + phaseName + ".dat");
+            if (fs::exists(sf))
+            {
+                auto sd = Dictionary::fromFile(sf.string());
+                const scalar rho = sd->found("rho_p")
+                    ? sd->subDict("rho_p")->lookupScalar("value") : 0.0;
+                scalar kv = 0.5235987756;   // sphere default (matches readFromDict)
+                if (sd->found("shape") && sd->subDict("shape")->found("k_v"))
+                    kv = sd->subDict("shape")->subDict("k_v")->lookupScalar("value");
+                comps[soluteIdx].setSolid(rho, kv);
+            }
         }
     }
 
@@ -360,21 +391,30 @@ static ThermoPackage buildElectrolyte(const DictPtr& pkg, const Database& db,
     //     (Ksp short-circuits to 0).
     if (!phaseName.empty())
     {
-        const fs::path cf =
-            resolve("data/standards/chemistry/salts/" + phaseName + ".dat");
-        if (fs::exists(cf))
+        // UNIFIED: the anchor from the salt record's solidPhases.<phase>.calorimetric
+        // (solubility/dissolutionEnthalpy); else legacy chemistry/salts/<phase>.dat.
+        DictPtr a;
+        if (saltRec && saltRec->found("solidPhases")
+            && saltRec->subDict("solidPhases")->found(phaseName)
+            && saltRec->subDict("solidPhases")->subDict(phaseName)->found("calorimetric"))
+            a = saltRec->subDict("solidPhases")->subDict(phaseName)->subDict("calorimetric");
+        else
         {
-            auto cd = Dictionary::fromFile(cf.string());
-            if (cd->found("measuredSolubilityAnchor"))
+            const fs::path cf =
+                resolve("data/standards/chemistry/salts/" + phaseName + ".dat");
+            if (fs::exists(cf))
             {
-                auto a = cd->subDict("measuredSolubilityAnchor");
-                if (a->found("solubility"))
-                    assembly.solubility =
-                        a->subDict("solubility")->lookupScalar("value");
-                if (a->found("dissolutionEnthalpy"))
-                    assembly.dHsolution =
-                        a->subDict("dissolutionEnthalpy")->lookupScalar("value");
+                auto cd = Dictionary::fromFile(cf.string());
+                if (cd->found("measuredSolubilityAnchor"))
+                    a = cd->subDict("measuredSolubilityAnchor");
             }
+        }
+        if (a)
+        {
+            if (a->found("solubility"))
+                assembly.solubility = a->subDict("solubility")->lookupScalar("value");
+            if (a->found("dissolutionEnthalpy"))
+                assembly.dHsolution = a->subDict("dissolutionEnthalpy")->lookupScalar("value");
         }
     }
 

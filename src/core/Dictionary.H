@@ -181,6 +181,9 @@ public:
     // Overload used by the parser when a scalar arrives with a unit
     // suffix or an explicit bracket form: stores value AND dimensions.
     void insert(const std::string& key, scalar value, Dimensions dims);
+    // Remove a key if present (used to strip loader-only metadata such as
+    // `overlayOf` after a partial overlay has been deep-merged).  No-op if absent.
+    void erase(const std::string& key);
     void setDimensions(const std::string& key, const Dimensions& dims);
     void setSource(std::string s) { source_ = std::move(s); }
     void setName  (std::string s) { name_   = std::move(s); }
@@ -204,6 +207,18 @@ public:
     // deep-copied ONCE at the root and re-pointed on every copied node, so a
     // manipulation of $vars in the copy stays in the copy.
     DictPtr deepCopy() const;
+
+    // PARTIAL deep-merge (unified overlay, roadmap Phase A): merge `overlay` INTO
+    // this dict IN PLACE.  For each key: if BOTH sides hold a sub-dictionary,
+    // recurse; otherwise the overlay value replaces (scalars / lists / new keys).
+    // So a case ships only the changed leaves (e.g. solidPhases.halite.equilibrium
+    // .logK25) and every other value keeps coming from the base (standard) record.
+    // Each replaced leaf's dotted path is appended to `overlaidPaths` (if non-null)
+    // for minimal provenance (which values came from the overlay tier).
+    void deepMerge(const DictPtr& overlay,
+                   std::vector<std::string>* overlaidPaths = nullptr,
+                   const std::string& prefix = "");
+
     DictPtr               varsDict()      const  { return varsDict_; }
     void                  propagateVarsDict(DictPtr v);
 
