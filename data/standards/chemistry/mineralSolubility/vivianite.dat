@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral vivianite; formula "Fe3(PO4)2:8H2O"; masters ( { ion Fe; nu 3; } { ion PO4; nu 2; } ); nuWater 8;
-      logK25 -36; dH 0; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Vivianite";

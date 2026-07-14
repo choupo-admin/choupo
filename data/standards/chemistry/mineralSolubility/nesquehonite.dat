@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral nesquehonite; formula "MgCO3:3H2O"; masters ( { ion HCO3; nu 1; } { ion H; nu -1; } { ion Mg; nu 1; } ); nuWater 3;
-      logK25 5.162; dH -14899.2; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Nesquehonite";

@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral hexahydrite; formula "MgSO4:6H2O"; masters ( { ion Mg; nu 1; } { ion SO4; nu 1; } ); nuWater 6;
-      logK25 -1.57; dH 2350; analytic ( -1.978 0.00138 ); source "USGS PHREEQC phreeqc.dat (public domain)";
-

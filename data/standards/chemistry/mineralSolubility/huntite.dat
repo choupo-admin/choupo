@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral huntite; formula "CaMg3(CO3)4"; masters ( { ion Ca; nu 1; } { ion Mg; nu 3; } { ion HCO3; nu 4; } { ion H; nu -4; } );
-      logK25 10.3; dH 0; analytic ( -1145 -0.3249 39410 452.6 0 0 ); validC ( 0 200 ); source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Huntite";

@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral enstatite; formula "MgSiO3"; masters ( { ion Mg; nu 1; } { ion H4SiO4; nu 1; } { ion H; nu -2; } ); nuWater -1;
-      logK25 11.33; dH -83000; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Enstatite";

@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral celestite; formula "SrSO4"; masters ( { ion Sr; nu 1; } { ion SO4; nu 1; } );
-      logK25 -6.63; dH -16890.8; analytic ( -7.14 0.00611 75 0 0 -1.79e-05 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: Howell et al., 1992, JCED 37, 464";
-

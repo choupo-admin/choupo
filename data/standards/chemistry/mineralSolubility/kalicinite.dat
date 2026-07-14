@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral kalicinite; formula "KHCO3"; masters ( { ion K; nu 1; } { ion HCO3; nu 1; } );
-      logK25 0.389; dH -14899.2; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Kalicinite";

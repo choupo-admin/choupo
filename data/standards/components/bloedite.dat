@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: bloedite (Na2Mg(SO4)2:4H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name bloedite;
+formula "Na2Mg(SO4)2:4H2O";
+
+solidPhases
+{
+    bloedite
+    {
+        dissolutionReaction { masters ( { ion Mg; nu 1; } { ion Na; nu 2; } { ion SO4; nu 2; } ); nuWater 4; }
+        equilibrium { logK25 -2.347; dH 0; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Bloedite"; }
+    }
+}

@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral pirssonite; formula "Na2Ca(CO3)2:2H2O"; masters ( { ion Na; nu 2; } { ion Ca; nu 1; } { ion HCO3; nu 2; } { ion H; nu -2; } ); nuWater 2;
-      logK25 11.424; dH -29798.4; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Pirssonite";

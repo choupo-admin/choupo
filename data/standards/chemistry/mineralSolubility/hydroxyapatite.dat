@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral hydroxyapatite; formula "Ca5(PO4)3OH"; masters ( { ion PO4; nu 3; } { ion H; nu -1; } { ion Ca; nu 5; } ); nuWater 1;
-      logK25 -40.459; dH -106964; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Hydroxyapatite";

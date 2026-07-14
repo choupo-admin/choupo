@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: diopside (CaMgSi2O6) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name diopside;
+formula "CaMgSi2O6";
+
+solidPhases
+{
+    diopside
+    {
+        dissolutionReaction { masters ( { ion Ca; nu 1; } { ion Mg; nu 1; } { ion H4SiO4; nu 2; } { ion H; nu -4; } ); nuWater -2; }
+        equilibrium { logK25 20.96; dH -134000; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Diopside"; }
+    }
+}

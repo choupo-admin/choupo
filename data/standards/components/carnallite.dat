@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: carnallite (KMgCl3:6H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name carnallite;
+formula "KMgCl3:6H2O";
+
+solidPhases
+{
+    carnallite
+    {
+        dissolutionReaction { masters ( { ion K; nu 1; } { ion Mg; nu 1; } { ion Cl; nu 3; } ); nuWater 6; }
+        equilibrium { logK25 4.35; dH 1170; analytic ( 24.06 -0.0311 -3090 0 0 0 ); validC ( 0 200 ); source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Carnallite"; }
+    }
+}

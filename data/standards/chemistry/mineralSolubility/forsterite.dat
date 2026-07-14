@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral forsterite; formula "Mg2SiO4"; masters ( { ion H4SiO4; nu 1; } { ion Mg; nu 2; } { ion H; nu -4; } );
-      logK25 27.86; dH -206000; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Forsterite";

@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral mirabilite; formula "Na2SO4:10H2O"; masters ( { ion Na; nu 2; } { ion SO4; nu 1; } ); nuWater 10;
-      logK25 -0.706; dH 124000; analytic ( -53.037 0.1242 4562 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: ref. 3";
-

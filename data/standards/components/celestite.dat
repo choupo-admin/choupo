@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: celestite (SrSO4) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name celestite;
+formula "SrSO4";
+
+solidPhases
+{
+    celestite
+    {
+        dissolutionReaction { masters ( { ion Sr; nu 1; } { ion SO4; nu 1; } ); }
+        equilibrium { logK25 -6.63; dH -16890.8; analytic ( -7.14 0.00611 75 0 0 -1.79e-05 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: Howell et al., 1992, JCED 37, 464"; }
+    }
+}

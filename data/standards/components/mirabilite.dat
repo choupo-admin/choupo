@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: mirabilite (Na2SO4:10H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name mirabilite;
+formula "Na2SO4:10H2O";
+
+solidPhases
+{
+    mirabilite
+    {
+        dissolutionReaction { masters ( { ion Na; nu 2; } { ion SO4; nu 1; } ); nuWater 10; }
+        equilibrium { logK25 -0.706; dH 124000; analytic ( -53.037 0.1242 4562 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: ref. 3"; }
+    }
+}

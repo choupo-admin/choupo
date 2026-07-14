@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: hexahydrite (MgSO4:6H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name hexahydrite;
+formula "MgSO4:6H2O";
+
+solidPhases
+{
+    hexahydrite
+    {
+        dissolutionReaction { masters ( { ion Mg; nu 1; } { ion SO4; nu 1; } ); nuWater 6; }
+        equilibrium { logK25 -1.57; dH 2350; analytic ( -1.978 0.00138 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    }
+}

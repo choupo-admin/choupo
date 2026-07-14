@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: barite (BaSO4) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name barite;
+formula "BaSO4";
+
+solidPhases
+{
+    barite
+    {
+        dissolutionReaction { masters ( { ion Ba; nu 1; } { ion SO4; nu 1; } ); }
+        equilibrium { logK25 -9.88; dH 19300; analytic ( -49.595 -0.03913 -1530 22.836 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: Blount 1977; Templeton, 1960"; }
+    }
+}

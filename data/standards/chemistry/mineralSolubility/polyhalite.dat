@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral polyhalite; formula "K2MgCa2(SO4)4:2H2O"; masters ( { ion K; nu 2; } { ion Mg; nu 1; } { ion Ca; nu 2; } { ion SO4; nu 4; } ); nuWater 2;
-      logK25 -13.744; dH 0; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Polyhalite";

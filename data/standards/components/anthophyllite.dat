@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: anthophyllite (Mg7Si8O22(OH)2) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name anthophyllite;
+formula "Mg7Si8O22(OH)2";
+
+solidPhases
+{
+    anthophyllite
+    {
+        dissolutionReaction { masters ( { ion Mg; nu 7; } { ion H4SiO4; nu 8; } { ion H; nu -14; } ); nuWater -8; }
+        equilibrium { logK25 66.8; dH -483000; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Anthophyllite"; }
+    }
+}

@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral barite; formula "BaSO4"; masters ( { ion Ba; nu 1; } { ion SO4; nu 1; } );
-      logK25 -9.88; dH 19300; analytic ( -49.595 -0.03913 -1530 22.836 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: Blount 1977; Templeton, 1960";
-

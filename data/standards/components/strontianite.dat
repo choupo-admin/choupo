@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: strontianite (SrCO3) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name strontianite;
+formula "SrCO3";
+
+solidPhases
+{
+    strontianite
+    {
+        dissolutionReaction { masters ( { ion Sr; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } ); }
+        equilibrium { logK25 1.058; dH -16572.8; analytic ( 262.9176 0.03252849 -12391.384 -95.51199 563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    }
+}

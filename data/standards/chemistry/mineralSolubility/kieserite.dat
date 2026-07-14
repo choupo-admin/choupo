@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral kieserite; formula "MgSO4:H2O"; masters ( { ion Mg; nu 1; } { ion SO4; nu 1; } ); nuWater 1;
-      logK25 -1.16; dH 9220; analytic ( 29.485 -0.0507 0 -2.662 -795000 ); source "USGS PHREEQC phreeqc.dat (public domain)";
-

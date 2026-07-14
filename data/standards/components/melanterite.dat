@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: melanterite (FeSO4:7H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name melanterite;
+formula "FeSO4:7H2O";
+
+solidPhases
+{
+    melanterite
+    {
+        dissolutionReaction { masters ( { ion Fe; nu 1; } { ion SO4; nu 1; } ); nuWater 7; }
+        equilibrium { logK25 -2.209; dH 20543.4; analytic ( 1.447 -0.004153 0 0 -214949 0 ); validC ( 0 200 ); source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Melanterite"; }
+    }
+}

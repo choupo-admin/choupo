@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: sepiolite (Mg2Si3O7.5OH:3H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name sepiolite;
+formula "Mg2Si3O7.5OH:3H2O";
+
+solidPhases
+{
+    sepiolite
+    {
+        dissolutionReaction { masters ( { ion Mg; nu 2; } { ion H4SiO4; nu 3; } { ion H; nu -4; } ); nuWater -0.5; }
+        equilibrium { logK25 15.76; dH -44768.8; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Sepiolite"; }
+    }
+}

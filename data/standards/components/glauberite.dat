@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: glauberite (Na2Ca(SO4)2) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name glauberite;
+formula "Na2Ca(SO4)2";
+
+solidPhases
+{
+    glauberite
+    {
+        dissolutionReaction { masters ( { ion Ca; nu 1; } { ion Na; nu 2; } { ion SO4; nu 2; } ); }
+        equilibrium { logK25 -5.31; dH 0; analytic ( 218.142 0 -9285 -77.735 0 0 ); validC ( 0 200 ); source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Glauberite"; }
+    }
+}

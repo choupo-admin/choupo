@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: glaserite (NaK3(SO4)2) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name glaserite;
+formula "NaK3(SO4)2";
+
+solidPhases
+{
+    glaserite
+    {
+        dissolutionReaction { masters ( { ion Na; nu 1; } { ion K; nu 3; } { ion SO4; nu 2; } ); }
+        equilibrium { logK25 -3.803; dH 25000; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Glaserite"; }
+    }
+}

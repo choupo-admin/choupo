@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral bischofite; formula "MgCl2:6H2O"; masters ( { ion Mg; nu 1; } { ion Cl; nu 2; } ); nuWater 6;
-      logK25 4.455; dH 0; analytic ( 7.526 -0.01114 115.7 0 0 0 ); validC ( 0 200 ); source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Bischofite";

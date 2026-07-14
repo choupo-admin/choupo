@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: talc (Mg3Si4O10(OH)2) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name talc;
+formula "Mg3Si4O10(OH)2";
+
+solidPhases
+{
+    talc
+    {
+        dissolutionReaction { masters ( { ion Mg; nu 3; } { ion H4SiO4; nu 4; } { ion H; nu -6; } ); nuWater -4; }
+        equilibrium { logK25 21.399; dH -193937; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Talc"; }
+    }
+}

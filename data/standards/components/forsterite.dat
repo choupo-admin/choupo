@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: forsterite (Mg2SiO4) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name forsterite;
+formula "Mg2SiO4";
+
+solidPhases
+{
+    forsterite
+    {
+        dissolutionReaction { masters ( { ion H4SiO4; nu 1; } { ion Mg; nu 2; } { ion H; nu -4; } ); }
+        equilibrium { logK25 27.86; dH -206000; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Forsterite"; }
+    }
+}

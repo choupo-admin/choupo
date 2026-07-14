@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral kainite; formula "KMgClSO4:3H2O"; masters ( { ion Cl; nu 1; } { ion K; nu 1; } { ion Mg; nu 1; } { ion SO4; nu 1; } ); nuWater 3;
-      logK25 -0.193; dH 0; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Kainite";

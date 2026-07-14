@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral trona; formula "Na3H(CO3)2:2H2O"; masters ( { ion Na; nu 3; } { ion H; nu -1; } { ion HCO3; nu 2; } ); nuWater 2;
-      logK25 9.274; dH -29798.4; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Trona";

@@ -268,18 +268,25 @@ def numfmt(v):
     return str(int(round(v))) if abs(v - round(v)) < 1e-9 else f"{v:g}"
 
 def format_record(nm, r, srckey):
+    # UNIFIED substance file: the mineral IS a component carrying a solidPhase.
     ms = " ".join(f"{{ ion {i}; nu {numfmt(v)}; }}" for i, v in r["masters"].items())
-    line = f'mineral {nm}; formula "{r["mineral"]}"; masters ( {ms} );'
+    rxn = f'masters ( {ms} );'
     if r["nuWater"]:
-        line += f' nuWater {numfmt(r["nuWater"])};'
-    kt = f'      logK25 {r["logK"]:.6g}; dH {r["dH"]:.6g};'
+        rxn += f' nuWater {numfmt(r["nuWater"])};'
+    eq = f'logK25 {r["logK"]:.6g}; dH {r["dH"]:.6g};'
     if r["analytic"] and any(r["analytic"]):
-        kt += ' analytic ( ' + " ".join(f"{a:.7g}" for a in r["analytic"]) + ' );'
-        kt += ' validC ( 0 200 );'
-    kt += (' source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); '
+        eq += ' analytic ( ' + " ".join(f"{a:.7g}" for a in r["analytic"]) + ' );'
+        eq += ' validC ( 0 200 );'
+    eq += (' source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); '
            f'reaction re-expressed to Choupo master basis from {srckey}";')
-    return ("recordType mineralSolubility;\nschemaVersion 1;\n\n"
-            + line + "\n" + kt + "\n")
+    return (
+        f'name {nm};\n'
+        f'formula "{r["mineral"]}";\n\n'
+        f'solidPhases\n{{\n'
+        f'    {nm}\n    {{\n'
+        f'        dissolutionReaction {{ {rxn} }}\n'
+        f'        equilibrium {{ {eq} }}\n'
+        f'    }}\n}}\n')
 
 if __name__ == "__main__":
     main()

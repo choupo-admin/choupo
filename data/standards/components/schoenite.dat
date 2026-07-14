@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: schoenite (K2Mg(SO4)2:6H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name schoenite;
+formula "K2Mg(SO4)2:6H2O";
+
+solidPhases
+{
+    schoenite
+    {
+        dissolutionReaction { masters ( { ion K; nu 2; } { ion Mg; nu 1; } { ion SO4; nu 2; } ); nuWater 6; }
+        equilibrium { logK25 -4.328; dH 0; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Schoenite"; }
+    }
+}

@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: bischofite (MgCl2:6H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name bischofite;
+formula "MgCl2:6H2O";
+
+solidPhases
+{
+    bischofite
+    {
+        dissolutionReaction { masters ( { ion Mg; nu 1; } { ion Cl; nu 2; } ); nuWater 6; }
+        equilibrium { logK25 4.455; dH 0; analytic ( 7.526 -0.01114 115.7 0 0 0 ); validC ( 0 200 ); source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Bischofite"; }
+    }
+}

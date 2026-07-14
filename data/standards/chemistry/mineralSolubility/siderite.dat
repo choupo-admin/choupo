@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral siderite; formula "FeCO3"; masters ( { ion Fe; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
-      logK25 -0.561; dH -25275.5; source "USGS PHREEQC phreeqc.dat (public domain)";
-

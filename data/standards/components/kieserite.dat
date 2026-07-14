@@ -1,0 +1,17 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Mineral: kieserite (MgSO4:H2O) -- unified substance file.
+  One canonical record per chemical identity; the solid-phase dissolution
+  equilibrium (Ksp) lives here as a typed solidPhase (roadmap Phase D).
+  Migrated from chemistry/mineralSolubility/ with values preserved verbatim.
+\*---------------------------------------------------------------------------*/
+name kieserite;
+formula "MgSO4:H2O";
+
+solidPhases
+{
+    kieserite
+    {
+        dissolutionReaction { masters ( { ion Mg; nu 1; } { ion SO4; nu 1; } ); nuWater 1; }
+        equilibrium { logK25 -1.16; dH 9220; analytic ( 29.485 -0.0507 0 -2.662 -795000 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    }
+}
