@@ -47,3 +47,13 @@ provenance
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "thenardite mineralogical density ~2.68 g/cm3"; }
 }
+
+// Solid phase(s) of this component (roadmap Phase D fold-in):
+solidPhases
+{
+    thenardite
+    {
+        dissolutionReaction { masters ( { ion Na; nu 2; } { ion SO4; nu 1; } ); }
+        equilibrium { logK25 0.65; dH -23100; analytic ( 159.849 0.01699 -5000 -59.6073 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: ref. 3"; }
+    }
+}

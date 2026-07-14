@@ -57,3 +57,13 @@ provenance
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "anhydrite mineralogical density ~2.96 g/cm3"; }
 }
+
+// Solid phase(s) of this component (roadmap Phase D fold-in):
+solidPhases
+{
+    anhydrite
+    {
+        dissolutionReaction { masters ( { ion Ca; nu 1; } { ion SO4; nu 1; } ); }
+        equilibrium { logK25 -4.25; dH -22400; analytic ( 5.725 -0.02478 -790.4 ); validC ( 50 160 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: 50 - 160oC, 1 - 1e3 atm, anhydrite dissolution, Blount and Dickson, 1973, Am. Mineral. 58, 323"; }
+    }
+}

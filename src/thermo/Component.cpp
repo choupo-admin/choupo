@@ -232,17 +232,21 @@ void Component::readFromDict(const DictPtr& d)
     // ρ_p/k_v off the component).  Fallback to the legacy flat solid{} block.
     if (d->found("solidPhases"))
     {
+        // Read crystal props from the FIRST phase that carries a crystal{} block
+        // (many mineral phases are SI-only -- no crystal; e.g. silica's polymorphs
+        // fold in for equilibria while its sand rho_p stays in the flat solid{}).
         auto sp = d->subDict("solidPhases");
-        const auto phases = sp->keys();
-        if (!phases.empty() && sp->subDict(phases.front())->found("crystal"))
-        {
-            auto cr = sp->subDict(phases.front())->subDict("crystal");
-            hasSolid_ = true;
-            rho_p_ = cr->lookupScalarOrDefault("rho_p", 0.0);
-            k_v_   = cr->lookupScalarOrDefault("k_v", 0.5235987756);
-        }
+        for (const auto& ph : sp->keys())
+            if (sp->subDict(ph)->found("crystal"))
+            {
+                auto cr = sp->subDict(ph)->subDict("crystal");
+                hasSolid_ = true;
+                rho_p_ = cr->lookupScalarOrDefault("rho_p", 0.0);
+                k_v_   = cr->lookupScalarOrDefault("k_v", 0.5235987756);
+                break;
+            }
     }
-    else if (d->found("solid"))
+    if (!hasSolid_ && d->found("solid"))   // flat solid{} fallback (physical solid)
     {
         auto sd = d->subDict("solid");
         hasSolid_ = true;

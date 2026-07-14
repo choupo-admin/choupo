@@ -49,3 +49,13 @@ liquidHeatCapacity
     coefficients  (50.0);      // J/(mol.K), constant
     Trange        (270  400);
 }
+
+// Solid phase(s) of this component (roadmap Phase D fold-in):
+solidPhases
+{
+    sylvite
+    {
+        dissolutionReaction { masters ( { ion K; nu 1; } { ion Cl; nu 1; } ); }
+        equilibrium { logK25 0.9; dH 8500; source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    }
+}

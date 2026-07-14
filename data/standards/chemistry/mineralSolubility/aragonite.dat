@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral aragonite; formula "CaCO3"; masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
-      logK25 1.993; dH -25731.6; analytic ( -64.0902 -0.04546451 -2248.497 32.66939 563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)";
-

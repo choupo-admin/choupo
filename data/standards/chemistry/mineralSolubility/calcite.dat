@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral calcite; formula "CaCO3"; masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } );
-      logK25 1.879; dH -28078.8; analytic ( 40.0171 -0.01928451 -5151.79 -8.66815 563713.9 ); validC ( 0 300 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: 0 - 300 C, Ellis, 1959, Plummer and Busenberg, 1982";
-

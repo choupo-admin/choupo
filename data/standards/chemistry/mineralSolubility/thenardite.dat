@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral thenardite; formula "Na2SO4"; masters ( { ion Na; nu 2; } { ion SO4; nu 1; } );
-      logK25 0.65; dH -23100; analytic ( 159.849 0.01699 -5000 -59.6073 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: ref. 3";
-

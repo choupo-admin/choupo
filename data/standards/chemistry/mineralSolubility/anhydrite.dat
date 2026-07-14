@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral anhydrite; formula "CaSO4"; masters ( { ion Ca; nu 1; } { ion SO4; nu 1; } );
-      logK25 -4.25; dH -22400; analytic ( 5.725 -0.02478 -790.4 ); validC ( 50 160 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: 50 - 160oC, 1 - 1e3 atm, anhydrite dissolution, Blount and Dickson, 1973, Am. Mineral. 58, 323";
-

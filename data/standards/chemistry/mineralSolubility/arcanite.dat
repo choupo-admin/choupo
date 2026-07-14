@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral arcanite; formula "K2SO4"; masters ( { ion K; nu 2; } { ion SO4; nu 1; } );
-      logK25 -1.776; dH 20920; analytic ( 674.142 0.30423 -18037 -280.236 0 -0.000144055 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: ref. 3";
-

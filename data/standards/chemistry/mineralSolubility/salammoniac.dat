@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral salammoniac; formula "NH4Cl"; masters ( { ion NH4; nu 1; } { ion Cl; nu 1; } );
-      logK25 1.2364; dH 14800; source "logK25 CALIBRATED to the measured pure-NH4Cl solubility 7.35 mol/kg at 298.15 K (Farelo, Fernandes & Avelino, J. Chem. Eng. Data 50 (2005) 1470) via Pitzer-HMW gamma_pm=0.565 at saturation; dH=+14.8 kJ/mol dissolution enthalpy (NH4Cl.dat solid datum vs ions.dat hfAq)";
-

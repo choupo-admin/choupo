@@ -216,17 +216,21 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
         }
         else
         {
+            // The legacy per-kind home is RETIRED (Phase D): minerals now live as
+            // solidPhases in standards/components/ (scanned below).  Read the legacy
+            // chemistry/mineralSolubility/ dir ONLY if it still exists -- absent is
+            // fine (the components/ scan provides the catalogue).
             const fs::path dir = fs::path(Database::currentRoot())
                                / "standards" / "chemistry" / "mineralSolubility";
-            if (!fs::exists(dir))
-                throw std::runtime_error(
-                    "speciation: no case-local minerals.dat and no standards "
-                    "chemistry/mineralSolubility/ -- " + std::string(howToObtain));
-            std::vector<fs::path> files;
-            for (const auto& f : fs::directory_iterator(dir))
-                if (f.path().extension() == ".dat") files.push_back(f.path());
-            std::sort(files.begin(), files.end());
-            for (const auto& f : files) records.push_back(Dictionary::fromFile(f.string()));
+            if (fs::exists(dir))
+            {
+                std::vector<fs::path> files;
+                for (const auto& f : fs::directory_iterator(dir))
+                    if (f.path().extension() == ".dat") files.push_back(f.path());
+                std::sort(files.begin(), files.end());
+                for (const auto& f : files)
+                    records.push_back(Dictionary::fromFile(f.string()));
+            }
         }
         for (const auto& e : records)
         {

@@ -1,5 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral brucite; formula "Mg(OH)2"; masters ( { ion Mg; nu 1; } { ion H; nu -2; } ); nuWater 2;
-      logK25 17.12; dH -92507.6; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Brucite";

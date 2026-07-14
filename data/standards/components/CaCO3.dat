@@ -53,3 +53,18 @@ solidHeatCapacity
     coefficients  ( 29.8993   0.224617   -1.49637e-04 );
     Trange        ( 298  600 );        // [Robie-Hemingway 1995, USGS Bull. 2131]
 }
+
+// Solid phase(s) of this component (roadmap Phase D fold-in):
+solidPhases
+{
+    aragonite
+    {
+        dissolutionReaction { masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } ); }
+        equilibrium { logK25 1.993; dH -25731.6; analytic ( -64.0902 -0.04546451 -2248.497 32.66939 563713.9 ); source "USGS PHREEQC phreeqc.dat (public domain)"; }
+    }
+    calcite
+    {
+        dissolutionReaction { masters ( { ion Ca; nu 1; } { ion HCO3; nu 1; } { ion H; nu -1; } ); }
+        equilibrium { logK25 1.879; dH -28078.8; analytic ( 40.0171 -0.01928451 -5151.79 -8.66815 563713.9 ); validC ( 0 300 ); source "USGS PHREEQC phreeqc.dat (public domain); lit: 0 - 300 C, Ellis, 1959, Plummer and Busenberg, 1982"; }
+    }
+}

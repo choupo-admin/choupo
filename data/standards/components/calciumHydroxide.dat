@@ -62,3 +62,13 @@ provenance
     solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
     rho_p { origin literature; method "portlandite mineralogical density ~2.21 g/cm3"; }
 }
+
+// Solid phase(s) of this component (roadmap Phase D fold-in):
+solidPhases
+{
+    portlandite
+    {
+        dissolutionReaction { masters ( { ion Ca; nu 1; } { ion H; nu -2; } ); nuWater 2; }
+        equilibrium { logK25 22.81; dH -112800; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Portlandite"; }
+    }
+}

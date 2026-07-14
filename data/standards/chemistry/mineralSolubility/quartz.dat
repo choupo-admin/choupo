@@ -1,6 +1,0 @@
-recordType mineralSolubility;
-schemaVersion 1;
-
-mineral quartz; formula "SiO2"; masters ( { ion H4SiO4; nu 1; } ); nuWater -2;
-      logK25 -3.98; dH 25062.2; analytic ( 0.41 0 -1309 ); source "USGS PHREEQC phreeqc.dat (public domain)";
-
