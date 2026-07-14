@@ -26,8 +26,3 @@ operation
 }
 
 boundary    { inlets ( Feed );  outlets ( Magma ); }
-
-streams     // default for isolated run; the sector cables Evap2/Syrup -> Feed
-{
-    Feed   { F 45 kmol/h;  T 350 K;  P 1 bar;  molarComposition { water 0.78;  sucrose 0.22; } }
-}

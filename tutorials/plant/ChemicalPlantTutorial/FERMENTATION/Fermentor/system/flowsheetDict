@@ -19,14 +19,3 @@ operation
 reaction    sucroseToEthanol;   // -> constant/reactions library
 
 boundary    { inlets ( Feed );  outlets ( Out ); }
-
-streams     // default for isolated unit run; the sector cables Mixer/Mixed -> Feed
-{
-    Feed
-    {
-        F                200 kmol/h;
-        T                310 K;
-        P                  1 bar;
-        molarComposition { water 0.88;  sucrose 0.04;  ethanol 0.06;  CO2 0.02; }
-    }
-}

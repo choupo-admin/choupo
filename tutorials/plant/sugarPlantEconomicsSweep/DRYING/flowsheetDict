@@ -14,13 +14,6 @@ boundary
     outlets  ( Powder  Dust  ExhaustClean  BdVapour );
 }
 
-streams     // DEFAULTS so the sector runs ISOLATED; the plant overrides Magma
-{
-    Magma      { F 20 kmol/h;   T 330 K;  P 1 bar;  molarComposition { water 0.70;  sucrose 0.30; } }
-    DryingAir  { F 300 kmol/h;  T 473.15 K;  P 1 bar;  state superheatedVapour;  molarComposition { N2 1.0; } }   // enough air to keep T_out physical
-    BdAir      { F 150 kmol/h;  T 380 K;     P 1 bar;  vf 1.0;  molarComposition { N2 0.935;  water 0.065; } }   // BD drying air (real stream)
-}
-
 connections
 {
     Magma        { to SD/Magma; }

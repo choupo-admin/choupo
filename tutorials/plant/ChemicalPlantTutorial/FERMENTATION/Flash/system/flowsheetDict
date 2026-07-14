@@ -16,14 +16,3 @@ operation
 }
 
 boundary    { inlets ( Feed );  outlets ( Liquid  Vapour ); }    // IsothermalFlash convention: liquid first, vapour second
-
-streams     // default for isolated unit run; the sector cables Fermentor/Out -> Feed
-{
-    Feed
-    {
-        F                200 kmol/h;
-        T                310 K;
-        P                  1 bar;
-        molarComposition { water 0.90;  sucrose 0.02;  ethanol 0.06;  CO2 0.02; }
-    }
-}

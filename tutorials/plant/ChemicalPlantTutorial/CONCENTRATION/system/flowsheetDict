@@ -16,15 +16,6 @@ boundary
     outlets  ( Magma  Vapour  Condensate1  Condensate2 );
 }
 
-// LEGACY COMPATIBILITY DEFAULTS for this pre-0/ nested sector.  Do not copy
-// this legacy form: current cases author these values in 0/<stream> files.
-// When the plant cables it, `RawJuice -> DilutedJuice` overrides these.
-streams
-{
-    DilutedJuice { F 100 kmol/h;  T 298.15 K;  P 1 bar;  molarComposition { water 0.94;  sucrose 0.06; } }
-    Steam        { utility steamLP;  F 60 kmol/h; }
-}
-
 connections
 {
     DilutedJuice { to Evap1/Feed; }

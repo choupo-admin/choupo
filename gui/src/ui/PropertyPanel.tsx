@@ -73,7 +73,7 @@ import { theoryLink } from "../case/modelDocs.js";
 import { useMemo } from "react";
 
 import { boundaryForStream } from "../case/modelBoundary.js";
-import { compositeMembers, unitFolderNames } from "../case/toGraph.js";
+import { compositeMembers, unitFolderNames, streamStateSpec, zeroStateText } from "../case/toGraph.js";
 import {
   operationSchemaFor,
   type OperationField,
@@ -217,7 +217,13 @@ export function PropertyPanel() {
       // but StreamDetails reads `.composition`.  Casting the raw dict straight
       // to StreamSpec left composition undefined -> the panel showed an EMPTY
       // composition for feeds (e.g. freshCO's `molarComposition { CO 1; }`).
-      const s = streams[name] ? normaliseStreamSpec(streams[name]!) : undefined;
+      // A stream NOT in the legacy `streams{}` block (an internal edge, or ANY
+      // stream once the case is migrated to 0/) reads its state from the 0/ file
+      // -- the same source the canvas uses -- so the panel shows values pre-run
+      // instead of a bogus "no values until a run completes".
+      const s = streams[name]
+        ? normaliseStreamSpec(streams[name]!)
+        : (streamStateSpec(zeroStateText(caseFiles.rawFiles, name)) ?? undefined);
       return <StreamDetails name={name} stream={s} runName={name} />;
     }
     if (selectedId.startsWith("op:") && propsDict) {

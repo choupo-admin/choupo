@@ -1,19 +1,12 @@
 /*---------------------------------------------------------------------------*\
   Evap1 / system/flowsheetDict   (LEAF -- a unit operation)
 
-  LEGACY COMPATIBILITY LEAF: this pre-0/ nested form keeps inline defaults so
-  the historical composite plant remains reproducible.  Do not copy it when
-  authoring a case: current cases put every stream state in 0/<stream>.
+  A leaf unit op (evaporator).  Its stream state lives in 0/<stream> --
+  materialised by the plant run, or projected from the parent's 0/ when this
+  unit is drilled open on its own.
 \*---------------------------------------------------------------------------*/
 
 type        evaporator;
 operation   { area 60 m2;  U 2200 W/m2/K; }     // HARDWARE only (the credo)
 
 boundary    { inlets ( Feed  Steam );  outlets ( Juice1  Vap1  Cond1 ); }
-
-// Legacy inline defaults; the sector overrides Feed/Steam.
-streams
-{
-    Feed   { F 100 kmol/h;  T 298.15 K;  P 1 bar;  molarComposition { water 0.94;  sucrose 0.06; } }
-    Steam  { utility steamLP;  F 60 kmol/h; }
-}

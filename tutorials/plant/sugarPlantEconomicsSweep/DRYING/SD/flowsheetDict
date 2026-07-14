@@ -18,9 +18,3 @@ operation
 dryingCurve sprayCurve;          // -> constant/dryingKinetics (kinetics, this machine)
 
 boundary    { inlets ( Magma  DryingAir );  outlets ( WetPowder  Exhaust ); }
-
-streams     // defaults for isolated run; the sector cables Magma + DryingAir
-{
-    Magma      { F 20 kmol/h;  T 330 K;  P 1 bar;  molarComposition { water 0.70;  sucrose 0.30; } }
-    DryingAir  { F 80 kmol/h;  T 473.15 K;  P 1 bar;  molarComposition { N2 1.0; } }
-}

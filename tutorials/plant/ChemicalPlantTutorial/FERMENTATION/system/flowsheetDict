@@ -35,29 +35,6 @@ boundary
     outlets  ( EthanolVapour  Purge );
 }
 
-streams     // defaults for isolated run; the plant cables Must from outside
-{
-    Must
-    {
-        F                50 kmol/h;
-        T               310 K;
-        P                 1 bar;
-        molarComposition { water 0.95;  sucrose 0.05; }
-    }
-
-    // Initial guess for the tear.  The Wegstein/Newton outer loop
-    // iterates this until it matches what the Splitter actually
-    // produces.  Composition picked roughly mid-conversion so the
-    // first pass is in a reasonable basin.
-    Recycle
-    {
-        F               150 kmol/h;
-        T               310 K;
-        P                 1 bar;
-        molarComposition { water 0.85;  sucrose 0.02;  ethanol 0.10;  CO2 0.03; }
-    }
-}
-
 tearStreams    ( Recycle );
 recycleSolver  Newton;        // default; switch to Wegstein for tougher recycles
 recycleTol     1e-5;

@@ -831,7 +831,7 @@ function readComposite(
   // inlet with no 0/ falls back to its authored `streams{}` block or ambient.
   for (const e of edges) {
     if (!e.name || tears.has(e.name)) continue;
-    const spec = streamStateSpec(rawFiles?.[`0/${e.name}`]);
+    const spec = streamStateSpec(zeroStateText(rawFiles, e.name));
     if (spec) streams[e.name] = spec;
   }
   for (const inl of inlets)
@@ -848,6 +848,24 @@ function readComposite(
 // into a display StreamSpec.  A migrated case carries its stream state HERE, not
 // in the flowsheetDict -- so a drilled unit / composite reads its real values
 // from 0/<stream> (the plant run materialised them) instead of showing blanks.
+/** Resolve a stream's 0/ state TEXT under the engine's ownership layout: a
+ *  stream may sit at the root (`0/RawJuice`) OR be sector-owned
+ *  (`0/CONCENTRATION/PlantSteam`) -- a feed is owned by its consuming sector, an
+ *  internal edge by its producing sector.  Try the root path first (unchanged
+ *  behaviour for flat cases); else accept a UNIQUE `0/.../<name>` match.  On an
+ *  ambiguous base name (the same local name in two sectors) return undefined --
+ *  never guess the wrong sector's file; the caller falls back to authored/ambient. */
+export function zeroStateText(
+  rawFiles: { [relPath: string]: string } | undefined, name: string,
+): string | undefined {
+  if (!rawFiles) return undefined;
+  const top = rawFiles[`0/${name}`];
+  if (top !== undefined) return top;
+  const hits = Object.keys(rawFiles).filter(
+    (k) => k.startsWith("0/") && k.endsWith(`/${name}`));
+  return hits.length === 1 ? rawFiles[hits[0]!] : undefined;
+}
+
 export function streamStateSpec(text: string | undefined): StreamSpec | null {
   if (!text) return null;
   let d: JsonDict;
@@ -888,7 +906,7 @@ function readLeaf(flowsheet: JsonDict, rawFiles?: { [relPath: string]: string })
   // materialised by the plant run); fall back to ambient for an unfed inlet.
   const streams: { [name: string]: StreamSpec } = {};
   for (const s of [...inlets, ...outlets]) {
-    const spec = streamStateSpec(rawFiles?.[`0/${s}`]);
+    const spec = streamStateSpec(zeroStateText(rawFiles, s));
     if (spec) streams[s] = spec;
     else if (inlets.includes(s)) streams[s] = { F: 0, T: AMBIENT_T, P: AMBIENT_P, composition: {} };
   }

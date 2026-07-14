@@ -324,25 +324,71 @@ function buildIndex(): TutorialEntry[] {
 // the sub-case's flowsheetDict NAMES (a composite's `connections` edge keys, a
 // leaf's `inputs`+`outputs`) as a flat `0/<stream>` map pulled from the root 0/.
 // Only the referenced streams -- a run's completeness check rejects extra 0/ files.
+// Resolve a member's LOCAL stream name up the ancestor chain to the name the
+// root 0/ stores it under.  A boundary INLET is renamed at every level the
+// parent wires `<parentName> { to <child>/<localName> }` (root ToConcentration
+// -> CONCENTRATION DilutedJuice -> Evap1 Feed); an internal/outlet stream is
+// stored under its own name, so the chain stops at the first level with no `to`
+// match and the basename wins.  `memberDir` is the sub-case's folder path
+// relative to the case root (e.g. "CONCENTRATION/Evap1").
+function resolveRootStreamName(
+  name: string, memberDir: string, rootFiles: { [p: string]: string },
+): string {
+  const segs = memberDir.split("/").filter(Boolean);
+  let cur = name;
+  for (let i = segs.length - 1; i >= 0; i--) {
+    const child = segs[i]!;
+    const pdir = segs.slice(0, i).join("/");
+    const pfs = rootFiles[(pdir ? pdir + "/" : "") + "system/flowsheetDict"]
+             ?? rootFiles[(pdir ? pdir + "/" : "") + "flowsheetDict"];
+    if (!pfs) break;
+    let mapped: string | null = null;
+    try {
+      const pj = toJson(parse(pfs, { sourceName: "anc" })) as { [k: string]: unknown };
+      const pconns = pj["connections"];
+      if (pconns && typeof pconns === "object" && !Array.isArray(pconns))
+        for (const [key, val] of Object.entries(pconns as { [k: string]: unknown })) {
+          const to = (val as { to?: unknown })?.["to"];
+          if (typeof to === "string" && to === `${child}/${cur}`) { mapped = key; break; }
+        }
+    } catch { /* unparseable ancestor -- stop chaining */ }
+    if (mapped === null) break;
+    cur = mapped;
+  }
+  return cur;
+}
+
 export function projectRootStreamState(
   subFsText: string,
   rootFiles: { [relPath: string]: string },
+  memberDir?: string,
 ): { [relPath: string]: string } {
   const out: { [relPath: string]: string } = {};
   try {
     const j = toJson(parse(subFsText, { sourceName: "sub" })) as { [k: string]: unknown };
+    // The streams this sub-case NAMES.  A COMPOSITE names them as connection
+    // edge keys (its boundary block may use different labels -> an orphan, so we
+    // do NOT read it).  A LEAF has no connections: its boundary inlets/outlets
+    // (or inputs/outputs) ARE its streams.  ONLY these -- a run's completeness
+    // check rejects a 0/ file the graph does not name.
     const wanted = new Set<string>();
     const conns = j["connections"];
-    if (conns && typeof conns === "object" && !Array.isArray(conns))
-      for (const k of Object.keys(conns as object)) wanted.add(k);
-    for (const key of ["inputs", "outputs"]) {
-      const v = j[key];
-      if (Array.isArray(v)) for (const s of v) if (typeof s === "string") wanted.add(s);
-    }
+    const hasConns = !!conns && typeof conns === "object" && !Array.isArray(conns);
+    if (hasConns) for (const k of Object.keys(conns as object)) wanted.add(k);
+    const bnd = j["boundary"] as { [k: string]: unknown } | undefined;
+    const named = hasConns
+      ? [j["inputs"], j["outputs"]]
+      : [j["inputs"], j["outputs"], bnd?.["inlets"], bnd?.["outlets"]];
+    for (const src of named)
+      if (Array.isArray(src)) for (const s of src) if (typeof s === "string") wanted.add(s);
+
     const root0: { [base: string]: string } = {};
     for (const [r, body] of Object.entries(rootFiles))
       if (r.startsWith("0/")) root0[r.slice(r.lastIndexOf("/") + 1)] = body;
-    for (const nm of wanted) if (root0[nm]) out[`0/${nm}`] = root0[nm];
+    for (const nm of wanted) {
+      const src = memberDir ? resolveRootStreamName(nm, memberDir, rootFiles) : nm;
+      if (root0[src]) out[`0/${nm}`] = root0[src];
+    }
   } catch { /* unparseable flowsheetDict -- no projection */ }
   return out;
 }
@@ -410,7 +456,10 @@ function subNodesFor(rootName: string,
     // reads them by NAME -- without this the drilled tab shows no values).
     const subFsText = sub["system/flowsheetDict"];
     if (subFsText && !Object.keys(sub).some((r) => r.startsWith("0/")))
-      Object.assign(sub, projectRootStreamState(subFsText, files));
+      // `dir` (the member's folder path under the case root) lets the projection
+      // resolve boundary-inlet renames up the whole ancestor chain, so a nested
+      // unit's feed traces to the root 0/ it is stored under.
+      Object.assign(sub, projectRootStreamState(subFsText, files, dir));
 
     // The sub-node's identifier is the ROOT case's FULL name + the folder path,
     // so a drill lookup (`${tutorialName}/${child}`) matches.  Using shortName

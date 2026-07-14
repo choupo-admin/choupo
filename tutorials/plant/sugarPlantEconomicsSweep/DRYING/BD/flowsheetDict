@@ -10,24 +10,3 @@
 type        solidDryer;
 
 boundary    { inlets ( WetPowder  hotAir );  outlets ( DryPowder  Vapour ); }
-
-streams     // default for isolated run; the sector cables SD/WetPowder
-{
-    WetPowder
-    {
-        F                  3.0 kmol/h;        // bound water (liquid)
-        T                  360.0 K;
-        P                  1.0 bar;
-        molarComposition  { water 1.0; }
-        solids { solidFlows { sucrose 1500.0 kg/h; } }
-    }
-
-    hotAir                                     // drying air -- a real stream
-    {
-        F                  150.0 kmol/h;
-        T                  380.0 K;
-        P                  1.0 bar;
-        vf                 1.0;                // superheated drying air
-        molarComposition  { N2 0.935;  water 0.065; }   // RH ~0.05 at 380 K (drier air)
-    }
-}

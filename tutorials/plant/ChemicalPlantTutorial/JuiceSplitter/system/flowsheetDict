@@ -18,8 +18,3 @@ type        splitter;
 operation   { fractions ( 0.6667  0.3333 ); }   // 2/3 to concentration | 1/3 to fermentation
 
 boundary    { inlets ( In );  outlets ( ToConcentration  ToFermentation ); }
-
-streams     // default for isolated unit run; the plant cables RawJuice -> In
-{
-    In  { F 150 kmol/h;  T 298.15 K;  P 1 bar;  molarComposition { water 0.94;  sucrose 0.06; } }
-}

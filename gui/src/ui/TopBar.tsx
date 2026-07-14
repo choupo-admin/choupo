@@ -37,6 +37,7 @@ License
 
 import { compositeMembers } from "../case/toGraph.js";
 import { readEdges } from "../case/toGraph.js";
+import { zeroStateText } from "../case/toGraph.js";
 import { ActionIcon, Badge, Group, Text, Tooltip } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
@@ -183,8 +184,18 @@ export function TopBar() {
         const bnd = fsr?.["boundary"] as Record<string, unknown> | undefined;
         const inl = bnd?.["inlets"];
         const strm = (fsr?.["streams"] ?? {}) as Record<string, unknown>;
+        // An inlet is FED if it carries a 0/ state file -- at the root
+        // (0/RawJuice) OR sector-owned (0/CONCENTRATION/PlantSteam), the
+        // ownership layout the engine uses (a feed is owned by its consuming
+        // sector).  Resolved via the same zeroStateText helper the graph uses.
+        // Without this a fractal case whose inlets live in 0/ false-flags EVERY
+        // inlet as unfed (the streams{} block is empty in the stream-state
+        // architecture -- the values live on disk).
+        const raw = caseFiles.rawFiles;
         const unfed = Array.isArray(inl)
-          ? inl.filter((x): x is string => typeof x === "string" && !strm[x]) : [];
+          ? inl.filter((x): x is string =>
+              typeof x === "string" && !strm[x]
+              && zeroStateText(raw, x) === undefined) : [];
         if (unfed.length) {
           notifications.show({
             color: "yellow", title: "Boundary inlet has no feed",
